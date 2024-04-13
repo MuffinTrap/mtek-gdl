@@ -210,6 +210,21 @@ void Set3DMode(float farClip = 1000.f);
  */
 void SetClearColor(u_char red, u_char grn, u_char blu, u_char alp);
 
+/*
+    Changed 13.4.2024
+    muffintrap: Added an overload of SetClearColor that takes
+    a single color as parameter
+*/
+//! Sets the clear color.
+/*!
+ *	\details Sets the color used when the screen gets cleared.
+ *
+ *	\note This function does not affect the background color in console mode.
+ *
+ *	\param[in]	color 
+ */
+void SetClearColor(u_int color);
+
 
 //! Sets the clip box.
 /*!

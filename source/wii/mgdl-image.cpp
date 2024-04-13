@@ -845,6 +845,52 @@ bool gdl::Image::LoadImageMem(void *imagePtr, u_int filterMode, u_int format) {
 
 }
 
+/* 
+	Changed 13.4.2024
+	LoadImageBuffer() added by muffintrap 
+*/
+bool gdl::Image::LoadImageBuffer(const void *buffer, size_t size, u_int filterMode, u_int format) {
+	if (gdl::ConsoleActive)
+		printf("gdl: Loading image from memory buffer");
+
+	// fmemopen cannot read from const buffer :U
+	// Copy data to temporary buffer before reading
+	void *tempBuffer = malloc(size);
+	memcpy(tempBuffer, buffer, size);
+
+	// Open file
+	FILE *fp;
+	if (!(fp = fmemopen(tempBuffer, size, "rb"))) {
+		gdl::CallErrorCallback("Image stream failed to open");
+		fclose(fp);
+		free(tempBuffer);
+		return(false);
+	}
+
+	// Decode and convert the image
+	png_structp png_ptr;
+	if (!(png_ptr = _gdl_image_GetFilePngContext(fp))) {
+		fclose(fp);
+		free(tempBuffer);
+		return(false);
+	}
+
+	if (!gdl::Image::_ProcessImage(png_ptr, 0, filterMode, format, false, 0)) {
+		fclose(fp);
+		free(tempBuffer);
+		return(false);
+	}
+
+	if (gdl::ConsoleActive) {
+		printf("Ok.\n");
+	}
+
+	fclose(fp);
+	free(tempBuffer);
+
+	return(true);
+}
+
 short gdl::Image::Xsize() {
 
     return(xSize);

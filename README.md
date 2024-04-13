@@ -1,3 +1,22 @@
+
+# Forked by Muffintrap
+The purpose of this fork is to:
+* Continue and extend the original MTek-GDL library
+* Remove deprecated or extraneous features
+* Add functions and classes that are useful in Demoscene context
+* Learn more about the Wii to maybe someday port Raylib to it.
+
+All changes made to the original are clearly commented in the code, as required by the GPL-2.0 License.
+
+If you use this fork for making a Wii game or demo, I won't be available to give tech support. And naturally, there is no warranty of any kind.
+
+### Why would anyone use this instead of GRRRRRRRLIB
++ Written in C++ instead of C (this might be a minus for someone though)
++ Does not crash Dolphin on exit
+
+This file was changed on 13.4.2024 by muffintrap to add explanation of the fork.
+Original contents of README.md are below:
+
 # MTek-GDL
 A cross-platform game development framework library for the Nintendo Wii and PC with an API very similar to SFML designed mainly to make homebrew software and game development across supported platforms much easier and straight forward to do for both beginners and advanced programmers. Designed mostly for 2D game development but lower level GX or OpenGL commands can be used in conjunction for advanced 2D or 3D graphics programming.
 

@@ -486,6 +486,12 @@ bool gdl::Texture::_ConvertMipmap(short xres, short yres, void *inBuff) {
     short	mipXres		 = xres;
     short	mipYres		 = yres;
 
+	/*
+		Changed 13.4.2024
+		muffintrap: initialize mipmapBuff[1] to NULL
+		to show that it might not be used.
+	*/
+	mipmapBuff[1] = NULL;
 
 	// Base level mipmap
 	switch(gdl::Texture::texFmt) {
@@ -612,8 +618,15 @@ bool gdl::Texture::_ConvertMipmap(short xres, short yres, void *inBuff) {
 		mipmapBuff[0] = mipmapBuff[1];
 
 	}
-
-	free2(mipmapBuff[1]);
+	/*
+		Changed 13.4.2024
+		muffintrap: added check that
+		memory is initialized before calling free() on it
+	*/
+	if (mipmapBuff[1] != NULL)
+	{
+		free2(mipmapBuff[1]);
+	}
 
 	return(true);
 
@@ -1328,7 +1341,12 @@ void gdl::Texture::PokePixel(short x, short y, u_int col) {
 		return;
 
 
-	register u8*	bp;
+	/*
+		Changed 13.4.2024
+		Muffintrap: removed register keyword since C++17 no longer
+		allows it.
+	*/
+	u8*	bp;
 
 	switch(texFmt) {
 	case gdl::I4:

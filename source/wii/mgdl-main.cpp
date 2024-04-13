@@ -27,6 +27,7 @@
 #include "mgdl-wii/mgdl-globals-internal.h"
 #include "mgdl-wii/mgdl-main.h"
 #include "mgdl-wii/mgdl-basic.h"
+#include "mgdl-wii/mgdl-util.h" // muffintrap (13.4.2024) Added include  for mgdl-util.h
 
 
 namespace gdl {
@@ -44,7 +45,14 @@ namespace gdl {
 
 	}
 
-	static void _resetCallback() {
+	/*
+		Changed 13.4.2024
+		ogc/system.h defines the reset callback to
+		have 2 parameters: u32 irq, void* ctx
+		Muffintrap added these parameters, but no idea
+		what should be done with them.
+	*/
+	static void _resetCallback(u32 irq, void* ctx) {
 
 		// Reset button exit (exit to menu)
 
@@ -506,6 +514,13 @@ void gdl::SetClearColor(u_char red, u_char grn, u_char blu, u_char alp) {
 
 	GXColor clearCol = { red, grn, blu, alp };
 	GX_SetCopyClear(clearCol, GX_MAX_Z24);
+
+}
+
+void gdl::SetClearColor(u_int color)
+{
+	gdl::RGBA8Components comp = gdl::ColorToComponents(color);
+	SetClearColor(comp.red, comp.green, comp.blue, comp.alpha);
 
 }
 
