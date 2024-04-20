@@ -5,6 +5,8 @@
 
 #include <stdio.h>
 #include <malloc.h>
+// muffintrap: added <cstring> for version 2.6.1
+#include <cstring>
 
 #include "mgdl-wii/mgdl-types.h"
 #include "mgdl-wii/mgdl-globals.h"
@@ -62,6 +64,16 @@ gdl::SpriteSet::~SpriteSet() {
 
 }
 
+gdl::SpriteSetConfig gdl::SpriteSet::CreateConfig(short numSprites, short tileRows, short tilesPerRow, short tileWidth, short tileHeight)
+{
+	SpriteSetConfig cfg = {0};
+	 cfg.numSprites= numSprites;
+	 cfg.tileRows= tileRows; 
+	 cfg.tilesPerRow= tilesPerRow;
+	 cfg.tileWidth= tileWidth;
+	 cfg.tileHeight= tileHeight;
+	return cfg;
+}
 /*
 	Change 13.4.2024
 	muffintrap: added new function that loads from image and configuration
@@ -89,16 +101,16 @@ bool gdl::SpriteSet::LoadSprites(SpriteSetConfig &config, Image *spriteSheet)
 
 	for (short i = 0; i < config.numSprites; i++)
 	{
-		short x = i % config.tilesPerRow;
-		short y = i / config.tileRows;
+		short column = i % config.tilesPerRow;
+		short row = i / config.tilesPerRow;
 
-		entry.tx1 = x * config.tileWidth;
+		entry.tx1 = column * config.tileWidth;
 		entry.tx2 = entry.tx1 + config.tileWidth;
-		entry.ty1 = y * config.tileHeight;
+		entry.ty1 = row * config.tileHeight;
 		entry.ty2 = entry.ty1 + config.tileHeight;
 		// Pivot point?
 		entry.px = entry.tx1 + config.tileWidth/2;
-		entry.px = entry.ty1 + config.tileHeight/2;
+		entry.py = entry.ty1 + config.tileHeight/2;
 
 		LoadTSM_Entry(entry, i);
 	}

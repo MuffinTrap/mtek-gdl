@@ -10,9 +10,11 @@ All changes made to the original are clearly commented in the code, as required 
 
 If you use this fork for making a Wii game or demo, I won't be available to give tech support. And naturally, there is no warranty of any kind.
 
-### Why would anyone use this instead of GRRRRRRRLIB
-+ Written in C++ instead of C (this might be a minus for someone though)
-+ Does not crash Dolphin on exit
+## Version numbers
+This is now version 0.100.0-muffintrap
+
+### Future plans
+1. Add support for reading glTF scenes: assimp or tinygltf
 
 This file was changed on 13.4.2024 by muffintrap to add explanation of the fork.
 Original contents of README.md are below:

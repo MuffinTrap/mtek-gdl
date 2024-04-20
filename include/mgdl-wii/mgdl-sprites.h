@@ -39,6 +39,7 @@ typedef struct
     short   tileHeight;
 }SpriteSetConfig;
 
+
 //! Sprite set handling class
 /*!
  *	Instead of using several gdl::Image objects for handling sprite images, it is recommended to use this gdl::SpriteSet
@@ -102,6 +103,20 @@ public:
      *		an error occurred (detailed error is printed in console mode).
      */
     bool	LoadSprites(SpriteSetConfig &config, Image *spriteSheet);
+
+    //! Creates a SpriteSetConfig struct
+    /*!
+     *	\details Creates a spriteSetConfig struct from given parameters
+     *
+     *  \param[in]  numSprites   Configuration struct
+     *	\param[in]	tileRows     How many rows of sprites the image contains
+     *	\param[in]	tilesPerRow	 How many sprites are on a single row
+     *	\param[in]	tileWidth    Width of a sprite in pixels
+     *	\param[in]	tileHeight   Height of a sprite in pixels
+     *
+     *	\return SpriteSetConfig struct
+     */
+    SpriteSetConfig CreateConfig(short numSprites, short tileRows, short tilesPerRow, short tileWidth, short tileHeight);
 
 
 

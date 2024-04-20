@@ -6,6 +6,8 @@
 #include <malloc.h>
 #include <gccore.h>
 #include <zlib.h>
+// muffintrap: added <cstring> for version 2.6.1
+#include <cstring>
 
 #include "mgdl-wii/mgdl-config.h"
 #include "mgdl-wii/mgdl-types.h"

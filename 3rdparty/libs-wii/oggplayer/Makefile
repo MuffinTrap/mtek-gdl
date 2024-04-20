@@ -14,8 +14,9 @@ AR		:=	$(PREFIX)ar
 
 LIBOGC_INC	:=	$(DEVKITPRO)/libogc/include
 LIBOGC_LIB	:=	$(DEVKITPRO)/libogc/lib/wii
+PORTLIBS_INC	:=	$(DEVKITPRO)/portlibs/ppc/include
 
-INCLUDE	:= -I$(LIBOGC_INC)
+INCLUDE	:= -I$(LIBOGC_INC) -I$(PORTLIBS_INC)
 MACHDEP := -mrvl -mcpu=750 -meabi -mhard-float
 CFLAGS  := -O3 -Wall $(MACHDEP) $(INCLUDE)
 
@@ -26,15 +27,12 @@ ARC 	:= lib$(LIB).a
 HDR 	:= $(LIB).h
 
 all : $(OFILES)
-	$(MAKE) -C tremor
 	$(AR) -r $(ARC) $(OFILES)
 
 clean :
-	$(MAKE) -C tremor clean
 	rm -f $(OFILES) $(ARC)
 
 install :
-	$(MAKE) -C tremor install
 	mkdir -p  $(LIBOGC_LIB)  $(LIBOGC_INC)
 	cp -f $(ARC) $(LIBOGC_LIB)/
 	cp -f $(HDR) $(LIBOGC_INC)/

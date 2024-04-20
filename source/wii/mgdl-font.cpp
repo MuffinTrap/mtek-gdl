@@ -7,6 +7,9 @@
 #include <stdarg.h>
 #include <malloc.h>
 #include <gccore.h>
+// Added <cstring> to get strlen
+// for version 2.6.1 by muffintrap.
+#include <cstring>
 
 #include "mgdl-wii/mgdl-types.h"
 #include "mgdl-wii/mgdl-globals.h"
