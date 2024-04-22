@@ -263,33 +263,54 @@ void gdl::SetMusicVolume(float volume) {
 
 }
 
-bool gdl::PlayMusic(const char* fileName, bool loop) {
+// Added for 0.100.0-muffintrap: added a version that reads from a buffer.
+bool gdl::PlayMusic(const u_char* buffer, size_t size, bool loop)
+{
+	// fmemopen cannot read from const buffer :U
+	// Copy data to temporary buffer before reading
+	void *tempBuffer = malloc(size);
+	memcpy(tempBuffer, buffer, size);
 
-    if (fileName != NULL) {
+	FILE* file = fmemopen(tempBuffer, size, "r");
+	bool result = PlayMusic(file, loop);
+	free(tempBuffer);
+	return result;
+}
 
-		if (PlayOgg(fileName, 0, loop))
+// Added for 0.100.0-muffintrap: separated PlayMusic into two parts to avoid copying code
+bool gdl::PlayMusic(const char* fileName, bool loop)
+{
+	FILE* file = fopen(fileName, "r");
+	bool result = PlayMusic(file, loop);
+	if (result)
+	{
+		gdl::wii::LastMusicFile = fileName;	// Save for possible later use
+	}
+	else {
+		if ((StatusOgg() == OGG_STATUS_ERR) || (StatusOgg() == OGG_STATUS_EOF)) {
+
+			if (PlayOgg(gdl::wii::LastMusicFile, 0, loop) != 0)
+				return(false);
+		}
+	}
+	return result;
+}
+
+// muffintrap: NOTE  oggplayer.c will close the file access.
+bool gdl::PlayMusic(FILE* file, bool loop)
+{
+    if (file != NULL) {
+
+		if (PlayOggFilePtr(file, 0, loop) != 0)
 			return(false);
 
 		SetVolumeOgg(255*((gdl::wii::UserMusicVolume*(gdl::wii::MasterMusicVolume/100.f))/100.f));
-		gdl::wii::LastMusicFile = fileName;	// Save for possible later use
+		return(true);
 
-    } else {
-
-		if ((StatusOgg() == OGG_STATUS_ERR) || (StatusOgg() == OGG_STATUS_EOF)) {
-
-			if (PlayOgg(gdl::wii::LastMusicFile, 0, loop))
-				return(false);
-
-		} else {
-
-			PauseOgg(0);
-
-		}
-
+    } 
+	else {
+		return false;
 	}
-
-	return(true);
-
 }
 
 void gdl::PauseMusic() {

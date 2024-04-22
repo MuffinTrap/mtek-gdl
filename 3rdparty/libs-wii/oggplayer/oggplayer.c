@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2008 Francisco Muñoz 'Hermes' <www.elotrolado.net>
+ Copyright (c) 2008 Francisco Muï¿½oz 'Hermes' <www.elotrolado.net>
  All rights reserved.
 
  Proper (standard) vorbis usage by Tantric, 2009
@@ -287,15 +287,25 @@ void StopOgg()
 
 }
 
+
+// muffintrap: broke the PlayOff function into two
+// parts to allow reading from any give FILE pointer
+// for version 0.100.0-muffintrap of gdl
 int PlayOgg(const char *file, int time_pos, int mode)
 {
+	FILE* filePtr = fopen(file, "r");
+	return PlayOggFilePtr(filePtr, time_pos, mode);
+}
 
+// muffintrap: modified to read from a file pointer
+// for version 0.100.0-muffintrap of gdl
+int PlayOggFilePtr(FILE* file, int time_pos, int mode)
+{
 	StopOgg();
-
-	if (!(private_ogg.fd = fopen(file, "r"))) {
+	if (file == NULL)
+	{
 		return -1;
 	}
-
 	private_ogg.mode = mode;
 	private_ogg.eof = 0;
 	private_ogg.volume = 127;

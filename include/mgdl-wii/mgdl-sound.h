@@ -119,6 +119,7 @@ void SetMusicVolume(float volume);
  *	    memory, this one streams audio data off of a music file which is ideal for music tracks as they tend to be lengthy
  *      and take up a bit of memory.
  *
+ *	\note If the new music cannot be loaded, this function will attempt to play previous music again
  *	\note To resume a stopped or paused music, use this function but specify NULL as the file name.
  *	\note This port of the library only supports mono or stereo OGG Vorbis audio files. Looping OGG files (logg) and mp3s are
  *	    not supported.
@@ -128,6 +129,24 @@ void SetMusicVolume(float volume);
  */
 bool PlayMusic(const char* fileName, bool loop);
 
+// muffintrap: Added a new version of PlayMusic 
+// to read ogg files from a buffer instead of file
+//!	Plays a music file.
+/*!
+ *	\details Plays a music file in the background. Unlike the gdl::Sound class which loads the sound data entirely into
+ *	    memory, this one streams audio data off of a music file which is ideal for music tracks as they tend to be lengthy
+ *      and take up a bit of memory.
+ *
+ *	\note If the new music cannot be loaded, this function will attempt to play previous music again
+ *	\note To resume a stopped or paused music, use this function but specify NULL as the file name.
+ *	\note This port of the library only supports mono or stereo OGG Vorbis audio files. Looping OGG files (logg) and mp3s are
+ *	    not supported.
+ *
+ *	\param[in]	buffer	Start of the buffer
+ *	\param[in]	size	Size of the buffer
+ *	\param[in]	loop		Loop flag (music will be looped if true).
+ */
+bool PlayMusic(const u_char* buffer, size_t size, bool loop);
 
 //! Pauses the currently playing music.
 /*!
@@ -138,6 +157,17 @@ void PauseMusic();
 
 //! Stops the currently playing music.
 void StopMusic();
+
+// muffintrap: split PlayMusic into 2 parts. The public functions
+// both use this one
+//! Loads and plays music file
+/*!
+ *  \details Always stops the currently playing music
+ *
+ *	\param[in]	file	Pointer to the file contents
+ *	\param[in]	loop	Loop flag (music will be looped if true)
+ */
+bool PlayMusic(FILE* file, bool loop);
 
 /*! @} */
 

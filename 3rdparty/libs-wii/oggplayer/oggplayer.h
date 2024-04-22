@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2008 Francisco Muñoz 'Hermes' <www.elotrolado.net>
+ Copyright (c) 2008 Francisco Muï¿½oz 'Hermes' <www.elotrolado.net>
  All rights reserved.
 
  Proper (standard) vorbis usage by Tantric, 2009
@@ -59,6 +59,9 @@ extern "C"
  * returns: -1 on error, 0 on success
  ***************************************************************************/
 int PlayOgg(const char *file, int time_pos, int mode);
+
+//muffintrap: Added a function to play Ogg from a File pointer
+int PlayOggFilePtr(FILE* file, int time_pos, int mode);
 
 /****************************************************************************
  * StopOgg
