@@ -4,8 +4,9 @@
 
 /*!	\mainpage
  *
- *	\version	0.75
+ *	\version	0.100.0-muffintrap
  *	\author		Jobert "Lameguy" Villamor (Lameguy64/TheCodingBrony)
+ *	\author		muffintrap (Forked from version 0.75)
  *	\copyright	GNU General Public License
  *
  *	\attention This is a work-in-progress "sneak-peek" version of this library! Avoid using functions that are not documented

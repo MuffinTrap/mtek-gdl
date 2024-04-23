@@ -27,6 +27,7 @@ gdl::FFont::FFont() {
 	ch=0;
 	vList=NULL;
 	tList=NULL;
+	firstIndex=0;
 
 }
 
@@ -40,7 +41,9 @@ gdl::FFont::~FFont() {
 
 }
 
-void gdl::FFont::BindSheet(gdl::Image& image, short charw, short charh) {
+// muffintrap: Added parameters firstIndex and lastIndex
+// and modified the code to use them
+void gdl::FFont::BindSheet(gdl::Image& image, short charw, short charh, short firstIndex, short lastIndex, short charactersPerRow) {
 
 	short	cx,cy;
 	short	tx,ty;
@@ -65,12 +68,15 @@ void gdl::FFont::BindSheet(gdl::Image& image, short charw, short charh) {
 
 	DCFlushRange(vList, sizeof(gdl::wii::VERT2s16)*4);
 
+	short characterAmount = lastIndex - firstIndex;
 
 	if (tList == NULL)
-		tList = memalign(32, (sizeof(gdl::wii::TEX2f32)*4)*256);
+		tList = memalign(32, (sizeof(gdl::wii::TEX2f32)*4)*(characterAmount));
 
-	for(cy=0; cy<16; cy++) {
-		for(cx=0; cx<16; cx++) {
+
+	short rows = characterAmount / charactersPerRow;
+	for(cy=firstIndex/charactersPerRow; cy<rows; cy++) {
+		for(cx=firstIndex%charactersPerRow; cx<charactersPerRow; cx++) {
 
 			tx = charw*cx;
 			ty = charh*cy;
@@ -95,7 +101,7 @@ void gdl::FFont::BindSheet(gdl::Image& image, short charw, short charh) {
 		}
 	}
 
-	DCFlushRange(tList, (sizeof(gdl::wii::TEX2f32)*4)*256);
+	DCFlushRange(tList, (sizeof(gdl::wii::TEX2f32)*4)*characterAmount);
 
 
 	if (gdl::ConsoleActive)
@@ -150,7 +156,7 @@ void gdl::FFont::DrawText(const char *text, short x, short y, float scale, u32 c
 
 	for(c=0; text[c] != 0x00; c++) {
 
-		tc = 4*((u_char*)text)[c];
+		tc = 4*(((u_char*)text)[c] - firstIndex);
 
 		GX_Begin(GX_QUADS, GX_VTXFMT0, 4);
 

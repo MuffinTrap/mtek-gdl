@@ -13,6 +13,7 @@ Bringing a lot of changes to the code. Removing things that are no longer needed
 + Copied mgui.h and .cpp from tools/ folder and renamed to mgdl-gui, changed them to work like immediate mode gui.
 + Copied font.c from tools/ and renamed it to mgdl-defaultfont.h to always have a default font to use.
 + Added mgdl-input-wii.h and .cpp to provide more convenient access to libogc:s input state
++ Added mgdl-assert.h and .cpp to provide asserts and on screen messages when they happen
 
 #### Modifications to library
 + Modified mgdl-input-keyboard.cpp to fix a compilation error.
@@ -24,6 +25,7 @@ Bringing a lot of changes to the code. Removing things that are no longer needed
 + Changed #define header guards to #pragma once in all files
 + Changed mgdl-audio.h and .cpp to read music files from memory buffers
 + Changed 3rdparty/oggplayer files: added function PlayOggFilePtr to play from given file pointer
++ Changed mgdl-font.h and .cpp to allow loading only a range of characters instead of always 256
 
 #### Removals
 + Removed tools folder. It contained the source for a Sheetmapper program, that does not compile without the pc version of mtek-gdl, which is not available. It might be possible to recreate using raylib or something similar.

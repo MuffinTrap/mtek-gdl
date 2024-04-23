@@ -25,6 +25,7 @@ class FFont {
 	short		cw,ch;
 	void		*vList;
 	void		*tList;
+	short		firstIndex; // muffintrap: need to remember the first index to calculate offsets into vertex and uv arrays
 
 public:
 
@@ -37,17 +38,24 @@ public:
 	virtual	~FFont();
 
 
+	// muffintrap: modified to take less than 256 characters. This way the usual
+	// spritefont images that have chacters between " !"#$% ... xyz{|}~" can be used
 	//! Binds the font handler class to an gdl::Image object of a font sheet.
 	/*!
 	 *	\details A font sheet consists of a simple array of 256 characters arranged in a 16x16 character grid. It is
 	 *	good enough for simple fonts (such as those found in retro inspired games) but will become problematic with
-	 *	dynamic fonts that have variable-width characters.
+	 *	dynamic fonts that have variable-width characters. If the sheet contains less characters or has
+	 *  different dimensions, the optional parameters for characters per row and
+	 *  first and last index can be specified.
 	 *
 	 *	\param[in]	image	gdl::Image object of a font sheet.
 	 *	\param[in]	charw	Width of characters in pixels.
 	 *	\param[in]	charh	Height of characters in pixels.
+	 *	\param[in]	firstIndex	How many characters to skip  Default 0.
+	 *	\param[in]	lastIndex	Last character to be loaded. Exclusive!. Default 256.
+	 *	\param[in]	charactersPerRow	How many characters are on a row. Default 16.
 	 */
-	void BindSheet(gdl::Image& image, short charw, short charh);
+	void BindSheet(gdl::Image& image, short charw, short charh, short firstIndex = 0, short lastIndex = 256, short charactersPerRow = 16);
 
 
 	//! Draw text.

@@ -46,10 +46,10 @@ namespace gdl {
 	}
 
 	/*
-		Changed 13.4.2024
+		muffintrap: changed for version 0.100.0-muffintrap
 		ogc/system.h defines the reset callback to
 		have 2 parameters: u32 irq, void* ctx
-		Muffintrap added these parameters, but no idea
+		Added these parameters, but no idea
 		what should be done with them.
 	*/
 	static void _resetCallback(u32 irq, void* ctx) {
