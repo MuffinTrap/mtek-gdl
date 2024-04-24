@@ -1,4 +1,8 @@
 #include "mgdl-wii/mgdl-gui.h"
+#include "mgdl-wii/mgdl-basic.h"
+#include "mgdl-wii/mgdl-font.h"
+#include "mgdl-wii/mgdl-input-wii.h"
+#include <wiiuse/wpad.h>
 
 /* Work in progress. 
     TODO: 
@@ -6,7 +10,52 @@
         - Combine constructors and input/drawing code for each element
     */
 
+gdl::MenuCreator::MenuCreator(gdl::Font font)
+{
+    this->currentFont = font;
+}
+
+void gdl::MenuCreator::StartMenu(int x, int y, int w, int h)
+{
+    this->x = x;
+    this->y = y;
+    this->w = w;
+    this->h = h;
+}
+
+void gdl::MenuCreator::Panel(int h, u_int col, short style)
+{
+    gdl::DrawBoxF(this->x, this->y, this->x + this->w, this->y + h, col);
+    this->y += h;
+}
+
+void gdl::MenuCreator::Text(const char* text)
+{
+    int h = currentFont.GetStrHeight();
+    currentFont.DrawText(text, this->x, this->y, 1, gdl::Color::White);
+    this->y += h;
+}
+
+bool gdl::MenuCreator::Button(const char* text, u_int color)
+{
+    int h = currentFont.GetStrHeight();
+    gdl::DrawBoxF(this->x, this->y, this->x + this->w, this->y + h, color);
+    currentFont.DrawText(text, this->x, this->y, 1, gdl::Color::White);
+    gdl::vec2 cursorPos = gdl::WiiInput::GetCursorPosition();
+
+    bool inside = ((cursorPos.x >= this->x) &&
+                (cursorPos.x <= this->x+(this->w)) &&
+                (cursorPos.y >= this->y) &&
+                (cursorPos.y <= this->y+(h)));
+    bool pressA = gdl::WiiInput::ButtonPress(WIIMOTE_BUTTON_A);
+            
+    this->y += h;
+
+    return inside && pressA;
+}
 /*
+
+
 namespace gdl {
 
     KeyboardInputStruct KeyboardInput = {0};

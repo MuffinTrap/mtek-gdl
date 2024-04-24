@@ -157,6 +157,13 @@ public:
 	 */
 	int CalcStrLen(const char *text, int len);
 
+	// muffintrap: added this to get the height of the font
+	//! Returns the height of this font in pixels.
+	/*!
+	 *
+	 *	\returns Height of the string in pixels, zero if no font was loaded or the string is blank.
+	 */
+	int GetStrHeight();
 
 	//! Draw text.
 	/*!

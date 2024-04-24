@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MGDL_WII_INPUT_H
+#define MGDL_WII_INPUT_H
 
 namespace gdl
 {
@@ -15,8 +16,9 @@ namespace gdl
         }
     };
 
-    namespace WiiInput
+    class WiiInput
     {
+        public:
         void Init();
         void StartFrame();
 
@@ -27,9 +29,6 @@ namespace gdl
 
         gdl::vec2 GetCursorPosition();
         gdl::vec2 GetNunchukJoystickDirection(float deadzone);
-
-        char ir_message[60];
-        char position_message[60];
-        char correction_message[60];
     };
-};
+}
+#endif

@@ -346,6 +346,11 @@ int gdl::Font::CalcStrLen(const char *text, int len) {
 
 }
 
+int gdl::Font::GetStrHeight()
+{
+	return this->charHeight;
+}
+
 void gdl::Font::DrawText(const char *text, short x, short y, float scale, u_int col) {
 
 	float	tx;

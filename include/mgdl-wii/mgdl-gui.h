@@ -6,7 +6,20 @@ namespace gdl
 {
     class MenuCreator
     {
+        public :
+        MenuCreator(gdl::Font font);
+        void StartMenu(int x, int y, int w, int h);
+        void Panel(int h, u_int col, short style);
+        void Text(const char* text);
+        bool Button(const char* text, u_int color);
 
+        private:
+        int x;
+        int y;
+        int w;
+        int h;
+
+        gdl::Font currentFont;
     };
 };
 
@@ -54,9 +67,6 @@ class MenuCreator {
         MenuCreator();
 
         // Basic controls
-        void Panel(int x, int y, int w, int h, int col, short style);
-        void Text(int x, int y, const char* text);
-        bool Button(int x, int y, int w, int h, const char* text);
         bool CheckBox(int x = 0, int y = 0, const char* caption = NULL, bool& value, bool disabled = false);
         float Slider(int x, int y, int w, int h, float min, float max, float step, float& value);
 
@@ -78,6 +88,5 @@ class MenuCreator {
         // One more for Wii input
         MouseInputStruct mouseInput;
         KeyboardInputStruct keyboardInput;
-        gdl::Font& currentFont;
 };
 */

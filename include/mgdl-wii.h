@@ -19,5 +19,11 @@
 #include "mgdl-wii/mgdl-sprites.h"
 #include "mgdl-wii/mgdl-font.h"
 #include "mgdl-wii/mgdl-sound.h"
+// muffintrap: Added new files in version 0.100.0-muffintrap
+#include "mgdl-wii/mgdl-gui.h"
+#include "mgdl-wii/mgdl-assert.h"
+#include "mgdl-wii/mgdl-defaultfont.h"
+#include "mgdl-wii/mgdl-input-wii.h"
+#include "mgdl-wii/mgdl-util.h"
 
 #endif // _GDL_WII_H

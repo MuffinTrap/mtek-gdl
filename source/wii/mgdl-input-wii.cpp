@@ -1,11 +1,13 @@
+#ifndef MGDL_WII_INPUT
+#define MGDL_WII_INPUT
 
-#include <mgdl-wii.h>
-#include <wiiuse/wpad.h>
 #include "mgdl-wii/mgdl-input-wii.h"
+#include "mgdl-wii.h"
+#include <wiiuse/wpad.h>
 #include <math.h>
 
 bool gdl::WiiInput::ButtonPress(int buttonEnum) {
-  return (WPAD_ButtonsDown(0) & buttonEnum);
+  return (WPAD_ButtonsDown(0) & buttonEnum) != 0;
 }
 
 bool gdl::WiiInput::ButtonRelease(int buttonEnum) {
@@ -18,6 +20,7 @@ bool gdl::WiiInput::ButtonHeld(int buttonEnum) {
 
 
 void gdl::WiiInput::Init() {
+	WPAD_Init();
   WPAD_SetDataFormat(WPAD_CHAN_0, WPAD_FMT_BTNS_ACC_IR);
 }
 
@@ -54,3 +57,5 @@ gdl::vec2 gdl::WiiInput::GetNunchukJoystickDirection(float deadzone)
 void gdl::WiiInput::StartFrame() {
   WPAD_ScanPads();  // Scan the Wiimotes
 }
+
+#endif

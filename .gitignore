@@ -1,23 +1,10 @@
+# MTEK-GDL gitignore
+# modified from original by muffintrap for version 0.100.0-muffintrap
 *.o
 *.d
 *.a
 *.elf
 *.dol
 *.exe
-readme.txt
-changelog.txt
-installation.txt
-install.bat
-mtek-gdl logo.png
-mtek-gdl logo.svg
-SyncToy_ffd6d763-926c-4015-946f-0ebba55d5d96.dat
-makefile.pc
 lib
-prototypes
-gemhunt
-junk
-patches
-codeblocks templates
-examples
-docs
-SyncToy_49dabfb1-b8f9-442b-ba94-e9d0150ced97.dat
+build
