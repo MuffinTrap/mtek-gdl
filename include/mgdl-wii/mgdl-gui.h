@@ -8,7 +8,7 @@ namespace gdl
     {
         public :
         MenuCreator(gdl::Font font);
-        void StartMenu(int x, int y, int w, int h);
+        void StartMenu(int x, int y, int w, int h, float fontScale);
         void Panel(int h, u_int col, short style);
         void Text(const char* text);
         bool Button(const char* text, u_int color);
@@ -20,6 +20,7 @@ namespace gdl
         int h;
 
         gdl::Font currentFont;
+        float fontScale;
     };
 };
 

@@ -1,6 +1,3 @@
-#ifndef MGDL_WII_INPUT
-#define MGDL_WII_INPUT
-
 #include "mgdl-wii/mgdl-input-wii.h"
 #include "mgdl-wii.h"
 #include <wiiuse/wpad.h>
@@ -58,4 +55,3 @@ void gdl::WiiInput::StartFrame() {
   WPAD_ScanPads();  // Scan the Wiimotes
 }
 
-#endif

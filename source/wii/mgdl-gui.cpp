@@ -10,46 +10,58 @@
         - Combine constructors and input/drawing code for each element
     */
 
+static gdl::WiiInput input;
+
 gdl::MenuCreator::MenuCreator(gdl::Font font)
 {
     this->currentFont = font;
 }
 
-void gdl::MenuCreator::StartMenu(int x, int y, int w, int h)
+void gdl::MenuCreator::StartMenu(int x, int y, int w, int h, float fontScale)
 {
     this->x = x;
     this->y = y;
     this->w = w;
     this->h = h;
+    this->fontScale = fontScale;
+    gdl::DrawBox(x,y,x+w,y+h,gdl::Color::White);
 }
 
 void gdl::MenuCreator::Panel(int h, u_int col, short style)
 {
-    gdl::DrawBoxF(this->x, this->y, this->x + this->w, this->y + h, col);
-    this->y += h;
+    gdl::DrawBoxF(x, y, x + w, y + h, col);
+    y += h;
 }
 
 void gdl::MenuCreator::Text(const char* text)
 {
-    int h = currentFont.GetStrHeight();
-    currentFont.DrawText(text, this->x, this->y, 1, gdl::Color::White);
-    this->y += h;
+    int h = currentFont.GetStrHeight() * this->fontScale;
+    currentFont.DrawText(text, x, y, 1, gdl::Color::White);
+    y += h;
 }
 
 bool gdl::MenuCreator::Button(const char* text, u_int color)
 {
-    int h = currentFont.GetStrHeight();
-    gdl::DrawBoxF(this->x, this->y, this->x + this->w, this->y + h, color);
-    currentFont.DrawText(text, this->x, this->y, 1, gdl::Color::White);
-    gdl::vec2 cursorPos = gdl::WiiInput::GetCursorPosition();
+    gdl::vec2 cursorPos = input.GetCursorPosition();
+    int buttonHeight = currentFont.GetStrHeight() * fontScale;
 
-    bool inside = ((cursorPos.x >= this->x) &&
-                (cursorPos.x <= this->x+(this->w)) &&
-                (cursorPos.y >= this->y) &&
-                (cursorPos.y <= this->y+(h)));
-    bool pressA = gdl::WiiInput::ButtonPress(WIIMOTE_BUTTON_A);
+    bool inside = ((cursorPos.x >= x) &&
+                (cursorPos.x <= x+w) &&
+                (cursorPos.y >= y) &&
+                (cursorPos.y <= y+buttonHeight));
+    bool pressA = input.ButtonPress(WPAD_BUTTON_A);
+
+    if (inside)
+    {
+        gdl::DrawBoxF(x, y, x + w, y + buttonHeight, color);
+    }
+    else
+    {
+        gdl::DrawBox(x, y, x + w, y + buttonHeight, color);
+    }
+    currentFont.DrawText(text, x, y, fontScale, gdl::Color::White);
             
-    this->y += h;
+    y += buttonHeight;
 
     return inside && pressA;
 }

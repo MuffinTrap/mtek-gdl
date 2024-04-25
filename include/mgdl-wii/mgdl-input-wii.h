@@ -29,6 +29,10 @@ namespace gdl
 
         gdl::vec2 GetCursorPosition();
         gdl::vec2 GetNunchukJoystickDirection(float deadzone);
+
+        // TODO:
+        // Try how it works if all data is read immediately after
+        // scanpads()
     };
 }
 #endif
