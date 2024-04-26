@@ -21,9 +21,51 @@ void init()
 	gdl::InitSystem(gdl::ModeMPAL, gdl::Aspect16x9, gdl::HiRes);
     gdl::SetClearColor(gdl::Color::Black);
     input.Init();
+    char buffer[100];
+    sprintf(buffer, "Wpad init flag: %d", (s32)input.GetInitStatus());
+    gdl_assert((input.GetInitStatus() == gdl::WiiInputStatus::AllOk), buffer);
     gdl::ConsoleMode();
 
     defaultFont.LoadFontMem(gdl::DefaultFontData);
+}
+
+void PrintStatus(gdl::WiiInputStatus s, short x, short y)
+{
+    switch(s)
+    {
+        case gdl::WiiInputStatus::AllOk:
+            defaultFont.DrawText("Input OK", x, y, 2, gdl::Color::White);
+            break;
+        case gdl::WiiInputStatus::NotReady:
+            defaultFont.DrawText("Input not ready", x, y, 2, gdl::Color::LightBlue);
+            break;
+        case gdl::WiiInputStatus::NoController:
+            defaultFont.DrawText("No Controller", x, y, 2, gdl::Color::LightRed);
+            break;
+        case gdl::WiiInputStatus::TransferError:
+            defaultFont.DrawText("Transfer error", x, y, 2, gdl::Color::LightRed);
+            break;
+        case gdl::WiiInputStatus::NoneRegistered:
+            defaultFont.DrawText("None registered", x, y, 2, gdl::Color::LightRed);
+            break;
+        case gdl::WiiInputStatus::UnknownError:
+            defaultFont.DrawText("Unknown Error", x, y, 2, gdl::Color::LightRed);
+            break;
+        case gdl::WiiInputStatus::BadChannel:
+            defaultFont.DrawText("Bad Channel", x, y, 2, gdl::Color::LightRed);
+            break;
+        case gdl::WiiInputStatus::QueueEmpty:
+            defaultFont.DrawText("Queue empty", x, y, 2, gdl::Color::LightRed);
+            break;
+        case gdl::WiiInputStatus::BadValue:
+            defaultFont.DrawText("Bad Value", x, y, 2, gdl::Color::LightRed);
+            break;
+        case gdl::WiiInputStatus::BadConfig:
+            defaultFont.DrawText("Bad Config", x, y, 2, gdl::Color::LightRed);
+            break;
+        default:
+        break;
+    }
 }
 
 int main()
@@ -38,13 +80,10 @@ int main()
 		    gdl::wii::Exit();
 
         gdl::PrepDisplay();
+
+        // Moving square
         gdl::DrawBoxF(boxX, gdl::ScreenYres-120, boxX+60, gdl::ScreenYres-60, gdl::Color::LightGreen);
         // Input
-            // Draw cursor
-            gdl::vec2 cp = input.GetCursorPosition();
-            gdl::DrawLine(cp.x-10,cp.y,cp.x+10,cp.y,gdl::Color::White);
-            gdl::DrawLine(cp.x,cp.y-10,cp.x,cp.y+10,gdl::Color::White);
-
             gdl::vec2 inputPos = gdl::vec2(20,40);
 
             short inputY = 80;
@@ -56,6 +95,16 @@ int main()
             short deltapos = 400;
             short box=20;
             short h=box/2;
+            // Draw state
+            short stateY = gdl::ScreenYres/2;
+            PrintStatus(input.GetInitStatus(),bpos, stateY-160);
+            PrintStatus(input.GetScanStatus(),bpos, stateY-120);
+            PrintStatus(input.GetExpansionStatus(),bpos, stateY-80);
+            // Draw cursor
+            gdl::vec2 cp = input.GetCursorPosition();
+            gdl::DrawLine(cp.x-10,cp.y,cp.x+10,cp.y,gdl::Color::White);
+            gdl::DrawLine(cp.x,cp.y-10,cp.x,cp.y+10,gdl::Color::White);
+
             // Draw button states
             gdl::Color::ColorValues active = gdl::Color::Blue;
             gdl::Color::ColorValues inactive = gdl::Color::LightBlue;
