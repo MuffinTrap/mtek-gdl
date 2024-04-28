@@ -306,6 +306,7 @@ int PlayOggFilePtr(FILE* file, int time_pos, int mode)
 	{
 		return -1;
 	}
+	private_ogg.fd = file;
 	private_ogg.mode = mode;
 	private_ogg.eof = 0;
 	private_ogg.volume = 127;

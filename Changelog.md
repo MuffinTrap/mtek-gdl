@@ -25,6 +25,7 @@ Bringing a lot of changes to the code. Removing things that are no longer needed
 + Changed #define header guards to #pragma once in all files
 + Changed mgdl-audio.h and .cpp to read music files from memory buffers
 + Changed 3rdparty/oggplayer files: added function PlayOggFilePtr to play from given file pointer
+    TODO: Restored oggplayer to the version that isn the devkitPro examples folder
 + Changed mgdl-font.h and .cpp to allow loading only a range of characters instead of always 256
 
 #### Removals

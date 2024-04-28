@@ -1,7 +1,6 @@
 #include "mgdl-wii/mgdl-gui.h"
 #include "mgdl-wii/mgdl-basic.h"
 #include "mgdl-wii/mgdl-font.h"
-#include "mgdl-wii/mgdl-input-wii.h"
 #include <wiiuse/wpad.h>
 
 /* Work in progress. 
@@ -10,11 +9,10 @@
         - Combine constructors and input/drawing code for each element
     */
 
-static gdl::WiiInput input;
-
-gdl::MenuCreator::MenuCreator(gdl::Font font)
+gdl::MenuCreator::MenuCreator(gdl::FFont font, short fontHeight)
 {
     this->currentFont = font;
+    this->fontHeight = fontHeight;
 }
 
 void gdl::MenuCreator::StartMenu(int x, int y, int w, int h, float fontScale)
@@ -35,21 +33,21 @@ void gdl::MenuCreator::Panel(int h, u_int col, short style)
 
 void gdl::MenuCreator::Text(const char* text)
 {
-    int h = currentFont.GetStrHeight() * this->fontScale;
+    int h = fontHeight * fontScale;
     currentFont.DrawText(text, x, y, 1, gdl::Color::White);
     y += h;
 }
 
 bool gdl::MenuCreator::Button(const char* text, u_int color)
 {
-    gdl::vec2 cursorPos = input.GetCursorPosition();
-    int buttonHeight = currentFont.GetStrHeight() * fontScale;
+    gdl::vec2 cursorPos = input->GetCursorPosition();
+    int buttonHeight = fontHeight * fontScale;
 
     bool inside = ((cursorPos.x >= x) &&
                 (cursorPos.x <= x+w) &&
                 (cursorPos.y >= y) &&
                 (cursorPos.y <= y+buttonHeight));
-    bool pressA = input.ButtonPress(WPAD_BUTTON_A);
+    bool pressA = input->ButtonPress(WPAD_BUTTON_A);
 
     if (inside)
     {
@@ -63,7 +61,7 @@ bool gdl::MenuCreator::Button(const char* text, u_int color)
             
     y += buttonHeight;
 
-    return inside && pressA;
+    return (inside && pressA);
 }
 /*
 

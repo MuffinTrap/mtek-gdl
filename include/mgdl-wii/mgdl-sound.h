@@ -113,6 +113,24 @@ void SetMasterVolumes(float musicVol, float soundVol);
 void SetMusicVolume(float volume);
 
 
+// muffintrap: Created a class for music
+// so that ogg buffer memory handling becomes easier
+class Music
+{
+	public:
+		Music();
+		~Music();
+		bool LoadFromFile(const char* filename);
+		bool LoadFromBuffer(const uint8_t* buffer, size_t size);
+		bool PlayMusic(bool loop);
+		float GetElapsed();
+		void TogglePauseMusic();
+		void StopMusic();
+	private:
+		uint8_t *oggBuffer;
+		size_t bufferSize;
+};
+
 //!	Plays a music file.
 /*!
  *	\details Plays a music file in the background. Unlike the gdl::Sound class which loads the sound data entirely into
@@ -146,7 +164,7 @@ bool PlayMusic(const char* fileName, bool loop);
  *	\param[in]	size	Size of the buffer
  *	\param[in]	loop		Loop flag (music will be looped if true).
  */
-bool PlayMusic(const u_char* buffer, size_t size, bool loop);
+bool PlayMusic(u_char* buffer, size_t size, bool loop);
 
 //! Pauses the currently playing music.
 /*!

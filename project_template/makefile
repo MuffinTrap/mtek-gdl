@@ -93,7 +93,7 @@ export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
 # build a list of include paths
 #---------------------------------------------------------------------------------
 LIBOGC_INC	:=	$(DEVKITPRO)/libogc/include
-PORTLIBS_INC	:=	$(DEVKITPRO)/portlibs/ppc/include
+PORTLIBS_INC	:=	$(PORTLIBS_PATH)/ppc/include
 export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)) \
 					-I$(CURDIR)/$(BUILD) \
