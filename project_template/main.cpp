@@ -2,6 +2,8 @@
 #include <wiiuse/wpad.h>
 #include <string>
 
+#include "mgdl-input-wii.h"
+
 // Image
 #include "konata_png.h"
 gdl::Image konata;
@@ -13,6 +15,9 @@ gdl::SpriteSet sprites;
 #include "amigaTopaz10_png.h"
 gdl::Image topazBytefont;
 gdl::FFont topaz;
+#include "font8x16_png.h"
+gdl::Image IBMFontImage;
+gdl::FFont IBM8x16;
 // Ogg
 #include "sample3_ogg.h"
 gdl::Music sampleMusic;
@@ -21,26 +26,14 @@ bool musicPlaying = false;
 #include "blipSelect_wav.h"
 gdl::Sound blip;
 
-static gdl::Font defaultFont;
-
-
-// For reasons beyond my understading
-// the input reading cannot be in a 
-// classless function...???
-static gdl::WiiInput input;
-// gdl::MenuCreator menu(topaz, 8);
-
+gdl::MenuCreator menu(&topaz, 2.0f);
 
 void init()
 {
     fatInitDefault();
 	gdl::InitSystem(gdl::ModeMPAL, gdl::Aspect16x9, gdl::HiRes);
     gdl::SetClearColor(gdl::Color::Black);
-    // input.Init();
-    WPAD_Init();
-    char buffer[100];
-    // sprintf(buffer, "Wpad init flag: %d", (s32)input.GetInitStatus());
-    // gdl_assert((input.GetInitStatus() == gdl::WiiInputStatus::AllOk), buffer);
+    gdl::WiiInput::Init();
     gdl::ConsoleMode();
 
     konata.LoadImageBuffer(konata_png, konata_png_size, gdl::Nearest, gdl::RGBA8);
@@ -52,21 +45,28 @@ void init()
     sprites.LoadSprites(cfg, &spriteSheet);
 
     topazBytefont.LoadImageBuffer(amigaTopaz10_png, amigaTopaz10_png_size, gdl::Nearest, gdl::RGBA8);
-    // Space is 32 in Ascii
-    // DEL is 127
-    // LastIndex is exclusive
-    // TODO: add parameter for gap between characters
-    // TODO: Allow other widths than 16 characters
-    topaz.BindSheet(topazBytefont, 8, 8, 32, 128);
+    topaz.BindSheet(topazBytefont, 9, 9, 32);
+
+    IBMFontImage.LoadImageBuffer(font8x16_png, font8x16_png_size, gdl::Nearest, gdl::RGBA8);
+    IBM8x16.BindSheet(IBMFontImage, 8, 16, 0);
     
     // blip.LoadSoundBuffer(blib_wav, blib_wav_size);
-
-    defaultFont.LoadFontMem(gdl::DefaultFontData);
     sampleMusic.LoadFromBuffer(sample3_ogg, sample3_ogg_size);
+
+    while(true)
+    {
+        // Show console for a while
+        gdl::WiiInput::StartFrame();
+        if (gdl::WiiInput::ButtonPress(WPAD_BUTTON_A))
+        {
+            break;
+        }
+    }
 }
 
 // TODO: Maybe remove the enum?
-void PrintStatus(gdl::WiiInputStatus s, short x, short y)
+/*
+void PrintStatus(short x, short y)
 {
     switch(s)
     {
@@ -104,6 +104,19 @@ void PrintStatus(gdl::WiiInputStatus s, short x, short y)
         break;
     }
 }
+*/
+
+void DrawFont(short x, short y, gdl::FFont* font)
+{
+    float scale = 2.0f;
+    font->DrawText(" !\"#$%&'()*+,-./", x, y, scale, gdl::Color::White);
+    y+=font->GetHeight() * scale;
+    font->DrawText("0123456789:;<=>?", x, y, scale, gdl::Color::White);
+    y+=font->GetHeight() * scale;
+    font->DrawText("@ABCDEFGHIJKLMNO", x, y, scale, gdl::Color::White);
+    y+=font->GetHeight() * scale;
+    font->DrawText("PQRSTUVWXYZ[\\]^_", x, y, scale, gdl::Color::White);
+}
 
 void DrawJoystick(short x, short y, short size)
 {
@@ -112,7 +125,7 @@ void DrawJoystick(short x, short y, short size)
     short box = jsize/3;
     short h=box/2;
     gdl::Color::ColorValues jc = gdl::Color::Green;
-    gdl::vec2 jdir = input.GetNunchukJoystickDirection(0.0f);
+    gdl::vec2 jdir = gdl::WiiInput::GetNunchukJoystickDirection(0.0f);
     short jleft= x + jsize/2 + jdir.x * box-h;
     short jtop = y + jsize/2 + jdir.y * box-h;
     gdl::DrawBox(x, y, x+jsize, y+jsize, jc);
@@ -145,7 +158,7 @@ void DrawDPad(short x, short y, short size)
     for (int i=0;i<4;i++)
     {
         gdl::Color::ColorValues c = gdl::Color::LightRed;
-        if (input.ButtonHeld(dpad_buttons[i]))
+        if (gdl::WiiInput::ButtonHeld(dpad_buttons[i]))
         {
             c = gdl::Color::Red;
         }
@@ -154,7 +167,7 @@ void DrawDPad(short x, short y, short size)
     }
 }
 
-void DrawButtons(short x, short y, short size)
+void DrawButtons(short x, short y, short size, gdl::FFont* font)
 {
     // Draw button states
     gdl::Color::ColorValues active = gdl::Color::Blue;
@@ -171,26 +184,27 @@ void DrawButtons(short x, short y, short size)
     for(int i = 0; i < 6;i++ )
     {
         gdl::Color::ColorValues c = inactive;
-        if (input.ButtonHeld(buttons[i]))
+        if (gdl::WiiInput::ButtonHeld(buttons[i]))
         {
             c = active;
         }
         gdl::DrawBoxF(x + i * size, y, x+size+i*size,y+size,c);
-        defaultFont.DrawText(names[i].c_str(),x+size/5+i*size,y+size/5,2,gdl::Color::White);
+        font->DrawText(names[i].c_str(), x + i*size, y, 1.0f, gdl::Color::White);
     }
 }
 
 void DrawControllerDebug(short x, short y)
 {
     // Draw cursor
-    gdl::vec2 cp = input.GetCursorPosition();
+    gdl::vec2 cp = gdl::WiiInput::GetCursorPosition();
+
     gdl::DrawLine(cp.x-10,cp.y,cp.x+10,cp.y,gdl::Color::White);
     gdl::DrawLine(cp.x,cp.y-10,cp.x,cp.y+10,gdl::Color::White);
 
-    DrawButtons(x, y, 20);
+    DrawButtons(x, y, 20, &IBM8x16);
     y += 20;
     DrawDPad(x, y, 60);
-    y += 80;
+    x += 80;
     DrawJoystick(x, y, 60);
 }
 
@@ -212,98 +226,85 @@ void DrawSprites(short x, short y, float scale)
 
 void DrawMenu(short x, short y, short w)
 {
-    gdl::Color::ColorValues active = gdl::Color::Blue;
-    gdl::Color::ColorValues inactive = gdl::Color::LightBlue;
-    // menu.StartMenu(x, y, w, 140, 2);
-    /*
-    if (menu.Button("Play Ogg", active) && musicPlaying == false)
+    gdl::vec2 cp = gdl::WiiInput::GetCursorPosition();
+    menu.StartMenu(x, y, w, cp.x, cp.y, gdl::WiiInput::ButtonPress(WPAD_BUTTON_A));
+    if (menu.Button("Play Ogg", gdl::Color::LightBlue))
     {
         // Play Ogg
         // TODO: Copying to tempBuffer is a bad idea
         // here because the audio is streaming.
         // How to make the data not const?
-        defaultFont.Printf(x, y, 2, gdl::Color::White, "Play Music Press");
-        // sampleMusic.PlayMusic(true);
-        // musicPlaying = true;
+        if (!musicPlaying)
+        {
+            sampleMusic.PlayMusic(true);
+            musicPlaying = true;
+        }
     }
+    /*
     if (menu.Button("Play Sound", active))
     {
         // blib.PlaySound();
-        defaultFont.Printf(x, y, 2, gdl::Color::White, "Play Sound Press");
     }
     if (menu.Button("Assert", active))
     {
         gdl_assert(false, "Assert fired!");
     }
+    */
     menu.Text("Hi! I am menu.");
     menu.Text("Yellow panel");
-    menu.Panel(40, gdl::Color::Yellow, 0);
-    */
+    menu.Panel(40, gdl::Color::Yellow);
 }
 
-void DrawTiming(short x, short y)
+void DrawTiming(short x, short y, gdl::FFont* font)
 {
-    defaultFont.Printf(x, y, 2, gdl::Color::White, "Deltatime: %f", gdl::Delta);
+    font->Printf(x, y, 2, gdl::Color::White, "Deltatime: %f", gdl::Delta);
     // TODO: Add gdl::Elapsed;
-    defaultFont.Printf(x, y + 30, 2, gdl::Color::White, "Elapsed time: %f", sampleMusic.GetElapsed());
+    font->Printf(x, y + 30, 2, gdl::Color::White, "Elapsed time: %f", sampleMusic.GetElapsed());
 }
 
 int main()
 {
     init();
-    // menu = gdl::MenuCreator(topaz, 8);
+    menu = gdl::MenuCreator(&IBM8x16, 1.0f);
     float boxX = 0;
     float elapsed = 0.0f;
     short frameCount = 0;
     while(1)
     {
-        WPAD_ScanPads();
-        // input.StartFrame();
+        gdl::WiiInput::StartFrame();
 
-        if (WPAD_ButtonsDown(WPAD_CHAN_0) & WPAD_BUTTON_HOME){
+        if (gdl::WiiInput::ButtonPress(WPAD_BUTTON_HOME)){
             gdl::wii::Exit();
-        }
-
-        /*
-		if (input.ButtonPress(WPAD_BUTTON_HOME))
-		    gdl::wii::Exit();
-
-
-        */
-        if (WPAD_ButtonsDown(WPAD_CHAN_0) & WPAD_BUTTON_A){
-            if (musicPlaying == false)
-            {
-                sampleMusic.PlayMusic(true);
-                musicPlaying = true;
-            }
         }
 
         gdl::PrepDisplay();
         // Input
         short top = 40;
         short left = 40;
-        // DrawControllerDebug(left, top);
+        DrawControllerDebug(left, top);
         left += 160;
-         //DrawMenu(left, top, 120);
+        DrawMenu(left, top, 120);
         left += 140;
-        DrawTiming(left, top);
+        DrawTiming(left, top, &IBM8x16);
 
-
-        // GUI
+        // SECOND ROW//////////////////////////////////////////////////////
         left = 40;
-        top = gdl::ScreenCenterY;
+        top = gdl::ScreenCenterY - 40;
 
         // Draw Image
-        topaz.DrawText("Gambatte minnasan!", 10, gdl::ScreenCenterY - 22, 2.0f, gdl::Color::White);
+        IBM8x16.DrawText("Gambatte minnasan!", 10, top - 32, 2.0f, gdl::Color::White);
         konata.Put(left, top, gdl::Color::White, 0, 0, 0.4f);
+        left += konata.Xsize() * 0.4f + 10;
 
         // Draw Sprites
-        left += 200;
-        DrawSprites(left, top, 4.0f);
+        DrawSprites(left, top, 1.0f);
+        left += 16*8;
 
-/*
+        DrawFont(left, top, &IBM8x16);
 
-*/
+        top += IBM8x16.GetHeight() * 2 * 6;
+        DrawFont(left, top, &topaz);
+
         // Draw Moving square
         gdl::DrawBoxF(boxX, gdl::ScreenYres-100, boxX+60, gdl::ScreenYres-60, gdl::Color::LightGreen);
         gdl::Display();

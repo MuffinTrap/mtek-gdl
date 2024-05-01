@@ -6,12 +6,12 @@
 namespace gdl
 {
     typedef struct {
-        u32 pressed;
-        u32 released;
-        u32 held;
-        float nunchukDeadzone;
-        float nunchukX;
-        float nunchukY;
+        u32 pressedButtons;
+        u32 releasedButtons;
+        u32 heldButtons;
+        float nunchukJoystickDirectionX;
+        float nunchukJoystickDirectionY;
+        float nunchukJoystickDeadzone;
         float cursorX;
         float cursorY;
     } WiimoteState;
@@ -42,14 +42,10 @@ namespace gdl
         }
     };
 
-    class WiiInput
+    namespace WiiInput
     {
-        public:
         void Init();
         void StartFrame();
-        gdl::WiiInputStatus GetInitStatus();
-        gdl::WiiInputStatus GetScanStatus();
-        gdl::WiiInputStatus GetExpansionStatus();
 
         // Button values are same as in <wiiuse/wpad.h>
         bool ButtonPress(int buttonEnum);
@@ -58,10 +54,6 @@ namespace gdl
 
         gdl::vec2 GetCursorPosition();
         gdl::vec2 GetNunchukJoystickDirection(float deadzone);
-
-        // TODO:
-        // Try how it works if all data is read immediately after
-        // scanpads()
-    };
+    }
 }
 #endif

@@ -1,34 +1,32 @@
-#include "mgdl-wii/mgdl-input-wii.h"
+#include "mgdl-input-wii.h"
 #include "mgdl-wii.h"
 #include <wiiuse/wpad.h>
 #include <math.h>
 
 static gdl::WiimoteState mote1;
+
 static s32 initStatus;
-static s32 scanStatus;
-static s32 expansionStatus;
 
 bool gdl::WiiInput::ButtonPress(int buttonEnum) {
-  return (mote1.pressed & buttonEnum) != 0;
+  return (mote1.pressedButtons & buttonEnum) != 0;
 }
 
 bool gdl::WiiInput::ButtonRelease(int buttonEnum) {
-  return (mote1.released & buttonEnum) != 0;
+  return (mote1.releasedButtons & buttonEnum) != 0;
 }
 
 bool gdl::WiiInput::ButtonHeld(int buttonEnum) {
-  return (mote1.held & buttonEnum) != 0;
+  return (mote1.heldButtons & buttonEnum) != 0;
 }
 
 gdl::vec2 gdl::WiiInput::GetCursorPosition() {
-  // Pointer
   return gdl::vec2(mote1.cursorX, mote1.cursorY);
 }
 
 gdl::vec2 gdl::WiiInput::GetNunchukJoystickDirection(float deadzone)
 {
-  mote1.nunchukDeadzone = deadzone;
-  return gdl::vec2(mote1.nunchukX, mote1.nunchukY);
+  mote1.nunchukJoystickDeadzone = deadzone;
+  return gdl::vec2(mote1.nunchukJoystickDirectionX, mote1.nunchukJoystickDirectionY);
 }
 
 static const char* StatusToText(gdl::WiiInputStatus s)
@@ -109,13 +107,6 @@ static gdl::WiiInputStatus FlagToEnum(s32 status)
     }
 }
 
-gdl::WiiInputStatus gdl::WiiInput::GetInitStatus() 
-{ return FlagToEnum(initStatus);}
-gdl::WiiInputStatus gdl::WiiInput::GetScanStatus()
-{ return FlagToEnum(scanStatus);}
-gdl::WiiInputStatus gdl::WiiInput::GetExpansionStatus()
-{ return FlagToEnum(expansionStatus);}
-
 void gdl::WiiInput::Init() {
 	initStatus = WPAD_Init();
   WPAD_SetDataFormat(WPAD_CHAN_0, WPAD_FMT_BTNS_ACC_IR);
@@ -123,26 +114,25 @@ void gdl::WiiInput::Init() {
 }
 
 void gdl::WiiInput::StartFrame() {
-  expansionStatus = WPAD_GetStatus();
-  scanStatus = WPAD_ScanPads();  // Scan the Wiimotes
+  WPAD_ScanPads();  // Scan the Wiimotes
 
   ir_t ir;
   WPAD_IR(WPAD_CHAN_0, &ir);
   mote1.cursorX = ir.x;
   mote1.cursorY = ir.y;
 
-  mote1.pressed = WPAD_ButtonsDown(0);
-  mote1.released = WPAD_ButtonsUp(0);
-  mote1.held = WPAD_ButtonsHeld(0);
+  mote1.pressedButtons = WPAD_ButtonsDown(0);
+  mote1.releasedButtons = WPAD_ButtonsUp(0);
+  mote1.heldButtons = WPAD_ButtonsHeld(0);
 
-  mote1.nunchukX=0.0f;
-  mote1.nunchukY=0.0f;
+  mote1.nunchukJoystickDirectionX=0.0f;
+  mote1.nunchukJoystickDirectionY=0.0f;
   expansion_t ex;
   WPAD_Expansion(WPAD_CHAN_0, &ex);
   if (ex.type == WPAD_EXP_NUNCHUK)
   {
       joystick_t n = ex.nunchuk.js;
-      if (n.mag > mote1.nunchukDeadzone)
+      if (n.mag > mote1.nunchukJoystickDeadzone)
       {
           // Angle of 0 means up.
           // 90 right, 180 down, 270 left
@@ -152,8 +142,8 @@ void gdl::WiiInput::StartFrame() {
           float y = -1.0f;
           float dirx = cos(rad) * x - sin(rad) * y;
           float diry = sin(rad) * x + cos(rad) * y;
-          mote1.nunchukX = dirx * n.mag;
-          mote1.nunchukY = diry * n.mag;
+          mote1.nunchukJoystickDirectionX = dirx * n.mag;
+          mote1.nunchukJoystickDirectionY = diry * n.mag;
       }
   }
 }

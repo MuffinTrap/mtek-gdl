@@ -7,38 +7,26 @@
 
 void gdl::AssertFunction(const char* message, int lineNumber, const char* filename, bool& ignoreToggle)
 {
-    static gdl::Font debugFont;
-    gdl::WiiInput input = WiiInput();
-    static bool fontLoaded = debugFont.LoadFontMem(gdl::DefaultFontData);
     if (false)
     {
+        gdl::ConsoleMode();
+        printf("Assert failed! Location: %s line: %d. Message: %s\n", filename, lineNumber, message);
+        printf("Press A to ignore, HOME to quit.\n");
         while (true)
         {
-            input.StartFrame();
-            gdl::PrepDisplay();
-            debugFont.Printf(20, 20, 2, 0xFFFFFFFF, "Assert failed! Location: %s line: %d. Message: %s", filename, lineNumber, message);
-            debugFont.Printf(20, 60, 2, 0xFFFFFFFF, "Press A to ignore always. Press HOME to Exit");
-
-            bool ignorePressed = input.ButtonPress(WIIMOTE_BUTTON_A);
-            if (ignorePressed)
+            WPAD_ScanPads();
+            if (WPAD_ButtonsDown(0) & WPAD_BUTTON_A)
             {
                 ignoreToggle = true;
                 break;
             }
-            bool exitPressed = input.ButtonPress(WIIMOTE_BUTTON_HOME);
-            if (exitPressed) 
+            if (WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME)
             {
                 // Return to homebrew menu
                 gdl::wii::Exit();
+                break;
             }
-            gdl::Display();
         }
-    }
-    else 
-    {
-        // Failed to load default font
-        gdl::ConsoleMode();
-        printf("Assert failed! Location: %s line: %d. Message: %s\n", filename, lineNumber, message);
     }
 }
 #endif // _MGDL_DEBUG

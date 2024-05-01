@@ -9,23 +9,23 @@
         - Combine constructors and input/drawing code for each element
     */
 
-gdl::MenuCreator::MenuCreator(gdl::FFont font, short fontHeight)
+gdl::MenuCreator::MenuCreator(gdl::FFont* font, float fontScale)
 {
     this->currentFont = font;
-    this->fontHeight = fontHeight;
+    this->fontScale = fontScale;
 }
 
-void gdl::MenuCreator::StartMenu(int x, int y, int w, int h, float fontScale)
+void gdl::MenuCreator::StartMenu(int x, int y, int w, float cursorX, float cursorY, bool buttonPress)
 {
     this->x = x;
     this->y = y;
     this->w = w;
-    this->h = h;
-    this->fontScale = fontScale;
-    gdl::DrawBox(x,y,x+w,y+h,gdl::Color::White);
+    this->cursorX = cursorX;
+    this->cursorY = cursorY;
+    this->buttonPress = buttonPress;
 }
 
-void gdl::MenuCreator::Panel(int h, u_int col, short style)
+void gdl::MenuCreator::Panel(int h, u_int col)
 {
     gdl::DrawBoxF(x, y, x + w, y + h, col);
     y += h;
@@ -33,35 +33,35 @@ void gdl::MenuCreator::Panel(int h, u_int col, short style)
 
 void gdl::MenuCreator::Text(const char* text)
 {
-    int h = fontHeight * fontScale;
-    currentFont.DrawText(text, x, y, 1, gdl::Color::White);
+    int h = currentFont->GetHeight() * fontScale;
+    currentFont->DrawText(text, x, y, fontScale, gdl::Color::White);
     y += h;
 }
 
 bool gdl::MenuCreator::Button(const char* text, u_int color)
 {
-    gdl::vec2 cursorPos = input->GetCursorPosition();
-    int buttonHeight = fontHeight * fontScale;
+    int h = currentFont->GetHeight() * fontScale;
 
-    bool inside = ((cursorPos.x >= x) &&
-                (cursorPos.x <= x+w) &&
-                (cursorPos.y >= y) &&
-                (cursorPos.y <= y+buttonHeight));
-    bool pressA = input->ButtonPress(WPAD_BUTTON_A);
+    bool inside = ((cursorX >= x) &&
+                (cursorX <= x + w) &&
+                (cursorY >= y) &&
+                (cursorY <= y + h));
 
     if (inside)
     {
-        gdl::DrawBoxF(x, y, x + w, y + buttonHeight, color);
+        gdl::DrawBoxF(x, y, x + w, y + h, color);
     }
     else
     {
-        gdl::DrawBox(x, y, x + w, y + buttonHeight, color);
+        gdl::DrawBox(x, y, x + w, y + h, color);
     }
-    currentFont.DrawText(text, x, y, fontScale, gdl::Color::White);
-            
-    y += buttonHeight;
 
-    return (inside && pressA);
+    // TODO Center text
+    currentFont->DrawText(text, x, y, fontScale, gdl::Color::White);
+            
+    y += h ;
+
+    return (inside && buttonPress);
 }
 /*
 

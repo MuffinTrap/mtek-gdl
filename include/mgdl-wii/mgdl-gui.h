@@ -1,16 +1,15 @@
 #pragma once
 
 #include "mgdl-wii.h"
-#include "mgdl-wii/mgdl-input-wii.h"
 
 namespace gdl
 {
     class MenuCreator
     {
         public :
-        MenuCreator(gdl::FFont font, short fontHeight);
-        void StartMenu(int x, int y, int w, int h, float fontScale);
-        void Panel(int h, u_int col, short style);
+        MenuCreator(gdl::FFont* font, float fontScale);
+        void StartMenu(int x, int y, int w, float cursorX, float cursorY, bool buttonPress);
+        void Panel(int h, u_int col);
         void Text(const char* text);
         bool Button(const char* text, u_int color);
 
@@ -18,13 +17,12 @@ namespace gdl
         int x;
         int y;
         int w;
-        int h;
-
-        gdl::FFont currentFont;
-        short fontHeight;
+        bool buttonPress;
+        float cursorX;
+        float cursorY;
         float fontScale;
-        private:
-        gdl::WiiInput *input;
+
+        gdl::FFont* currentFont;
     };
 };
 

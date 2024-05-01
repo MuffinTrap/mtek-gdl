@@ -26,7 +26,8 @@ Bringing a lot of changes to the code. Removing things that are no longer needed
 + Changed mgdl-audio.h and .cpp to read music files from memory buffers
 + Changed 3rdparty/oggplayer files: added function PlayOggFilePtr to play from given file pointer
     TODO: Restored oggplayer to the version that isn the devkitPro examples folder
-+ Changed mgdl-font.h and .cpp to allow loading only a range of characters instead of always 256
++ Changed mgdl-font.h and .cpp to allow loading only a range of characters instead of always 256. Removed the Font class since it loaded DirectQB font files and DirectQB is from 1999.
+
 
 #### Removals
 + Removed tools folder. It contained the source for a Sheetmapper program, that does not compile without the pc version of mtek-gdl, which is not available. It might be possible to recreate using raylib or something similar.

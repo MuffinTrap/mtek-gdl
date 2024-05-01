@@ -20,9 +20,8 @@ namespace gdl {
     *
     */
     void AssertFunction(const char* message, int lineNumber, const char* filename, bool& ignoreToggle);
-};
 
-    #define gdl_assert(test, message) \
+    #define _assert(test, message) \
     if (test == false) \
     { \
         static bool ignoreThis = false; \
@@ -31,6 +30,7 @@ namespace gdl {
         } \
     }
 #else
-    #define gdl_assert(test, message)
+    #define assert(test, message)
 
 #endif
+};
