@@ -4,9 +4,11 @@
 Squeezing More Out of Assert by Steve Rabin
 */
 
+#include <stdio.h>
+#include <stdarg.h>
+
 #ifndef _MGDL_DEBUG
 
-namespace gdl {
     //! If the assert fails, break into assert display loop and ask if assert should be ignored. Only used if _MGDL_DEBUG is defined.
     /*!
     *	\details This function is called by the mgdl_assert macro. It breaks 
@@ -19,18 +21,17 @@ namespace gdl {
     *	\param[inout]	ignoreToggle Reference to a static bool controlling if the assert will be ignored when it happens again.
     *
     */
-    void AssertFunction(const char* message, int lineNumber, const char* filename, bool& ignoreToggle);
+    void AssertFunction(const char* filename, int lineNumber, bool& ignoreToggle, const char* message, ...);
 
-    #define _assert(test, message) \
+    #define gdl_assert(test, message, ...) \
     if (test == false) \
     { \
         static bool ignoreThis = false; \
         if (ignoreThis == false) { \
-            gdl::AssertFunction(message, __LINE__, __FILE__, ignoreThis); \
+            AssertFunction(__FILE__, __LINE__, ignoreThis, message, ##__VA_ARGS__); \
         } \
     }
-#else
-    #define assert(test, message)
 
+#else
+    #define gdl_assert(test, message)
 #endif
-};

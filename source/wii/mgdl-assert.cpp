@@ -1,17 +1,20 @@
 #ifndef _MGDL_DEBUG
-
-#include "mgdl-wii/mgdl-assert.h"
-#include "mgdl-wii.h"
-#include <wiiuse/wpad.h>
-
-
-void gdl::AssertFunction(const char* message, int lineNumber, const char* filename, bool& ignoreToggle)
-{
-    if (false)
+    #include <mgdl-wii.h>
+    #include <wiiuse/wpad.h>
+    #include <stdio.h>
+    #include <stdarg.h>
+    void AssertFunction(const char* filename, int lineNumber, bool& ignoreToggle, const char* message, ...)
     {
         gdl::ConsoleMode();
-        printf("Assert failed! Location: %s line: %d. Message: %s\n", filename, lineNumber, message);
-        printf("Press A to ignore, HOME to quit.\n");
+            char	buff[256];
+            va_list args;
+
+            va_start(args, message);
+            vsprintf(buff, message, args);
+            va_end(args);
+
+        printf("Assert failed! %s:%d:%s\n", filename, lineNumber, buff);
+        printf("Press A to ignore, HOME to quit\n");
         while (true)
         {
             WPAD_ScanPads();
@@ -26,7 +29,7 @@ void gdl::AssertFunction(const char* message, int lineNumber, const char* filena
                 gdl::wii::Exit();
                 break;
             }
+            VIDEO_WaitVSync();
         }
     }
-}
 #endif // _MGDL_DEBUG

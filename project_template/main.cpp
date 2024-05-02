@@ -61,6 +61,7 @@ void init()
         {
             break;
         }
+        VIDEO_WaitVSync();
     }
 }
 
@@ -198,12 +199,10 @@ void DrawMenu(short x, short y, short w)
     {
         blip.Play(1.0f, 100.0f);
     }
-    /*
-    if (menu.Button("Assert"))
+    if (menu.Button("Assert", gdl::Color::LightRed))
     {
         gdl_assert(false, "Assert fired!");
     }
-    */
     menu.Text("Hi! I am menu.");
     menu.Text("Yellow panel");
     menu.Panel(40, gdl::Color::Yellow);

@@ -16,19 +16,6 @@ namespace gdl
         float cursorY;
     } WiimoteState;
 
-    enum WiiInputStatus : s32
-    {
-        AllOk = 0,
-        NoController = -1,
-        NotReady = -2,
-        TransferError = -3,
-        NoneRegistered = -4,
-        UnknownError = -5,
-        BadChannel = -6,
-        QueueEmpty = -7,
-        BadValue = -8,
-        BadConfig = -9 
-    };
     // TODO: Replace with glm::vec2
     class vec2
     {
