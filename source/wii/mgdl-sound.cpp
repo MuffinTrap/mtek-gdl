@@ -48,8 +48,32 @@ bool gdl::Sound::LoadSound(const char* fileName) {
 		gdl::CallErrorCallback("Sound file %s not found", fileName);
 		return(false);
 	}
+	return LoadSound(fp);
+}
 
+bool gdl::Sound::LoadSound(const uint8_t* buffer, size_t size)
+{
+	FILE *fp;
 
+	uint8_t* wavBuffer = (uint8_t*)malloc(size);
+	memcpy(wavBuffer, buffer, size);
+
+	bool openOk = true;
+	if (!(fp = fmemopen(wavBuffer, size, "r")))
+	{
+		openOk = false;
+		gdl::CallErrorCallback("Sound buffer could not be opened");
+	}
+	if (openOk)
+	{
+		openOk = LoadSound(fp);
+	}
+	free(wavBuffer);
+	return openOk;
+}
+
+bool gdl::Sound::LoadSound(FILE* fp)
+{
 	// Get header chunk
 	struct {
 		char	id[4];
@@ -60,7 +84,7 @@ bool gdl::Sound::LoadSound(const char* fileName) {
 	fread(&WAV_Chunk, 1, sizeof(WAV_Chunk), fp);
 
 	if (memcmp(&WAV_Chunk.id, "RIFF", 4) || memcmp(&WAV_Chunk.format, "WAVE", 4)) {
-		gdl::CallErrorCallback("Sound file %s is not a Microsoft WAVE file", fileName);
+		gdl::CallErrorCallback("Sound file is not a Microsoft WAVE file");
 		fclose(fp);
 		return(false);
 	}
@@ -91,7 +115,7 @@ bool gdl::Sound::LoadSound(const char* fileName) {
 	gdl::wii::RevBytes(&WAV_Subchunk1.bps, sizeof(short));
 
 	if (memcmp(&WAV_Subchunk1.id, "fmt ", 4)) {
-		gdl::CallErrorCallback("Unsupported WAV format variant in %s", fileName);
+		gdl::CallErrorCallback("Unsupported WAV format variant in sound file");
 		fclose(fp);
 		return(0);
 	}
@@ -185,11 +209,12 @@ bool gdl::Sound::LoadSound(const char* fileName) {
 
 
 	if (gdl::ConsoleActive)
-		printf("Ok!\n");
+		printf("Sound loaded Ok!\n");
 
 	return(true);
 
 }
+
 
 void gdl::Sound::Delete() {
 

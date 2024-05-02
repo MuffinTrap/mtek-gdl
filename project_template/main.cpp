@@ -50,7 +50,7 @@ void init()
     IBMFontImage.LoadImageBuffer(font8x16_png, font8x16_png_size, gdl::Nearest, gdl::RGBA8);
     IBM8x16.BindSheet(IBMFontImage, 8, 16, 0);
     
-    // blip.LoadSoundBuffer(blib_wav, blib_wav_size);
+    blip.LoadSound(blipSelect_wav, blipSelect_wav_size);
     sampleMusic.LoadFromBuffer(sample3_ogg, sample3_ogg_size);
 
     while(true)
@@ -63,48 +63,6 @@ void init()
         }
     }
 }
-
-// TODO: Maybe remove the enum?
-/*
-void PrintStatus(short x, short y)
-{
-    switch(s)
-    {
-        case gdl::WiiInputStatus::AllOk:
-            defaultFont.DrawText("Input OK", x, y, 2, gdl::Color::White);
-            break;
-        case gdl::WiiInputStatus::NotReady:
-            defaultFont.DrawText("Input not ready", x, y, 2, gdl::Color::LightBlue);
-            break;
-        case gdl::WiiInputStatus::NoController:
-            defaultFont.DrawText("No Controller", x, y, 2, gdl::Color::LightRed);
-            break;
-        case gdl::WiiInputStatus::TransferError:
-            defaultFont.DrawText("Transfer error", x, y, 2, gdl::Color::LightRed);
-            break;
-        case gdl::WiiInputStatus::NoneRegistered:
-            defaultFont.DrawText("None registered", x, y, 2, gdl::Color::LightRed);
-            break;
-        case gdl::WiiInputStatus::UnknownError:
-            defaultFont.DrawText("Unknown Error", x, y, 2, gdl::Color::LightRed);
-            break;
-        case gdl::WiiInputStatus::BadChannel:
-            defaultFont.DrawText("Bad Channel", x, y, 2, gdl::Color::LightRed);
-            break;
-        case gdl::WiiInputStatus::QueueEmpty:
-            defaultFont.DrawText("Queue empty", x, y, 2, gdl::Color::LightRed);
-            break;
-        case gdl::WiiInputStatus::BadValue:
-            defaultFont.DrawText("Bad Value", x, y, 2, gdl::Color::LightRed);
-            break;
-        case gdl::WiiInputStatus::BadConfig:
-            defaultFont.DrawText("Bad Config", x, y, 2, gdl::Color::LightRed);
-            break;
-        default:
-        break;
-    }
-}
-*/
 
 void DrawFont(short x, short y, gdl::FFont* font)
 {
@@ -230,22 +188,18 @@ void DrawMenu(short x, short y, short w)
     menu.StartMenu(x, y, w, cp.x, cp.y, gdl::WiiInput::ButtonPress(WPAD_BUTTON_A));
     if (menu.Button("Play Ogg", gdl::Color::LightBlue))
     {
-        // Play Ogg
-        // TODO: Copying to tempBuffer is a bad idea
-        // here because the audio is streaming.
-        // How to make the data not const?
         if (!musicPlaying)
         {
             sampleMusic.PlayMusic(true);
             musicPlaying = true;
         }
     }
-    /*
-    if (menu.Button("Play Sound", active))
+    if (menu.Button("Play Sound", gdl::Color::LightBlue))
     {
-        // blib.PlaySound();
+        blip.Play(1.0f, 100.0f);
     }
-    if (menu.Button("Assert", active))
+    /*
+    if (menu.Button("Assert"))
     {
         gdl_assert(false, "Assert fired!");
     }
@@ -274,6 +228,10 @@ int main()
         gdl::WiiInput::StartFrame();
 
         if (gdl::WiiInput::ButtonPress(WPAD_BUTTON_HOME)){
+            gdl::wii::Exit();
+        }
+
+        if (gdl::WiiInput::ButtonPress(WPAD_BUTTON_B)){
             gdl::wii::Exit();
         }
 

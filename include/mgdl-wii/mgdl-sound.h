@@ -55,6 +55,21 @@ public:
 	 */
 	bool LoadSound(const char* fileName);
 
+	// muffintrap: Added for version 0.100.0-muffintrap
+	//! Loads a sound file from buffer
+	/*!
+	 *	\details This function loads a sound file which can then be played with Play() or Play2D().
+	 *
+	 *	\note This port of the library only supports uncompressed Microsoft WAV sound files with a sample
+	 *		format of 8 or 16-bit and a sample frequency of up to 48KHz, Mono or Stereo.
+	 *
+	 *	\param[in]	buffer		Address of the buffer
+	 *	\param[in]	size		Size of the buffer in bytes
+	 *
+	 *	\returns Non-zero if the sound file was successfully loaded, otherwise an error occured.
+	 */
+	bool LoadSound(const uint8_t* buffer, size_t size);
+
 
 	//! Deletes the sound data stored in the object
 	/*!
@@ -87,7 +102,19 @@ public:
 	 */
 	void Play2D(float pitch, float volume, float x, float y);
 
-
+	// muffintrap: Added for version 0.100.0-muffintrap
+	//! Internal sound loading function. Loads a sound from FILE pointer
+	/*!
+	 *	\details This function is used by other LoadSound functions
+	 *
+	 *	\note This port of the library only supports uncompressed Microsoft WAV sound files with a sample
+	 *		format of 8 or 16-bit and a sample frequency of up to 48KHz, Mono or Stereo.
+	 *
+	 *	\param[in]	fp		Pointer to opened file
+	 *
+	 *	\returns Non-zero if the sound file was successfully loaded, otherwise an error occured.
+	 */
+	bool LoadSound(FILE* fp);
 };
 
 
