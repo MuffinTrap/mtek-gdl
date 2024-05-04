@@ -237,7 +237,7 @@ void gdl::InitSystem(gdl::InitVideoMode videoMode, gdl::InitAspectMode aspectMod
 				} else {
 
 					// If in progressive mode, create a texture buffer for framebuffer upscaling
-					gdl::wii::UpscaleBuff = memalign(32, (gdl::ScreenXres*gdl::ScreenYres)*4);
+					gdl::wii::UpscaleBuff = aligned_alloc(32, (gdl::ScreenXres*gdl::ScreenYres)*4);
 					DCFlushRange(gdl::wii::UpscaleBuff, (gdl::ScreenXres*gdl::ScreenYres)*4);
 
 					GX_InitTexObj(
@@ -350,7 +350,7 @@ void gdl::InitSystem(gdl::InitVideoMode videoMode, gdl::InitAspectMode aspectMod
 
 
 	// Allocate for the GP fifo buffer
-	gdl::wii::gp_fifo = memalign(32, GDL_GP_FIFO_SIZE);
+	gdl::wii::gp_fifo = aligned_alloc(32, GDL_GP_FIFO_SIZE);
 	memset(gdl::wii::gp_fifo, 0, GDL_GP_FIFO_SIZE);
 
 
@@ -719,14 +719,9 @@ void gdl::Display() {
 				VIDEO_WaitVSync();
 				VIDEO_WaitVSync();
 				exit(0);
-
 			}
-
 		}
-
-
 	}
-
 
 	// Calculate delta based on the amount of cycles that have passed since the start of rendering when gdl::PrepDisplay() got called
 	u64 timer_cycles = (u_int)((_timer_getCpuCycles()-_timer_lastCycles))/100;
