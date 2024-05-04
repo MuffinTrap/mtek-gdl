@@ -8,6 +8,9 @@
 #include <string.h>
 #include <gccore.h>
 
+// muffintrap: added <stdlib.h> for version 0.100.0-muffintrap
+#include <stdlib.h>
+
 #include "mgdl-wii/mgdl-config.h"
 #include "mgdl-wii/mgdl-types.h"
 #include "mgdl-wii/mgdl-globals.h"
@@ -712,7 +715,7 @@ bool gdl::Texture::Create(short xSize, short ySize, u_int filterMode, u_int form
 
 	// Allocate texture data block
 	if (gdl::Texture::texAlloc == gdl::MEM1)
-		gdl::Texture::texData = memalign(32, gdl::Texture::texSize);
+		gdl::Texture::texData = aligned_alloc(32, gdl::Texture::texSize);
 	else
 		gdl::Texture::texData = malloc2(gdl::Texture::texSize);
 
@@ -841,7 +844,7 @@ bool gdl::Texture::CreateMipmapped(short xSize, short ySize, u_int minFilt, u_in
 
 	// Allocate texture data block
 	if (gdl::Texture::texAlloc == gdl::MEM1)
-		gdl::Texture::texData = memalign(32, gdl::Texture::texSize);
+		gdl::Texture::texData = aligned_alloc(32, gdl::Texture::texSize);
 	else
 		gdl::Texture::texData = malloc2(gdl::Texture::texSize);
 
@@ -982,7 +985,7 @@ bool gdl::Texture::LoadTexture(const char* fileName) {
 
 	// Allocate texture
 	if (gdl::Texture::texAlloc == gdl::MEM1)
-		gdl::Texture::texData = memalign(32, gdl::Texture::texSize);
+		gdl::Texture::texData = aligned_alloc(32, gdl::Texture::texSize);
 	else
 		gdl::Texture::texData = malloc2(gdl::Texture::texSize);
 

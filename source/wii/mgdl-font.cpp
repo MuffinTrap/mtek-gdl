@@ -7,9 +7,10 @@
 #include <stdarg.h>
 #include <malloc.h>
 #include <gccore.h>
-// Added <cstring> to get strlen
-// for version 2.6.1 by muffintrap.
+// muffintrap: Added <cstring> and <stdlib.h> to get strlen and aligned_alloc
+// for version 0.100.0-muffintrap
 #include <cstring>
+#include <stdlib.h>
 
 #include "mgdl-wii/mgdl-types.h"
 #include "mgdl-wii/mgdl-globals.h"
@@ -17,7 +18,6 @@
 #include "mgdl-wii/mgdl-main.h"
 #include "mgdl-wii/mgdl-image.h"
 #include "mgdl-wii/mgdl-font.h"
-
 
 // Fixed-sized font class functions
 
@@ -28,7 +28,6 @@ gdl::FFont::FFont() {
 	vList=NULL;
 	tList=NULL;
 	firstIndex=0;
-
 }
 
 gdl::FFont::~FFont() {
@@ -54,15 +53,18 @@ void gdl::FFont::BindSheet(gdl::Image& image, short charw, short charh,  char fi
 	firstIndex = firstCharacter;
 	short charactersPerRow = image.Texture.TXsize()/ charw;
 	short rows = image.Texture.TYsize() / charh;
-	short lastCharacter = (charactersPerRow * rows) - firstCharacter;
 	short characterAmount = charactersPerRow * rows;
 
 	if (gdl::ConsoleActive)
-		printf("gdl: Binding a character font sheet. CPR:%d, R:%d, A:%d, FC: '%c' LC: '%c'\n",
-	charactersPerRow, rows, characterAmount, firstCharacter, lastCharacter);
+	{
+		// This breaks all future printfs! :D
+		printf("gdl: Binding a character font sheet. CPR:%d, R:%d, A:%d\n",
+	charactersPerRow, rows, characterAmount);
+	}
 
+	//  muffintrap: Changed memalign() to aligned_alloc() for version 0.100.0-muffintrap
 	if (vList == NULL)
-		vList = memalign(32, sizeof(gdl::wii::VERT2s16)*4);
+		vList = aligned_alloc(32, sizeof(gdl::wii::VERT2s16)*4);
 
 	((gdl::wii::VERT2s16*)vList)[0].x = 0;		((gdl::wii::VERT2s16*)vList)[0].y = 0;
 	((gdl::wii::VERT2s16*)vList)[1].x = charw;	((gdl::wii::VERT2s16*)vList)[1].y = 0;
@@ -71,9 +73,8 @@ void gdl::FFont::BindSheet(gdl::Image& image, short charw, short charh,  char fi
 
 	DCFlushRange(vList, sizeof(gdl::wii::VERT2s16)*4);
 
-
 	if (tList == NULL)
-		tList = memalign(32, (sizeof(gdl::wii::TEX2f32)*4)*(characterAmount));
+		tList = aligned_alloc(32, (sizeof(gdl::wii::TEX2f32)*4)*(characterAmount));
 
 	for(cy=0; cy<rows; cy++) {
 		for(cx=0; cx<charactersPerRow; cx++) {
@@ -86,13 +87,13 @@ void gdl::FFont::BindSheet(gdl::Image& image, short charw, short charh,  char fi
 			tc = 4*(cx+(charactersPerRow*cy));
 
 			// Upper-left
-			((gdl::wii::TEX2f32*)tList)[tc].u	= ((f32)tx+0.01f)/image.Texture.TXsize();
-			((gdl::wii::TEX2f32*)tList)[tc].v	= ((f32)ty+0.01f)/image.Texture.TYsize();
+			((gdl::wii::TEX2f32*)tList)[tc].u	= ((f32)tx)/image.Texture.TXsize();
+			((gdl::wii::TEX2f32*)tList)[tc].v	= ((f32)ty)/image.Texture.TYsize();
 
 			// Upper-right
 			// ((gdl::wii::TEX2f32*)tList)[tc+1].u	= ((f32)(tx+charw)-0.4f)/image.Texture.TXsize();
 			((gdl::wii::TEX2f32*)tList)[tc+1].u	= ((f32)(tx+charw))/image.Texture.TXsize();
-			((gdl::wii::TEX2f32*)tList)[tc+1].v	= ((f32)ty+0.01f)/image.Texture.TYsize();
+			((gdl::wii::TEX2f32*)tList)[tc+1].v	= ((f32)ty)/image.Texture.TYsize();
 
 			// Lower-left
 			// ((gdl::wii::TEX2f32*)tList)[tc+2].u	= ((f32)(tx+charw)-0.4f)/image.Texture.TXsize();
@@ -100,7 +101,7 @@ void gdl::FFont::BindSheet(gdl::Image& image, short charw, short charh,  char fi
 			((gdl::wii::TEX2f32*)tList)[tc+2].v	= (f32)(ty+charh)/image.Texture.TYsize();
 
 			// Lower-right
-			((gdl::wii::TEX2f32*)tList)[tc+3].u	= ((f32)tx+0.01f)/image.Texture.TXsize();
+			((gdl::wii::TEX2f32*)tList)[tc+3].u	= ((f32)tx)/image.Texture.TXsize();
 			((gdl::wii::TEX2f32*)tList)[tc+3].v	= (f32)(ty+charh)/image.Texture.TYsize();
 		}
 	}

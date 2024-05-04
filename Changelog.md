@@ -27,6 +27,7 @@ Bringing a lot of changes to the code. Removing things that are no longer needed
 + Changed 3rdparty/oggplayer files: added function PlayOggFilePtr to play from given file pointer
     TODO: Restored oggplayer to the version that isn the devkitPro examples folder
 + Changed mgdl-font.h and .cpp to allow loading only a range of characters instead of always 256. Removed the Font class since it loaded DirectQB font files and DirectQB is from 1999.
++ Changed usage of memalign to aligned_alloc because memalign is obsolete. Source: https://www.gnu.org/software/libc/manual/html_node/Aligned-Memory-Blocks.html
 
 
 #### Removals

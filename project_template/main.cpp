@@ -35,6 +35,8 @@ void init()
     gdl::SetClearColor(gdl::Color::Black);
     gdl::WiiInput::Init();
     gdl::ConsoleMode();
+    // This assert works!
+    // gdl_assert(false, "Loading assets");
 
     konata.LoadImageBuffer(konata_png, konata_png_size, gdl::Nearest, gdl::RGBA8);
     spriteSheet.LoadImageBuffer(tilemap_png, tilemap_png_size, gdl::Nearest, gdl::RGBA8);
@@ -46,9 +48,14 @@ void init()
 
     topazBytefont.LoadImageBuffer(amigaTopaz10_png, amigaTopaz10_png_size, gdl::Nearest, gdl::RGBA8);
     topaz.BindSheet(topazBytefont, 9, 9, 32);
+    printf("Topaz font loaded.\n");
 
     IBMFontImage.LoadImageBuffer(font8x16_png, font8x16_png_size, gdl::Nearest, gdl::RGBA8);
+    // This works!
     IBM8x16.BindSheet(IBMFontImage, 8, 16, 0);
+    // This no longer works
+    gdl_assert(false, "After IBM bind sheet");
+    printf("IBM font loaded.\n");
     
     blip.LoadSound(blipSelect_wav, blipSelect_wav_size);
     sampleMusic.LoadFromBuffer(sample3_ogg, sample3_ogg_size);
@@ -201,7 +208,7 @@ void DrawMenu(short x, short y, short w)
     }
     if (menu.Button("Assert", gdl::Color::LightRed))
     {
-        gdl_assert(false, "Assert fired!");
+        gdl_assert(false, "Assert button pressed!");
     }
     menu.Text("Hi! I am menu.");
     menu.Text("Yellow panel");
@@ -220,7 +227,6 @@ int main()
     init();
     menu = gdl::MenuCreator(&IBM8x16, 1.0f);
     float boxX = 0;
-    float elapsed = 0.0f;
     short frameCount = 0;
     while(1)
     {
