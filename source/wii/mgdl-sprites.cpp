@@ -5,8 +5,9 @@
 
 #include <stdio.h>
 #include <malloc.h>
-// muffintrap: added <cstring> for version 2.6.1
+// muffintrap: added <cstring> and <stdlib> for version 0.100.0-muffintrap
 #include <cstring>
+#include <stdlib.h>
 
 #include "mgdl-wii/mgdl-types.h"
 #include "mgdl-wii/mgdl-globals.h"
@@ -248,7 +249,7 @@ void gdl::SpriteSet::LoadTSM_Entry(TSM_entry &entry, short index)
 		spriteList[index].cy = entry.py;
 
 		// Generate vertex list
-		spriteList[index].vList = (wii::VERT2s16*)memalign(32, sizeof(wii::VERT2s16)*4);
+		spriteList[index].vList = (wii::VERT2s16*)aligned_alloc(32, sizeof(wii::VERT2s16)*4);
 		spriteList[index].vList[0].x = 0;					
 		spriteList[index].vList[0].y = 0;
 		spriteList[index].vList[1].x = spriteList[index].w;	
@@ -262,7 +263,7 @@ void gdl::SpriteSet::LoadTSM_Entry(TSM_entry &entry, short index)
 		// Generate texcoord list
 		entry.tx2++;
 		entry.ty2++;
-		spriteList[index].tList = (wii::TEX2f32*)memalign(32, sizeof(wii::TEX2f32)*4);
+		spriteList[index].tList = (wii::TEX2f32*)aligned_alloc(32, sizeof(wii::TEX2f32)*4);
 		short tWidth = sheetList[entry.sheetnum-1]->Texture.TXsize();
 		short tHeight = sheetList[entry.sheetnum-1]->Texture.TYsize();
 		spriteList[index].tList[0].u = ((float)entry.tx1+0.01f)	/ tWidth;

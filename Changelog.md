@@ -1,6 +1,6 @@
 # Changes made by muffintrap
 
-### Version 2.6.1
+### Version 0.100.0-muffintrap
 Bringing a lot of changes to the code. Removing things that are no longer needed, are provided by the environment or do not work.
 
 #### New files
@@ -14,6 +14,8 @@ Bringing a lot of changes to the code. Removing things that are no longer needed
 + Copied font.c from tools/ and renamed it to mgdl-defaultfont.h to always have a default font to use.
 + Added mgdl-input-wii.h and .cpp to provide more convenient access to libogc:s input state
 + Added mgdl-assert.h and .cpp to provide asserts and on screen messages when they happen
++ Added project_template folder and files to have a template for a project and example code how to use input, audio and image functions
++ Brought images over from gdl-examples repository and added licenses.txt to clarify the licenses of assets in project_template
 
 #### Modifications to library
 + Modified mgdl-input-keyboard.cpp to fix a compilation error.
@@ -27,6 +29,7 @@ Bringing a lot of changes to the code. Removing things that are no longer needed
 + Changed 3rdparty/oggplayer files: added function PlayOggFilePtr to play from given file pointer
     TODO: Restored oggplayer to the version that isn the devkitPro examples folder
 + Changed mgdl-font.h and .cpp to allow loading only a range of characters instead of always 256. Removed the Font class since it loaded DirectQB font files and DirectQB is from 1999.
++ Added include of <cstring> to mgdl-font, because strlen, memset and memcpy were no longer available after removing the libraries
 + Changed usage of memalign to aligned_alloc because memalign is obsolete. Source: https://www.gnu.org/software/libc/manual/html_node/Aligned-Memory-Blocks.html
 
 
@@ -35,4 +38,4 @@ Bringing a lot of changes to the code. Removing things that are no longer needed
 + Removed png library from 3rdparty/libs-wii, since devkitpro enviroment has a newer version of it installed when you install the wii pack. Added portlibs directories to template project makefile and makefile-wii 
 + Removed zlib library from 3rdparty/libs-wii, since devkitpro environment has a newer version of it installed when you install the wii pack
 + Removed tremor from 3rdparty/libs-wii/oggplayer since devkitpro environment has it already.
-+ Added include of <cstring> to mgdl-font, because strlen, memset and memcpy were no longer available after removing the libraries
+

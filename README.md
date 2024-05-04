@@ -15,8 +15,9 @@ This is now version 0.100.0-muffintrap
 
 ### Future plans
 1. Add support for reading glTF scenes: assimp or tinygltf
+2. Add Gnu Rocket integration for syncing
 
-This file was changed on 13.4.2024 by muffintrap to add explanation of the fork.
+This file was changed for version 0.100.0-muffintrap by muffintrap to add explanation of the fork.
 Original contents of README.md are below:
 
 # MTek-GDL
