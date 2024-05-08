@@ -7,7 +7,7 @@
 void init()
 {
     fatInitDefault();
-	gdl::InitSystem(gdl::ModeMPAL, gdl::Aspect16x9, gdl::HiRes);
+	gdl::InitSystem(gdl::ModeAuto, gdl::AspectAuto, gdl::HiRes);
     gdl::SetClearColor(gdl::Color::Black);
     gdl::WiiInput::Init();
     gdl::ConsoleMode();

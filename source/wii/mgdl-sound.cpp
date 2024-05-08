@@ -17,6 +17,7 @@
 #include "mgdl-wii/mgdl-globals-internal.h"
 #include "mgdl-wii/mgdl-main.h"
 #include "mgdl-wii/mgdl-sound.h"
+#include "mgdl-wii/mgdl-assert.h"
 
 
 gdl::Sound::Sound() {
@@ -313,6 +314,7 @@ bool gdl::Music::LoadFromBuffer(const uint8_t* buffer, size_t size)
 {
 	bufferSize = size;
 	oggBuffer = (uint8_t*)malloc(size);
+	gdl_assert((oggBuffer != nullptr), "Could not allocate buffer for music");
 	memcpy(oggBuffer, buffer, size);
 	return true;
 }
@@ -328,12 +330,18 @@ bool gdl::Music::PlayMusic(bool loop)
 		playMode = OGG_INFINITE_TIME;
 	}
 	FILE* file = fmemopen(oggBuffer, bufferSize, "r");
+	gdl_assert((file != nullptr), "Could not open music buffer as file");
 	return (PlayOggFilePtr(file, 0, playMode) == 0);
 }
 
 float gdl::Music::GetElapsed()
 {
 	return (float)GetTimeOgg()/1000.0f;
+}
+
+void gdl::Music::JumpToSeconds(float seconds)
+{
+	SetTimeOgg(seconds*1000.0f);
 }
 
 void gdl::Music::TogglePauseMusic()

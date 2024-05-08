@@ -32,8 +32,6 @@ typedef struct {
 //! Sprite Set configuration structure
 typedef struct 
 {
-    short	numSprites;
-    short   tileRows;
     short   tilesPerRow;
     short   tileWidth;
     short   tileHeight;
@@ -108,15 +106,13 @@ public:
     /*!
      *	\details Creates a spriteSetConfig struct from given parameters
      *
-     *  \param[in]  numSprites   Configuration struct
-     *	\param[in]	tileRows     How many rows of sprites the image contains
      *	\param[in]	tilesPerRow	 How many sprites are on a single row
      *	\param[in]	tileWidth    Width of a sprite in pixels
      *	\param[in]	tileHeight   Height of a sprite in pixels
      *
      *	\return SpriteSetConfig struct
      */
-    SpriteSetConfig CreateConfig(short numSprites, short tileRows, short tilesPerRow, short tileWidth, short tileHeight);
+    SpriteSetConfig CreateConfig(short tilesPerRow, short tileWidth, short tileHeight);
 
 
 

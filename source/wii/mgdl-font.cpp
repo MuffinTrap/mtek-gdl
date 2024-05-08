@@ -207,6 +207,11 @@ short gdl::FFont::GetHeight()
 	return ch;
 }
 
+short gdl::FFont::GetWidth()
+{
+	return cw;
+}
+
 short gdl::FFont::GetWidth(const char* str)
 {
 	return strlen(str) * cw;

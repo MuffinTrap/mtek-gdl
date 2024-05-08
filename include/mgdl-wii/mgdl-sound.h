@@ -151,6 +151,7 @@ class Music
 		bool LoadFromBuffer(const uint8_t* buffer, size_t size);
 		bool PlayMusic(bool loop);
 		float GetElapsed();
+		void JumpToSeconds(float seconds);
 		void TogglePauseMusic();
 		void StopMusic();
 	private:

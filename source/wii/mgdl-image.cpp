@@ -16,6 +16,7 @@
 #include "mgdl-wii/mgdl-globals-internal.h"
 #include "mgdl-wii/mgdl-main.h"
 #include "mgdl-wii/mgdl-image.h"
+#include "mgdl-wii/mgdl-assert.h"
 
 
 // Common image/sprite drawing functions (shared to the image and sprite drawing classes)
@@ -859,6 +860,7 @@ bool gdl::Image::LoadImageBuffer(const void *buffer, size_t size, u_int filterMo
 	// fmemopen cannot read from const buffer :U
 	// Copy data to temporary buffer before reading
 	void *tempBuffer = malloc(size);
+	gdl_assert((tempBuffer != nullptr), "Cannot allocate enough memory for image buffer.");
 	memcpy(tempBuffer, buffer, size);
 
 	// Open file

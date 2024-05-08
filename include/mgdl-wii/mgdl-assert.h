@@ -29,7 +29,7 @@ void AssertFunction(const char* filename, int lineNumber, bool& ignoreToggle, co
 // after message causes compile error.
 // See: https://gcc.gnu.org/onlinedocs/cpp/Variadic-Macros.html
 #define gdl_assert(test, message, ...) \
-if (test == false) \
+if ((test) == false) \
 { \
     static bool ignoreThis = false; \
     if (ignoreThis == false) { \

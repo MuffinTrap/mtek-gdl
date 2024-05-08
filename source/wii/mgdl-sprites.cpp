@@ -65,11 +65,9 @@ gdl::SpriteSet::~SpriteSet() {
 
 }
 
-gdl::SpriteSetConfig gdl::SpriteSet::CreateConfig(short numSprites, short tileRows, short tilesPerRow, short tileWidth, short tileHeight)
+gdl::SpriteSetConfig gdl::SpriteSet::CreateConfig(short tilesPerRow, short tileWidth, short tileHeight)
 {
 	SpriteSetConfig cfg = {0};
-	 cfg.numSprites= numSprites;
-	 cfg.tileRows= tileRows; 
 	 cfg.tilesPerRow= tilesPerRow;
 	 cfg.tileWidth= tileWidth;
 	 cfg.tileHeight= tileHeight;
@@ -85,11 +83,8 @@ bool gdl::SpriteSet::LoadSprites(SpriteSetConfig &config, Image *spriteSheet)
 	{
 		return false;
 	}
-	if (config.tilesPerRow * config.tileRows != config.numSprites)
-	{
-		return false;
-	}
-	numSprites	= config.numSprites;
+	int rows = spriteSheet->Ysize() / config.tilesPerRow;
+	numSprites	= config.tilesPerRow * rows;
 	numSheets	= 1;
 	spriteList	= (Sprite*)calloc(numSprites, sizeof(Sprite));
 	sheetList	= (Image**)calloc(1, sizeof(Image*));
@@ -100,15 +95,15 @@ bool gdl::SpriteSet::LoadSprites(SpriteSetConfig &config, Image *spriteSheet)
 	// NOTE! Sheet numbering starts from 1
 	entry.sheetnum = 1;
 
-	for (short i = 0; i < config.numSprites; i++)
+	for (short i = 0; i < numSprites; i++)
 	{
 		short column = i % config.tilesPerRow;
 		short row = i / config.tilesPerRow;
 
 		entry.tx1 = column * config.tileWidth;
-		entry.tx2 = entry.tx1 + config.tileWidth;
+		entry.tx2 = entry.tx1 + config.tileWidth-1;
 		entry.ty1 = row * config.tileHeight;
-		entry.ty2 = entry.ty1 + config.tileHeight;
+		entry.ty2 = entry.ty1 + config.tileHeight-1;
 		// Pivot point?
 		entry.px = entry.tx1 + config.tileWidth/2;
 		entry.py = entry.ty1 + config.tileHeight/2;

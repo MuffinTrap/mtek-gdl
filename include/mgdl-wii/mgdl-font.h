@@ -93,9 +93,19 @@ public:
 	 */
 	short GetHeight();
 
-	// muffintrap: added this to get the width of the string in this font
+	// muffintrap: added this to get the width of a single character
 	//! Returns the width of this font in pixels.
 	/*!
+	 *
+	 *	\returns width of the string in pixels, zero if no font was loaded or the string is blank.
+	 */
+	short GetWidth();
+
+	// muffintrap: added this to get the width of the string in this font
+	//! Returns the width of the given string in pixels.
+	/*!
+	 *
+	 *	\param[in]	str		The string to be measured
 	 *
 	 *	\returns width of the string in pixels, zero if no font was loaded or the string is blank.
 	 */
