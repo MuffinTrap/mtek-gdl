@@ -26,9 +26,7 @@ void Template::Init()
     barb.LoadImageBuffer(barb_png, barb_png_size, gdl::Linear, gdl::RGBA8);
     mel_image.LoadImageBuffer(mel_tiles_png, mel_tiles_png_size, gdl::Nearest, gdl::RGBA8);
     short spritesPerRow = 2;
-    short rows = 2;
-    // TODO: Calculate these automaticall from sprite size.
-    gdl::SpriteSetConfig cfg = mel_sprites.CreateConfig(spritesPerRow*rows, rows, spritesPerRow, 62,62);
+    gdl::SpriteSetConfig cfg = mel_sprites.CreateConfig(spritesPerRow, 62,62);
     mel_sprites.LoadSprites(cfg, &mel_image);
 
     pointerImage.LoadImageBuffer(pointer_png, pointer_png_size, gdl::Nearest, gdl::RGBA8);
@@ -55,7 +53,7 @@ void Template::Update()
 void DrawTextDouble(const char* text, short x, short y, float scale, gdl::FFont* font)
 {
     font->DrawText(text, x-font->GetWidth(text)*scale/2+4, y+4, scale, gdl::Color::Black);
-    font->DrawText(text, x-font->GetWidth(text)*scale/2, y, scale, gdl::Color::White);
+    font->DrawText(text, x-font->GetWidth(text)*scale/2, y, scale, gdl::Color::LightGreen);
 
 }
 
