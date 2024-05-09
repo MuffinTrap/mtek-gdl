@@ -14,8 +14,10 @@ If you use this fork for making a Wii game or demo, I won't be available to give
 This is now version 0.100.0-muffintrap
 
 ### Future plans
-1. Add support for reading glTF scenes: assimp or tinygltf
-2. Add Gnu Rocket integration for syncing
+1. Add support for reading glTF scenes with tinygltf
+2. Add Rocket integration for syncing
+3. Add glm and useful math and lerp functions
+4. Add a simpler to use 3D functions
 
 This file was changed for version 0.100.0-muffintrap by muffintrap to add explanation of the fork.
 Original contents of README.md are below:

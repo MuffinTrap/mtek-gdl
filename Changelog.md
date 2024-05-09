@@ -16,6 +16,7 @@ Bringing a lot of changes to the code. Removing things that are no longer needed
 + Added mgdl-assert.h and .cpp to provide asserts and on screen messages when they happen
 + Added project_template folder and files to have a template for a project and example code how to use input, audio and image functions
 + Brought images over from gdl-examples repository and added licenses.txt to clarify the licenses of assets in project_template
++ Added the Codeblocks Template folder from 2.6 release. Wrote more instructions for setting up Codeblocks under Windows 10.
 
 #### Modifications to library
 + Modified mgdl-input-keyboard.cpp to fix a compilation error.
