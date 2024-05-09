@@ -27,6 +27,7 @@
 #include "mgdl-wii/mgdl-globals-internal.h"
 #include "mgdl-wii/mgdl-main.h"
 #include "mgdl-wii/mgdl-basic.h"
+#include "mgdl-wii/mgdl-util.h" // muffintrap (13.4.2024) Added include  for mgdl-util.h
 
 
 namespace gdl {
@@ -44,7 +45,14 @@ namespace gdl {
 
 	}
 
-	static void _resetCallback() {
+	/*
+		muffintrap: changed for version 0.100.0-muffintrap
+		ogc/system.h defines the reset callback to
+		have 2 parameters: u32 irq, void* ctx
+		Added these parameters, but no idea
+		what should be done with them.
+	*/
+	static void _resetCallback(u32 irq, void* ctx) {
 
 		// Reset button exit (exit to menu)
 
@@ -229,7 +237,7 @@ void gdl::InitSystem(gdl::InitVideoMode videoMode, gdl::InitAspectMode aspectMod
 				} else {
 
 					// If in progressive mode, create a texture buffer for framebuffer upscaling
-					gdl::wii::UpscaleBuff = memalign(32, (gdl::ScreenXres*gdl::ScreenYres)*4);
+					gdl::wii::UpscaleBuff = aligned_alloc(32, (gdl::ScreenXres*gdl::ScreenYres)*4);
 					DCFlushRange(gdl::wii::UpscaleBuff, (gdl::ScreenXres*gdl::ScreenYres)*4);
 
 					GX_InitTexObj(
@@ -342,7 +350,7 @@ void gdl::InitSystem(gdl::InitVideoMode videoMode, gdl::InitAspectMode aspectMod
 
 
 	// Allocate for the GP fifo buffer
-	gdl::wii::gp_fifo = memalign(32, GDL_GP_FIFO_SIZE);
+	gdl::wii::gp_fifo = aligned_alloc(32, GDL_GP_FIFO_SIZE);
 	memset(gdl::wii::gp_fifo, 0, GDL_GP_FIFO_SIZE);
 
 
@@ -506,6 +514,13 @@ void gdl::SetClearColor(u_char red, u_char grn, u_char blu, u_char alp) {
 
 	GXColor clearCol = { red, grn, blu, alp };
 	GX_SetCopyClear(clearCol, GX_MAX_Z24);
+
+}
+
+void gdl::SetClearColor(u_int color)
+{
+	gdl::RGBA8Components comp = gdl::ColorToComponents(color);
+	SetClearColor(comp.red, comp.green, comp.blue, comp.alpha);
 
 }
 
@@ -704,14 +719,9 @@ void gdl::Display() {
 				VIDEO_WaitVSync();
 				VIDEO_WaitVSync();
 				exit(0);
-
 			}
-
 		}
-
-
 	}
-
 
 	// Calculate delta based on the amount of cycles that have passed since the start of rendering when gdl::PrepDisplay() got called
 	u64 timer_cycles = (u_int)((_timer_getCpuCycles()-_timer_lastCycles))/100;

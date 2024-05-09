@@ -25,6 +25,18 @@ typedef struct {
     GXTexObj		*texObj;	//!< Pointer to associated texture object
 } Sprite;
 
+/*
+    Changed 13.4.2024
+    muffintrap: added struct SpriteSetConfig
+*/
+//! Sprite Set configuration structure
+typedef struct 
+{
+    short   tilesPerRow;
+    short   tileWidth;
+    short   tileHeight;
+}SpriteSetConfig;
+
 
 //! Sprite set handling class
 /*!
@@ -69,6 +81,39 @@ public:
      *		an error occurred (detailed error is printed in console mode).
      */
     bool	LoadSprites(const char *fileName, const char *sheetsDir, u_int filterMode, u_int format);
+
+    /*
+        Changed: 13.4.2024
+        muffintrap: added function to load spriteset from image and configuration
+        because RT Engine is quite old and there is no documentation
+    */
+    //! Loads a sprite set from image and configuration
+    /*!
+     *	\details Loads a TR-Engine format sprite map file and its associated sprite sheets (sprite sheets must
+	 *		be in PNG format in this port of the library).
+     *
+     *  \param[in]  configuration   Configuration struct
+     *	\param[in]	spriteSheet       Pointer to SpriteSheet
+     *	\param[in]	filterMode	Filtering mode (see gdl::TextureFilterModes).
+     *	\param[in]	format		Texture format to load sprite sheets as (see gdl::TextureFormatModes).
+     *
+     *	\return Non-zero if the sprite set and its associated sprite sheets were loaded successfully. Otherwise
+     *		an error occurred (detailed error is printed in console mode).
+     */
+    bool	LoadSprites(SpriteSetConfig &config, Image *spriteSheet);
+
+    //! Creates a SpriteSetConfig struct
+    /*!
+     *	\details Creates a spriteSetConfig struct from given parameters
+     *
+     *	\param[in]	tilesPerRow	 How many sprites are on a single row
+     *	\param[in]	tileWidth    Width of a sprite in pixels
+     *	\param[in]	tileHeight   Height of a sprite in pixels
+     *
+     *	\return SpriteSetConfig struct
+     */
+    SpriteSetConfig CreateConfig(short tilesPerRow, short tileWidth, short tileHeight);
+
 
 
     //! Returns the number of sprites in the currently loaded sprite set.
@@ -121,6 +166,30 @@ public:
      */
     void	PutS(short x1, short y1, short x2, short y2, short index, u_int col = gdl::Color::White);
 
+    private:
+
+    /*
+        Changed 13.4.2024
+        muffintrap: moved TSM_entry to header and 
+        created a function used by both versions of LoadSprites
+    */
+    //! Struct for holding information about one sprite properties.
+    /*!
+     *	\param[in]	entry	Single sprite entry
+     */
+	typedef struct {
+		short	sheetnum;
+		short	tx1,ty1;
+		short	tx2,ty2;
+		short	px,py;
+	} TSM_entry;
+
+    //! Loads a sprite defined by a single TSM_entry struct to
+    /*!
+     *	\param[in]	entry	Single sprite entry
+     *	\param[in]	index	Index into spritelist
+     */
+    void LoadTSM_Entry(TSM_entry &entry, short index);
 
 };
 

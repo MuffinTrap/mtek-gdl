@@ -177,6 +177,25 @@ public:
 	 */
 	bool LoadImageMem(void *imagePtr, u_int filterMode, u_int format);
 
+	/* Changed: 13.4.2024
+	Header and documentation added for LoadImageBuffer by muffintrap
+	*/
+	//! Loads an image from memory.
+	/*!
+	 *  \details Similar to gdl::LoadImage() but this function loads an image file from a memory address. This is most
+	 *		useful when making standalone DOL executables where image data is embedded into the program.
+	 *
+	 *	\note Unlike gdl::LoadImage() which supports TPL texture files, this function only supports PNG images.
+	 *
+	 *  \param[in]	buffer		Pointer to a memory block containing an image file.
+	 *  \param[in]	size		Size of the buffer in bytes
+	 *	\param[in]	filterMode	Filtering mode (see gdl::TextureFilterModes).
+	 *	\param[in]	format		Texture format (see gdl::TextureFormatModes).
+	 *
+	 *	\returns Non-zero if the image was successfully loaded, otherwise an error occured (detailed error is printed
+	 *		in console mode).
+	 */
+	bool LoadImageBuffer(const void *buffer, size_t size, u_int filterMode, u_int format);
 
 	//! Returns the X size of the image in pixels.
 	/*!

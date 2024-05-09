@@ -1,7 +1,3 @@
-# Makefile for building the Nintendo Wii (libogc) version of MTek-GDL
-# Note: Only use MSys' make program for this makefile due to linux style file path conventions
-# Version 26.1 edit by muffintrap: added portlibs include
-
 ifeq ($(strip $(DEVKITPRO)),)
   $(error "DevkitPRO may not be installed")
 endif
@@ -17,30 +13,26 @@ AR		:=	$(PREFIX)ar
 LIBOGC_INC	:=	$(DEVKITPRO)/libogc/include
 LIBOGC_LIB	:=	$(DEVKITPRO)/libogc/lib/wii
 
-PORTLIBS_INC	:=	$(DEVKITPRO)/portlibs/ppc/include
-
-INCLUDE	:= -Iinclude -I$(LIBOGC_INC) -I$(PORTLIBS_INC)
+INCLUDE	:= -I../../include -I$(LIBOGC_INC)
 MACHDEP := -mrvl -mcpu=750 -meabi -mhard-float
 CFLAGS  := -O3 -Wall $(MACHDEP) $(INCLUDE)
 
 LIB 	:= mgdl
-CFILES	:= $(wildcard source/wii/*.cpp)
+CFILES	:= $(wildcard *.cpp)
 OFILES	:= $(CFILES:.cpp=.o)
-ARC 	:= lib/wii/lib$(LIB).a
-HDR 	:= $(wildcard include/mgdl-wii/*.h)
+ARC 	:= lib$(LIB).a
+HDR 	:= $(wildcard ../../include/mgdl-wii/*.h)
 
 all : $(OFILES)
-	mkdir -p lib/wii
 	$(AR) -r $(ARC) $(OFILES)
 
 clean :
 	rm -f $(OFILES) $(ARC)
-	rm -r lib/wii
 
 install :
 	mkdir -p $(LIBOGC_LIB) $(LIBOGC_INC)/mgdl-wii/
 	cp -f $(ARC) $(LIBOGC_LIB)/
-	cp -f include/mgdl-wii.h $(LIBOGC_INC)
+	cp -f ../../include/mgdl-wii.h $(LIBOGC_INC)
 	cp -f $(HDR) $(LIBOGC_INC)/mgdl-wii/
 
 %.o : %.cpp

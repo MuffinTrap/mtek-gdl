@@ -6,6 +6,9 @@
 #include <malloc.h>
 #include <gccore.h>
 #include <zlib.h>
+// muffintrap: added <cstring> and <stdlib.h> for version 0.100.0-muffintrap
+#include <cstring>
+#include <stdlib.h>
 
 #include "mgdl-wii/mgdl-config.h"
 #include "mgdl-wii/mgdl-types.h"
@@ -13,6 +16,7 @@
 #include "mgdl-wii/mgdl-globals-internal.h"
 #include "mgdl-wii/mgdl-main.h"
 #include "mgdl-wii/mgdl-image.h"
+#include "mgdl-wii/mgdl-assert.h"
 
 
 // Common image/sprite drawing functions (shared to the image and sprite drawing classes)
@@ -463,14 +467,14 @@ void gdl::Image::_PrepareImage(short xRes, short yRes) {
 
 	// Generate vertex arrays for fast image drawing
 	// (as were going to take advantage of the vertex cache)
-	if (vList == NULL) vList = memalign(32, sizeof(s16)*8);
+	if (vList == NULL) vList = aligned_alloc(32, sizeof(s16)*8);
 	((s16*)vList)[0] = 0;		((s16*)vList)[1] = 0;
 	((s16*)vList)[2] = xRes;	((s16*)vList)[3] = 0;
 	((s16*)vList)[4] = xRes;	((s16*)vList)[5] = yRes;
 	((s16*)vList)[6] = 0;		((s16*)vList)[7] = yRes;
 	DCFlushRange(vList, sizeof(s16)*8);
 
-	if (tList == NULL) tList = memalign(32, sizeof(f32)*8);
+	if (tList == NULL) tList = aligned_alloc(32, sizeof(f32)*8);
 	((f32*)tList)[0] = 0;	((f32*)tList)[1] = 0;
 	((f32*)tList)[2] = u;	((f32*)tList)[3] = 0;
 	((f32*)tList)[4] = u;	((f32*)tList)[5] = v;
@@ -739,14 +743,14 @@ bool gdl::Image::LoadImage(const char *fileName, u_int filterMode, u_int format)
 
 			// Generate vertex arrays for fast image drawing
 			// (as were going to take advantage of the vertex cache)
-			if (vList == NULL) vList = memalign(32, sizeof(s16)*8);
+			if (vList == NULL) vList = aligned_alloc(32, sizeof(s16)*8);
 			((s16*)vList)[0] = 0;					((s16*)vList)[1] = 0;
 			((s16*)vList)[2] = Texture.TXsize();	((s16*)vList)[3] = 0;
 			((s16*)vList)[4] = Texture.TXsize();	((s16*)vList)[5] = Texture.TYsize();
 			((s16*)vList)[6] = 0;					((s16*)vList)[7] = Texture.TYsize();
 			DCFlushRange(vList, sizeof(s16)*8);
 
-			if (tList == NULL) tList = memalign(32, sizeof(f32)*8);
+			if (tList == NULL) tList = aligned_alloc(32, sizeof(f32)*8);
 			((f32*)tList)[0] = 0;	((f32*)tList)[1] = 0;
 			((f32*)tList)[2] = 1;	((f32*)tList)[3] = 0;
 			((f32*)tList)[4] = 1;	((f32*)tList)[5] = 1;
@@ -843,6 +847,53 @@ bool gdl::Image::LoadImageMem(void *imagePtr, u_int filterMode, u_int format) {
 
 	return(true);
 
+}
+
+/* 
+	Changed 13.4.2024
+	LoadImageBuffer() added by muffintrap 
+*/
+bool gdl::Image::LoadImageBuffer(const void *buffer, size_t size, u_int filterMode, u_int format) {
+	if (gdl::ConsoleActive)
+		printf("gdl: Loading image from memory buffer");
+
+	// fmemopen cannot read from const buffer :U
+	// Copy data to temporary buffer before reading
+	void *tempBuffer = malloc(size);
+	gdl_assert((tempBuffer != nullptr), "Cannot allocate enough memory for image buffer.");
+	memcpy(tempBuffer, buffer, size);
+
+	// Open file
+	FILE *fp;
+	if (!(fp = fmemopen(tempBuffer, size, "rb"))) {
+		gdl::CallErrorCallback("Image stream failed to open");
+		fclose(fp);
+		free(tempBuffer);
+		return(false);
+	}
+
+	// Decode and convert the image
+	png_structp png_ptr;
+	if (!(png_ptr = _gdl_image_GetFilePngContext(fp))) {
+		fclose(fp);
+		free(tempBuffer);
+		return(false);
+	}
+
+	if (!gdl::Image::_ProcessImage(png_ptr, 0, filterMode, format, false, 0)) {
+		fclose(fp);
+		free(tempBuffer);
+		return(false);
+	}
+
+	if (gdl::ConsoleActive) {
+		printf("Ok.\n");
+	}
+
+	fclose(fp);
+	free(tempBuffer);
+
+	return(true);
 }
 
 short gdl::Image::Xsize() {

@@ -354,7 +354,13 @@ namespace Keyboard {
     namespace StdIn {
 
         // Read function callback for stdin
-        static ssize_t stdinRead(struct _reent *r, int unused, char *ptr, size_t len) {
+        /*
+            Change 13.4.204
+            Muffintrap Changed function definition to fix a
+            compilation error.
+            Changed second parameter type from 'int' to 'void*'
+        */
+        static ssize_t stdinRead(struct _reent *r, void* unused, char *ptr, size_t len) {
 
             // Parse keyboard presses and output them to stdin
             int charsRead = 0;

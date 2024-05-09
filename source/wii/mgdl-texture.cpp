@@ -8,6 +8,9 @@
 #include <string.h>
 #include <gccore.h>
 
+// muffintrap: added <stdlib.h> for version 0.100.0-muffintrap
+#include <stdlib.h>
+
 #include "mgdl-wii/mgdl-config.h"
 #include "mgdl-wii/mgdl-types.h"
 #include "mgdl-wii/mgdl-globals.h"
@@ -486,6 +489,12 @@ bool gdl::Texture::_ConvertMipmap(short xres, short yres, void *inBuff) {
     short	mipXres		 = xres;
     short	mipYres		 = yres;
 
+	/*
+		Changed 13.4.2024
+		muffintrap: initialize mipmapBuff[1] to NULL
+		to show that it might not be used.
+	*/
+	mipmapBuff[1] = NULL;
 
 	// Base level mipmap
 	switch(gdl::Texture::texFmt) {
@@ -612,8 +621,15 @@ bool gdl::Texture::_ConvertMipmap(short xres, short yres, void *inBuff) {
 		mipmapBuff[0] = mipmapBuff[1];
 
 	}
-
-	free2(mipmapBuff[1]);
+	/*
+		Changed 13.4.2024
+		muffintrap: added check that
+		memory is initialized before calling free() on it
+	*/
+	if (mipmapBuff[1] != NULL)
+	{
+		free2(mipmapBuff[1]);
+	}
 
 	return(true);
 
@@ -699,7 +715,7 @@ bool gdl::Texture::Create(short xSize, short ySize, u_int filterMode, u_int form
 
 	// Allocate texture data block
 	if (gdl::Texture::texAlloc == gdl::MEM1)
-		gdl::Texture::texData = memalign(32, gdl::Texture::texSize);
+		gdl::Texture::texData = aligned_alloc(32, gdl::Texture::texSize);
 	else
 		gdl::Texture::texData = malloc2(gdl::Texture::texSize);
 
@@ -828,7 +844,7 @@ bool gdl::Texture::CreateMipmapped(short xSize, short ySize, u_int minFilt, u_in
 
 	// Allocate texture data block
 	if (gdl::Texture::texAlloc == gdl::MEM1)
-		gdl::Texture::texData = memalign(32, gdl::Texture::texSize);
+		gdl::Texture::texData = aligned_alloc(32, gdl::Texture::texSize);
 	else
 		gdl::Texture::texData = malloc2(gdl::Texture::texSize);
 
@@ -969,7 +985,7 @@ bool gdl::Texture::LoadTexture(const char* fileName) {
 
 	// Allocate texture
 	if (gdl::Texture::texAlloc == gdl::MEM1)
-		gdl::Texture::texData = memalign(32, gdl::Texture::texSize);
+		gdl::Texture::texData = aligned_alloc(32, gdl::Texture::texSize);
 	else
 		gdl::Texture::texData = malloc2(gdl::Texture::texSize);
 
@@ -1328,7 +1344,12 @@ void gdl::Texture::PokePixel(short x, short y, u_int col) {
 		return;
 
 
-	register u8*	bp;
+	/*
+		Changed 13.4.2024
+		Muffintrap: removed register keyword since C++17 no longer
+		allows it.
+	*/
+	u8*	bp;
 
 	switch(texFmt) {
 	case gdl::I4:

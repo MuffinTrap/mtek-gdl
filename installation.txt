@@ -1,0 +1,83 @@
+Prior to doing the following instructions, you must extract the 'mtek-gdl' folder from the downloaded archive
+into your C:\ drive.
+
+If you're having trouble setting up MTek-GDL, you can ask for help from the Wiibrew Forums right here:
+http://forum.wiibrew.org/
+
+
+To set up the Wii version of MTek-GDL:
+
+    - This is assuming that you already have DevKitPPC already set up and ready to use. If you haven't yet, get
+      it from this website: http://devkitpro.org/
+      When installing, have everything unchecked but have Minimal System, devkitPPC and Programmer's Notepad as
+      those are all you need to develop software for the Nintendo Wii. Complete the installation and make sure
+      that all packages were downloaded and installed successfully (no download/extraction errors).
+
+    - Since Programmer's Notepad is a bit clunky, it is recommended to use CodeBlocks as your main IDE which you
+      can get here: http://www.codeblocks.org/
+      Once installed, apply the included user templates from the included 'codeblocks templates' folder into
+      your CodeBlocks application data folder. Installing the templates are detailed within the readme file
+      inside the templates folder.
+
+    - If for some reason you prefer to use Programmer's Notepad, you may want to download the latest version of
+      it here as well: http://www.pnotepad.org/
+      Pick the portable version and simply copy the program files over the existing one but make sure you backup
+      'UserTools.xml' inside the settings folder as that contains pre-configured hotkeys for compiling and running
+      your programs through a makefile.
+
+    - Install the MTek-GDL Wii library and its dependencies by running install.bat inside the mtek-gdl folder then
+      follow the on-screen instructions.
+
+    - Once the dependencies and the library itself have been compiled and installed, open the project file of any
+      of the included Wii examples with Programmer's Notepad (can either be the old included version or the most
+      recent version) and try to compile to see whether or not the library and its dependencies were installed
+      properly.
+
+    - To be able to run Wii programs on your Wii directly from your PC, you must set a WIILOAD environment variable
+      with the IP address of your Wii as its value so you can use wiiload to upload and run your programs into your
+      console.
+
+    To add/modify environment variables in Windows:
+
+        - Head to System Properties by either pressing Winkey + Break or right click My Computer and click Properties.
+          In Windows Vista and onwards, click on Advanced System Settings at the left of the System window.
+
+        - Click on the Advanced tab then click the Environment Variables button.
+
+        - In the User Variables list, click on New then enter WIILOAD as the Variable name and tcp:x.x.x.x where
+          x.x.x.x is the IP address of your Wii (determine it in the Homebrew Channel by pressing the Home button on
+          your Wiimote) as the Variable value.
+
+          For convenience reasons, you may want to reserve a specific IP address for your Wii through your router
+          settings so that you don't have to change the WIILOAD variable every time your Wii is given a different
+          IP address. However, this won't be covered in this document but you can Google around for instructions on
+          how to do it.
+
+    - If you managed to compile and run one of the included examples with no problem, have fun!
+
+
+To create a PC or Wii project with MTek-GDL (CodeBlocks method, most recommended):
+
+    - This is much simpler than the Programmer's Notepad or makefile method as the included templates for CodeBlocks
+      has pretty much everything set for you. Just simply click Create a New Project in the start-up screen, head to
+      the User Templates list and select the project you'd like to make.
+
+    - If you created a Wii project with a name other than the one specified by default, you'll need to bring up the
+      Build Options dialog then click Ok to fix an incorrect PROJECT_NAME bug with CodeBlocks when you try to compile
+      and run your project.
+
+    - If your dealing with cross-platform projects, you may want to take into account the presence of the PLATFORM_PC
+      or PLATFORM_WII macros so your code can know which target platform it is being compiled for.
+
+
+To create a Wii project with MTek-GDL (old Programmer's Notepad or makefile method, probably outdated):
+
+    - If you wish to create a new project with Programmer's Notepad (or anything that uses makefiles),
+      simply copy the files inside '/mtek-gdl/examples/wii/template' to your new project's folder and
+      create your Programmer's Notepad project and main.cpp files inside it as well but make sure that
+      the path to your project folder does not contain any spaces as it is a limitation with most
+      versions of make.
+
+    - In your main.cpp file, add the following line at the top of it:
+      #include <mgdl-wii.cpp>
+      And simply write your additional header files right after it (such as wpad.h).

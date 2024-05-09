@@ -1,5 +1,7 @@
 LIBOGC_INC	:= $(DEVKITPRO)/libogc/include
 LIBOGC_LIB	:= $(DEVKITPRO)/libogc/lib/wii
+PORTLIBS_INC	:=	$(DEVKITPRO)/portlibs/ppc/include
+PORTLIBS_LIB	:=	$(DEVKITPRO)/portlibs/ppc/lib
 
 SUBDIRS		:= `ls | egrep -v '^(\.svn)$$'`
 

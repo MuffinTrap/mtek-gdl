@@ -7,6 +7,10 @@
 #include <stdarg.h>
 #include <malloc.h>
 #include <gccore.h>
+// muffintrap: Added <cstring> and <stdlib.h> to get strlen and aligned_alloc
+// for version 0.100.0-muffintrap
+#include <cstring>
+#include <stdlib.h>
 
 #include "mgdl-wii/mgdl-types.h"
 #include "mgdl-wii/mgdl-globals.h"
@@ -14,7 +18,6 @@
 #include "mgdl-wii/mgdl-main.h"
 #include "mgdl-wii/mgdl-image.h"
 #include "mgdl-wii/mgdl-font.h"
-
 
 // Fixed-sized font class functions
 
@@ -24,7 +27,7 @@ gdl::FFont::FFont() {
 	ch=0;
 	vList=NULL;
 	tList=NULL;
-
+	firstIndex=0;
 }
 
 gdl::FFont::~FFont() {
@@ -37,7 +40,8 @@ gdl::FFont::~FFont() {
 
 }
 
-void gdl::FFont::BindSheet(gdl::Image& image, short charw, short charh) {
+// muffintrap: Added parameter firstCharacter
+void gdl::FFont::BindSheet(gdl::Image& image, short charw, short charh,  char firstCharacter) {
 
 	short	cx,cy;
 	short	tx,ty;
@@ -46,14 +50,21 @@ void gdl::FFont::BindSheet(gdl::Image& image, short charw, short charh) {
 	charTexObj = image.Texture.TexObj();
 	cw = charw;
 	ch = charh;
-
+	firstIndex = firstCharacter;
+	short charactersPerRow = image.Texture.TXsize()/ charw;
+	short rows = image.Texture.TYsize() / charh;
+	short characterAmount = charactersPerRow * rows;
 
 	if (gdl::ConsoleActive)
-		printf("gdl: Binding a character font sheet... ");
+	{
+		// This breaks all future printfs! :D
+		printf("gdl: Binding a character font sheet. CPR:%d, R:%d, A:%d\n",
+	charactersPerRow, rows, characterAmount);
+	}
 
-
+	//  muffintrap: Changed memalign() to aligned_alloc() for version 0.100.0-muffintrap
 	if (vList == NULL)
-		vList = memalign(32, sizeof(gdl::wii::VERT2s16)*4);
+		vList = aligned_alloc(32, sizeof(gdl::wii::VERT2s16)*4);
 
 	((gdl::wii::VERT2s16*)vList)[0].x = 0;		((gdl::wii::VERT2s16*)vList)[0].y = 0;
 	((gdl::wii::VERT2s16*)vList)[1].x = charw;	((gdl::wii::VERT2s16*)vList)[1].y = 0;
@@ -62,37 +73,40 @@ void gdl::FFont::BindSheet(gdl::Image& image, short charw, short charh) {
 
 	DCFlushRange(vList, sizeof(gdl::wii::VERT2s16)*4);
 
-
 	if (tList == NULL)
-		tList = memalign(32, (sizeof(gdl::wii::TEX2f32)*4)*256);
+		tList = aligned_alloc(32, (sizeof(gdl::wii::TEX2f32)*4)*(characterAmount));
 
-	for(cy=0; cy<16; cy++) {
-		for(cx=0; cx<16; cx++) {
+	for(cy=0; cy<rows; cy++) {
+		for(cx=0; cx<charactersPerRow; cx++) {
 
+			// Coordinates to source image
 			tx = charw*cx;
 			ty = charh*cy;
-			tc = 4*(cx+(16*cy));
+
+			// Texture coordinate array index
+			tc = 4*(cx+(charactersPerRow*cy));
 
 			// Upper-left
-			((gdl::wii::TEX2f32*)tList)[tc].u	= ((f32)tx+0.01f)/image.Texture.TXsize();
-			((gdl::wii::TEX2f32*)tList)[tc].v	= ((f32)ty+0.01f)/image.Texture.TYsize();
+			((gdl::wii::TEX2f32*)tList)[tc].u	= ((f32)tx)/image.Texture.TXsize();
+			((gdl::wii::TEX2f32*)tList)[tc].v	= ((f32)ty)/image.Texture.TYsize();
 
 			// Upper-right
-			((gdl::wii::TEX2f32*)tList)[tc+1].u	= ((f32)(tx+charw)-0.4f)/image.Texture.TXsize();
-			((gdl::wii::TEX2f32*)tList)[tc+1].v	= ((f32)ty+0.01f)/image.Texture.TYsize();
+			// ((gdl::wii::TEX2f32*)tList)[tc+1].u	= ((f32)(tx+charw)-0.4f)/image.Texture.TXsize();
+			((gdl::wii::TEX2f32*)tList)[tc+1].u	= ((f32)(tx+charw))/image.Texture.TXsize();
+			((gdl::wii::TEX2f32*)tList)[tc+1].v	= ((f32)ty)/image.Texture.TYsize();
 
 			// Lower-left
-			((gdl::wii::TEX2f32*)tList)[tc+2].u	= ((f32)(tx+charw)-0.4f)/image.Texture.TXsize();
+			// ((gdl::wii::TEX2f32*)tList)[tc+2].u	= ((f32)(tx+charw)-0.4f)/image.Texture.TXsize();
+			((gdl::wii::TEX2f32*)tList)[tc+2].u	= ((f32)(tx+charw))/image.Texture.TXsize();
 			((gdl::wii::TEX2f32*)tList)[tc+2].v	= (f32)(ty+charh)/image.Texture.TYsize();
 
 			// Lower-right
-			((gdl::wii::TEX2f32*)tList)[tc+3].u	= ((f32)tx+0.01f)/image.Texture.TXsize();
+			((gdl::wii::TEX2f32*)tList)[tc+3].u	= ((f32)tx)/image.Texture.TXsize();
 			((gdl::wii::TEX2f32*)tList)[tc+3].v	= (f32)(ty+charh)/image.Texture.TYsize();
-
 		}
 	}
 
-	DCFlushRange(tList, (sizeof(gdl::wii::TEX2f32)*4)*256);
+	DCFlushRange(tList, (sizeof(gdl::wii::TEX2f32)*4)*characterAmount);
 
 
 	if (gdl::ConsoleActive)
@@ -147,7 +161,7 @@ void gdl::FFont::DrawText(const char *text, short x, short y, float scale, u32 c
 
 	for(c=0; text[c] != 0x00; c++) {
 
-		tc = 4*((u_char*)text)[c];
+		tc = 4*(((u_char*)text)[c] - firstIndex);
 
 		GX_Begin(GX_QUADS, GX_VTXFMT0, 4);
 
@@ -188,243 +202,21 @@ void gdl::FFont::Printf(short x, short y, float scale, u32 col, const char* form
 
 }
 
-
-// Variable-sized font class routines
-
-gdl::Font::Font() {
-
-	vList = NULL;
-	tList = NULL;
-	memset(charWidth, 0x00, 256);
-
+short gdl::FFont::GetHeight()
+{
+	return ch;
 }
 
-gdl::Font::~Font() {
-
-	if (vList != NULL)
-		free(vList);
-
-	if (tList != NULL)
-		free(tList);
-
+short gdl::FFont::GetWidth()
+{
+	return cw;
 }
 
-bool gdl::Font::LoadFont(const char *fileName) {
-
-	if (gdl::ConsoleActive)
-		printf("gdl: Loading font file... ");
-
-
-	// Load font file
-	FILE *fp;
-	if (!(fp = fopen(fileName, "rb"))) {
-		gdl::CallErrorCallback("Font file %s not found", fileName);
-		return(false);
-	}
-
-	u_char fontData[2305];
-
-	if (fread(fontData, 1, 2305, fp) != 2305) {
-		gdl::CallErrorCallback("Font file %s might be invalid or corrupt", fileName);
-		return(false);
-	}
-
-	fclose(fp);
-
-
-	// Parse the font data
-    if (!gdl::Font::LoadFontMem(fontData)) {
-		gdl::CallErrorCallback("Font file %s might be invalid or corrupt", fileName);
-		return(false);
-    }
-
-	if (gdl::ConsoleActive)
-		printf("Ok!\n");
-
-	return(true);
-
+short gdl::FFont::GetWidth(const char* str)
+{
+	return strlen(str) * cw;
 }
 
-bool gdl::Font::LoadFontMem(u_char *fontData) {
-
-	memcpy(gdl::Font::charWidth, &fontData[2048], 256);
-	gdl::Font::charHeight = fontData[2304];
-
-	// Create vertex arrays for drawing the characters
-	if (gdl::Font::vList == NULL)
-		gdl::Font::vList = memalign(32, (sizeof(gdl::wii::VERT2s16)*4)*256);
-
-	if (gdl::Font::tList == NULL)
-		gdl::Font::tList = memalign(32, (sizeof(gdl::wii::TEX2f32)*4)*256);
-
-	gdl::wii::VERT2s16	*verts = (gdl::wii::VERT2s16*)gdl::Font::vList;
-	gdl::wii::TEX2f32	*tcoords = (gdl::wii::TEX2f32*)gdl::Font::tList;
-
-	for(int c=0; c<256; c++) {
-
-		int cc=4*c;
-		short tx=8*(c%16);
-		short ty=8*(c/16);
-
-		verts[cc].x		= 0;						verts[cc].y		= 0;
-		verts[cc+1].x	= gdl::Font::charWidth[c];	verts[cc+1].y	= 0;
-		verts[cc+2].x	= gdl::Font::charWidth[c];	verts[cc+2].y	= gdl::Font::charHeight;
-		verts[cc+3].x	= 0;						verts[cc+3].y	= gdl::Font::charHeight;
-
-		tcoords[cc].u	= ((float)tx/128);
-		tcoords[cc].v	= ((float)ty/128);
-		tcoords[cc+1].u	= ((float)(tx+gdl::Font::charWidth[c])/128);
-		tcoords[cc+1].v	= ((float)ty/128);
-		tcoords[cc+2].u	= ((float)(tx+gdl::Font::charWidth[c])/128);
-		tcoords[cc+2].v	= ((float)(ty+gdl::Font::charHeight)/128);
-		tcoords[cc+3].u	= ((float)tx/128);
-		tcoords[cc+3].v	= ((float)(ty+gdl::Font::charHeight)/128);
-
-	}
-
-	DCFlushRange(gdl::Font::vList, (sizeof(gdl::wii::VERT2s16)*4)*256);
-	DCFlushRange(gdl::Font::tList, (sizeof(gdl::wii::TEX2f32)*4)*256);
-
-
-	// Convert font data into a character sheet
-	gdl::Font::charSheet.Create(128, 128, gdl::Nearest, gdl::I4);
-
-	u_char charSheet[128][128];
-	for(short cy=0; cy<16; cy++) {
-		for(short cx=0; cx<16; cx++) {
-
-			for(short py=0; py<8; py++) {
-				u_char col = fontData[(8*(cx+(16*cy)))+py];
-				for(short px=0; px<8; px++) {
-
-
-					if (col & (1<<(7-px)))
-						charSheet[(8*cy)+py][(8*cx)+px] = 255;
-					else
-						charSheet[(8*cy)+py][(8*cx)+px] = 0;
-
-				}
-			}
-
-		}
-	}
-
-	gdl::Font::charSheet.ConvertRawImage(128, 128, (void*)charSheet, gdl::Gray);
-
-	return(true);
-
-}
-
-int gdl::Font::CalcStrLen(const char *text) {
-
-	int slen=0;
-	for(short c=0; c<(short)strlen(text); c++) {
-		slen += charWidth[(int)text[c]];
-	}
-
-	return(slen-1);
-
-}
-
-int gdl::Font::CalcStrLen(const char *text, int len) {
-
-	int slen=0;
-	for(short c=0; c<len; c++) {
-		slen += charWidth[(int)text[c]];
-	}
-
-	return(slen-1);
-
-}
-
-void gdl::Font::DrawText(const char *text, short x, short y, float scale, u_int col) {
-
-	float	tx;
-	GXColor textCol;
-	Mtx		tempMatrix;
-
-
-	if (vList == NULL)
-		return;
-
-	if (tList == NULL)
-		return;
-
-
-	if ((x == gdl::Centered) || (x == gdl::PCentered)) {
-		tx = gdl::ScreenCenterX-((gdl::Font::CalcStrLen(text)*scale)/2)+(scale/2);
-	} else {
-		tx = x;
-	}
-
-
-	textCol.r = RED(col);
-	textCol.g = GREEN(col);
-	textCol.b = BLUE(col);
-	textCol.a = ALPHA(col);
-
-	GX_LoadTexObj(gdl::Font::charSheet.TexObj(), GX_TEXMAP0);
-	GX_SetTevOp(GX_TEVSTAGE0, GX_MODULATE);
-
-	GX_ClearVtxDesc();
-	GX_SetVtxDesc(GX_VA_POS, GX_INDEX16);
-	GX_SetVtxDesc(GX_VA_TEX0, GX_INDEX16);
-
-	GX_SetArray(GX_VA_POS, gdl::Font::vList, 2*sizeof(s16));
-	GX_SetArray(GX_VA_TEX0, gdl::Font::tList, 2*sizeof(f32));
-
-	GX_SetChanCtrl(GX_COLOR0A0, GX_DISABLE, GX_SRC_VTX, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
-	GX_SetChanMatColor(GX_COLOR0A0, textCol);
-
-
-	guMtxCopy(gdl::wii::ModelMtx, tempMatrix);
-	guMtxApplyTrans(tempMatrix, tempMatrix, tx, y, 0);
-	guMtxApplyScale(tempMatrix, tempMatrix, scale, scale, 0);
-	GX_LoadPosMtxImm(tempMatrix, GX_PNMTX0);
-
-
-	for(int i=0; text[i]!=0x00; i++) {
-
-		int tc=4*((u_char)text[i]);
-
-		GX_Begin(GX_QUADS, GX_VTXFMT0, 4);
-
-			GX_Position1x16(tc);
-			GX_TexCoord1x16(tc);
-
-			GX_Position1x16(tc+1);
-			GX_TexCoord1x16(tc+1);
-
-			GX_Position1x16(tc+2);
-			GX_TexCoord1x16(tc+2);
-
-			GX_Position1x16(tc+3);
-			GX_TexCoord1x16(tc+3);
-
-		GX_End();
-
-		guMtxApplyTrans(tempMatrix, tempMatrix, gdl::Font::charWidth[(u_char)text[i]], 0, 0);
-		GX_LoadPosMtxImm(tempMatrix, GX_PNMTX0);
-
-	}
-
-	GX_LoadPosMtxImm(gdl::wii::ModelMtx, GX_PNMTX0);
-	GX_SetChanCtrl(GX_COLOR0A0, GX_DISABLE, GX_SRC_VTX, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
-
-}
-
-void gdl::Font::Printf(short x, short y, float scale, u32 col, const char* format, ... ) {
-
-	va_list args;
-	char	buff[256];
-
-	va_start(args, format);
-	vsprintf(buff, format, args);
-	va_end(args);
-
-	gdl::Font::DrawText(buff, x, y, scale, col);
-
-}
-
+// muffintrap: removed Font class from version 0.100.0-muffintrap
 
 #endif // _GDL_WII_FONT

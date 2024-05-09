@@ -1,0 +1,100 @@
+Updated instructions for CodeBlocks 20.03 in Windows 10 
+by muffintrap.
+
+Read the Readme.txt file first. This file has more detailed instructions that are in addition to those in that file.
+
+0. Environment variables.
+
+To make it easier to use the template, add DEVKITPRO to your path in Windows / Linux 
+
+Windows 10:
+Type "Environment variable" into Windows search
+Open "Edit the system environment variables"
+Select "Advanced" Tab
+Press "Environment Variables..." on the bottom right
+Select "New..." under "User variables for ..."
+Input:
+	Variable name: DEVKITPRO
+	Variable value: path to devkitPro/ folder 
+
+Note that MSYS2 and the compiler expect paths with forward slashes.
+So if your devkitPro/ is for example in:
+D:\Dev\Wii\devkitPro
+then you need to make the environment variable:
+/d/Dev/Wii/devkitPro
+
+You can now use the variable by surrounding it with percentage marks, like this
+%DEVKITPRO%\...
+
+If you use the Dolphin emulator, it is a good idea to add it too so that you can launch your build in Dolphin from CodeBlocks:
+
+Follow the above steps again, but instead of creating a new variable, select the "Path" and click "Edit..."
+
+In the Edit environment variable window, click on "New" and then "Browse"
+Navigate to the Dolphin installation directory, select the directory that has the Dolphin.exe in it.
+
+Click "OK", and "OK"
+
+
+1. Adding the compiler to Codeblocks
+
+template-win/share/codeblocks/compilers/options_devkit...
+
+This file adds a new compiler configuration to Codeblocks
+Add it to %APPDATA%/CodeBlocks/share/codeblocks/compilers/
+
+The compiler should now appear in the list. Go to 
+Settings -> Compiler Settings / Global compiler settings / Selected compiler:
+
+Check that the compiler directory is correct
+Set the compiler as default if you just use CodeBlocks for Wii projects.
+
+
+2. Project templates
+
+Place the UserTemplates/DevkitPPC-Wii Project with MTek-GDL to %APPDATA%/codeblocks/UserTemplates
+
+
+3. Finding the CB Share program, that updates CodeBlocks configs
+
+If you don't have the CB Share Config program, you need to reinstall Codeblocks and select to install it.
+
+In windows it is called cb_share_config.exe
+
+
+4. Starting a new project
+
+Open CodeBlocks
+Select "Create a new project"
+In the "New from template" dialog:
+select User templates from the left side
+Select DevkitPPC-Wii Project with MTek-GDL
+
+5. Checking the build options
+
+When the project is created, you should have a window on the left side of CodeBlocks window, with tabs: Projects/Files/Symbols/Resources
+
+In Projects tab you should have
+Workspace
+- <project name>
+  - Sources/
+    - main.cpp
+	
+Right click on the <project name>, select Build Options...
+In the Project build options window, the Release config is selected.
+Select <project name> above it to access global build settings for the project.
+Select the Pre/post build steps tab.
+In the Post-build steps text field you have. 
+"wiiload $(PROJECT_NAME).dol"
+
+Remove this if you don't want to send the build to Wii every time.
+
+Change it to 
+"Dolphin $(PROJECT_NAME).dol" to run it in Dolphin.
+
+6. MY EYES!
+
+CodeBlocks does not have any dark themes and only the editor theme can be changed.
+Here is a link to the dark Dracula theme: https://draculatheme.com/codeblocks
+
+CodeBlocks default UI is very cluttered. The Extra tools can be hidden by right clicking them and deselecting.
