@@ -1,6 +1,6 @@
-#! /bin/bash
+#!/bin/bash
 
-cls
+clear
 echo "Install Mtek and libraries"
 
 export DEVKITPRO=/opt/devkitpro
