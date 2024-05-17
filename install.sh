@@ -9,7 +9,8 @@ export DEVKITPPC=/opt/devkitpro/devkitPPC
 pDEVKITPRO=/opt/devkitpro
 pDEVKITPPC=/opt/devkitpro/devkitPPC
 
-cd libs/wii
+cd 3rdparty
+cd libs-wii
 make 
 make install DEVKITPRO=$pDEVKITPRO DEVKITPPC=$pDEVKITPPC
 make clean
