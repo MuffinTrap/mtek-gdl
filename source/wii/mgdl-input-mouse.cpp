@@ -25,10 +25,12 @@ extern bool UsbInitialized;
 namespace Mouse {
 
 	static lwp_t MsThread = 0;
-	static MouseStateStruct mouseStats = { 0 };
+	static MouseStateStruct mouseStats = { };
 
 	static bool initialized = false;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 	static void* MsThreadFunc(void *args) {
 
 		MouseReconnect:
@@ -118,6 +120,7 @@ bool gdl::Mouse::Init(ConnectCallbackFunc* callback) {
 
 }
 
+#pragma GCC diagnostic pop
 gdl::Mouse::MouseStateStruct gdl::Mouse::GetStats() {
 
     return(gdl::Mouse::mouseStats);

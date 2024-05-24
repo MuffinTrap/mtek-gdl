@@ -359,8 +359,12 @@ namespace Keyboard {
             Muffintrap Changed function definition to fix a
             compilation error.
             Changed second parameter type from 'int' to 'void*'
+            Added ignore for unused-parameter warning
         */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
         static ssize_t stdinRead(struct _reent *r, void* unused, char *ptr, size_t len) {
+
 
             // Parse keyboard presses and output them to stdin
             int charsRead = 0;
@@ -401,7 +405,11 @@ namespace Keyboard {
             return(charsRead);
 
         }
+#pragma GCC diagnostic pop
 
+// muffintrap added ignore for missing-field-initializers for version 0.100.1-muffintrap
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
         // Device table (for mounting to stdin)
         static const devoptab_t devTable = {
             "stdin",
@@ -417,7 +425,7 @@ namespace Keyboard {
             NULL,
             NULL
         };
-
+#pragma GCC diagnostic pop
         // Init function, sets stdin callbacks for the keyboard driver to input characters into it
         void Init() {
 
@@ -437,6 +445,9 @@ namespace Keyboard {
         static int ScancodeDown = 0;
         static int LastScancodeDown = 0;
 
+        // muffintrap added ignore for unused-parameter
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
         void *TmThreadFunc(void *arg) {
 
             int typeCount = 0;
@@ -474,6 +485,7 @@ namespace Keyboard {
             return(NULL);
 
         }
+#pragma GCC diagnostic pop
 
 
     }
@@ -656,6 +668,9 @@ namespace Keyboard {
 	}
 
 
+        // muffintrap added ignore for unused-parameter
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 	// Keyboard handler thread
 	static void* KbThreadFunc(void *args) {
 
@@ -724,7 +739,7 @@ namespace Keyboard {
 		return(NULL);
 
 	}
-
+#pragma GCC diagnostic pop
 
 }
 

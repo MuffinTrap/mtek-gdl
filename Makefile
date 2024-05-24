@@ -21,7 +21,7 @@ PORTLIBS_INC	:=	$(DEVKITPRO)/portlibs/ppc/include
 
 INCLUDE	:= -Iinclude -I$(LIBOGC_INC) -I$(PORTLIBS_INC)
 MACHDEP := -mrvl -mcpu=750 -meabi -mhard-float
-CFLAGS  := -O3 -Werror -Wall -Wextra -fsanitize=undefined,address $(MACHDEP) $(INCLUDE)
+CFLAGS  := -O3 -Werror -Wall -Wextra -fsanitize=undefined -fsanitize=address $(MACHDEP) $(INCLUDE)
 
 LIB 	:= mgdl
 CFILES	:= $(wildcard source/wii/*.cpp)

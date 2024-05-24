@@ -147,7 +147,6 @@ class Music
 	public:
 		Music();
 		~Music();
-		bool LoadFromFile(const char* filename);
 		bool LoadFromBuffer(const uint8_t* buffer, size_t size);
 		bool PlayMusic(bool loop);
 		float GetElapsed();

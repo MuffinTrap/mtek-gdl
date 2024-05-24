@@ -52,6 +52,8 @@ namespace gdl {
 		Added these parameters, but no idea
 		what should be done with them.
 	*/
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 	static void _resetCallback(u32 irq, void* ctx) {
 
 		// Reset button exit (exit to menu)
@@ -64,6 +66,7 @@ namespace gdl {
 		}
 
 	}
+#pragma GCC diagnostic pop
 
 	static u64 _timer_getCpuCycles() {
 

@@ -486,18 +486,13 @@ void gdl::Image::_PrepareImage(short xRes, short yRes) {
 
 }
 
+// Changes to version 0.100.1-muffintrap.
+// Moved variable initialization just before use
+// Added volatile to color_type since GCC thought it could be 'clobbered'
 bool gdl::Image::_ProcessImage(png_structp png_ptr, u_int minFilt, u_int magFilt, u_int format, bool mipmapped, short maxMips) {
 
-	png_infop	info_ptr;
-	png_byte	color_type;
-	png_byte	bit_depth;
-	png_byte	intr_type;
-	short		width,height;
-	int			jmpval;
-
-
 	// Create PNG info context
-	info_ptr = png_create_info_struct(png_ptr);
+	png_infop info_ptr = png_create_info_struct(png_ptr);
 
 	if (!info_ptr) {
 		gdl::CallErrorCallback("Could not create info struct when loading image");
@@ -507,7 +502,7 @@ bool gdl::Image::_ProcessImage(png_structp png_ptr, u_int minFilt, u_int magFilt
 
 
 	// Get function jump data for libpng
-	jmpval = setjmp(png_jmpbuf(png_ptr));
+	int jmpval = setjmp(png_jmpbuf(png_ptr));
 	if (jmpval) {
 		gdl::CallErrorCallback("setjmp() call error %d", jmpval);
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
@@ -520,11 +515,7 @@ bool gdl::Image::_ProcessImage(png_structp png_ptr, u_int minFilt, u_int magFilt
 	png_set_sig_bytes(png_ptr, 8);
 	png_read_info(png_ptr, info_ptr);
 
-	width		= png_get_image_width(png_ptr, info_ptr);
-	height		= png_get_image_height(png_ptr, info_ptr);
-	color_type	= png_get_color_type(png_ptr, info_ptr);
-	bit_depth	= png_get_bit_depth(png_ptr, info_ptr);
-	intr_type	= png_get_interlace_type(png_ptr, info_ptr);
+	png_byte intr_type	= png_get_interlace_type(png_ptr, info_ptr);
 
 	if (intr_type != PNG_INTERLACE_NONE) {
 		gdl::CallErrorCallback("Interlaced image files are not supported");
@@ -532,15 +523,19 @@ bool gdl::Image::_ProcessImage(png_structp png_ptr, u_int minFilt, u_int magFilt
 		return(false);
 	}
 
+	short width			= png_get_image_width(png_ptr, info_ptr);
+	short height		= png_get_image_height(png_ptr, info_ptr);
 	if ((width > 1024) || (height > 1024)) {
 		gdl::CallErrorCallback("Resolution of image file too high");
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 		return(false);
 	}
 
+	png_byte bit_depth	= png_get_bit_depth(png_ptr, info_ptr);
 	if (bit_depth == 16)
 		png_set_strip_16(png_ptr);
 
+	volatile png_byte color_type	= png_get_color_type(png_ptr, info_ptr);
 	if (color_type == PNG_COLOR_TYPE_PALETTE) {
 
 		png_set_palette_to_rgb(png_ptr);

@@ -243,6 +243,8 @@ void gdl::Sound::Play(float pitch, float volume) {
 
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 void gdl::Sound::Play2D(float pitch, float volume, float x, float y) {
 
 	if (sData == NULL)
@@ -268,6 +270,7 @@ void gdl::Sound::Play2D(float pitch, float volume, float x, float y) {
 
 }
 
+#pragma GCC diagnostic pop
 
 // Sound system functions
 
@@ -306,10 +309,6 @@ gdl::Music::~Music()
 	}
 }
 
-bool gdl::Music::LoadFromFile(const char* filename)
-{
-	return false;
-}
 bool gdl::Music::LoadFromBuffer(const uint8_t* buffer, size_t size)
 {
 	bufferSize = size;

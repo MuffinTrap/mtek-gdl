@@ -86,7 +86,7 @@ bool gdl::SpriteSet::LoadSprites(short spritesPerRow, short spriteHeight, Image 
 	sheetList[0] = spriteSheet;
 
 
-	TSM_entry entry = {0};
+	TSM_entry entry = { };
 	// NOTE! Sheet numbering starts from 1
 	entry.sheetnum = 1;
 
@@ -201,7 +201,7 @@ bool gdl::SpriteSet::LoadSprites(const char *fileName, const char *sheetsdir, u_
 		Change 13.4.2024
 		muffintrap: Changed to use function LoadTMS_entry()
 	*/
-	TSM_entry entry = {0};
+	TSM_entry entry = {};
 
 	for(i=0; i<TSM_header.numSprites; i++) {
 
