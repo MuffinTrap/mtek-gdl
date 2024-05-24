@@ -3,12 +3,14 @@
 clear
 echo "Install Mtek and libraries"
 
-if [! -v DEVKITPRO]; then
+if [[ ! (-v DEVKITPRO) ]];
+then
 	echo "Enviroment variable DEVKITPRO is not set. Set it and/or use command sudo -E ./install.sh to use user's enviroment variables"
 	exit 1
 fi
 
-if [! -v DEVKITPPC]; then
+if [[ ! -v DEVKITPPC ]];
+then
 	echo "Enviroment variable DEVKITPPC is not set. Set it and/or use command sudo -E ./install.sh to use user's enviroment variables"
 	exit 1
 fi

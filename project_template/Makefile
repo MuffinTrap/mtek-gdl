@@ -33,7 +33,7 @@ INCLUDES	:=	include
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-CFLAGS	= -O3 -Wall -DPLATFORM_WII $(MACHDEP) $(INCLUDE)
+CFLAGS	= -O3 -Werror -Wall -Wextra -fsanitize=address -DPLATFORM_WII $(MACHDEP) $(INCLUDE)
 CXXFLAGS	= -Wwrite-strings $(CFLAGS)
 
 LDFLAGS	=	$(MACHDEP) -Wl,-Map,$(notdir $@).map
