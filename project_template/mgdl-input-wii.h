@@ -14,6 +14,7 @@ namespace gdl
         float nunchukJoystickDeadzone;
         float cursorX;
         float cursorY;
+        float roll;
     } WiimoteState;
 
     // TODO: Replace with glm::vec2
@@ -41,6 +42,9 @@ namespace gdl
 
         gdl::vec2 GetCursorPosition();
         gdl::vec2 GetNunchukJoystickDirection(float deadzone);
+
+        // In rad -PI...PI
+        float GetRoll();
     }
 }
 #endif

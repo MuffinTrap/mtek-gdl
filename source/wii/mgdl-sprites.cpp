@@ -15,6 +15,7 @@
 #include "mgdl-wii/mgdl-main.h"
 #include "mgdl-wii/mgdl-image.h"
 #include "mgdl-wii/mgdl-sprites.h"
+#include "mgdl-wii/mgdl-assert.h"
 
 
 // External declarations to be able to access the image module's put routines
@@ -65,26 +66,20 @@ gdl::SpriteSet::~SpriteSet() {
 
 }
 
-gdl::SpriteSetConfig gdl::SpriteSet::CreateConfig(short tilesPerRow, short tileWidth, short tileHeight)
-{
-	SpriteSetConfig cfg = {0};
-	 cfg.tilesPerRow= tilesPerRow;
-	 cfg.tileWidth= tileWidth;
-	 cfg.tileHeight= tileHeight;
-	return cfg;
-}
 /*
 	Change 13.4.2024
 	muffintrap: added new function that loads from image and configuration
 */
-bool gdl::SpriteSet::LoadSprites(SpriteSetConfig &config, Image *spriteSheet)
+bool gdl::SpriteSet::LoadSprites(short spritesPerRow, short spriteHeight, Image *spriteSheet)
 {
-	if (spriteSheet == NULL) 
-	{
-		return false;
-	}
-	int rows = spriteSheet->Ysize() / config.tilesPerRow;
-	numSprites	= config.tilesPerRow * rows;
+	gdl_assert(spriteSheet != NULL, "Null pointer to sprite sheet\n");
+	gdl_assert(spritesPerRow > 0 && spriteHeight > 0,"Invalid dimensions given, per row: %d height:%d\n", spritesPerRow, spriteHeight);
+	gdl_assert(spriteSheet->Xsize() % spritesPerRow == 0, "Sprite sheet width does not align with given spritesPerRow. Modulo was: %d", spriteSheet->Xsize()%spritesPerRow);
+	gdl_assert(spriteSheet->Ysize() % spriteHeight == 0, "Sprite sheet height does not align with given spriteHeight. Modulo was: %d", spriteSheet->Ysize()%spriteHeight);
+
+	short spriteWidth = spriteSheet->Xsize() / spritesPerRow;
+	int rows = spriteSheet->Ysize() / spriteHeight;
+	numSprites	= spritesPerRow * rows;
 	numSheets	= 1;
 	spriteList	= (Sprite*)calloc(numSprites, sizeof(Sprite));
 	sheetList	= (Image**)calloc(1, sizeof(Image*));
@@ -97,16 +92,16 @@ bool gdl::SpriteSet::LoadSprites(SpriteSetConfig &config, Image *spriteSheet)
 
 	for (short i = 0; i < numSprites; i++)
 	{
-		short column = i % config.tilesPerRow;
-		short row = i / config.tilesPerRow;
+		short column = i % spritesPerRow;
+		short row = i / spritesPerRow;
 
-		entry.tx1 = column * config.tileWidth;
-		entry.tx2 = entry.tx1 + config.tileWidth-1;
-		entry.ty1 = row * config.tileHeight;
-		entry.ty2 = entry.ty1 + config.tileHeight-1;
+		entry.tx1 = column * spriteWidth;
+		entry.tx2 = entry.tx1 + spriteWidth;
+		entry.ty1 = row * spriteHeight;
+		entry.ty2 = entry.ty1 + spriteHeight;
 		// Pivot point?
-		entry.px = entry.tx1 + config.tileWidth/2;
-		entry.py = entry.ty1 + config.tileHeight/2;
+		entry.px = entry.tx1 + spriteWidth/2;
+		entry.py = entry.ty1 + spriteHeight/2;
 
 		LoadTSM_Entry(entry, i);
 	}
@@ -117,7 +112,7 @@ bool gdl::SpriteSet::LoadSprites(SpriteSetConfig &config, Image *spriteSheet)
 	// Clear sheetList since the Image is freed somewhere else
 	sheetList = NULL;
 
-	return(true);
+	return true;
 }
 
 bool gdl::SpriteSet::LoadSprites(const char *fileName, const char *sheetsdir, u_int filtermode, u_int format) {
@@ -238,8 +233,8 @@ bool gdl::SpriteSet::LoadSprites(const char *fileName, const char *sheetsdir, u_
 void gdl::SpriteSet::LoadTSM_Entry(TSM_entry &entry, short index)
 {
 		// Calculate sprite width and height and set the sprite's center coords
-		spriteList[index].w = (entry.tx2 - entry.tx1) + 1;
-		spriteList[index].h = (entry.ty2 - entry.ty1) + 1;
+		spriteList[index].w = (entry.tx2 - entry.tx1);
+		spriteList[index].h = (entry.ty2 - entry.ty1);
 		spriteList[index].cx = entry.px;
 		spriteList[index].cy = entry.py;
 
@@ -261,13 +256,13 @@ void gdl::SpriteSet::LoadTSM_Entry(TSM_entry &entry, short index)
 		spriteList[index].tList = (wii::TEX2f32*)aligned_alloc(32, sizeof(wii::TEX2f32)*4);
 		short tWidth = sheetList[entry.sheetnum-1]->Texture.TXsize();
 		short tHeight = sheetList[entry.sheetnum-1]->Texture.TYsize();
-		spriteList[index].tList[0].u = ((float)entry.tx1+0.01f)	/ tWidth;
-		spriteList[index].tList[0].v = ((float)entry.ty1+0.01f)	/ tHeight;
+		spriteList[index].tList[0].u = ((float)entry.tx1)	/ tWidth;
+		spriteList[index].tList[0].v = ((float)entry.ty1)	/ tHeight;
 		spriteList[index].tList[1].u = (float)entry.tx2			/ tWidth;
-		spriteList[index].tList[1].v = ((float)entry.ty1+0.01f)	/ tHeight;
+		spriteList[index].tList[1].v = ((float)entry.ty1)	/ tHeight;
 		spriteList[index].tList[2].u = (float)entry.tx2			/ tWidth;
 		spriteList[index].tList[2].v = (float)entry.ty2			/ tHeight;
-		spriteList[index].tList[3].u = ((float)entry.tx1+0.01f)	/ tWidth;
+		spriteList[index].tList[3].u = ((float)entry.tx1)	/ tWidth;
 		spriteList[index].tList[3].v = (float)entry.ty2			/ tHeight;
 		DCFlushRange(spriteList[index].tList, sizeof(wii::VERT2s16)*4);
 

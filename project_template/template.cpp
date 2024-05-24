@@ -26,8 +26,8 @@ void Template::Init()
     barb.LoadImageBuffer(barb_png, barb_png_size, gdl::Linear, gdl::RGBA8);
     mel_image.LoadImageBuffer(mel_tiles_png, mel_tiles_png_size, gdl::Nearest, gdl::RGBA8);
     short spritesPerRow = 2;
-    gdl::SpriteSetConfig cfg = mel_sprites.CreateConfig(spritesPerRow, 62,62);
-    mel_sprites.LoadSprites(cfg, &mel_image);
+    short spriteHeight = 64;
+    mel_sprites.LoadSprites(spritesPerRow, spriteHeight, &mel_image);
 
     pointerImage.LoadImageBuffer(pointer_png, pointer_png_size, gdl::Nearest, gdl::RGBA8);
 
@@ -76,10 +76,9 @@ void Template::Draw()
     short top = 32;
     short left = 32;
     DrawMenu(left, top + 120, 120);
-    DrawInputInfo(left, top);
-    DrawTimingInfo(left, gdl::ScreenYres-ibmFont.GetHeight()*4*1.5f, 1.5f);
-
     DrawSprites();
+    DrawTimingInfo(left, gdl::ScreenYres-ibmFont.GetHeight()*4*1.5f, 1.5f);
+    DrawInputInfo(left, top);
 }
 
 static void DrawButtons(short x, short y, short size, gdl::FFont* font)
@@ -189,8 +188,8 @@ void Template::DrawSprites()
 void Template::DrawTimingInfo(int x, int y, float scale)
 {
     u64 now = gettime();
-    float temp=ticks_to_millisecs(now - programStart);
-    double deltaTime = (double)(now - deltaTimeStart) / (double)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
+    elapsedMS = ticks_to_millisecs(now - programStart);
+    deltaTime = (float)(now - deltaTimeStart) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
     deltaTimeStart = now;
     float ystep = ibmFont.GetHeight()*scale;
     ibmFont.Printf(x+4, y + ystep * 0+4, scale, gdl::Color::Black, "Deltatime %f", deltaTime);
@@ -199,8 +198,8 @@ void Template::DrawTimingInfo(int x, int y, float scale)
     ibmFont.Printf(x+4, y + ystep * 1+4, scale, gdl::Color::Black, "Normalized Deltatime: %f", gdl::Delta);
     ibmFont.Printf(x, y + ystep * 1, scale, gdl::Color::LightRed, "Normalized Deltatime: %f", gdl::Delta);
 
-    ibmFont.Printf(x+4, y + ystep * 2+4, scale, gdl::Color::Black, "Elapsed milliseconds: %f", temp);
-    ibmFont.Printf(x, y + ystep * 2, scale, gdl::Color::LightRed, "Elapsed milliseconds: %f", temp);
+    ibmFont.Printf(x+4, y + ystep * 2+4, scale, gdl::Color::Black, "Elapsed milliseconds: %d", elapsedMS);
+    ibmFont.Printf(x, y + ystep * 2, scale, gdl::Color::LightRed, "Elapsed milliseconds: %d", elapsedMS);
 
     ibmFont.Printf(x+4, y + ystep * 3+4, scale, gdl::Color::Black, "Music elapsed: %f", sampleMusic.GetElapsed());
     ibmFont.Printf(x, y + ystep * 3, scale, gdl::Color::LightRed, "Music elapsed: %f", sampleMusic.GetElapsed());

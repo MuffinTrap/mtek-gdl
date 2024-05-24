@@ -15,7 +15,7 @@ LIBOGC_LIB	:=	$(DEVKITPRO)/libogc/lib/wii
 
 INCLUDE	:= -I../../include -I$(LIBOGC_INC)
 MACHDEP := -mrvl -mcpu=750 -meabi -mhard-float
-CFLAGS  := -O3 -Wall $(MACHDEP) $(INCLUDE)
+CFLAGS  := -O3 -Werror -Wall -Wextra -fsanitize=undefined,address$(MACHDEP) $(INCLUDE)
 
 LIB 	:= mgdl
 CFILES	:= $(wildcard *.cpp)

@@ -11,7 +11,7 @@ All changes made to the original are clearly commented in the code, as required 
 If you use this fork for making a Wii game or demo, I won't be available to give tech support. And naturally, there is no warranty of any kind.
 
 ## Version numbers
-This is now version 0.100.0-muffintrap
+This is now version 0.100.1-muffintrap
 
 ### Future plans
 1. Add support for reading glTF scenes with tinygltf
