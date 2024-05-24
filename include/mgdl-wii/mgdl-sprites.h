@@ -25,19 +25,6 @@ typedef struct {
     GXTexObj		*texObj;	//!< Pointer to associated texture object
 } Sprite;
 
-/*
-    Changed 13.4.2024
-    muffintrap: added struct SpriteSetConfig
-*/
-//! Sprite Set configuration structure
-typedef struct 
-{
-    short   tilesPerRow;
-    short   tileWidth;
-    short   tileHeight;
-}SpriteSetConfig;
-
-
 //! Sprite set handling class
 /*!
  *	Instead of using several gdl::Image objects for handling sprite images, it is recommended to use this gdl::SpriteSet
@@ -84,7 +71,7 @@ public:
 
     /*
         Changed: 13.4.2024
-        muffintrap: added function to load spriteset from image and configuration
+        muffintrap: added function to load spriteset from image
         because RT Engine is quite old and there is no documentation
     */
     //! Loads a sprite set from image and configuration
@@ -92,7 +79,8 @@ public:
      *	\details Loads a TR-Engine format sprite map file and its associated sprite sheets (sprite sheets must
 	 *		be in PNG format in this port of the library).
      *
-     *  \param[in]  configuration   Configuration struct
+     *  \param[in]  spritesPerRow   How many sprites on a row.
+     *  \param[in]  spriteHeight    Height of a sprite in pixels
      *	\param[in]	spriteSheet       Pointer to SpriteSheet
      *	\param[in]	filterMode	Filtering mode (see gdl::TextureFilterModes).
      *	\param[in]	format		Texture format to load sprite sheets as (see gdl::TextureFormatModes).
@@ -100,21 +88,7 @@ public:
      *	\return Non-zero if the sprite set and its associated sprite sheets were loaded successfully. Otherwise
      *		an error occurred (detailed error is printed in console mode).
      */
-    bool	LoadSprites(SpriteSetConfig &config, Image *spriteSheet);
-
-    //! Creates a SpriteSetConfig struct
-    /*!
-     *	\details Creates a spriteSetConfig struct from given parameters
-     *
-     *	\param[in]	tilesPerRow	 How many sprites are on a single row
-     *	\param[in]	tileWidth    Width of a sprite in pixels
-     *	\param[in]	tileHeight   Height of a sprite in pixels
-     *
-     *	\return SpriteSetConfig struct
-     */
-    SpriteSetConfig CreateConfig(short tilesPerRow, short tileWidth, short tileHeight);
-
-
+    bool	LoadSprites(short spritesPerRow, short spriteHeight, Image *spriteSheet);
 
     //! Returns the number of sprites in the currently loaded sprite set.
     /*!

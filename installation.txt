@@ -25,6 +25,10 @@ To set up the Wii version of MTek-GDL:
       'UserTools.xml' inside the settings folder as that contains pre-configured hotkeys for compiling and running
       your programs through a makefile.
 
+    - muffintrap: Added this part since some of the libraries were removed
+      From the pacman install the following package:
+      ppc-png
+
     - Install the MTek-GDL Wii library and its dependencies by running install.bat inside the mtek-gdl folder then
       follow the on-screen instructions.
 

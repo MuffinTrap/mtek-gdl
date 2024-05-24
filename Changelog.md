@@ -1,5 +1,27 @@
 # Changes made by muffintrap
 
+
+### Version 0.100.1-muffintrap
+Fixes and little additions. Breaks SpriteSet API.
+
+#### New files
++ Added gitignore_example.txt to project_template
+
+#### Modifications to library
++ Removed SpriteSetConfig and made LoadSprites to calculate dimensions from sprites per row and sprite height given as parameters.
++ Moved deltatime and elapsed to class variables in template.h. Elapsed time is measured in milliseconds
++ Added GetRoll() to WiiInput. Returns the roll of the wiimote in radians.
++ Modified install.sh: added checks and instruction
++ Renamed makefile.wii to Makefile, since there is no makefile.pc
++ Changed makefile to Makefile in project_template since Linux cares about case
+
+#### Old files
++ Restored Tremor files in 3rdparty/libs-wii/oggplayer.
+
+#### Removals
++ Removed .gitignore from include/mgdl-wii/
++ Removed file install since there is also install.sh
+
 ### Version 0.100.0-muffintrap
 Bringing a lot of changes to the code. Removing things that are no longer needed, are provided by the environment or do not work.
 

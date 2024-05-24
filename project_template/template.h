@@ -14,6 +14,9 @@ class Template
     gdl::Sound blip;
     gdl::MenuCreator menu;
 
+    float deltaTime;
+    int elapsedMS;
+
     public:
         Template();
         void Init();
@@ -25,4 +28,5 @@ class Template
         void DrawInputInfo(int x, int y);
         void DrawTimingInfo(int x, int y, float scale);
         void DrawSprites();
+
 };
