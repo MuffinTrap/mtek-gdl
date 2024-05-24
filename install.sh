@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 clear
 echo "Install Mtek and libraries"
