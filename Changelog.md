@@ -5,7 +5,9 @@
 Fixes and little additions. Breaks SpriteSet API.
 
 #### New files
-+ Added gitignore_example.txt to project_template
++ Renamed project_template to project_example
++ Added simpler project_template
++ Added gitignore_example.txt to project_example and project_template
 
 #### Modifications to library
 + Removed SpriteSetConfig and made LoadSprites to calculate dimensions from sprites per row and sprite height given as parameters.
@@ -14,9 +16,7 @@ Fixes and little additions. Breaks SpriteSet API.
 + Modified install.sh: added checks and instruction
 + Renamed makefile.wii to Makefile, since there is no makefile.pc
 + Changed makefile to Makefile in project_template since Linux cares about case
-
-#### Old files
-+ Restored Tremor files in 3rdparty/libs-wii/oggplayer.
++ Modified installation.txt to have instructions on KDevelop and libraries that need to be installed with pacman
 
 #### Removals
 + Removed .gitignore from include/mgdl-wii/
