@@ -17,7 +17,7 @@ PORTLIBS_INC 	:=	$(DEVKITPRO)/portlibs/ppc/include
 
 INCLUDE	:= -I../../include -I$(LIBOGC_INC) -I$(PORTLIBS_INC)
 MACHDEP := -mrvl -mcpu=750 -meabi -mhard-float
-CFLAGS  := -O3 -Werror -Wall -Wextra -fsanitize=address -fsanitize=undefined $(MACHDEP) $(INCLUDE)
+CFLAGS  := -O3 -Werror -Wall -Wextra $(MACHDEP) $(INCLUDE)
 
 LIB 	:= mgdl
 CFILES	:= $(wildcard *.cpp)

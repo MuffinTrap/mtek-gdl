@@ -33,20 +33,27 @@ int main()
             VIDEO_WaitVSync();
         }
         */
-        while(1)
+        bool gameRunning = true;
+        while(true)
         {
             gdl::WiiInput::StartFrame();
 
             if (gdl::WiiInput::ButtonPress(WPAD_BUTTON_HOME)){
-                break;
+                gameRunning = false;
+                gdl::wii::Exit();
             }
 
-            temp.Update();
+            if (gameRunning)
+            {
+                temp.Update();
+            }
 
             gdl::PrepDisplay();
-            temp.Draw();
+            if (gameRunning)
+            {
+                temp.Draw();
+            }
             gdl::Display();
         }
     }
-    gdl::wii::Exit();
 }

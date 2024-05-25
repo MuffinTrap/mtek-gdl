@@ -34,9 +34,9 @@ float gdl::WiiInput::GetRoll() {
 }
 
 void gdl::WiiInput::Init() {
-	initStatus = WPAD_Init();
+  initStatus = WPAD_Init();
   WPAD_SetDataFormat(WPAD_CHAN_0, WPAD_FMT_BTNS_ACC_IR);
-  mote1 = {0};
+  mote1 = { };
 }
 
 void gdl::WiiInput::StartFrame() {

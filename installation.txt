@@ -19,18 +19,36 @@ To set up the Wii version of MTek-GDL:
       your CodeBlocks application data folder. Installing the templates are detailed within the readme file
       inside the templates folder.
 
+    - Another great choice is KDevelop. It requires no setup and can automatically find all the directories.
+      All you need to do is choose Project > Open / Import project and then select the folder where the
+      Makefile is. Select Custom Makefile project as suggested and you are all set.
+
+    - Eclipse might be possible to get to work. It allows to set your own executables for the Cross GCC
+      compiler. To use enviromment variables you need to write ${VAR} instead of %VAR% or $VAR.
+      On Windows the problem is that the PPC compiler wants forward slashes, but Windows uses backward slashes. So either
+      compiling works or autocomplete works.
+
     - If for some reason you prefer to use Programmer's Notepad, you may want to download the latest version of
       it here as well: http://www.pnotepad.org/
       Pick the portable version and simply copy the program files over the existing one but make sure you backup
       'UserTools.xml' inside the settings folder as that contains pre-configured hotkeys for compiling and running
       your programs through a makefile.
 
-    - muffintrap: Added this part since some of the libraries were removed
-      From the pacman install the following package:
-      ppc-png
+    - From the devkitpro pacman install the following packages
+      ppc-libvorbis
+      ppc-libvorbisidec   < This is the tremor library that the oggplayer in 3rdparty is using
+      ppc-libpng
+
+      On Windows the command is pacman -S library-name
+      On Ubuntu linux the command is dkp-pacman -S library-name
 
     - Install the MTek-GDL Wii library and its dependencies by running install.bat inside the mtek-gdl folder then
       follow the on-screen instructions.
+
+      On linux, run the install.sh script with:
+      sudo -E ./install.sh
+      The -E flag uses the current user's environment variables so make find DevKitPPC and DevkitPro.
+
 
     - Once the dependencies and the library itself have been compiled and installed, open the project file of any
       of the included Wii examples with Programmer's Notepad (can either be the old included version or the most

@@ -33,7 +33,7 @@ INCLUDES	:=	include
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-CFLAGS	= -O3 -Werror -Wall -Wextra -fsanitize=address -DPLATFORM_WII $(MACHDEP) $(INCLUDE)
+CFLAGS	= -O3 -Werror -Wall -Wextra -DPLATFORM_WII $(MACHDEP) $(INCLUDE)
 CXXFLAGS	= -Wwrite-strings $(CFLAGS)
 
 LDFLAGS	=	$(MACHDEP) -Wl,-Map,$(notdir $@).map
@@ -109,7 +109,7 @@ export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib) \
 					-L$(PORTLIBS_LIB)
 
 export OUTPUT	:=	$(CURDIR)/$(TARGET)
-.PHONY: $(BUILD) clean
+.PHONY: $(BUILD) clean all
 
 all: $(BUILD)
 
