@@ -44,7 +44,7 @@ gdl::FFont::~FFont() {
 void gdl::FFont::BindSheet(gdl::Image& image, short charw, short charh,  char firstCharacter) {
 
 	short	cx,cy;
-	short	tx,ty;
+	f32		tx,ty, tx2, ty2;
 	int		tc;
 
 	charTexObj = image.Texture.TexObj();
@@ -76,33 +76,36 @@ void gdl::FFont::BindSheet(gdl::Image& image, short charw, short charh,  char fi
 	if (tList == NULL)
 		tList = aligned_alloc(32, (sizeof(gdl::wii::TEX2f32)*4)*(characterAmount));
 
+	f32 xSize = image.Texture.TXsize();
+	f32 ySize = image.Texture.TYsize();
+
 	for(cy=0; cy<rows; cy++) {
 		for(cx=0; cx<charactersPerRow; cx++) {
 
 			// Coordinates to source image
 			tx = charw*cx;
 			ty = charh*cy;
+			tx2 = (tx + charw) -1;
+			ty2 = (ty + charh) -1;
 
 			// Texture coordinate array index
 			tc = 4*(cx+(charactersPerRow*cy));
 
 			// Upper-left
-			((gdl::wii::TEX2f32*)tList)[tc].u	= ((f32)tx)/image.Texture.TXsize();
-			((gdl::wii::TEX2f32*)tList)[tc].v	= ((f32)ty)/image.Texture.TYsize();
+			((gdl::wii::TEX2f32*)tList)[tc].u	= tx/xSize;
+			((gdl::wii::TEX2f32*)tList)[tc].v	= ty/ySize;
 
 			// Upper-right
-			// ((gdl::wii::TEX2f32*)tList)[tc+1].u	= ((f32)(tx+charw)-0.4f)/image.Texture.TXsize();
-			((gdl::wii::TEX2f32*)tList)[tc+1].u	= ((f32)(tx+charw))/image.Texture.TXsize();
-			((gdl::wii::TEX2f32*)tList)[tc+1].v	= ((f32)ty)/image.Texture.TYsize();
+			((gdl::wii::TEX2f32*)tList)[tc+1].u	= tx2/xSize;
+			((gdl::wii::TEX2f32*)tList)[tc+1].v	= ty/ySize;
 
 			// Lower-left
-			// ((gdl::wii::TEX2f32*)tList)[tc+2].u	= ((f32)(tx+charw)-0.4f)/image.Texture.TXsize();
-			((gdl::wii::TEX2f32*)tList)[tc+2].u	= ((f32)(tx+charw))/image.Texture.TXsize();
-			((gdl::wii::TEX2f32*)tList)[tc+2].v	= (f32)(ty+charh)/image.Texture.TYsize();
+			((gdl::wii::TEX2f32*)tList)[tc+2].u	= tx2/xSize;
+			((gdl::wii::TEX2f32*)tList)[tc+2].v	= ty2/ySize;
 
 			// Lower-right
-			((gdl::wii::TEX2f32*)tList)[tc+3].u	= ((f32)tx)/image.Texture.TXsize();
-			((gdl::wii::TEX2f32*)tList)[tc+3].v	= (f32)(ty+charh)/image.Texture.TYsize();
+			((gdl::wii::TEX2f32*)tList)[tc+3].u	= tx/xSize;
+			((gdl::wii::TEX2f32*)tList)[tc+3].v	= ty2/ySize;
 		}
 	}
 
@@ -207,14 +210,14 @@ short gdl::FFont::GetHeight()
 	return ch;
 }
 
-short gdl::FFont::GetWidth()
+short gdl::FFont::GetCharacterWidth()
 {
-	return cw;
+	return (cw+1);
 }
 
-short gdl::FFont::GetWidth(const char* str)
+short gdl::FFont::GetStringWidth(const char* str)
 {
-	return strlen(str) * cw;
+	return strlen(str) * (cw+1);
 }
 
 // muffintrap: removed Font class from version 0.100.0-muffintrap

@@ -99,7 +99,7 @@ public:
 	 *
 	 *	\returns width of the string in pixels, zero if no font was loaded or the string is blank.
 	 */
-	short GetWidth();
+	short GetCharacterWidth();
 
 	// muffintrap: added this to get the width of the string in this font
 	//! Returns the width of the given string in pixels.
@@ -109,7 +109,7 @@ public:
 	 *
 	 *	\returns width of the string in pixels, zero if no font was loaded or the string is blank.
 	 */
-	short GetWidth(const char* str);
+	short GetStringWidth(const char* str);
 };
 
 // muffintrap: removed Font class from version 0.100.0-muffintrap

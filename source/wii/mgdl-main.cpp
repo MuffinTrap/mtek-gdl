@@ -508,6 +508,7 @@ void gdl::Set3DMode(float farClip) {
 	guMtxIdentity(gdl::wii::ModelMtx);
 	GX_LoadPosMtxImm(gdl::wii::ModelMtx, GX_PNMTX0);
 	GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
+	GX_SetCullMode(GX_CULL_BACK);
 
 	GX_ClearVtxDesc();
 

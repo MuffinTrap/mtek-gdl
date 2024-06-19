@@ -23,4 +23,6 @@
 
     RGBA8Components ColorToComponents(u_int color);
     u_int ComponentsToColor(RGBA8Components components);
+
+    float GetRandomFloat(float min = 0.0f, float max = 1.0f);
  };

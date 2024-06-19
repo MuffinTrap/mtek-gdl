@@ -8,6 +8,7 @@
 // muffintrap: added <cstring> and <stdlib> for version 0.100.0-muffintrap
 #include <cstring>
 #include <stdlib.h>
+#include <math.h>
 
 #include "mgdl-wii/mgdl-types.h"
 #include "mgdl-wii/mgdl-globals.h"
@@ -96,9 +97,9 @@ bool gdl::SpriteSet::LoadSprites(short spritesPerRow, short spriteHeight, Image 
 		short row = i / spritesPerRow;
 
 		entry.tx1 = column * spriteWidth;
-		entry.tx2 = entry.tx1 + spriteWidth;
+		entry.tx2 = (entry.tx1 + spriteWidth)-1;
 		entry.ty1 = row * spriteHeight;
-		entry.ty2 = entry.ty1 + spriteHeight;
+		entry.ty2 = (entry.ty1 + spriteHeight)-1;
 		// Pivot point?
 		entry.px = entry.tx1 + spriteWidth/2;
 		entry.py = entry.ty1 + spriteHeight/2;

@@ -39,6 +39,7 @@ namespace wii {
 
 		Mtx44	ProjMtx;
 		Mtx		ModelMtx;
+		Mtx		ViewMtx;
 
 		bool	DoExitSequence      = false;
 		float	DoExitCount         = 0;

@@ -1,5 +1,6 @@
 #include "mgdl-wii/mgdl-util.h"
 #include "mgdl-wii/mgdl-types.h"
+#include <cstdlib>
 
 gdl::RGBA8Components gdl::ColorToComponents(u_int color)
 {
@@ -18,4 +19,10 @@ u_int gdl::ComponentsToColor(gdl::RGBA8Components components)
     components.blue,
     components.alpha);
     return color;
+}
+
+float gdl::GetRandomFloat(float min, float max)
+{
+    float range = max - min;
+	return min + range * ((float)rand()/(float)RAND_MAX);
 }

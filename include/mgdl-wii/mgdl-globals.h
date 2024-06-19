@@ -67,6 +67,12 @@ namespace wii {
     extern Mtx ModelMtx;
 
 
+	//! Global view matrix object used by the library's graphics functions.
+	/*
+	 * This matrix represents the camera.
+	 */
+	extern Mtx ViewMtx;
+
 	//! CPU delta time.
 	/*!
 	 *  Similar to gdl::Delta but contains the delta time it took between a gdl::PrepDisplay() and gdl::Display() pair

@@ -23,5 +23,8 @@
 #include "mgdl-wii/mgdl-gui.h"
 #include "mgdl-wii/mgdl-assert.h"
 #include "mgdl-wii/mgdl-util.h"
+// muffintrap: Added new files for version 0.100.2-muffintrap
+#include "mgdl-wii/mgdl-perspective.h"
+#include "mgdl-wii/mgdl-vector-operations.h"
 
 #endif // _GDL_WII_H

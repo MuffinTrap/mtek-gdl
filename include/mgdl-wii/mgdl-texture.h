@@ -5,6 +5,8 @@
 #ifndef _GDL_WII_TEXTURE_H
 #define _GDL_WII_TEXTURE_H
 
+#include <ogc/gx.h>
+
 
 namespace gdl {
 

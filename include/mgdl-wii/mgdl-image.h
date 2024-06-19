@@ -8,6 +8,7 @@
 #include <png.h>
 
 #include "mgdl-wii/mgdl-texture.h"
+#include "mgdl-wii/mgdl-types.h"
 
 
 namespace gdl {
