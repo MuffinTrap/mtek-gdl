@@ -11,13 +11,13 @@ All changes made to the original are clearly commented in the code, as required 
 If you use this fork for making a Wii game or demo, I won't be available to give tech support. And naturally, there is no warranty of any kind.
 
 ## Version numbers
-This is now version 0.100.1-muffintrap
+This is now version 0.100.2-muffintrap "nova"
 
 ### Future plans
 1. Add support for reading glTF scenes with tinygltf
 2. Add Rocket integration for syncing
-3. Add glm and useful math and lerp functions
-4. Add a simpler to use 3D functions
+3. Add useful math and lerp functions
+4. Add functions to help rendering 3D scenes and objects
 
 This file was changed for version 0.100.0-muffintrap by muffintrap to add explanation of the fork.
 Original contents of README.md are below:

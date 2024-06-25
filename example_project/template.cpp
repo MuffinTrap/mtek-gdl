@@ -52,8 +52,8 @@ void Template::Update()
 
 void DrawTextDouble(const char* text, short x, short y, float scale, gdl::FFont* font)
 {
-    font->DrawText(text, x-font->GetWidth(text)*scale/2+4, y+4, scale, gdl::Color::Black);
-    font->DrawText(text, x-font->GetWidth(text)*scale/2, y, scale, gdl::Color::LightGreen);
+    font->DrawText(text, x-font->GetStringWidth(text)*scale/2+4, y+4, scale, gdl::Color::Black);
+    font->DrawText(text, x-font->GetStringWidth(text)*scale/2, y, scale, gdl::Color::LightGreen);
 
 }
 
