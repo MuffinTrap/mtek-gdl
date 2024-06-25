@@ -26,3 +26,8 @@ float gdl::GetRandomFloat(float min, float max)
     float range = max - min;
 	return min + range * ((float)rand()/(float)RAND_MAX);
 }
+int gdl::GetRandomInt(int min, int max)
+{
+    int range = max - min;
+	return min + rand()%range;
+}

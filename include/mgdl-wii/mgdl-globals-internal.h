@@ -55,6 +55,8 @@ namespace wii {
     extern bool ProgressiveMode;
     //! Widescreen mode flag
     extern bool WidescreenMode;
+    //! OpenGX is used flag
+    extern bool OpenGXMode;
 
 	//! Screen capture issue flag (set by the Image Handling Module)
     extern bool ScreenCapIssued;

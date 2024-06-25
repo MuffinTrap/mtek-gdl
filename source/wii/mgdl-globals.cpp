@@ -36,6 +36,7 @@ namespace wii {
 		bool	WidescreenMode      = false;
 		bool	AutoFlush           = false;
 		bool	TexAllocMode        = gdl::MEM1;
+		bool	OpenGXMode			= false;
 
 		Mtx44	ProjMtx;
 		Mtx		ModelMtx;

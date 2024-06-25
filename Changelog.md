@@ -1,7 +1,21 @@
 # Changes made by muffintrap
 
+### Version 0.100.2-muffintrap "nova"
+Support for using OpenGX for rendering.
 
-### Version 0.100.1-muffintrap
+#### New files
++ Added mgdl-rendering.h and .cpp for functions that help drawing in perspective.
++ Added mgdl-vector-operations.h and .cpp that contain overloaded vectors and utility functions for guVector
+
+#### Modifications to library
++ Fixed off-by-one errors in mgdl-font and mgdl-sprites
++ Added random number utility functions to mgdl-util
++ Added InitializationFlag OpenGX to enable using OpenGX for drawing instead of gdl functions.
++ Modified example and template makefiles to use portlibs/wii in include and library path
+
+#### Removals
+
+### Version 0.100.1-muffintrap "retrojam"
 Fixes and little additions. Breaks SpriteSet API.
 
 #### New files
@@ -22,7 +36,7 @@ Fixes and little additions. Breaks SpriteSet API.
 + Removed .gitignore from include/mgdl-wii/
 + Removed file install since there is also install.sh
 
-### Version 0.100.0-muffintrap
+### Version 0.100.0-muffintrap "instanssi"
 Bringing a lot of changes to the code. Removing things that are no longer needed, are provided by the environment or do not work.
 
 #### New files

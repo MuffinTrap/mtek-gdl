@@ -110,6 +110,7 @@ enum InitResolution {
 	LowRes,				//!< OldSchool low-res mode (320x240/432x240) for NTSC and MPAL, 320x264/432x264 for PAL).
 };
 
+// Muffintrap: Added flag for OpenGX rendering for version 0.100.2-muffintrap
 /*! Initialization flag options
  *
  *  \details Special initialization flags for the for the gdl::InitSystem() function.
@@ -118,6 +119,7 @@ enum InitFlags {
     DontMask	= 1<<0,	//!< Disable screen masking which is used to hide garbage in the FrameBuffer during initialization.
     ForceNonInt	= 1<<1,	//!< Force non-interlaced mode for low resolution modes regardless whether or not a component cable is used.
     AntiAliased	= 1<<2,	//!< Enable anti-aliasing mode (ignored when resolution is set to gdl::LowRes).
+    OpenGX      = 1<<3  //!< OpenGX will be used for drawing and is expected to handle rendering state.
 };
 
 
@@ -256,7 +258,6 @@ void ResetClipBox();
  */
 void PrepDisplay();
 
-
 //! Display graphics.
 /*!
  *	\details Finishes GX rendering, waits for it to finish processing, and then switches framebuffers after a VSync,
@@ -268,7 +269,6 @@ void PrepDisplay();
  *      intensive routines must be written within a gdl::PrepDisplay() and gdl::Display() pair.
  */
 void Display();
-
 
 //! Sets an error callback function.
 /*!

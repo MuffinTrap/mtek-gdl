@@ -442,6 +442,11 @@ void gdl::InitSystem(gdl::InitVideoMode videoMode, gdl::InitAspectMode aspectMod
 	// Set default error handling callback
 	gdl::SetErrorCallback(_defaultErrorCallback);
 
+	// Expect OpenGX to handle rendering state from here on
+	if (flags & InitFlags::OpenGX)
+	{
+		gdl::wii::OpenGXMode = true;
+	}
 }
 
 void gdl::ConsoleMode() {
@@ -570,17 +575,20 @@ void gdl::PrepDisplay() {
 	// Get the current CPU cycles passed for delta calculation when gdl::Display() is called
 	_timer_lastCycles = _timer_getCpuCycles();
 
-	GX_SetViewport(0, 0, gdl::wii::rmode->fbWidth, gdl::wii::rmode->efbHeight, 0, 1);
-	GX_SetScissor(0, 0, gdl::wii::rmode->fbWidth, gdl::wii::rmode->efbHeight);
+	if (wii::OpenGXMode == false)
+	{
+		GX_SetViewport(0, 0, gdl::wii::rmode->fbWidth, gdl::wii::rmode->efbHeight, 0, 1);
+		GX_SetScissor(0, 0, gdl::wii::rmode->fbWidth, gdl::wii::rmode->efbHeight);
 
-	GX_InvVtxCache();
-	GX_InvalidateTexAll();
+		GX_InvVtxCache();
+		GX_InvalidateTexAll();
 
-	guMtxIdentity(gdl::wii::ModelMtx);
-	GX_LoadPosMtxImm(gdl::wii::ModelMtx, GX_PNMTX0);
-	GX_SetZMode(GX_FALSE, GX_LEQUAL, GX_FALSE);
+		guMtxIdentity(gdl::wii::ModelMtx);
+		GX_LoadPosMtxImm(gdl::wii::ModelMtx, GX_PNMTX0);
+		GX_SetZMode(GX_FALSE, GX_LEQUAL, GX_FALSE);
 
-	gdl::Set2DMode(100);
+		gdl::Set2DMode(100);
+	}
 
 }
 
@@ -590,12 +598,14 @@ void gdl::Display() {
 	if (wii::DoExitSequence) {
 
 		wii::DoExitCount += 1.f*gdl::Delta;
-		GX_SetScissor(0, 0, gdl::wii::rmode->fbWidth, gdl::wii::rmode->efbHeight);
+		if (wii::OpenGXMode == false) {
+			GX_SetScissor(0, 0, gdl::wii::rmode->fbWidth, gdl::wii::rmode->efbHeight);
 
-		if (ceil(wii::DoExitCount)<30)
-			gdl::DrawBoxF(0, 0, gdl::ScreenXres-1, gdl::ScreenYres-1, RGBA(0, 0, 0, 255*(ceil(wii::DoExitCount)/30.f)));
-		else
-			gdl::DrawBoxF(0, 0, gdl::ScreenXres-1, gdl::ScreenYres-1, RGBA(0, 0, 0, 255));
+			if (ceil(wii::DoExitCount)<30)
+				gdl::DrawBoxF(0, 0, gdl::ScreenXres-1, gdl::ScreenYres-1, RGBA(0, 0, 0, 255*(ceil(wii::DoExitCount)/30.f)));
+			else
+				gdl::DrawBoxF(0, 0, gdl::ScreenXres-1, gdl::ScreenYres-1, RGBA(0, 0, 0, 255));
+		}
 
 	}
 
@@ -663,7 +673,6 @@ void gdl::Display() {
 
 	}
 
-
 	// Complete all rendering
 	gdl::wii::ActiveFB ^= 1;
 	GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
@@ -675,7 +684,6 @@ void gdl::Display() {
 	GX_DrawDone();
 
 	_timer_GPUcycles = _timer_getCpuCycles();
-
 
 	// If in anti-aliased mode, capture from the external framebuffer
 	if ((gdl::wii::ScreenCapIssued) && (gdl::wii::rmode->aa)) {
@@ -696,12 +704,12 @@ void gdl::Display() {
 		gdl::ConsoleActive = false;
 	}
 
+
 	// Switch framebuffers
 	VIDEO_SetNextFramebuffer(gdl::wii::FB[gdl::wii::ActiveFB]);
 	VIDEO_SetBlack(FALSE);
 	VIDEO_Flush();
 	VIDEO_WaitVSync();
-
 
 	// Power-off or exit to menu handling
 	if (wii::DoExitSequence) {
