@@ -13,8 +13,10 @@ If you use this fork for making a Wii game or demo, I won't be available to give
 ## How to compile and install the library and run the example with Dolphin
 1. Install devkitpro following instructions here: [DevkitPro Getting Started](https://devkitpro.org/wiki/Getting_Started)
 2. Add DEVKITPRO and DEVKITPPC to your environment variables. If you used the default install location, they should be:
+```sh
 	DEVKITPRO : /opt/devkitpro
 	DEVKITPPC : /opt/devkitpro/devkitPPC
+```
 3. Using (dkp-)pacman, install the package **wii-dev**
 4. Using (dkp-)pacman, install these packages if they are not already installed:
 	* ppc-png
