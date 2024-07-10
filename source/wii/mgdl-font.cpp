@@ -220,6 +220,12 @@ short gdl::FFont::GetStringWidth(const char* str)
 	return strlen(str) * (cw+1);
 }
 
+gdl::wii::TEX2f32 gdl::FFont::GetTextureCoordinate(char character, char subIndex)
+{
+	int	tc = 4*(character - firstIndex);
+	return ((gdl::wii::TEX2f32*)tList)[tc + subIndex];
+}
+
 // muffintrap: removed Font class from version 0.100.0-muffintrap
 
 #endif // _GDL_WII_FONT

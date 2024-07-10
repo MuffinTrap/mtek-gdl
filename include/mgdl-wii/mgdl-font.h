@@ -110,6 +110,17 @@ public:
 	 *	\returns width of the string in pixels, zero if no font was loaded or the string is blank.
 	 */
 	short GetStringWidth(const char* str);
+
+	// muffintrap: added this to enable OpenGX drawing of fonts
+	//! Returns the texture coordinate of a character
+	/*!
+	 *
+	 *	\param[in]	character	The character
+	 *	\param[in]	subIndex	Which coordinate: 0-3
+	 *
+	 *	\returns Texture coordinate
+	 */
+	gdl::wii::TEX2f32 GetTextureCoordinate(char character, char subIndex);
 };
 
 // muffintrap: removed Font class from version 0.100.0-muffintrap

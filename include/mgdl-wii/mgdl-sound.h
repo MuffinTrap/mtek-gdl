@@ -30,6 +30,7 @@ class Sound {
 	u_short	freq;
 	void	*sData;
 	int		sSize;
+	short	voiceNumber; // ASND voice number
 
 public:
 
@@ -101,6 +102,21 @@ public:
 	 *	\param[in]	y		Y position of sound (this parameter does nothing for now).
 	 */
 	void Play2D(float pitch, float volume, float x, float y);
+
+	//! Get elapsed playback time in seconds
+	/*!
+	 *	\details This function returns how long the sound has been playing in seconds
+	 *
+	 *	\returns Elapsed playback time in seconds
+	 */
+	float GetElapsedSeconds();
+
+	//! Stops the playback of the sound
+	/*!
+	 *	\details This function stops the sound if it is playing
+	 */
+	void Stop();
+
 
 	// muffintrap: Added for version 0.100.0-muffintrap
 	//! Internal sound loading function. Loads a sound from FILE pointer

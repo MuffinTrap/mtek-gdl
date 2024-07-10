@@ -26,7 +26,7 @@ gdl::Sound::Sound() {
 	freq=0;
 	sData=NULL;
 	sSize=0;
-
+	voiceNumber = SND_INVALID;
 }
 
 gdl::Sound::~Sound() {
@@ -233,12 +233,12 @@ void gdl::Sound::Play(float pitch, float volume) {
 	if (sData == NULL)
 		return;
 
-	short tslot = ASND_GetFirstUnusedVoice();
-	if (tslot == SND_INVALID)
+	voiceNumber = ASND_GetFirstUnusedVoice();
+	if (voiceNumber == SND_INVALID)
 		return;
 
 	ASND_Pause(0);
-	ASND_SetVoice(tslot, format, freq*pitch, 0,
+	ASND_SetVoice(voiceNumber, format, freq*pitch, 0,
 		sData, sSize, volume*((float)gdl::wii::MasterSfxVolume/100.f), volume*((float)gdl::wii::MasterSfxVolume/100.f), NULL);
 
 }
@@ -271,6 +271,26 @@ void gdl::Sound::Play2D(float pitch, float volume, float x, float y) {
 }
 
 #pragma GCC diagnostic pop
+
+float gdl::Sound::GetElapsedSeconds()
+{
+	if (voiceNumber != SND_INVALID)
+	{
+		return (float)ASND_GetTimerVoice(voiceNumber)/1000.0f;
+	}
+	else
+	{
+		return 0.0f;
+	}
+}
+
+void gdl::Sound::Stop()
+{
+	if (voiceNumber != SND_INVALID)
+	{
+		ASND_StopVoice(voiceNumber);
+	}
+}
 
 // Sound system functions
 
