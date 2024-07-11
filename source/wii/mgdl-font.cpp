@@ -99,11 +99,11 @@ void gdl::FFont::BindSheet(gdl::Image& image, short charw, short charh,  char fi
 			((gdl::wii::TEX2f32*)tList)[tc+1].u	= tx2/xSize;
 			((gdl::wii::TEX2f32*)tList)[tc+1].v	= ty/ySize;
 
-			// Lower-left
+			// Lower-right
 			((gdl::wii::TEX2f32*)tList)[tc+2].u	= tx2/xSize;
 			((gdl::wii::TEX2f32*)tList)[tc+2].v	= ty2/ySize;
 
-			// Lower-right
+			// Lower-left
 			((gdl::wii::TEX2f32*)tList)[tc+3].u	= tx/xSize;
 			((gdl::wii::TEX2f32*)tList)[tc+3].v	= ty2/ySize;
 		}

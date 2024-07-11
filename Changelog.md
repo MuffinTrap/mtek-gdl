@@ -6,12 +6,16 @@ Support for using OpenGX for rendering.
 #### New files
 + Added mgdl-rendering.h and .cpp for functions that help drawing in perspective.
 + Added mgdl-vector-operations.h and .cpp that contain overloaded vectors and utility functions for guVector
++ Added development snapshot of OpenGX to 3rd party libraries.
 
 #### Modifications to library
 + Fixed off-by-one errors in mgdl-font and mgdl-sprites
 + Added random number utility functions to mgdl-util
 + Added InitializationFlag OpenGX to enable using OpenGX for drawing instead of gdl functions.
 + Modified example and template makefiles to use portlibs/wii in include and library path
++ Added PeekPixel function to Texture class
++ Added UV Getter function to FFont
++ Added functions Stop() and GetElapsedSeconds() to Sound class.
 
 #### Removals
 

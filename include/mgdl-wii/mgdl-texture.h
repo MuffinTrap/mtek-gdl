@@ -289,6 +289,20 @@ public:
 	 */
 	void PokePixel(short x, short y, u_int col);
 
+	//! Peeks a pixel from the texture.
+	/*!
+	 *	\details Peeks a pixel from the texture for generating things from images
+	 *
+	 *	\note This function is only effective on non-mipmapped and non-specialty format textures.
+	 *	\note If you peek a pixel from an I4/I8 format texture, the color value will be only be in a range from 0 to 255. If
+	 *		the texture is an IA4/IA8, use the IA() color macro.
+	 *
+	 *	\param[in]	x	X offset of pixel to read.
+	 *	\param[in]	y	Y offset of pixel to read.
+	 *	\returns	Color of pixel (use the RGBA() or IA() macros for this).
+	 */
+	u_int PeekPixel(short x, short y);
+
 
 	//! Returns the pointer to the texture data block.
 	/*!

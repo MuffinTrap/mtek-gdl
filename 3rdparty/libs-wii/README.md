@@ -3,3 +3,4 @@ This directory contains third-party libraries used by the Nintendo Wii version M
 All the licenses of the aforementioned libraries are not modified in any way.
 
 muffintrap: Update on version 0.100.0-muffintrap: zlib, png and tremor were removed.
+muffintrap: Update on version 0.100.2-muffintrap: added current (10.7.2024) version of devkitpro/opengx with modification to make it work with ogc 2.6.0

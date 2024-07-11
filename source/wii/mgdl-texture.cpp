@@ -1408,6 +1408,103 @@ void gdl::Texture::PokePixel(short x, short y, u_int col) {
 
 }
 
+u_int gdl::Texture::PeekPixel(short x, short y)
+{
+	if ((texData == NULL) || (texMipmapped))
+		return 0;
+
+
+	u8*	bp;
+	u_int col = 0;
+
+	switch(texFmt) {
+	case gdl::I4:
+
+		bp = &((u8*)texData)[(((x/2)%4)+(32*((x/2)/4)))+((texXsize*4)*(y/8))+(4*(y%8))];
+
+		if ((x%2) == 0)
+		{
+			col +=(*bp&0x0f);
+		}
+		else
+			col += (*bp&0xf0);
+
+		break;
+
+	case gdl::I8:
+
+		bp = &((u8*)texData)[((x%8)+(32*(x/8)))+((texXsize*4)*(y/4))+(8*(y%4))];
+		col += (*bp);
+		break;
+
+	case gdl::IA4:
+
+		bp = &((u8*)texData)[((x%8)+(32*(x/8)))+((texXsize*4)*(y/4))+(8*(y%4))];
+		col += (*bp);
+		break;
+
+	case gdl::IA8:
+
+		bp = &((u8*)texData)[2*(((x%4)+(16*(x/4)))+(4*(y%4))+((texXsize*4)*(y/4)))];
+		col += (*bp << 8); // Color index
+		bp++;
+		col += (*bp); // Alpha value
+		break;
+
+	case gdl::RGB565:
+
+		bp = (u8*)(((u16*)texData) + ( ((x%4)+(16*(x/4)) + ((4*(y%4)) + ((texXsize*4)*(y/4))) ) ));
+		{
+			// From https://wiki.tockdom.com/wiki/Image_Formats#RGB5A3
+			u16 compressed = *((u16*)bp);
+			u8 red = 0x8 * (compressed & 0xF800);
+			u8 green = 0x4 * (compressed & 0x7E0);
+			u8 blue = 0x8 * compressed & 0x1F;
+			col = RGBA(red, green, blue, 0xff);
+		}
+		break;
+
+	case gdl::RGB5A3:
+
+		bp = (u8*)(((u16*)texData) + ( ((x%4)+(16*(x/4)) + ((4*(y%4)) + ((texXsize*4)*(y/4))) ) ));
+		{
+			// From https://wiki.tockdom.com/wiki/Image_Formats#RGB5A3
+			u16 compressed = *((u16*)bp);
+			if (compressed & 0x8000) // Top bit is set: alpha not used
+			{
+				u8 red = 0x08 * (compressed & 0x7C00);
+				u8 green = 0x08 * (compressed & 0x7C0);
+				u8 blue = 0x08 * (compressed & 0x1F);
+				col = RGBA(red, green, blue, 0xff);
+			}
+			else // Top bit is not set, alpha is used
+			{
+				u8 red = 0x11 * (compressed & 0xF00);
+				u8 green = 0x11 * (compressed & 0x0F0);
+				u8 blue = 0x11 * (compressed & 0x00F);
+				u8 alpha = 0x20 * (compressed & 0x7000);
+				col = RGBA(red, green, blue, alpha);
+			}
+		}
+		break;
+
+	case gdl::RGBA8:
+
+		bp = ((u8*)texData) + (((y&(~3))<<2)*texXsize)+((x&(~3))<<4)+((((y&3)<<2)+(x&3))<<1);
+		{
+			u16 partA = *((u16*)(bp   ));
+			u16 partB = *((u16*)(bp+32));
+			u_int A = partA;
+			u_int B = partB;
+			col += (A<<24); // Red
+			col += (A>>8);  // Alpha
+			col += (B<<8);  // Blue and Green
+		}
+	}
+
+	return col;
+}
+
 void *gdl::Texture::TexAddr() {
 
 	return(texData);
