@@ -85,7 +85,8 @@ enum AlignmentModes {
     PCentered	= 0x7ff1,	//!< Pixel centered (most noticable when image is zoomed in).
     Pivot       = 0x7ff2,	//!< Alligned according to its pivot coordinate (only applicable to gdl::SpriteSet functions).
     CPivot      = 0x7ff3,	//!< Alligned according to its pivot coordinate and pixel centered (only applicable to gdl::SpriteSet functions).
-    RJustify	= 0x7ff4	//!< Right justified (also bottom justified when used for the Y pivot axis).
+    RJustify	= 0x7ff4,	//!< Right justified (also bottom justified when used for the Y pivot axis).
+    LJustify    = 0x7ff5    //!< Left justified (also top justified when used for the Y axis) The default alignment;
 };
 
 
