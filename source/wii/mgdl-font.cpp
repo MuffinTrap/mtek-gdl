@@ -18,6 +18,7 @@
 #include "mgdl-wii/mgdl-main.h"
 #include "mgdl-wii/mgdl-image.h"
 #include "mgdl-wii/mgdl-font.h"
+#include "mgdl-wii/mgdl-assert.h"
 
 // Fixed-sized font class functions
 
@@ -43,28 +44,31 @@ gdl::FFont::~FFont() {
 // muffintrap: Added parameter firstCharacter
 void gdl::FFont::BindSheet(gdl::Image& image, short charw, short charh,  char firstCharacter) {
 
-	short	cx,cy;
-	f32		tx,ty, tx2, ty2;
-	int		tc;
-
 	charTexObj = image.Texture.TexObj();
 	cw = charw;
 	ch = charh;
 	firstIndex = firstCharacter;
+
+	gdl_assert(image.Texture.TXsize()%charw == 0, "BindSheet error: %u mod %d not zero");
+	gdl_assert(image.Texture.TYsize()%charh == 0, "BindSheet error: %u mod %d not zero");
+
 	short charactersPerRow = image.Texture.TXsize()/ charw;
 	short rows = image.Texture.TYsize() / charh;
 	short characterAmount = charactersPerRow * rows;
 
 	if (gdl::ConsoleActive)
 	{
-		// This breaks all future printfs! :D
 		printf("gdl: Binding a character font sheet. CPR:%d, R:%d, A:%d\n",
 	charactersPerRow, rows, characterAmount);
 	}
 
 	//  muffintrap: Changed memalign() to aligned_alloc() for version 0.100.0-muffintrap
 	if (vList == NULL)
+	{
 		vList = aligned_alloc(32, sizeof(gdl::wii::VERT2s16)*4);
+		gdl_assert(vList != nullptr, "Out of memory when allocating font vertex list");
+
+	}
 
 	((gdl::wii::VERT2s16*)vList)[0].x = 0;		((gdl::wii::VERT2s16*)vList)[0].y = 0;
 	((gdl::wii::VERT2s16*)vList)[1].x = charw;	((gdl::wii::VERT2s16*)vList)[1].y = 0;
@@ -73,49 +77,80 @@ void gdl::FFont::BindSheet(gdl::Image& image, short charw, short charh,  char fi
 
 	DCFlushRange(vList, sizeof(gdl::wii::VERT2s16)*4);
 
-	if (tList == NULL)
-		tList = aligned_alloc(32, (sizeof(gdl::wii::TEX2f32)*4)*(characterAmount));
-
 	f32 xSize = image.Texture.TXsize();
 	f32 ySize = image.Texture.TYsize();
-
-	for(cy=0; cy<rows; cy++) {
-		for(cx=0; cx<charactersPerRow; cx++) {
-
-			// Coordinates to source image
-			tx = charw*cx;
-			ty = charh*cy;
-			tx2 = (tx + charw) -1;
-			ty2 = (ty + charh) -1;
-
-			// Texture coordinate array index
-			tc = 4*(cx+(charactersPerRow*cy));
-
-			// Upper-left
-			((gdl::wii::TEX2f32*)tList)[tc].u	= tx/xSize;
-			((gdl::wii::TEX2f32*)tList)[tc].v	= ty/ySize;
-
-			// Upper-right
-			((gdl::wii::TEX2f32*)tList)[tc+1].u	= tx2/xSize;
-			((gdl::wii::TEX2f32*)tList)[tc+1].v	= ty/ySize;
-
-			// Lower-right
-			((gdl::wii::TEX2f32*)tList)[tc+2].u	= tx2/xSize;
-			((gdl::wii::TEX2f32*)tList)[tc+2].v	= ty2/ySize;
-
-			// Lower-left
-			((gdl::wii::TEX2f32*)tList)[tc+3].u	= tx/xSize;
-			((gdl::wii::TEX2f32*)tList)[tc+3].v	= ty2/ySize;
-		}
-	}
-
-	DCFlushRange(tList, (sizeof(gdl::wii::TEX2f32)*4)*characterAmount);
-
+	CreateTextureCoordList(rows, charactersPerRow, xSize, ySize);
 
 	if (gdl::ConsoleActive)
 		printf("Ok!\n");
-
 }
+
+void gdl::FFont::SetFirstCharacterIndex ( short firstCharacterIndex )
+{
+	if (firstCharacterIndex >= 0 && firstCharacterIndex <=255)
+	{
+		firstIndex = firstCharacterIndex;
+	}
+};
+
+void gdl::FFont::SetCharacterDimensions(short characterWidth, short characterHeight)
+{
+	if (characterWidth > 0)
+	{
+		cw = characterWidth;
+	}
+	if (characterHeight > 0)
+	{
+		ch = characterHeight;
+	}
+}
+
+void gdl::FFont::CreateTextureCoordList(short rows, short charactersPerRow, short texW, short texH)
+{
+	gdl_assert(cw > 0 && ch > 0, "Character dimensions not set");
+	gdl_assert(rows > 0 && charactersPerRow > 0, "Rows and cpr at zero");
+	gdl_assert(texW > 0 && texH > 0, "Texture size is 0");
+
+	short characterAmount = rows * charactersPerRow;
+	size_t tListSize = (sizeof(gdl::wii::TEX2f32)*4)*(characterAmount);
+	if (tList == NULL)
+	{
+		tList = aligned_alloc(32, tListSize);
+		gdl_assert(tList != nullptr, "Out of memory when allocation font txcord list");
+	}
+
+	for(short cy=0; cy<rows; cy++) {
+		for(short cx=0; cx<charactersPerRow; cx++) {
+
+			// Coordinates to source image
+			f32 tx = cw * cx;
+			f32 ty = ch * cy;
+			f32 tx2 = (tx + cw) -1;
+			f32 ty2 = (ty + ch) -1;
+
+			// Texture coordinate array index
+			u32 tc = 4*(cx+(charactersPerRow*cy));
+
+			// Upper-left
+			((gdl::wii::TEX2f32*)tList)[tc].u	= tx/texW;
+			((gdl::wii::TEX2f32*)tList)[tc].v	= ty/texH;
+
+			// Upper-right
+			((gdl::wii::TEX2f32*)tList)[tc+1].u	= tx2/texW;
+			((gdl::wii::TEX2f32*)tList)[tc+1].v	= ty/texH;
+
+			// Lower-right
+			((gdl::wii::TEX2f32*)tList)[tc+2].u	= tx2/texW;
+			((gdl::wii::TEX2f32*)tList)[tc+2].v	= ty2/texH;
+
+			// Lower-left
+			((gdl::wii::TEX2f32*)tList)[tc+3].u	= tx/texW;
+			((gdl::wii::TEX2f32*)tList)[tc+3].v	= ty2/texH;
+		}
+	}
+	DCFlushRange(tList, tListSize);
+}
+
 
 void gdl::FFont::DrawText(const char *text, short x, short y, float scale, u32 col) {
 

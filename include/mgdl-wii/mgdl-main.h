@@ -370,9 +370,16 @@ namespace wii {
      *	\details This function will work only during a gdl::PrepDisplay() and gdl::Display() loop. It pretty much does
      *		the same thing that would happen if you press reset on the console.
      */
-    void Exit();
+    void StartFadeoutExit();
 
+    //! Makes the library exit as fast as possible.
+    /*!
+     *	\details Closes the video display and quits the program
+     */
+    void DoProgramExit();
 
+    void _ResetExit();
+    void _PowerOffExit();
 }
 
 /*! @} */

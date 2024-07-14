@@ -717,20 +717,10 @@ void gdl::Display() {
 		if (ceil(wii::DoExitCount) >= 30) {
 
 			if (wii::ExitType == 0) {	// Power-off
-
-				VIDEO_SetBlack(TRUE);
-				VIDEO_Flush();
-				VIDEO_WaitVSync();
-				VIDEO_WaitVSync();
-				SYS_ResetSystem(SYS_POWEROFF, 0, 0);
-
+				gdl::wii::_PowerOffExit();
 			} else { // Soft-reset (exit to loader)
 
-				VIDEO_SetBlack(TRUE);
-				VIDEO_Flush();
-				VIDEO_WaitVSync();
-				VIDEO_WaitVSync();
-				exit(0);
+				gdl::wii::_ResetExit();
 			}
 		}
 	}
@@ -757,15 +747,37 @@ gdl::ErrorCallback gdl::SetErrorCallback(gdl::ErrorCallback func) {
 
 }
 
-void gdl::wii::Exit() {
+void gdl::wii::StartFadeoutExit() {
 
 	if (gdl::wii::DoExitSequence == false) {
 
 		gdl::wii::DoExitSequence = true;
 		gdl::wii::ExitType = 1;
-
 	}
+}
 
+void gdl::wii::DoProgramExit() {
+	gdl::wii::ExitType = 1;
+	gdl::wii::_ResetExit();
+}
+
+void gdl::wii::_ResetExit()
+{
+	ICSync();
+	VIDEO_SetBlack(TRUE);
+	VIDEO_Flush();
+	VIDEO_WaitVSync();
+	VIDEO_WaitVSync();
+	exit(0);
+}
+
+void gdl::wii::_PowerOffExit()
+{
+	VIDEO_SetBlack(TRUE);
+	VIDEO_Flush();
+	VIDEO_WaitVSync();
+	VIDEO_WaitVSync();
+	SYS_ResetSystem(SYS_POWEROFF, 0, 0);
 }
 
 void gdl::wii::RevBytes(void *var, int size) {

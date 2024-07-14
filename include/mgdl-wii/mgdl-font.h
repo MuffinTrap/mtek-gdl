@@ -55,6 +55,11 @@ public:
 	void BindSheet(gdl::Image& image, short charw, short charh, char firstCharacter);
 
 
+	void CreateVertexList();
+	void CreateTextureCoordList(short rows, short charactersPerRow, short texW, short texH);
+	void SetFirstCharacterIndex(short firstIndex);
+	void SetCharacterDimensions(short characterWidth, short characterHeight);
+
 	//! Draw text.
 	/*!
 	 *	\details Draws a string of text using the currently binded font sheet. Because it only accepts a pre-made

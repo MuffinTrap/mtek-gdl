@@ -854,9 +854,16 @@ bool gdl::Image::LoadImageBuffer(const void *buffer, size_t size, u_int filterMo
 
 	// fmemopen cannot read from const buffer :U
 	// Copy data to temporary buffer before reading
-	void *tempBuffer = malloc(size);
+	void *tempBuffer = aligned_alloc(32, size);
 	gdl_assert((tempBuffer != nullptr), "Cannot allocate enough memory for image buffer.");
+
+	// Copy
 	memcpy(tempBuffer, buffer, size);
+
+	// Make sure that the data is in the main memory
+	DCFlushRange(tempBuffer, size);
+	// Complete all operations
+	ICSync();
 
 	// Open file
 	FILE *fp;
@@ -866,6 +873,7 @@ bool gdl::Image::LoadImageBuffer(const void *buffer, size_t size, u_int filterMo
 		free(tempBuffer);
 		return(false);
 	}
+	ICSync();
 
 	// Decode and convert the image
 	png_structp png_ptr;

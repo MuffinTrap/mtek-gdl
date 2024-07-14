@@ -107,6 +107,9 @@ bool gdl::SpriteSet::LoadSprites(short spritesPerRow, short spriteHeight, Image 
 		LoadTSM_Entry(entry, i);
 	}
 
+	DCFlushRange(spriteList, numSprites * sizeof(Sprite));
+	DCFlushRange(sheetList, sizeof(Image*));
+
 	if (gdl::ConsoleActive)
 		printf("gdl: Sprite sheets loaded successfully.\n");
 

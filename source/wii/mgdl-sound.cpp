@@ -58,6 +58,7 @@ bool gdl::Sound::LoadSound(const uint8_t* buffer, size_t size)
 
 	uint8_t* wavBuffer = (uint8_t*)malloc(size);
 	memcpy(wavBuffer, buffer, size);
+	DCFlushRange(wavBuffer, size);
 
 	bool openOk = true;
 	if (!(fp = fmemopen(wavBuffer, size, "r")))
@@ -335,6 +336,7 @@ bool gdl::Music::LoadFromBuffer(const uint8_t* buffer, size_t size)
 	oggBuffer = (uint8_t*)malloc(size);
 	gdl_assert((oggBuffer != nullptr), "Could not allocate buffer for music");
 	memcpy(oggBuffer, buffer, size);
+	DCFlushRange(oggBuffer, size);
 	return true;
 }
 
@@ -360,7 +362,7 @@ float gdl::Music::GetElapsed()
 
 void gdl::Music::JumpToSeconds(float seconds)
 {
-	SetTimeOgg(seconds*1000.0f);
+	SetTimeOgg(s32(seconds*1000.0f));
 }
 
 void gdl::Music::TogglePauseMusic()
