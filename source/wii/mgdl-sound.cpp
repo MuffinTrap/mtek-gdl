@@ -285,6 +285,25 @@ float gdl::Sound::GetElapsedSeconds()
 	}
 }
 
+bool gdl::Sound::GetIsPlaying()
+{
+	s32 status = ASND_StatusVoice(voiceNumber);
+	if (status == SND_WORKING) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+void gdl::Sound::Pause(bool setPaused)
+{
+	if (voiceNumber != SND_INVALID)
+	{
+		ASND_PauseVoice(voiceNumber, setPaused ? 1 : 0);
+	}
+}
+
 void gdl::Sound::Stop()
 {
 	if (voiceNumber != SND_INVALID)

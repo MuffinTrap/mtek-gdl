@@ -111,6 +111,20 @@ public:
 	 */
 	float GetElapsedSeconds();
 
+	//! Get if the voice is playing or not
+	/*!
+	 * \details This function can be used to know if the voice is currently playing
+	 *
+	 * \returns True if voice is playing, false if not playing
+	 */
+	bool GetIsPlaying();
+
+	//! Pauses the playback of the sound
+	/*!
+	 *	\details This function pauses the sound if it is playing
+	 */
+	void Pause(bool setPaused);
+
 	//! Stops the playback of the sound
 	/*!
 	 *	\details This function stops the sound if it is playing

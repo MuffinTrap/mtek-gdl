@@ -36,3 +36,7 @@ if ((test) == false) \
         AssertFunction(__FILE__, __LINE__, ignoreThis, message, ##__VA_ARGS__); \
     } \
 }
+
+#define gdl_assert_printf(test, message, ...) gdl_assert(test, message, __VA_ARGS__)
+#define gdl_assert_print(test, message) gdl_assert(test, message)
+#define gdl_assert_test(test) gdl_assert(test, "assert failed")
