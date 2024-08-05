@@ -90,8 +90,9 @@ public:
 	 *
 	 *	\param[in]	pitch	Pitch of sound (1.0 is normal pitch).
 	 *	\param[in]	volume	Volume of sound (100 is full volume).
+	 *	\returns True if play started, false if not.
 	 */
-	void Play(float pitch, float volume);
+	bool Play(float pitch, float volume);
 
 
 	//! Plays a sound with 2D stereo panning.
