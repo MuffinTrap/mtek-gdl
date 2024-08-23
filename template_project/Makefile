@@ -41,7 +41,7 @@ LDFLAGS	=	$(MACHDEP) -Wl,-Map,$(notdir $@).map
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project (add your own at the left-most)
 #---------------------------------------------------------------------------------
-LIBS	:=	-lmgdl -lvalloc -lwiiuse -loggplayer -lvorbisidec -logg -lpng -lz -lfat -lbte -lasnd -logc -lm
+LIBS	:=	-lmgdl -lopengx -lglut -lGLU -lvalloc -lwiiuse -loggplayer -lvorbisidec -logg -lpng -lz -lfat -lbte -lasnd -logc -lm
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
@@ -92,6 +92,7 @@ export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
 #---------------------------------------------------------------------------------
 # build a list of include paths
 #---------------------------------------------------------------------------------
+
 LIBOGC_INC	:=	$(DEVKITPRO)/libogc/include
 PORTLIBS_PPC_INC	:=	$(PORTLIBS_PATH)/ppc/include
 PORTLIBS_WII_INC	:=	$(PORTLIBS_PATH)/wii/include
