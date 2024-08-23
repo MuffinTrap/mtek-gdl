@@ -230,18 +230,18 @@ void gdl::SoundWii::UnloadData() {
 void gdl::SoundWii::Play(float pitch, float volume) {
 
 	// Simple play function
-
 	if (sData == nullptr)
 		return;
 
 	voiceNumber = ASND_GetFirstUnusedVoice();
 	if (voiceNumber == SND_INVALID)
+	{
 		return;
+	}
 
 	ASND_Pause(0);
 	ASND_SetVoice(voiceNumber, format, freq*pitch, 0,
 		sData, sSize, volume*((float)gdl::wii::MasterSfxVolume/100.f), volume*((float)gdl::wii::MasterSfxVolume/100.f), NULL);
-
 }
 
 #pragma GCC diagnostic push
