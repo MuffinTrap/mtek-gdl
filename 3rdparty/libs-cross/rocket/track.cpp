@@ -91,6 +91,11 @@ double sync_get_val_ptr(const struct sync_track *t, double row) {
 
 void start_save_sync(const char *filename_h, const char *filename_cpp) {
     FILE *file_h = fopen(filename_h, "w");
+    if (file_h == NULL)
+    {
+        printf("Cannot write tracks: No such directory/file %s\n", filename_h);
+        return;
+    }
     fprintf(file_h, "// sync data declaration\n");
     fprintf(file_h, "#ifdef SYNC_PLAYER\n");
     fprintf(file_h, "#pragma once\n");
@@ -98,6 +103,10 @@ void start_save_sync(const char *filename_h, const char *filename_cpp) {
     fclose(file_h);
 
     FILE *file_cpp = fopen(filename_cpp, "w");
+    if (file_cpp == NULL) {
+        perror("Error opening file");
+        return;
+    }
     fprintf(file_cpp, "// sync data implementation\n");
     fprintf(file_h, "#ifdef SYNC_PLAYER\n");
     fprintf(file_cpp, "#include \"../rocket/track.h\"\n");

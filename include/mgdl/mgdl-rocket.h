@@ -37,20 +37,21 @@ namespace gdl
 		// Supply the rocket connection you created and the music
 		static RocketSync& GetSingleton();
 		static void InitRocket(sync_device* rocket, gdl::Sound* soundFile, float bpm, int beatsPerRow);
-		static void Update();
+		static void UpdateRow();
 		static sync_device* GetDevice();
 		static void Disconnect(); // Disconnects
 
 		static void StartSaveToHeader();
-		static void SaveTrack(sync_track* track);
+		static void SaveTrack(const sync_track* track);
 		static void SaveTrack(sync_track& track);
 		static void EndSaveToHeader();
 
-		static void SetToBeSaved(sync_track*);
+		static void SetToBeSaved(const sync_track*);
 		static void SaveAllTracks();
 
 		static void SetRow(int row);
 		static double GetRow();
+		static int GetRowInt();
 		static float GetTime();
 
 		void Play();
@@ -58,16 +59,16 @@ namespace gdl
 		gdl::SyncState GetState();
 
 		static float GetFloat(sync_track& track);
-		static float GetFloat(sync_track* track);
+		static float GetFloat(const sync_track* track);
 
 		static double GetDouble(sync_track& track);
-		static double GetDouble(sync_track* track);
+		static double GetDouble(const sync_track* track);
 
 		static int GetInt(sync_track& track);
-		static int GetInt(sync_track* track);
+		static int GetInt(const sync_track* track);
 
 		static bool GetBool(sync_track& track);
-		static bool GetBool(sync_track* track);
+		static bool GetBool(const sync_track* track);
 	private:
 		RocketSync();
 		sync_device *rocket_device;
@@ -79,6 +80,6 @@ namespace gdl
 		gdl::SyncState syncState;
 		float musicElapsedSeconds;
 
-		std::vector<sync_track*> tracks;
+		std::vector<const sync_track*> tracks;
 	};
 };

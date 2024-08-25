@@ -34,6 +34,7 @@ namespace gdl
 	public:
 		WiiController();
 		void SetChannelNumber(int channel);
+		void StartFrame();
 		void ZeroAllInputs();
 		// Button values are same as in <wiiuse/wpad.h>
 		bool ButtonPress(int buttonEnum);

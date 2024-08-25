@@ -6,7 +6,6 @@ gdl::WiiController::WiiController()
 	ZeroAllInputs();
 }
 
-
 void gdl::WiiController::SetChannelNumber ( int channel )
 {
 	this->channel = channel;
@@ -64,6 +63,13 @@ void gdl::WiiController::ZeroAllInputs()
 	roll = 0.0f;
 }
 
+void gdl::WiiController::StartFrame()
+{
+	pressedButtons = 0;
+	releasedButtons = 0;
+}
+
+
 void gdl::WiiController::SetButtonDown ( int buttonEnum )
 {
 	pressedButtons += buttonEnum;
@@ -72,5 +78,6 @@ void gdl::WiiController::SetButtonDown ( int buttonEnum )
 void gdl::WiiController::SetButtonUp ( int buttonEnum )
 {
 	heldButtons -= buttonEnum;
+	releasedButtons += buttonEnum;
 }
 

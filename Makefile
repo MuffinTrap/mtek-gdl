@@ -35,7 +35,7 @@ CFILES	+= $(wildcard 3rdparty/libs-cross/rocket/*.cpp)
 OFILES	:= $(CFILES:.cpp=.o)
 ARC 	:= lib/wii/lib$(LIB).a
 HDR 	:= $(wildcard include/mgdl-wii/*.h)
-HDR 	+= $(wildcard include/mgdl-cross/*.h)
+HDR 	+= $(wildcard include/mgdl/*.h)
 
 .PHONY: all clean install
 

@@ -17,7 +17,7 @@ namespace gdl
 		void SetSpacingOnce(float x, float y);
 		short GetCharacterWidth();
 		short GetCharacterHeight();
-	private:
+	protected: // gdl::SpriteSet derives from this class
 
 		gdl::Image fontImage;
 		float spacingX;

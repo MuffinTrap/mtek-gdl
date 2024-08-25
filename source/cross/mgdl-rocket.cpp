@@ -17,14 +17,28 @@ void RocketPause( int flag)
 		singleton.Pause(false);
     }
 }
+
 void gdl::RocketSync::Pause(bool setPaused)
 {
     instance->music->SetPaused(setPaused);
+    if (setPaused)
+    {
+        instance->syncState = SyncPause;
+    }
+    else
+    {
+        // Start playing when unpaused for the first time
+        if (instance->syncState == SyncStop)
+        {
+            instance->Play();
+        }
+        instance->syncState = SyncPlay;
+    }
 }
 
 void RocketSetRow( int rowIn)
 {
-    gdl::RocketSync::SetRow(rowIn);
+    instance->SetRow(rowIn);
 }
 
 void gdl::RocketSync::SetRow(int row)
@@ -37,8 +51,7 @@ void gdl::RocketSync::SetRow(int row)
 int RocketIsPlaying()
 {
     // Get the play state of the audio source
-    gdl::RocketSync& singleton = gdl::RocketSync::GetSingleton();
-    switch(singleton.GetState())
+    switch(instance->GetState())
 	{
 		case gdl::SyncPlay:
 			return 1;
@@ -53,6 +66,24 @@ int RocketIsPlaying()
 			return 2;
 			break;
 	}
+}
+
+
+// Used by getters
+double gdl::RocketSync::GetRow()
+{
+	return instance->row;
+}
+
+int gdl::RocketSync::GetRowInt()
+{
+    return static_cast<int>(ceil(instance->row));
+}
+
+// Use for effects not tied to tracks
+float gdl::RocketSync::GetTime()
+{
+    return instance->musicElapsedSeconds;
 }
 
 gdl::SyncState gdl::RocketSync::GetState()
@@ -73,9 +104,10 @@ void gdl::RocketSync::InitRocket(sync_device* rocket, gdl::Sound* soundFile, flo
 }
 
 // Call this at the start of the frame
-void gdl::RocketSync::Update()
+void gdl::RocketSync::UpdateRow()
 {
     instance->musicElapsedSeconds = instance->music->GetElapsedSeconds();
+	instance->row  = instance->musicElapsedSeconds * instance->rowRate;
 }
 
 sync_device * gdl::RocketSync::GetDevice()
@@ -91,9 +123,24 @@ void gdl::RocketSync::Disconnect()
 }
 
 // For internal use
+gdl::RocketSync::RocketSync()
+{
+    instance = nullptr;
+    music = nullptr;
+    bpm = 0;
+    rowsPerBeat = 1;
+    row = 0;
+    rowRate = 0;
+    syncState = gdl::SyncState::SyncStop;
+    musicElapsedSeconds = 0.0f;
+}
+
 gdl::RocketSync & gdl::RocketSync::GetSingleton()
 {
-    instance = new RocketSync();
+    if (instance == nullptr)
+    {
+        instance = new RocketSync();
+    }
     return *instance;
 }
 
@@ -102,6 +149,10 @@ void gdl::RocketSync::Play()
 {
     instance->music->Play();
 }
+
+
+// -----------------------------------------------------------
+// Functions for saving tracks
 
 // Call to write the header files
 void gdl::RocketSync::StartSaveToHeader()
@@ -118,7 +169,7 @@ void gdl::RocketSync::SaveTrack(sync_track& track)
 }
 #pragma GCC diagnostic pop
 
-void gdl::RocketSync::SaveTrack(sync_track* track)
+void gdl::RocketSync::SaveTrack(const sync_track* track)
 {
     save_sync(track, MGDL_ROCKET_FILE_H, MGDL_ROCKET_FILE_CPP);
 }
@@ -128,7 +179,7 @@ void gdl::RocketSync::EndSaveToHeader()
     end_save_sync(MGDL_ROCKET_FILE_H, MGDL_ROCKET_FILE_CPP);
 }
 
-void gdl::RocketSync::SetToBeSaved(sync_track* track)
+void gdl::RocketSync::SetToBeSaved(const sync_track* track)
 {
     instance->tracks.push_back(track);
 }
@@ -144,18 +195,6 @@ void gdl::RocketSync::SaveAllTracks()
 }
 
 
-// Used by getters
-double gdl::RocketSync::GetRow()
-{
-	return ceil(instance->musicElapsedSeconds / instance->rowRate);
-}
-
-// Use for effects not tied to tracks
-float gdl::RocketSync::GetTime()
-{
-    return instance->musicElapsedSeconds;
-}
-
 
 // Getters
 float gdl::RocketSync::GetFloat(sync_track& track)
@@ -163,14 +202,9 @@ float gdl::RocketSync::GetFloat(sync_track& track)
     return static_cast<float>(sync_get_val_ref(track, instance->row));
 }
 
-float gdl::RocketSync::GetFloat(sync_track* track)
+float gdl::RocketSync::GetFloat(const sync_track* track)
 {
     return static_cast<float>(sync_get_val_ptr(track, instance->row));
-}
-
-double gdl::RocketSync::GetDouble(sync_track* track)
-{
-    return sync_get_val_ptr(track, instance->row);
 }
 
 double gdl::RocketSync::GetDouble(sync_track& track)
@@ -178,9 +212,9 @@ double gdl::RocketSync::GetDouble(sync_track& track)
     return sync_get_val_ref(track, instance->row);
 }
 
-int gdl::RocketSync::GetInt(sync_track* track)
+double gdl::RocketSync::GetDouble(const sync_track* track)
 {
-    return static_cast<int>(sync_get_val_ptr(track, instance->row));
+    return sync_get_val_ptr(track, instance->row);
 }
 
 int gdl::RocketSync::GetInt(sync_track& track)
@@ -188,12 +222,18 @@ int gdl::RocketSync::GetInt(sync_track& track)
     return static_cast<int>(sync_get_val_ref(track, instance->row));
 }
 
+int gdl::RocketSync::GetInt(const sync_track* track)
+{
+    return static_cast<int>(sync_get_val_ptr(track, instance->row));
+}
+
+
 bool gdl::RocketSync::GetBool(sync_track& track)
 {
     return sync_get_val_ref(track, instance->row) > 0.0f ? true : false;
 }
 
-bool gdl::RocketSync::GetBool(sync_track* track)
+bool gdl::RocketSync::GetBool(const sync_track* track)
 {
     return sync_get_val_ptr(track, instance->row) > 0.0f ? true : false;
 }
