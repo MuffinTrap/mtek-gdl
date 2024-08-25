@@ -30,11 +30,18 @@ DATA		:=	data
 TEXTURES	:=	
 INCLUDES	:=	include
 
+#-------------------
+# Extra modules
+#-------------------
+# Rocket
+SOURCES += ../3rdparty/modules/rocket/
+INCLUDES += ../3rdparty/modules/rocket/
+
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
 CFLAGS	= -O3 -Werror -Wall -Wextra -DPLATFORM_WII $(MACHDEP) $(INCLUDE)
-CXXFLAGS	= -Wwrite-strings $(CFLAGS)
+CXXFLAGS	= -Wwrite-strings $(CFLAGS) -DSYNC_PLAYER
 
 LDFLAGS	=	$(MACHDEP) -Wl,-Map,$(notdir $@).map
 
@@ -75,6 +82,7 @@ BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
 SCFFILES	:=	$(foreach dir,$(TEXTURES),$(notdir $(wildcard $(dir)/*.scf)))
 TPLFILES	:=	$(SCFFILES:.scf=.tpl)
 
+
 #---------------------------------------------------------------------------------
 # use CXX for linking C++ projects, CC for standard C
 #---------------------------------------------------------------------------------
@@ -114,6 +122,8 @@ export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib) \
 					-L$(PORTLIBS_WII_LIB)
 
 export OUTPUT	:=	$(CURDIR)/$(TARGET)
+
+
 .PHONY: $(BUILD) clean all
 
 all: $(BUILD)

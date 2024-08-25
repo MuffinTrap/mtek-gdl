@@ -7,6 +7,7 @@ SRC_DIRS := .
 
 # Use find to gather all .cpp and .c files in SRC_DIRS
 cpp_src := $(shell find $(SRC_DIRS) -name '*.cpp')
+cpp_src += $(wildcard ../3rdparty/modules/rocket/*.cpp)
 OFILES	:= $(cpp_src:.cpp=.o)
 CXX_FLAGS = -Werror=unused-function -Wall -Wextra -Wpedantic -std=c++11
 
@@ -21,9 +22,9 @@ CXX = clang++
 EXE_SUFFIX = .elf
 LD_FLAGS = -lpng -lsndfile -lopenal -lGL -lGLU -lglut -lmgdl -Wno-unused-function -z muldefs
 LD_FLAGS += -L../lib/pc
-ROCKET_INCLUDE = -I../3rdparty/libs-cross/
 GLUT_INCLUDE = -I/usr/include/GL/
 MGDL_INCLUDE = -I../include/
+ROCKET_INCLUDE = -I../3rdparty/modules/rocket/
 CXX_FLAGS += $(GLUT_INCLUDE) $(MGDL_INCLUDE) $(ROCKET_INCLUDE)
 
 # Executable is the same name as current directory

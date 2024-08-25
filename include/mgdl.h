@@ -8,7 +8,6 @@
 #include "mgdl/mgdl-image.h"
 #include "mgdl/mgdl-font.h"
 #include "mgdl/mgdl-spriteset.h"
-#include "mgdl/mgdl-rocket.h"
 #include "mgdl/mgdl-sound.h"
 #include "mgdl/mgdl-controller.h"
 #include "mgdl/mgdl-platform.h"

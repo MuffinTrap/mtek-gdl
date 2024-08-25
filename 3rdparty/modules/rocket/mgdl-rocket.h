@@ -1,8 +1,8 @@
 #pragma once
 
-#include <rocket/base.h>
-#include <rocket/device.h>
-#include <rocket/track.h>
+#include "base.h"
+#include "device.h"
+#include "track.h"
 
 #include <vector>
 
@@ -11,8 +11,14 @@
 // to include and compile the rocket source
 
 // Include these only once in your project
-#define MGDL_ROCKET_FILE_H "rocket_sync/tracks.h"
-#define MGDL_ROCKET_FILE_CPP "rocket_sync/tracks.cpp"
+#define MGDL_ROCKET_FILE_H "rocket_tracks.h"
+#define MGDL_ROCKET_FILE_CPP "rocket_tracks.cpp"
+
+#ifdef SYNC_PLAYER
+	typedef const sync_track& ROCKET_TRACK;
+#else
+	typedef const sync_track* ROCKET_TRACK;
+#endif
 
 extern "C" {
 	// Give these functions to the rocket as callbacks
@@ -36,17 +42,22 @@ namespace gdl
 	public:
 		// Supply the rocket connection you created and the music
 		static RocketSync& GetSingleton();
-		static void InitRocket(sync_device* rocket, gdl::Sound* soundFile, float bpm, int beatsPerRow);
+		static bool InitRocket(gdl::Sound* soundFile, float bpm, int beatsPerRow);
 		static void UpdateRow();
 		static sync_device* GetDevice();
 		static void Disconnect(); // Disconnects
+		static void StartSync();
+
+		// TODO how to do this?
+#ifndef SYNC_PLAYER
+		static ROCKET_TRACK GetTrack(const char* trackName);
+#endif
 
 		static void StartSaveToHeader();
-		static void SaveTrack(const sync_track* track);
-		static void SaveTrack(sync_track& track);
+		static void SaveTrack(ROCKET_TRACK track);
 		static void EndSaveToHeader();
 
-		static void SetToBeSaved(const sync_track*);
+		static void SetToBeSaved(ROCKET_TRACK track);
 		static void SaveAllTracks();
 
 		static void SetRow(int row);
@@ -58,17 +69,10 @@ namespace gdl
 		void Pause(bool setPaused);
 		gdl::SyncState GetState();
 
-		static float GetFloat(sync_track& track);
-		static float GetFloat(const sync_track* track);
-
-		static double GetDouble(sync_track& track);
-		static double GetDouble(const sync_track* track);
-
-		static int GetInt(sync_track& track);
-		static int GetInt(const sync_track* track);
-
-		static bool GetBool(sync_track& track);
-		static bool GetBool(const sync_track* track);
+		static float GetFloat(ROCKET_TRACK track);
+		static double GetDouble(ROCKET_TRACK track);
+		static int GetInt(ROCKET_TRACK track);
+		static bool GetBool(ROCKET_TRACK track);
 	private:
 		RocketSync();
 		sync_device *rocket_device;
