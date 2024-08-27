@@ -24,6 +24,9 @@ If you use this fork for making a Wii game or demo, I won't be available to give
 	* ppc-libvorbis
 	* ppc-libvorbisidec
 	* ppc-libogg
+	* wii-glu
+	* wii-opengx
+	* wii-freeglut
 5. Clone this repository to your computer. In the next steps the folder of the repository is called **mtek-gdl/**
 5. Go to mtek-gdl/3rdparty/libs-wii/ and run these commands. They will compile and install libraries that mtek-gdl uses.
 ```sh

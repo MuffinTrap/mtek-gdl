@@ -9,6 +9,7 @@ HDR 	:= $(wildcard include/mgdl-pc/*.h)
 HDR 	+= $(wildcard include/mgdl/*.h)
 PCHDR 	:= include/mgdl.h
 
+OBJ_DIR := obj_lnx
 
 # Link everything statically
 CXX_FLAGS = -Werror=unused-function -Wall -Wextra -Wpedantic -std=c++11 -static
@@ -17,19 +18,19 @@ CXX = clang++
 #LD_FLAGS = -lpng -lsndfile -lopenal -lGL -lGLU -lglut -Wno-unused-function -z muldefs
 GLUT_INCLUDE = -I/usr/include/GL/
 MGDL_INCLUDE = -Iinclude/
-ROCKET_INCLUDE = -I3rdparty/libs-cross/
-CXX_FLAGS += $(GLUT_INCLUDE) $(MGDL_INCLUDE) $(ROCKET_INCLUDE)
+CXX_FLAGS += $(GLUT_INCLUDE) $(MGDL_INCLUDE)
 
-LIBDIR	:= lib/pc
+LIBDIR	:= lib/lnx
 
 .PHONY: all clean install
 
+all : OBJ_FILES = $(wildcard $(OBJ_DIR)/*.o)
 all : $(OFILES)
 	mkdir -p $(LIBDIR)
 # Create static library
-	$(AR) rcs $(ARC) $(OFILES)
-# Copy static library
-	cp $(ARC) $(LIBDIR)
+	$(AR) rcs $(ARC) $(OBJ_FILES)
+# Move static library
+	mv $(ARC) $(LIBDIR)
 # Copy header files
 	cp $(HDR) $(LIBDIR)
 # Copy main header
@@ -39,12 +40,7 @@ clean :
 	rm -f $(OFILES) $(ARC)
 	rm -r lib/pc
 
-#TODO
-# Note: to install you need permissions to modify /opt/
-# use the command $ sudo -E make install
-# The -E flag uses the user's enviroment variables
-# install :
-
-
 %.o : %.cpp
+	mkdir -p $(OBJ_DIR)
 	$(CXX) $(CXX_FLAGS) $(LD_FLAGS) -c $< -o $@
+	mv $@ $(OBJ_DIR)

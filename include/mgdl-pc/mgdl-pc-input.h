@@ -3,6 +3,8 @@
 
 #include <mgdl/mgdl-controller.h>
 
+extern gdl::WiiController glutController;
+
 extern "C"
 {
 	void GetGlutController(gdl::WiiController& controllerInOut);

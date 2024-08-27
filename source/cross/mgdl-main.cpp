@@ -2,7 +2,6 @@
 #include <mgdl/mgdl-platform.h>
 #include <mgdl/mgdl-png.h>
 #include <mgdl/mgdl-image.h>
-#include <mgdl/mgdl-controller.h>
 #include <mgdl/mgdl-font.h>
 
 #ifdef GEKKO
@@ -53,9 +52,14 @@ gdl::Font* gdl::LoadFont(std::string filename, short characterWidth, short chara
 	return a;
 }
 
-void gdl::ReadController(gdl::WiiController& controllerInOut)
+gdl::WiiController& gdl::GetController( int controllerNumber)
 {
-	gdl::Platform::GetPlatform().ReadControllerInput(controllerInOut);
+	return gdl::Platform::GetPlatform().GetController(controllerNumber);
+}
+
+void gdl::DoProgramExit()
+{
+	gdl::Platform::GetPlatform().DoProgramExit();
 }
 
 u16 gdl::GetScreenWidth() { return gdl::Platform::GetPlatform().GetScreenWidth();}

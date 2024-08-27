@@ -9,6 +9,8 @@ static std::function<void()> initCall = nullptr;
 static std::function<void()> updateCall = nullptr;
 static std::function<void()> drawCall = nullptr;
 
+static gdl::WiiController controller;
+
 void gdl::PlatformWii::InitSystem(gdl::ScreenAspect screenAspect,
 								  std::function<void ()> initCallback,
 								  std::function<void ()> updateCallback,
@@ -50,6 +52,9 @@ void gdl::PlatformWii::InitSystem(gdl::ScreenAspect screenAspect,
 	WPAD_Init();
 	WPAD_SetDataFormat(WPAD_CHAN_0, WPAD_FMT_BTNS_ACC_IR);
 
+	controller.SetChannelNumber(WPAD_CHAN_0);
+	controller.ZeroAllInputs();
+
 	gdl::ConsoleMode();
 	u64 now = gettime();
 	u64 deltaTimeStart = now;
@@ -60,12 +65,10 @@ void gdl::PlatformWii::InitSystem(gdl::ScreenAspect screenAspect,
 
     if ((initFlags & gdl::PlatformInitFlag::FlagPauseUntilA )!= 0)
 	{
-		static gdl::WiiController C;
-		C.ZeroAllInputs();
 		while(true)
 		{
-			ReadControllerInput(C);
-			if (C.ButtonPress(gdl::WiiButtons::ButtonA))
+			ReadControllers();
+			if (GetController(0).ButtonPress(gdl::WiiButtons::ButtonA))
 			{
 				break;
 			}
@@ -81,6 +84,8 @@ void gdl::PlatformWii::InitSystem(gdl::ScreenAspect screenAspect,
 		deltaTimeS = (float)(now - deltaTimeStart) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
 		deltaTimeStart = now;
 
+		controller.StartFrame();
+		ReadControllers();
 		updateCall();
 		gdl::PrepDisplay();
 		drawCall();
@@ -88,29 +93,37 @@ void gdl::PlatformWii::InitSystem(gdl::ScreenAspect screenAspect,
 		gdl::Display();
 	}
 }
+gdl::WiiController& gdl::PlatformWii::GetController(int controllerNumber)
+{
+	if (controllerNumber == 0)
+	{
+		return controller;
+	}
+	return controller;
+}
 
-void gdl::PlatformWii::ReadControllerInput(gdl::WiiController& controllerInOut)
+void gdl::PlatformWii::ReadControllers()
 {
 	// TODO This might have to be in a macro
 	WPAD_ScanPads();  // Scan the Wiimotes
-	WPADData *data1 = WPAD_Data(controllerInOut.channel);
+	WPADData *data1 = WPAD_Data(controller.channel);
 
 	const ir_t &ir = data1->ir;
 	// Multiply x and y to match them to 16:9 screen
-	controllerInOut.cursorX = ir.x * 1.67f - 16.f;
-	controllerInOut.cursorY = ir.y * 1.2f - 16.f;
+	controller.cursorX = ir.x * 1.67f - 16.f;
+	controller.cursorY = ir.y * 1.2f - 16.f;
 
-	controllerInOut.pressedButtons = WPAD_ButtonsDown(0);
-	controllerInOut.releasedButtons = WPAD_ButtonsUp(0);
-	controllerInOut.heldButtons = WPAD_ButtonsHeld(0);
+	controller.pressedButtons = WPAD_ButtonsDown(0);
+	controller.releasedButtons = WPAD_ButtonsUp(0);
+	controller.heldButtons = WPAD_ButtonsHeld(0);
 
-	controllerInOut.nunchukJoystickDirectionX=0.0f;
-	controllerInOut.nunchukJoystickDirectionY=0.0f;
+	controller.nunchukJoystickDirectionX=0.0f;
+	controller.nunchukJoystickDirectionY=0.0f;
 	const expansion_t &ex = data1->exp;
 	if (ex.type == WPAD_EXP_NUNCHUK)
 	{
 		joystick_t n = ex.nunchuk.js;
-		if (n.mag > controllerInOut.nunchukJoystickDeadzone)
+		if (n.mag > controller.nunchukJoystickDeadzone)
 		{
 			// Angle is reported in degrees
 			// Angle of 0 means up.
@@ -121,12 +134,12 @@ void gdl::PlatformWii::ReadControllerInput(gdl::WiiController& controllerInOut)
 			float y = -1.0f;
 			float dirx = cos(rad) * x - sin(rad) * y;
 			float diry = sin(rad) * x + cos(rad) * y;
-			controllerInOut.nunchukJoystickDirectionX = dirx * n.mag;
-			controllerInOut.nunchukJoystickDirectionY = diry * n.mag;
+			controller.nunchukJoystickDirectionX = dirx * n.mag;
+			controller.nunchukJoystickDirectionY = diry * n.mag;
 		}
 	}
 
-	controllerInOut.roll = DegToRad(data1->orient.roll);
+	controller.roll = DegToRad(data1->orient.roll);
 }
 
 void gdl::PlatformWii::DoProgramExit()

@@ -31,7 +31,6 @@ LIB 	:= mgdl
 LIBDIR	:= mgdl/
 CFILES	:= $(wildcard source/wii/*.cpp)
 CFILES	+= $(wildcard source/cross/*.cpp)
-CFILES	+= $(wildcard 3rdparty/libs-cross/rocket/*.cpp)
 OFILES	:= $(CFILES:.cpp=.o)
 ARC 	:= lib/wii/lib$(LIB).a
 HDR 	:= $(wildcard include/mgdl-wii/*.h)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mgdl-types.h"
+#include "mgdl-controller.h"
 
 #include <functional>
 #include <string>
@@ -12,7 +13,6 @@ namespace gdl
 	class Sound;
 	class Image;
 	class PNGFile;
-	class WiiController;
 
 	void InitSystem(gdl::ScreenAspect screenAspect,
 								std::function<void()> initCallback,
@@ -25,8 +25,9 @@ namespace gdl
 	gdl::Sound* LoadSound(std::string filename);
 	gdl::PNGFile* LoadPNG(std::string filename);
 	gdl::Font* LoadFont(std::string filename, short characterWidth, short characterHeight, char firstCharacter);
+	void DoProgramExit();
 
-	void ReadController(gdl::WiiController& controllerInOut);
+	gdl::WiiController& GetController(int controllerNumber);
 
 	u16 GetScreenWidth();
 	u16 GetScreenHeight();

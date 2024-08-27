@@ -16,7 +16,7 @@ namespace gdl
 						std::function<void ()> updateCallback,
 						std::function<void ()> drawCallback,
 						u32 initFlags) override;
-						void ReadControllerInput(gdl::WiiController& controllerInOut) override;
+						gdl::WiiController& GetController(int controllerNumber) override;
 						void DoProgramExit() override;
 	private:
 		void InitAudio();

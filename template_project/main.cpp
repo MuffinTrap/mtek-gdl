@@ -1,8 +1,6 @@
 #include <mgdl.h>
 #include "mgdl-rocket.h"
 
-static gdl::WiiController controller;
-
 #ifdef SYNC_PLAYER
     #include MGDL_ROCKET_FILE_H
     #include MGDL_ROCKET_FILE_CPP
@@ -80,16 +78,14 @@ void render()
 // Called before render()
 void update()
 {
-    controller.StartFrame();
-    gdl::ReadController(controller);
-    if (controller.ButtonPress(gdl::WiiButtons::ButtonHome))
+    if (gdl::GetController(0).ButtonPress(gdl::WiiButtons::ButtonHome))
     {
         gdl::Platform& plat = gdl::Platform::GetPlatform();
         plat.DoProgramExit();
     }
 
 #ifndef SYNC_PLAYER
-    if (controller.ButtonPress(gdl::WiiButtons::Button2))
+    if (gdl::GetController(0).ButtonPress(gdl::WiiButtons::Button2))
     {
         gdl::RocketSync::StartSaveToHeader();
         gdl::RocketSync::SaveTrack(clear_r);
