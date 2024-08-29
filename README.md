@@ -10,6 +10,9 @@ All changes made to the original are clearly commented in the code, as required 
 
 If you use this fork for making a Wii game or demo, I won't be available to give tech support. And naturally, there is no warranty of any kind.
 
+## Version number
+This is now version 0.100.2-muffintrap "nova"
+
 ## How to compile and install the library and run the example with Dolphin
 1. Install devkitpro following instructions here: [DevkitPro Getting Started](https://devkitpro.org/wiki/Getting_Started)
 2. Add DEVKITPRO and DEVKITPPC to your environment variables. If you used the default install location, they should be:
@@ -45,8 +48,6 @@ If you use this fork for making a Wii game or demo, I won't be available to give
 8. Open the Dolphin emulator, Select File > Open... and select the file **example_project.dol**
 
 
-## Version numbers
-This is now version 0.100.2-muffintrap "nova"
 
 ## How to compile and install the library and run the example with Dolphin
 1. Install devkitpro following instructions here: [DevkitPro Getting Started](https://devkitpro.org/wiki/Getting_Started)

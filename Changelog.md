@@ -9,25 +9,18 @@ they can only be used in a Wii-only program.
 There are lots of comments missing and things to tidy up (and Mac support is not really tested yet), but it
 "should work"
 
-
 #### New files
 + Added mgdl-rendering.h and .cpp for functions that help drawing in perspective.
 + Added mgdl-vector-operations.h and .cpp that contain overloaded vectors and utility functions for guVector
 + New cross platform files for all the main classes
-+ New pc files
-
-
++ New pc files for Win/Mac/Linux
 
 #### Modifications to library
 + Fixed off-by-one errors in mgdl-font and mgdl-sprites
 + Added random number utility functions to mgdl-util
-+ Added InitializationFlag OpenGX to enable using OpenGX for drawing instead of gdl functions.
++ Added OpenGL as the rendering library
 + Modified example and template makefiles to use portlibs/wii in include and library path
-+ Added PeekPixel function to Texture class
-+ Added UV Getter function to FFont
 + Added functions Stop() and GetElapsedSeconds() to Sound class.
-
-#### Removals
 
 ### Version 0.100.1-muffintrap "retrojam"
 Fixes and little additions. Breaks SpriteSet API.
