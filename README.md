@@ -10,14 +10,49 @@ All changes made to the original are clearly commented in the code, as required 
 
 If you use this fork for making a Wii game or demo, I won't be available to give tech support. And naturally, there is no warranty of any kind.
 
+## How to compile and install the library and run the example with Dolphin
+1. Install devkitpro following instructions here: [DevkitPro Getting Started](https://devkitpro.org/wiki/Getting_Started)
+2. Add DEVKITPRO and DEVKITPPC to your environment variables. If you used the default install location, they should be:
+```sh
+	DEVKITPRO : /opt/devkitpro
+	DEVKITPPC : /opt/devkitpro/devkitPPC
+```
+3. Using (dkp-)pacman, install the package **wii-dev**
+4. Using (dkp-)pacman, install these packages if they are not already installed:
+	* ppc-png
+	* ppc-zlib
+	* ppc-libvorbis
+	* ppc-libvorbisidec
+	* ppc-libogg
+	* wii-glu
+	* wii-opengx
+	* wii-freeglut
+5. Clone this repository to your computer. In the next steps the folder of the repository is called **mtek-gdl/**
+5. Go to mtek-gdl/3rdparty/libs-wii/ and run these commands. They will compile and install libraries that mtek-gdl uses.
+```sh
+	make
+	sudo -E make install
+```
+6. Go to mtek-gdl/ and run these commands. They will compile and install the library itself.
+```sh
+	make
+	sudo -E make install
+```
+7. Go to mtek-gdl/example_project/ and run the command to compile it. It should produce a file called **example_project.dol**
+```sh
+	make
+```
+8. Open the Dolphin emulator, Select File > Open... and select the file **example_project.dol**
+
+
 ## Version numbers
-This is now version 0.100.1-muffintrap
+This is now version 0.100.2-muffintrap "nova"
 
 ### Future plans
 1. Add support for reading glTF scenes with tinygltf
 2. Add Rocket integration for syncing
-3. Add glm and useful math and lerp functions
-4. Add a simpler to use 3D functions
+3. Add useful math and lerp functions
+4. Add functions to help rendering 3D scenes and objects
 
 This file was changed for version 0.100.0-muffintrap by muffintrap to add explanation of the fork.
 Original contents of README.md are below:
