@@ -52,8 +52,8 @@ void Template::Update()
 
 void DrawTextDouble(const char* text, short x, short y, float scale, gdl::FFont* font)
 {
-    font->DrawText(text, x-font->GetWidth(text)*scale/2+4, y+4, scale, gdl::Color::Black);
-    font->DrawText(text, x-font->GetWidth(text)*scale/2, y, scale, gdl::Color::LightGreen);
+    font->DrawText(text, x-font->GetStringWidth(text)*scale/2+4, y+4, scale, gdl::Color::Black);
+    font->DrawText(text, x-font->GetStringWidth(text)*scale/2, y, scale, gdl::Color::LightGreen);
 
 }
 
@@ -77,7 +77,7 @@ void Template::Draw()
     short left = 32;
     DrawMenu(left, top + 120, 120);
     DrawSprites();
-    DrawTimingInfo(left, gdl::ScreenYres-ibmFont.GetHeight()*4*1.5f, 1.5f);
+    DrawTimingInfo(left, gdl::ScreenYres-ibmFont.GetHeight()*7*1.5f, 1.5f);
     DrawInputInfo(left, top);
 }
 
@@ -203,6 +203,10 @@ void Template::DrawTimingInfo(int x, int y, float scale)
 
     ibmFont.Printf(x+4, y + ystep * 3+4, scale, gdl::Color::Black, "Music elapsed: %f", sampleMusic.GetElapsed());
     ibmFont.Printf(x, y + ystep * 3, scale, gdl::Color::LightRed, "Music elapsed: %f", sampleMusic.GetElapsed());
+
+    float blipElapsed = blip.GetElapsedSeconds();
+    ibmFont.Printf(x+4, y + ystep * 4+4, scale, gdl::Color::Black, "Sound elapsed: %f", blipElapsed);
+    ibmFont.Printf(x, y + ystep * 4, scale, gdl::Color::LightRed, "Sound elapsed: %f", blipElapsed);
 }
 
 void Template::DrawMenu(int x, int y, int w)

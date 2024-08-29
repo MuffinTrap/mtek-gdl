@@ -41,7 +41,7 @@ LDFLAGS	=	$(MACHDEP) -Wl,-Map,$(notdir $@).map
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project (add your own at the left-most)
 #---------------------------------------------------------------------------------
-LIBS	:=	-lmgdl -lvalloc -lwiiuse -loggplayer -lvorbisidec -lpng -lz -lfat -lbte -lasnd -logc -lm
+LIBS	:=	-lmgdl -lvalloc -lwiiuse -loggplayer -lvorbisidec -lvorbis -logg -lpng -lz -lfat -lbte -lasnd -logc -lm
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
@@ -93,20 +93,24 @@ export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
 # build a list of include paths
 #---------------------------------------------------------------------------------
 LIBOGC_INC	:=	$(DEVKITPRO)/libogc/include
-PORTLIBS_INC	:=	$(PORTLIBS_PATH)/ppc/include
+PORTLIBS_PPC_INC	:=	$(PORTLIBS_PATH)/ppc/include
+PORTLIBS_WII_INC	:=	$(PORTLIBS_PATH)/wii/include
 export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)) \
 					-I$(CURDIR)/$(BUILD) \
 					-I$(LIBOGC_INC) \
-					-I$(PORTLIBS_INC)
+					-I$(PORTLIBS_PPC_INC) \
+					-I$(PORTLIBS_WII_INC)
 #---------------------------------------------------------------------------------
 # build a list of library paths
 #---------------------------------------------------------------------------------
 LIBOGC_LIB	:=	$(DEVKITPRO)/libogc/lib/wii
-PORTLIBS_LIB	:=	$(DEVKITPRO)/portlibs/ppc/lib
+PORTLIBS_PPC_LIB	:=	$(DEVKITPRO)/portlibs/ppc/lib
+PORTLIBS_WII_LIB	:=	$(DEVKITPRO)/portlibs/wii/lib
 export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib) \
 					-L$(LIBOGC_LIB) \
-					-L$(PORTLIBS_LIB)
+					-L$(PORTLIBS_PPC_LIB) \
+					-L$(PORTLIBS_WII_LIB)
 
 export OUTPUT	:=	$(CURDIR)/$(TARGET)
 .PHONY: $(BUILD) clean all
@@ -153,7 +157,7 @@ $(OUTPUT).elf: $(OFILES)
 	@$(bin2o)
 
 #---------------------------------------------------------------
-# muffintrap: load png, ogg and wav
+# Convert png, ogg and wav files
 %.png.o : %.png
 	@echo $(notdir $<)
 	@$(bin2o)
