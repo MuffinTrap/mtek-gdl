@@ -2,6 +2,7 @@
 #include <mgdl/mgdl-cache.h>
 #include <mgdl/mgdl-alloc.h>
 #include <mgdl/mgdl-assert.h>
+#include <mgdl/mgdl-file.h>
 
 #include <png.h>
 #include <stdio.h>
@@ -274,11 +275,11 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 	return true;
 }
 
-bool gdl::PNGFile::ReadBuffer(const void* buffer, size_t size)
+bool gdl::PNGFile::ReadBuffer(const u8* buffer, size_t size)
 {
-// fmemopen cannot read from const buffer :U
+	// fmemopen cannot read from const buffer :U
 	// Copy data to temporary buffer before reading
-	void *tempBuffer = aligned_alloc(32, size);
+	u8 *tempBuffer = (u8*)gdl::AllocateAlignedMemory(size);
 	gdl_assert_print((tempBuffer != nullptr), "Cannot allocate enough memory for image buffer.");
 
 	// Copy
@@ -288,7 +289,7 @@ bool gdl::PNGFile::ReadBuffer(const void* buffer, size_t size)
 	CacheFlushRange(tempBuffer, size);
 
 	// Open file
-	FILE *fp= fmemopen(tempBuffer, size, "rb");
+	FILE *fp= gdl::BufferOpen(tempBuffer, size, "rb");
 
 	if (fp == nullptr)
 	{

@@ -1,61 +1,58 @@
-
-# Template project linux Makefile
+# Template project windows Makefile
 
 SRC_DIRS := .
-
-# Use only CXX to compile all files
 
 # Use find to gather all .cpp and .c files in SRC_DIRS
 cpp_src := $(shell find $(SRC_DIRS) -name '*.cpp')
 
-# Setup compilation options
+# Setup common compilation options
 CXXFLAGS = -Werror=unused-function -Wall -Wextra -Wpedantic -std=c++11
 
-# Extra compilation options
 # #############################
+# Extra compilation options
 
 # For Debugging
 CXXFLAGS += -ggdb
 
-# For optimization
-# CXXFLAGS += -O3
-
-# ROCKET module
-
-# Add rocket files
+# Rocket module
+# Add rocket files to source
 cpp_src += $(wildcard ../3rdparty/modules/rocket/*.cpp)
 ROCKET_INCLUDE = -I../3rdparty/modules/rocket/
 CXXFLAGS += $(ROCKET_INCLUDE)
-# The rocket code of library is compiled in SYNC_PLAYER mode
+
+# The rocket code of the release is compiled in SYNC_PLAYER mode
 # CXX_FLAGS += -DSYNC_PLAYER
 
-# ############################################
-# Linux specific settings
+# ######################################
+# Windows specific settings
 
 # Set Compiler
-CXX = clang++
-EXE_SUFFIX = .elf
-OBJ_DIR := obj_lnx
+CXX = g++
+EXE_SUFFIX = .exe
+OBJ_DIR := obj_win
 
 # Create a list of libraries that need to be linked
-LDFLAGS = -lpng -lsndfile -lopenal -lGL -lGLU -lglut -lmgdl -Wno-unused-function -z muldefs
+LDFLAGS = -lmgdl -lpng -lsndfile -lopenal -lopengl32 -lglu32 -lfreeglut -lws2_32 -Wl,--allow-multiple-definition
 
-# Add mgdl search directory and include
-LDFLAGS += -L../lib/lnx
+# Add mgdl library search directory and include
+LDFLAGS += -L../lib/win
+#LDFLAGS += -L/ucrt64/lib
 MGDL_INCLUDE = -I../include/
 
 # Add include directories for libraries
-GLUT_INCLUDE = -I/usr/include/GL/
+#GLUT_INCLUDE = -I/usr/include/GL/
 
 # Executable is the same name as current directory +
 # platform specific postfix
-TARGET	:=	$(notdir $(CURDIR))_lnx.elf
+TARGET	:=	$(notdir $(CURDIR))_win.exe
 
-# ########################
+# END Windows specific
+
+# ###################################
 # Common settings and targets
 
 # Add them all to Compilation options
-CXXFLAGS += $(GLUT_INCLUDE) $(MGDL_INCLUDE) 
+CXXFLAGS += $(MGDL_INCLUDE)
 
 # Create a list of object files that make needs to
 # process
@@ -68,7 +65,7 @@ all : OBJ_FILES = $(wildcard $(OBJ_DIR)/*.o)
 
 # When all OFILES have been processed, link them together
 all : $(OFILES)
-	$(CXX) $(OBJ_FILES) $(CXXFLAGS) $(LDFLAGS) -o $(TARGET)
+	$(CXX) $(OBJ_FILES) $(CXXFLAGS) $(LDFLAGS) -o $(TARGET) 
 
 # Remove obj directory, all object files and the target
 clean:

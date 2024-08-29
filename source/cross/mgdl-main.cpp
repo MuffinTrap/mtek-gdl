@@ -1,14 +1,6 @@
 #include <mgdl/mgdl-main.h>
 #include <mgdl/mgdl-platform.h>
-#include <mgdl/mgdl-png.h>
-#include <mgdl/mgdl-image.h>
-#include <mgdl/mgdl-font.h>
 
-#ifdef GEKKO
-#include <mgdl-wii/mgdl-wii-sound.h>
-#else
-#include <mgdl-pc/mgdl-pc-sound.h>
-#endif
 
 void gdl::InitSystem(gdl::ScreenAspect screenAspect,
 								std::function<void()> initCallback,
@@ -23,6 +15,13 @@ gdl::Image* gdl::LoadImage(std::string filename, gdl::TextureFilterModes filterM
 {
 	gdl::Image* img = new gdl::Image();
 	img->LoadFile(filename.c_str(), filterMode);
+	return img;
+}
+
+gdl::Image* gdl::LoadImage(gdl::PNGFile* png, gdl::TextureFilterModes filterMode)
+{
+	gdl::Image* img = new gdl::Image();
+	img->LoadPNG(png, filterMode);
 	return img;
 }
 

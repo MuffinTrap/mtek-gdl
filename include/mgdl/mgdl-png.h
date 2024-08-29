@@ -12,7 +12,7 @@ namespace gdl
 	public:
 		PNGFile();
 		~PNGFile();
-		bool ReadBuffer(const void* buffer, size_t size);
+		bool ReadBuffer(const u8* buffer, size_t size);
 		bool ReadFile(const char* filename);
 		void DeleteData();
 		GLenum GetGLFormat();
