@@ -101,13 +101,18 @@ gdl::SyncState gdl::RocketSync::GetState()
 
 bool gdl::RocketSync::InitRocket(gdl::Sound* soundFile, float bpm, int rowsPerBeat)
 {
-    // TODO: Dummy soundfile if none given
+    if (soundFile == nullptr)
+    {
+        perror("No sound file give to RocketSync\n");
+        return false;
+    }
+
     sync_device* rocket = sync_create_device("sync");
     #ifndef SYNC_PLAYER
     if (sync_tcp_connect(rocket, "localhost", SYNC_DEFAULT_PORT))
     {
+        perror("Could not connect to rocket host\n");
         return false;
-        // TODO do not crash!
     }
     else
     {
@@ -116,6 +121,7 @@ bool gdl::RocketSync::InitRocket(gdl::Sound* soundFile, float bpm, int rowsPerBe
         rocket_callbacks.set_row = RocketSetRow;
     }
     #endif
+
 
     gdl::RocketSync& singleton = gdl::RocketSync::GetSingleton();
     singleton.rocket_device = rocket;

@@ -28,8 +28,4 @@ namespace gdl
 
 		virtual ~Sound() = default;
 	};
-
-	// Separate for music?
-
-
 };

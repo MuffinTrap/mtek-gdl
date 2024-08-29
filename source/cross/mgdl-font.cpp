@@ -8,7 +8,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-void gdl::Font::LoadFromBuffer (const u8* buffer, size_t size, short charw, short charh, char firstCharacter )
+bool gdl::Font::LoadFromBuffer (const u8* buffer, size_t size, short charw, short charh, char firstCharacter )
 {
 	bool imageOk = fontImage.LoadBuffer(buffer, size, gdl::TextureFilterModes::Linear);
 	gdl_assert_print(imageOk, "Did not load font image buffer");
@@ -17,9 +17,10 @@ void gdl::Font::LoadFromBuffer (const u8* buffer, size_t size, short charw, shor
 	{
 		Bind(charw, charh, firstCharacter);
 	}
+	return imageOk;
 }
 
-void gdl::Font::LoadFromImage(const char* filename, short charw, short charh, char firstCharacter )
+bool gdl::Font::LoadFromImage(const char* filename, short charw, short charh, char firstCharacter )
 {
 	bool imageOk = fontImage.LoadFile(filename, gdl::TextureFilterModes::Linear);
 	gdl_assert_printf(imageOk, "Did not load font image file: %s", filename);
@@ -28,6 +29,7 @@ void gdl::Font::LoadFromImage(const char* filename, short charw, short charh, ch
 	{
 		Bind(charw, charh, firstCharacter);
 	}
+	return imageOk;
 }
 
 void gdl::Font::Bind (short charw, short charh, char firstCharacter )

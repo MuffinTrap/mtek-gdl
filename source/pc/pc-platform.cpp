@@ -72,6 +72,9 @@ void UpdateLoop(int value)
     glutTimerFunc(16, UpdateLoop, 0);
     // TODO Where is the correct place for this?
     glutController.StartFrame();
+    // Tell glut that the window needs to be
+    // redrawn.
+    glutPostRedisplay();
 }
 #pragma GCC diagnostic pop
 #pragma clang diagnostic pop
@@ -85,11 +88,6 @@ void RenderLoop() {
 
     // Wait for v sync and swap
     glutSwapBuffers();
-
-    // Tell glut that the window needs to be
-    // redrawn.
-    glutPostRedisplay();
-
 }
 
 void gdl::PlatformPC::InitAudio()

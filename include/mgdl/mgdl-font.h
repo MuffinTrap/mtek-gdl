@@ -8,8 +8,8 @@ namespace gdl
 	class Font
 	{
 	public:
-		void LoadFromBuffer(const u8* buffer, size_t size, short charw, short charh, char firstCharacter);
-		void LoadFromImage(const char* filename, short charw, short charh, char firstCharacter);
+		bool LoadFromBuffer(const u8* buffer, size_t size, short charw, short charh, char firstCharacter);
+		bool LoadFromImage(const char* filename, short charw, short charh, char firstCharacter);
 		void Printf(u32 color, float scale, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* format, ... );
 		void Print(u32 color, float scale, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* text);
 		void DrawSheet();

@@ -12,18 +12,17 @@ PCHDR 	:= include/mgdl.h
 # Link everything statically
 CXX_FLAGS = -Werror=unused-function -Wall -Wextra -Wpedantic -std=c++11 -static
 
+# Add own include files so that #include <...> works
+MGDL_INCLUDE = -Iinclude/
+CXX_FLAGS += $(MGDL_INCLUDE)
+
 # Windows specific settings
 CXX = g++
 LIBDIR	:= lib/win
 OBJ_DIR := obj_win
 CXX_FLAGS += -DMGDL_PLATFORM_WINDOWS
-#LD_FLAGS = -lpng -lsndfile -lopenal -lopengl32 -lglu32 -lfreeglut -Wno-unused-function -z muldefs
-GLUT_INCLUDE = -I/usr/include/GL/
-UCRT64_INCLUDE = -I/ucrt64/include
-#LD_FLAGS += -L/ucrt64/lib
-MGDL_INCLUDE = -Iinclude/
-CXX_FLAGS += $(GLUT_INCLUDE) $(MGDL_INCLUDE)
 
+# Common part
 
 .PHONY: all clean install
 

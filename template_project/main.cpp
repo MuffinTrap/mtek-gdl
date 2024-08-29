@@ -59,7 +59,11 @@ void init()
     glClearColor(247.0f/255.0f, 1.0f, 174.0f/255.0f, 0.0f);
     gdl::Sound* numbers = gdl::LoadSound("numbers.wav");
 
-    gdl::RocketSync::InitRocket(numbers, 120, 4);
+    bool rocketInit = gdl::RocketSync::InitRocket(numbers, 120, 4);
+    if (rocketInit == false)
+    {
+        gdl::DoProgramExit();
+    }
 
 #ifndef SYNC_PLAYER
     clear_r = gdl::RocketSync::GetTrack("clear_r");
@@ -87,9 +91,9 @@ void update()
 #ifndef SYNC_PLAYER
     if (gdl::GetController(0).ButtonPress(gdl::WiiButtons::Button2))
     {
-        gdl::RocketSync::StartSaveToHeader();
-        gdl::RocketSync::SaveTrack(clear_r);
-        gdl::RocketSync::EndSaveToHeader();
+       gdl::RocketSync::StartSaveToHeader();
+       gdl::RocketSync::SaveTrack(clear_r);
+       gdl::RocketSync::EndSaveToHeader();
     }
 #endif
 
@@ -112,7 +116,6 @@ int main()
         gdl::ScreenAspect::Screen4x3,
         init,
         update,  // std::function callbacks
-        render,
-        gdl::PlatformInitFlag::FlagPauseUntilA
+        render
     );
 }

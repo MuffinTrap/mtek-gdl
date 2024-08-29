@@ -32,19 +32,23 @@ EXE_SUFFIX = .exe
 OBJ_DIR := obj_win
 
 # Create a list of libraries that need to be linked
-LDFLAGS = -lmgdl -lpng -lsndfile -lopenal -lopengl32 -lglu32 -lfreeglut -lws2_32 -Wl,--allow-multiple-definition
+
+# NOTE ! 
+# Bloody C++ linking order is "last is first" and it does not read the
+# list before it tries to link
+# So the libraries not used by other libraries need to be last
+# and mgdl needs to be first
+LDFLAGS = -lmgdl -lpng -lopenal -lsndfile -lfreeglut -lglu32 -lopengl32 -lws2_32 -Wl,--allow-multiple-definition
 
 # Add mgdl library search directory and include
 LDFLAGS += -L../lib/win
-#LDFLAGS += -L/ucrt64/lib
 MGDL_INCLUDE = -I../include/
-
-# Add include directories for libraries
-#GLUT_INCLUDE = -I/usr/include/GL/
 
 # Executable is the same name as current directory +
 # platform specific postfix
-TARGET	:=	$(notdir $(CURDIR))_win.exe
+# Add numbers to the end if it crashes
+# and you need to make a new one
+TARGET	:=	$(notdir $(CURDIR))_win3.exe
 
 # END Windows specific
 

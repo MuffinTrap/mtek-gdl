@@ -14,15 +14,29 @@ void gdl::InitSystem(gdl::ScreenAspect screenAspect,
 gdl::Image* gdl::LoadImage(std::string filename, gdl::TextureFilterModes filterMode)
 {
 	gdl::Image* img = new gdl::Image();
-	img->LoadFile(filename.c_str(), filterMode);
-	return img;
+	if(img->LoadFile(filename.c_str(), filterMode))
+	{
+		return img;
+	}
+	else
+	{
+		delete img;
+		return nullptr;
+	}
 }
 
 gdl::Image* gdl::LoadImage(gdl::PNGFile* png, gdl::TextureFilterModes filterMode)
 {
 	gdl::Image* img = new gdl::Image();
-	img->LoadPNG(png, filterMode);
-	return img;
+	if (img->LoadPNG(png, filterMode))
+	{
+		return img;
+	}
+	else
+	{
+		delete img;
+		return nullptr;
+	}
 }
 
 gdl::Sound* gdl::LoadSound(std::string filename)
@@ -33,22 +47,43 @@ gdl::Sound* gdl::LoadSound(std::string filename)
 #else
 	snd = new gdl::SoundPC();
 #endif
-	snd->LoadFile(filename.c_str());
-	return snd;
+	if(snd->LoadFile(filename.c_str()))
+	{
+		return snd;
+	}
+	else
+	{
+		delete snd;
+		return nullptr;
+	}
 }
 
 gdl::PNGFile* gdl::LoadPNG(std::string filename)
 {
 	gdl::PNGFile* png = new gdl::PNGFile();
-	png->ReadFile(filename.c_str());
-	return png;
+	if (png->ReadFile(filename.c_str()))
+	{
+		return png;
+	}
+	else
+	{
+		delete png;
+		return nullptr;
+	}
 }
 
 gdl::Font* gdl::LoadFont(std::string filename, short characterWidth, short characterHeight, char firstCharacter)
 {
-	gdl::Font* a = new gdl::Font();
-	a->LoadFromImage(filename.c_str(), characterWidth, characterHeight, firstCharacter);
-	return a;
+	gdl::Font* font = new gdl::Font();
+	if (font->LoadFromImage(filename.c_str(), characterWidth, characterHeight, firstCharacter))
+	{
+		return font;
+	}
+	else
+	{
+		delete font;
+		return nullptr;
+	}
 }
 
 gdl::WiiController& gdl::GetController( int controllerNumber)
