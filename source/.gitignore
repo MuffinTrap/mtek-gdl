@@ -1,7 +1,3 @@
 *.o
 *.d
 *.a
-mgdl-wii.cpp
-obj
-old
-pc
