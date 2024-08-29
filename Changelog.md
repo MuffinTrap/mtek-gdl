@@ -1,7 +1,32 @@
 # Changes made by muffintrap
 
+### Version 0.100.2-muffintrap "nova"
+This is a big refactor that makes the library cross platform. The library can now be used on Windows, Linux, OS X(Mac computers) and Wii.
+This is made possible with OpenGL and OpenAL that work on all of them.
+The OpenGL is now the default way to draw anything. The files using GX are still in the framework, but
+they can only be used in a Wii-only program.
+There are lots of comments missing and things to tidy up (and Mac support is not really tested yet), but it
+"should work"
 
-### Version 0.100.1-muffintrap
+#### New files
++ Added mgdl-rendering.h and .cpp for functions that help drawing in perspective.
++ Added mgdl-vector-operations.h and .cpp that contain overloaded vectors and utility functions for guVector
++ New cross platform files for all the main classes
++ New pc files
+
+
+#### Modifications to library
++ Fixed off-by-one errors in mgdl-font and mgdl-sprites
++ Added random number utility functions to mgdl-util
++ Added InitializationFlag OpenGX to enable using OpenGX for drawing instead of gdl functions.
++ Modified example and template makefiles to use portlibs/wii in include and library path
++ Added PeekPixel function to Texture class
++ Added UV Getter function to FFont
++ Added functions Stop() and GetElapsedSeconds() to Sound class.
+
+#### Removals
+
+### Version 0.100.1-muffintrap "retrojam"
 Fixes and little additions. Breaks SpriteSet API.
 
 #### New files

@@ -11,10 +11,101 @@ All changes made to the original are clearly commented in the code, as required 
 If you use this fork for making a Wii game or demo, I won't be available to give tech support. And naturally, there is no warranty of any kind.
 
 ## Version numbers
-This is now version 0.100.1-muffintrap
+
+This is now version 0.100.2-muffintrap "nova"
+
+## How to compile and install the library and run the example with Dolphin
+1. Install devkitpro following instructions here: [DevkitPro Getting Started](https://devkitpro.org/wiki/Getting_Started)
+2. Add DEVKITPRO and DEVKITPPC to your environment variables. If you used the default install location, they should be:
+```sh
+	DEVKITPRO : /opt/devkitpro
+	DEVKITPPC : /opt/devkitpro/devkitPPC
+```
+3. Using (dkp-)pacman, install the package **wii-dev**
+4. Using (dkp-)pacman, install these packages if they are not already installed:
+	* ppc-png
+	* ppc-zlib
+	* ppc-libvorbis
+	* ppc-libvorbisidec
+	* ppc-libogg
+	* wii-glu
+	* wii-opengx
+	* wii-freeglut
+5. Clone this repository to your computer. In the next steps the folder of the repository is called **mtek-gdl/**
+5. Go to mtek-gdl/3rdparty/libs-wii/ and run these commands. They will compile and install libraries that mtek-gdl uses.
+```sh
+	make
+	sudo -E make install
+```
+6. Go to mtek-gdl/ and run these commands. They will compile and install the library itself.
+```sh
+	make
+	sudo -E make install
+```
+7. Go to mtek-gdl/example_project/ and run the command to compile it. It should produce a file called **example_project.dol**
+```sh
+	make
+```
+8. Open the Dolphin emulator, Select File > Open... and select the file **example_project.dol**
+
+## How to compile and install on Windows
+### Development environment and libraries
+1. Install [MSYS2](https://www.msys2.org/) (This is a different version from the one that comes with DevkitPro) [Detailed instructions for install](https://www.freecodecamp.org/news/how-to-install-c-and-cpp-compiler-on-windows/)
+2. Launch the UCRT64 variant and update the packages as explained in the Detailed instructions above.
+3. Install the compiler 
+<code>pacman -S mingw-w64-ucrt-x86_64-gcc</code>
+4. Install the required libraries:
+<code>pacman -S mingw-w64-ucrt-x86_64-openal mingw-w64-ucrt-x86_64-freeglut mingw-w64-ucrt-x86_64-libpng mingw-w64-ucrt-x86_64-libsndfile mingw-w64-ucrt-x86_64-glm make</code>
+
+### Compiling the executable and getting the .dll files
+1. Navigate to the github repository.
+2. Run command <code>make -f Makefile_win</code>
+
+####  Get or link to DLL files
+**Link to files**
+- Add the folder <code>C:\msys64\ucrt64\bin</code> to PATH on windows. That way windows will look there for the dll files when running your executable.
+
+#### These are the dll files that the program needs to run.
+You need to include these files when you release your executable.
+- libgcc_s_seh-1.dll
+- libfreeglut.dll
+- libopenal-1.dll
+- libpng16-16.dll
+- libsndfile-1.dll
+- libstdc++-6.dll
+- libwinpthread-1.dll
+- zlib1.dll
+- libFLAC.dll
+- libmpg123-0.dll
+- libmp3lame-0.dll
+- libogg-0.dll
+- libvorbis-0.dll
+- libopus-0.dll
+- libvorbisenc-2.dll
+
+## Libraries needed for Linux port:
+- libsndfile1-dev
+- libopenal-dev
+- freeglut3-dev
+
+Linux makefile is Makefile_linux.mk
+You cannot install the library at least for now. Use -L and -I in a makefile to locate it.
+
+### Rocket editor
+These libraries are needed if you build the rocket editor on Linux
+
+- libqt5websockets5-dev
+- qml-module-qtwebsockets
+
+## Libraries needed for Mac port:
+You need to install these somehow using homebrew. The versions given are ones that worked before.
+
+- libsndfile version 1.2.2
+- openal-soft version 1.23.1
+- libpng version 1.6.43
 
 ### Future plans
-1. Add support for reading glTF scenes with tinygltf
+1. Add support for reading glTF scenes with tinygltf and FBX support if ufbx
 2. Add Rocket integration for syncing
 3. Add glm and useful math and lerp functions
 4. Add a simpler to use 3D functions
