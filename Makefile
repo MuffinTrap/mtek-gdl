@@ -28,11 +28,13 @@ MACHDEP := -mrvl -mcpu=750 -meabi -mhard-float
 CFLAGS  := -O3 -Werror -Wall -Wextra $(MACHDEP) $(INCLUDE) -DSYNC_PLAYER -DGEKKO
 
 LIB 	:= mgdl
-LIBDIR	:= mgdl/
 CFILES	:= $(wildcard source/wii/*.cpp)
 CFILES	+= $(wildcard source/cross/*.cpp)
 OFILES	:= $(CFILES:.cpp=.o)
 ARC 	:= lib/wii/lib$(LIB).a
+HDRS_X 	:= $(wildcard include/mgdl/*.h)
+HDRS_WII	:= $(wildcard include/mgdl-wii/*.h)
+HDRS := $(HDRS_X) $(HDRS_WII)
 HDR 	:= $(wildcard include/mgdl-wii/*.h)
 HDR 	+= $(wildcard include/mgdl/*.h)
 
@@ -50,10 +52,12 @@ clean :
 # use the command $ sudo -E make install
 # The -E flag uses the user's enviroment variables
 install :
-	mkdir -p $(LIBOGC_LIB) $(LIBOGC_INC)/$(LIBDIR)
+	mkdir -p $(LIBOGC_LIB) $(LIBOGC_INC)/mgdl
+	mkdir -p $(LIBOGC_LIB) $(LIBOGC_INC)/mgdl-wii
 	cp -f $(ARC) $(LIBOGC_LIB)/
 	cp -f include/mgdl.h $(LIBOGC_INC)
-	cp -f $(HDR) $(LIBOGC_INC)/$(LIBDIR)
+	cp -f $(HDRS_X) $(LIBOGC_INC)/mgdl
+	cp -f $(HDRS_WII) $(LIBOGC_INC)/mgdl-wii
 
 %.o : %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
