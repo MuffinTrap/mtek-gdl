@@ -3,45 +3,55 @@
 LIB 	:= mgdl
 CFILES	= $(wildcard source/cross/*.cpp)
 CFILES	+= $(wildcard source/pc/*.cpp)
-OFILES	:= $(CFILES:.cpp=.o)
 ARC 	:= lib$(LIB).a
 HDR 	:= $(wildcard include/mgdl-pc/*.h)
 HDR 	+= $(wildcard include/mgdl/*.h)
 PCHDR 	:= include/mgdl.h
-
-OBJ_DIR := obj_lnx
+INSTALL_DIR = $(HOME)/libmgdl
 
 # Link everything statically
 CXX_FLAGS = -Werror=unused-function -Wall -Wextra -Wpedantic -std=c++11 -static
 
+# Add own include files so that #include <...> works
+MGDL_INCLUDE = -Iinclude/
+CXX_FLAGS += $(MGDL_INCLUDE)
+
 # Linux specific settings
 CXX = clang++
 LIBDIR	:= lib/lnx
-#LD_FLAGS = -lpng -lsndfile -lopenal -lGL -lGLU -lglut -Wno-unused-function -z muldefs
 GLUT_INCLUDE = -I/usr/include/GL/
-MGDL_INCLUDE = -Iinclude/
-CXX_FLAGS += $(GLUT_INCLUDE) $(MGDL_INCLUDE)
-
+CXX_FLAGS += $(GLUT_INCLUDE)
+# Different file type for linux object files
+OFILES	:= $(CFILES:.cpp=.lo)
+# Common part
 
 .PHONY: all clean install
 
-all : OBJ_FILES = $(wildcard $(OBJ_DIR)/*.o)
-all : $(OFILES)
-	mkdir -p $(LIBDIR)
+all : $(ARC)
+
+$(ARC): $(OFILES)
+	@mkdir -p $(LIBDIR)
 # Create static library
-	$(AR) rcs $(ARC) $(OBJ_FILES)
+	@$(AR) rcs $(ARC) $(OFILES)
 # Move static library
-	mv $(ARC) $(LIBDIR)
+	@mv $(ARC) $(LIBDIR)
 # Copy header files
-	cp $(HDR) $(LIBDIR)
+	@cp $(HDR) $(LIBDIR)
 # Copy main header
-	cp $(PCHDR) $(LIBDIR)
+	@cp $(PCHDR) $(LIBDIR)
+	@echo built library $(ARC)
+
+# Installs to /home/user/libmgdl
+install: $(ARC)
+	@mkdir -p $(INSTALL_DIR)
+	@cp $(LIBDIR)/$(ARC) $(INSTALL_DIR)
+	@cp $(HDR) $(INSTALL_DIR)
+	@cp $(PCHDR) $(INSTALL_DIR)
+	@echo installed to $(INSTALL_DIR)
 
 clean :
 	rm -f $(OFILES) $(ARC)
-	rm -r lib/pc
+	rm -r $(LIBDIR)
 
-%.o : %.cpp
-	mkdir -p $(OBJ_DIR)
+%.lo : %.cpp
 	$(CXX) $(CXX_FLAGS) $(LD_FLAGS) -c $< -o $@
-	mv $@ $(OBJ_DIR)

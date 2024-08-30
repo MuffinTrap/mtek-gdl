@@ -25,3 +25,10 @@ build
 # Misc files
 *.txt
 
+# Different object file types for different platforms
+# win
+*.wo
+# linux
+*.lo
+# mac
+*.mo

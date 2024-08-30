@@ -7,5 +7,5 @@
 #include <stdio.h>
 namespace gdl
 {
-    FILE* BufferOpen(const u8* buffer, size_t size, const char* mode);
+    FILE* BufferOpen(u8* buffer, size_t size, const char* mode);
 };
