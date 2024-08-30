@@ -4,8 +4,9 @@ LIB 	:= mgdl
 CFILES	= $(wildcard source/cross/*.cpp)
 CFILES	+= $(wildcard source/pc/*.cpp)
 ARC 	:= lib$(LIB).a
-HDR 	:= $(wildcard include/mgdl-pc/*.h)
-HDR 	+= $(wildcard include/mgdl/*.h)
+HDRS_X 	:= $(wildcard include/mgdl/*.h)
+HDRS_PC	:= $(wildcard include/mgdl-pc/*.h)
+HDRS := $(HDRS_X) $(HDRS_PC)
 PCHDR 	:= include/mgdl.h
 INSTALL_DIR = $(HOME)/libmgdl
 
@@ -19,8 +20,7 @@ CXX_FLAGS += $(MGDL_INCLUDE)
 # Linux specific settings
 CXX = clang++
 LIBDIR	:= lib/lnx
-GLUT_INCLUDE = -I/usr/include/GL/
-CXX_FLAGS += $(GLUT_INCLUDE)
+CXX_FLAGS += -DMGDL_PLATFORM_LINUX
 # Different file type for linux object files
 OFILES	:= $(CFILES:.cpp=.lo)
 # Common part
@@ -35,17 +35,16 @@ $(ARC): $(OFILES)
 	@$(AR) rcs $(ARC) $(OFILES)
 # Move static library
 	@mv $(ARC) $(LIBDIR)
-# Copy header files
-	@cp $(HDR) $(LIBDIR)
-# Copy main header
-	@cp $(PCHDR) $(LIBDIR)
 	@echo built library $(ARC)
 
 # Installs to /home/user/libmgdl
 install: $(ARC)
 	@mkdir -p $(INSTALL_DIR)
+	@mkdir -p $(INSTALL_DIR)/mgdl
+	@mkdir -p $(INSTALL_DIR)/mgdl-pc
 	@cp $(LIBDIR)/$(ARC) $(INSTALL_DIR)
-	@cp $(HDR) $(INSTALL_DIR)
+	@cp $(HDRS_X) $(INSTALL_DIR)/mgdl
+	@cp $(HDRS_PC) $(INSTALL_DIR)/mgdl-pc
 	@cp $(PCHDR) $(INSTALL_DIR)
 	@echo installed to $(INSTALL_DIR)
 
@@ -54,4 +53,4 @@ clean :
 	rm -r $(LIBDIR)
 
 %.lo : %.cpp
-	$(CXX) $(CXX_FLAGS) $(LD_FLAGS) -c $< -o $@
+	$(CXX) $(CXX_FLAGS) -c $< -o $@

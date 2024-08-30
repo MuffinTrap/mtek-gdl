@@ -48,3 +48,7 @@ build/
 
 # Kate meta files
 *.kate-swp
+
+*.wo
+*.lo
+*.mo
