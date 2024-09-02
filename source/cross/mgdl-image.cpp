@@ -34,6 +34,7 @@ bool gdl::Image::LoadFile ( const char* filename, gdl::TextureFilterModes filter
 		return false;
 	}
 	bool loadOk =  LoadPNG(pngFile, filterMode);
+
 	// Data is loaded to OpenGX, release the buffers
 	delete pngFile;
 	pngFile = nullptr;
@@ -66,6 +67,10 @@ bool gdl::Image::LoadPNG(PNGFile* png, gdl::TextureFilterModes filterMode)
 
 	// restore previous alignment
 	glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
+
+	// copy data
+	width = png->GetWidth();
+	height = png->GetHeight();
 
 	return true;
 }
