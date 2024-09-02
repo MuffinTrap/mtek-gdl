@@ -19,11 +19,12 @@ CXXFLAGS += -ggdb
 
 # Rocket module
 # Add rocket files to source
+# The rocket code of the release is compiled in SYNC_PLAYER mode
+
 cpp_src += $(wildcard ../3rdparty/modules/rocket/*.cpp)
 ROCKET_INCLUDE = -I../3rdparty/modules/rocket/
 CXXFLAGS += $(ROCKET_INCLUDE)
-# The rocket code of the release is compiled in SYNC_PLAYER mode
-# CXX_FLAGS += -DSYNC_PLAYER
+CXX_FLAGS += -DSYNC_PLAYER
 
 # ######################################
 # Windows specific settings

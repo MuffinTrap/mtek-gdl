@@ -5,7 +5,7 @@ CFILES	= $(wildcard source/cross/*.cpp)
 CFILES	+= $(wildcard source/pc/*.cpp)
 ARC 	:= lib$(LIB).a
 HDRS_X 	:= $(wildcard include/mgdl/*.h)
-HDRS_PC	:= $(wildcard include/mgdl-pc/*.h)
+HDRS_PC	:= $(wildcard include/mgdl/pc/*.h)
 HDRS := $(HDRS_X) $(HDRS_PC)
 PCHDR 	:= include/mgdl.h
 INSTALL_DIR = $(HOME)/libmgdl
@@ -41,10 +41,10 @@ $(ARC): $(OFILES)
 install: $(ARC)
 	@mkdir -p $(INSTALL_DIR)
 	@mkdir -p $(INSTALL_DIR)/mgdl
-	@mkdir -p $(INSTALL_DIR)/mgdl-pc
+	@mkdir -p $(INSTALL_DIR)/mgdl/pc
 	@cp $(LIBDIR)/$(ARC) $(INSTALL_DIR)
 	@cp $(HDRS_X) $(INSTALL_DIR)/mgdl
-	@cp $(HDRS_PC) $(INSTALL_DIR)/mgdl-pc
+	@cp $(HDRS_PC) $(INSTALL_DIR)/mgdl/pc
 	@cp $(PCHDR) $(INSTALL_DIR)
 	@echo installed to $(INSTALL_DIR)
 

@@ -9,7 +9,7 @@
 
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-sound.h>
-#include <mgdl-wii/mgdl-wii-config.h>
+#include <mgdl/wii/mgdl-wii-config.h>
 
 
 #if GDL_NO_SOUND == FALSE

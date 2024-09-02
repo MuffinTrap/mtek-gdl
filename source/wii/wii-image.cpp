@@ -13,13 +13,13 @@
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-types.h>
 
-#include "mgdl-wii/mgdl-wii-config.h"
-#include "mgdl-wii/mgdl-wii-types.h"
-#include "mgdl-wii/mgdl-wii-globals.h"
-#include "mgdl-wii/mgdl-wii-globals-internal.h"
-#include "mgdl-wii/mgdl-wii-main.h"
-#include "mgdl-wii/mgdl-wii-image.h"
-#include "mgdl-wii/mgdl-wii-assert.h"
+#include "mgdl/wii/mgdl-wii-config.h"
+#include "mgdl/wii/mgdl-wii-types.h"
+#include "mgdl/wii/mgdl-wii-globals.h"
+#include "mgdl/wii/mgdl-wii-globals-internal.h"
+#include "mgdl/wii/mgdl-wii-main.h"
+#include "mgdl/wii/mgdl-wii-image.h"
+#include "mgdl/wii/mgdl-wii-assert.h"
 
 
 // Common image/sprite drawing functions (shared to the image and sprite drawing classes)
@@ -858,7 +858,7 @@ bool gdl::ImageWii::LoadImageBuffer(const void *buffer, size_t size, u_int filte
 	// fmemopen cannot read from const buffer :U
 	// Copy data to temporary buffer before reading
 	void *tempBuffer = aligned_alloc(32, size);
-	gdl_assert((tempBuffer != nullptr), "Cannot allocate enough memory for image buffer.");
+	gdl_assert_print((tempBuffer != nullptr), "Cannot allocate enough memory for image buffer.");
 
 	// Copy
 	memcpy(tempBuffer, buffer, size);

@@ -20,21 +20,18 @@ LIBOGC_LIB	:=	$(DEVKITPRO)/libogc/lib/wii
 PORTLIBS_PPC	:=	$(DEVKITPRO)/portlibs/ppc/include
 PORTLIBS_WII	:=	$(DEVKITPRO)/portlibs/wii/include
 
-ROCKET_INC	:=	3rdparty/libs-cross/
-
 INCLUDE	:= -Iinclude -I$(LIBOGC_INC) -I$(PORTLIBS_PPC) -I$(PORTLIBS_WII) -I$(ROCKET_INC)
 MACHDEP := -mrvl -mcpu=750 -meabi -mhard-float
 # SYNC_PLAYER is for rocket
 CFLAGS  := -O3 -Werror -Wall -Wextra $(MACHDEP) $(INCLUDE) -DSYNC_PLAYER -DGEKKO
 
 LIB 	:= mgdl
-LIBDIR	:= mgdl/
 CFILES	:= $(wildcard source/wii/*.cpp)
 CFILES	+= $(wildcard source/cross/*.cpp)
 OFILES	:= $(CFILES:.cpp=.o)
 ARC 	:= lib/wii/lib$(LIB).a
-HDR 	:= $(wildcard include/mgdl-wii/*.h)
-HDR 	+= $(wildcard include/mgdl/*.h)
+HDR_W 	:= $(wildcard include/mgdl/wii/*.h)
+HDR_X 	:= $(wildcard include/mgdl/*.h)
 
 .PHONY: all clean install
 
@@ -50,10 +47,18 @@ clean :
 # use the command $ sudo -E make install
 # The -E flag uses the user's enviroment variables
 install :
-	mkdir -p $(LIBOGC_LIB) $(LIBOGC_INC)/$(LIBDIR)
+	# Create lib/wii/ and include/mgdl/
+	mkdir -p $(LIBOGC_LIB) $(LIBOGC_INC)/$(LIB)
+	# Subdir wii for wii headers
+	mkdir -p $(LIBOGC_INC)/$(LIB)/wii
+
 	cp -f $(ARC) $(LIBOGC_LIB)/
+	# Main header to include/
 	cp -f include/mgdl.h $(LIBOGC_INC)
-	cp -f $(HDR) $(LIBOGC_INC)/$(LIBDIR)
+	# Cross platform headers to include/mgdl/
+	cp -f $(HDR_X) $(LIBOGC_INC)/$(LIB)
+	# Wii headers to include/mgdl/wii/
+	cp -f $(HDR_W) $(LIBOGC_INC)/$(LIB)/wii
 
 %.o : %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@

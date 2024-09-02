@@ -5,7 +5,7 @@
 #ifndef _GDL_WII_SPRITES_H
 #define _GDL_WII_SPRITES_H
 
-#include <mgdl-wii/mgdl-wii-image.h>
+#include <mgdl/wii/mgdl-wii-image.h>
 
 namespace gdl {
 

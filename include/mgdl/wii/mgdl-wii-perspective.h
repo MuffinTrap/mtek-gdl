@@ -4,8 +4,8 @@
 #pragma once
 #include <vector>
 #include <ogc/gu.h>
-#include <mgdl-wii/mgdl-wii-image.h>
-#include <mgdl-wii/mgdl-wii-globals.h>
+#include <mgdl/wii/mgdl-wii-image.h>
+#include <mgdl/wii/mgdl-wii-globals.h>
 
 
 namespace gdl {

@@ -1,9 +1,9 @@
 #include <mgdl/mgdl-platform.h>
 
 #ifdef GEKKO
-	#include <mgdl-wii/mgdl-wii-platform.h>
+	#include <mgdl/wii/mgdl-wii-platform.h>
 #else
-	#include <mgdl-pc/mgdl-pc-platform.h>
+	#include <mgdl/pc/mgdl-pc-platform.h>
 #endif
 
 u16 gdl::Platform::GetScreenHeight() { return screenHeight; }

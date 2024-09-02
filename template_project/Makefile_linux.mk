@@ -17,13 +17,14 @@ CXXFLAGS += -ggdb
 # For optimization
 # CXXFLAGS += -O3
 
-# ROCKET module
-# Add rocket files
+## ROCKET module
+## Add rocket files by uncommenting the 4 lines below
+## The rocket code of library is compiled in SYNC_PLAYER mode
+
 cpp_src += $(wildcard ../3rdparty/modules/rocket/*.cpp)
 ROCKET_INCLUDE = -I../3rdparty/modules/rocket/
 CXXFLAGS += $(ROCKET_INCLUDE)
-# The rocket code of library is compiled in SYNC_PLAYER mode
-# CXX_FLAGS += -DSYNC_PLAYER
+CXX_FLAGS += -DSYNC_PLAYER
 
 # ############################################
 # Linux specific settings

@@ -1,6 +1,6 @@
 #include <ogc/gx.h>
 
-#include "mgdl-wii/mgdl-wii-perspective.h"
+#include "mgdl/wii/mgdl-wii-perspective.h"
 
 gdl::Camera gdl::Perspective::defaultCamera = gdl::Camera();
 int gdl::Perspective::stackTop = -1;

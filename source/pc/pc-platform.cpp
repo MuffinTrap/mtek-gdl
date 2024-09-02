@@ -1,8 +1,7 @@
-#include <mgdl-pc/mgdl-pc-platform.h>
 #include <mgdl/mgdl-opengl.h>
 #include <mgdl/mgdl-assert.h>
-
-#include <mgdl-pc/mgdl-pc-input.h>
+#include <mgdl/pc/mgdl-pc-platform.h>
+#include <mgdl/pc/mgdl-pc-input.h>
 
 static int windowWidth = 0;
 static int windowHeight = 0;
@@ -154,7 +153,7 @@ void gdl::PlatformPC::InitSystem(gdl::ScreenAspect screenAspect, std::function<v
     printf("glutInitDisplayMode\n");
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(windowWidth, windowHeight);
-    glutCreateWindow("Press F5 to write Rocket tracks");
+    glutCreateWindow("Press 2 to write Rocket tracks");
 
 
     // Input callbacks and init

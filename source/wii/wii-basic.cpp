@@ -6,9 +6,9 @@
 #include <gccore.h>
 
 #include <mgdl/mgdl-util.h>
-#include <mgdl-wii/mgdl-wii-types.h>
-#include <mgdl-wii/mgdl-wii-globals.h>
-#include <mgdl-wii/mgdl-wii-basic.h>
+#include <mgdl/wii/mgdl-wii-types.h>
+#include <mgdl/wii/mgdl-wii-globals.h>
+#include <mgdl/wii/mgdl-wii-basic.h>
 
 
 void gdl::DrawPoint(short x, short y, u_int col) {

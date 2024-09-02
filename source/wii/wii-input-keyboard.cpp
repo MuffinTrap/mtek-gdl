@@ -6,11 +6,11 @@
 #include <sys/iosupport.h>
 #include <wiikeyboard/usbkeyboard.h>
 
-#include "mgdl-wii/mgdl-wii-types.h"
-#include "mgdl-wii/mgdl-wii-globals.h"
-#include "mgdl-wii/mgdl-wii-globals-internal.h"
-#include "mgdl-wii/mgdl-wii-main.h"
-#include "mgdl-wii/mgdl-wii-input.h"
+#include "mgdl/wii/mgdl-wii-types.h"
+#include "mgdl/wii/mgdl-wii-globals.h"
+#include "mgdl/wii/mgdl-wii-globals-internal.h"
+#include "mgdl/wii/mgdl-wii-main.h"
+#include "mgdl/wii/mgdl-wii-input.h"
 
 
 #define STDIN_MAX_CHARS      16

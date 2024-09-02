@@ -5,11 +5,7 @@
 #include <mgdl/mgdl-png.h>
 #include <mgdl/mgdl-image.h>
 #include <mgdl/mgdl-font.h>
-#ifdef GEKKO
-#include <mgdl-wii/mgdl-wii-sound.h>
-#else
-#include <mgdl-pc/mgdl-pc-sound.h>
-#endif
+#include <mgdl/mgdl-sound.h>
 
 #include <functional>
 #include <string>

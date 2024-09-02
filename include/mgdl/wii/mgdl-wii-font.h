@@ -5,7 +5,7 @@
 #define _GDL_WII_FONT_H
 
 #include <mgdl/mgdl-util.h>
-#include <mgdl-wii/mgdl-wii-image.h>
+#include <mgdl/wii/mgdl-wii-image.h>
 
 namespace gdl {
 

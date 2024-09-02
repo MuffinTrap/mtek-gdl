@@ -1,4 +1,4 @@
-#include "mgdl-wii/mgdl-wii-vector-operations.h"
+#include "mgdl/wii/mgdl-wii-vector-operations.h"
 
 guVector operator+(const guVector a, const guVector b)
 {

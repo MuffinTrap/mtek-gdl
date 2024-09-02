@@ -13,12 +13,12 @@
 
 #include <mgdl/mgdl-util.h>
 
-#include "mgdl-wii/mgdl-wii-config.h"
-#include "mgdl-wii/mgdl-wii-types.h"
-#include "mgdl-wii/mgdl-wii-globals.h"
-#include "mgdl-wii/mgdl-wii-globals-internal.h"
-#include "mgdl-wii/mgdl-wii-main.h"
-#include "mgdl-wii/mgdl-wii-texture.h"
+#include "mgdl/wii/mgdl-wii-config.h"
+#include "mgdl/wii/mgdl-wii-types.h"
+#include "mgdl/wii/mgdl-wii-globals.h"
+#include "mgdl/wii/mgdl-wii-globals-internal.h"
+#include "mgdl/wii/mgdl-wii-main.h"
+#include "mgdl/wii/mgdl-wii-texture.h"
 
 
 // Internal macros for texture conversion (from Metaphrasis)

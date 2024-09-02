@@ -1,7 +1,7 @@
 #include <mgdl/mgdl-cache.h>
 
 #ifdef GEKKO
-#include <mgdl-wii/mgdl-wii.h>
+#include <mgdl/wii/mgdl-wii.h>
 
 void gdl::CacheFlushRange ( void* rangeStart, size_t size )
 {

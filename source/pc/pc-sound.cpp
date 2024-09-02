@@ -1,4 +1,4 @@
-#include <mgdl-pc/mgdl-pc-sound.h>
+#include <mgdl/pc/mgdl-pc-sound.h>
 
 gdl::SoundPC::SoundPC()
 {

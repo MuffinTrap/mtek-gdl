@@ -5,9 +5,9 @@
 
 #include <gccore.h>
 
-#include <mgdl-wii/mgdl-wii-config.h>
-#include <mgdl-wii/mgdl-wii-types.h>
-#include <mgdl-wii/mgdl-wii-texture.h>
+#include <mgdl/wii/mgdl-wii-config.h>
+#include <mgdl/wii/mgdl-wii-types.h>
+#include <mgdl/wii/mgdl-wii-texture.h>
 
 namespace gdl {
 

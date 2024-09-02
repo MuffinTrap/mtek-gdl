@@ -2,8 +2,8 @@
 #include <wiiuse/wpad.h>
 
 #include <mgdl/mgdl-opengl.h>
-#include <mgdl-wii/mgdl-wii-platform.h>
-#include <mgdl-wii/mgdl-wii.h>
+#include <mgdl/wii/mgdl-wii-platform.h>
+#include <mgdl/wii/mgdl-wii.h>
 
 static std::function<void()> initCall = nullptr;
 static std::function<void()> updateCall = nullptr;

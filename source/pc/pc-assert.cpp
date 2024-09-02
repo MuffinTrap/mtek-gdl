@@ -1,28 +1,39 @@
-#include <mgdl-pc/mgdl-pc-assert.h>
+#include <mgdl/pc/mgdl-pc-assert.h>
 
 #include <stdio.h>
 #include <stdarg.h>
-void AssertFunctionPrintf(bool test, const char* filename, int lineNumber, const char* message, ...)
+#include <iostream>
+#include <cassert>
+void AssertFunctionPrintf(const char* filename, int lineNumber, bool &ignoreToggle, const char* message, ...)
 {
-	if (test == false)
+	char	buff[256];
+	va_list args;
+
+	va_start(args, message);
+	vsnprintf(buff, 256, message, args);
+	va_end(args);
+
+	printf("Assert failed! %s:%d:%s\n", filename, lineNumber, buff);
+	printf("Input i to ignore this assert. Input nothing to proceed to assert handler\n");
+	char answer = '\0';
+	std::cin >> answer;
+	if (answer == 'i')
 	{
-		char	buff[256];
-		va_list args;
-
-		va_start(args, message);
-		vsnprintf(buff, 256, message, args);
-		va_end(args);
-
-		printf("Assert failed! %s:%d:%s\n", filename, lineNumber, buff);
-		assert(test);
+		ignoreToggle = true;
+		return;
 	}
 }
-void AssertFunctionPrint(bool test, const char* filename, int lineNumber, const char* message)
+void AssertFunctionPrint(const char* filename, int lineNumber, bool &ignoreToggle, const char* message)
 {
-	if (test == false)
+	printf("Assert failed! %s:%d:%s\n", filename, lineNumber, message);
+	printf("Input i to ignore this assert. Input nothing to proceed to assert handler\n");
+	char answer = '\0';
+	std::cin >> answer;
+	if (answer == 'i')
 	{
-		printf("Assert failed! %s:%d:%s\n", filename, lineNumber, message);
-		assert(test);
+		ignoreToggle = true;
+		return;
 	}
+	assert(false);
 }
 

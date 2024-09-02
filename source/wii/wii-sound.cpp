@@ -12,12 +12,12 @@
 #include <asndlib.h>
 #include <oggplayer.h>
 
-#include "mgdl-wii/mgdl-wii-config.h"
-#include "mgdl-wii/mgdl-wii-globals.h"
-#include "mgdl-wii/mgdl-wii-globals-internal.h"
-#include "mgdl-wii/mgdl-wii-main.h"
-#include "mgdl-wii/mgdl-wii-sound.h"
-#include "mgdl-wii/mgdl-wii-assert.h"
+#include "mgdl/wii/mgdl-wii-config.h"
+#include "mgdl/wii/mgdl-wii-globals.h"
+#include "mgdl/wii/mgdl-wii-globals-internal.h"
+#include "mgdl/wii/mgdl-wii-main.h"
+#include "mgdl/wii/mgdl-wii-sound.h"
+#include "mgdl/wii/mgdl-wii-assert.h"
 
 
 gdl::SoundWii::SoundWii() {
@@ -373,7 +373,7 @@ bool gdl::Music::LoadFromBuffer(const uint8_t* buffer, size_t size)
 {
 	bufferSize = size;
 	oggBuffer = (uint8_t*)malloc(size);
-	gdl_assert((oggBuffer != nullptr), "Could not allocate buffer for music");
+	gdl_assert_print((oggBuffer != nullptr), "Could not allocate buffer for music");
 	memcpy(oggBuffer, buffer, size);
 	DCFlushRange(oggBuffer, size);
 	return true;
@@ -390,7 +390,7 @@ bool gdl::Music::Play(bool loop)
 		playMode = OGG_INFINITE_TIME;
 	}
 	FILE* file = fmemopen(oggBuffer, bufferSize, "r");
-	gdl_assert((file != nullptr), "Could not open music buffer as file");
+	gdl_assert_print((file != nullptr), "Could not open music buffer as file");
 	return (PlayOggFilePtr(file, 0, playMode) == 0);
 }
 

@@ -8,8 +8,8 @@
 #ifndef _GDL_WII_GLOBALS_INT_H
 #define _GDL_WII_GLOBALS_INT_H
 
-#include "mgdl-wii/mgdl-wii-config.h"
-#include "mgdl-wii/mgdl-wii-types.h"
+#include "mgdl/wii/mgdl-wii-config.h"
+#include "mgdl/wii/mgdl-wii-types.h"
 
 
 namespace gdl {

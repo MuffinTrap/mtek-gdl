@@ -1,7 +1,7 @@
 
 
 #ifndef GEKKO
-#include <mgdl-pc/mgdl-pc-input.h>
+#include <mgdl/pc/mgdl-pc-input.h>
 #include <mgdl/mgdl-opengl.h>
 
 #include <stdio.h>

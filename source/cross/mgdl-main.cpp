@@ -1,6 +1,12 @@
 #include <mgdl/mgdl-main.h>
 #include <mgdl/mgdl-platform.h>
 
+#ifdef GEKKO
+#include <mgdl/wii/mgdl-wii-sound.h>
+#else
+#include <mgdl/pc/mgdl-pc-sound.h>
+#endif
+
 
 void gdl::InitSystem(gdl::ScreenAspect screenAspect,
 								std::function<void()> initCallback,
