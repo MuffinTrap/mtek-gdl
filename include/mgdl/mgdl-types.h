@@ -1,5 +1,8 @@
 #pragma once
 
+// For MacOS
+#include <stddef.h>
+
 #ifdef GEKKO
 
     #include <gctypes.h>
