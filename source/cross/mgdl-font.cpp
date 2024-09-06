@@ -101,22 +101,21 @@ void gdl::Font::Print(u32 color, float scale, gdl::AlignmentModes alignmentX, gd
 		gdl::vec2 tx2= GetTextureCoordinate(character, 2); // LOW RIGHT
 		gdl::vec2 tx3= GetTextureCoordinate(character, 3); //LOW LEFT!
 
-		// TOP LEFT
-		glTexCoord2f(tx0.x, tx0.y);
-		glVertex3f(dx, dy, dz);
-
-		// TOP RIGHT
-		glTexCoord2f(tx1.x, tx1.y);
-		glVertex3f(dx + step, dy, dz);
+		// LOW LEFT!
+		glTexCoord2f(tx3.x, tx3.y);
+		glVertex3f(dx, dy - scale, dz);
 
 		// LOW RIGHT
 		glTexCoord2f(tx2.x, tx2.y);
 		glVertex3f(dx + step, dy - scale, dz);
 
-		// LOW LEFT!
-		glTexCoord2f(tx3.x, tx3.y);
-		glVertex3f(dx, dy - scale, dz);
+		// TOP RIGHT
+		glTexCoord2f(tx1.x, tx1.y);
+		glVertex3f(dx + step, dy, dz);
 
+		// TOP LEFT
+		glTexCoord2f(tx0.x, tx0.y);
+		glVertex3f(dx, dy, dz);
 		dx += step + spacingX;
 	}
 	glEnd();
@@ -161,43 +160,21 @@ void gdl::Font::DrawSheet ()
 	glBegin(GL_QUADS);
 		glColor3f(1.0f, 1.0f, 1.0f);
 
-		// Upper left
-		glTexCoord2f(0.0f, 0.0f);
-		glVertex3f(x-aspect*0.5f, y+0.5f, z);
-
-		// Upper right
-		glTexCoord2f(1.0f, 0.0f);
-		glVertex3f(x+aspect*0.5f, y+0.5f, z);
-
-		// Lower right
-		glTexCoord2f(1.0f, 1.0f);
-		glVertex3f(x+aspect*0.5f, y-0.5f, z);
-
 		// Lower left
 		glTexCoord2f(0.0f, 1.0f);
 		glVertex3f(x-aspect*0.5f, y-0.5f, z);
-
+		// Lower right
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex3f(x+aspect*0.5f, y-0.5f, z);
+		// Upper right
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex3f(x+aspect*0.5f, y+0.5f, z);
+		// Upper left
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex3f(x-aspect*0.5f, y+0.5f, z);
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
-
-
-	glBegin(GL_LINE_LOOP);
-		glColor3f(1.0f, 1.0f, 1.0f);
-
-		// Upper left
-		glVertex3f(x-aspect*0.5f, y+0.5f, z);
-
-		// Upper right
-		glVertex3f(x+aspect*0.5f, y+0.5f, z);
-
-		// Lower right
-		glVertex3f(x+aspect*0.5f, y-0.5f, z);
-
-		// Lower left
-		glVertex3f(x-aspect*0.5f, y-0.5f, z);
-
-	glEnd();
 }
 
 void gdl::Font::CreateTextureCoordList(short rows, short charactersPerRow, short texW, short texH)

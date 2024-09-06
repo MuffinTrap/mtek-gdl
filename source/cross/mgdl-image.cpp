@@ -87,21 +87,19 @@ void gdl::Image::Draw2DAbsolute(short x, short y, short x2, short y2)
 	glBegin(GL_QUADS);
 		glColor3f(1.0f, 1.0f, 1.0f);
 
+		// Lower left
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2f(dx, dy-height);
+		// Lower right
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2f(dx+width, dy-height);
+		// Upper right
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2f(dx+width, dy);
 		// Upper left
 		glTexCoord2f(0.0f, 0.0f);
 		glVertex2f(dx, dy);
 
-		// Upper right
-		glTexCoord2f(1.0f, 0.0f);
-		glVertex2f(dx+width, dy);
-
-		// Lower right
-		glTexCoord2f(1.0f, 1.0f);
-		glVertex2f(dx+width, dy-height);
-
-		// Lower left
-		glTexCoord2f(0.0f, 1.0f);
-		glVertex2f(dx, dy-height);
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
@@ -164,21 +162,22 @@ void gdl::Image::Draw3D(float scale, gdl::AlignmentModes alignX, gdl::AlignmentM
 	glBegin(GL_QUADS);
 		glColor3f(1.0f, 1.0f, 1.0f);
 
-		// Upper left
-		glTexCoord2f(0.0f, 0.0f);
-		glVertex3f(x-aspect*hs, y+hs, z);
-
-		// Upper right
-		glTexCoord2f(1.0f, 0.0f);
-		glVertex3f(x+aspect*hs, y+hs, z);
+		// Lower left
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex3f(x-aspect*hs, y-hs, z);
 
 		// Lower right
 		glTexCoord2f(1.0f, 1.0f);
 		glVertex3f(x+aspect*hs, y-hs, z);
 
-		// Lower left
-		glTexCoord2f(0.0f, 1.0f);
-		glVertex3f(x-aspect*hs, y-hs, z);
+		// Upper right
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex3f(x+aspect*hs, y+hs, z);
+
+		// Upper left
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex3f(x-aspect*hs, y+hs, z);
+
 
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D, 0);
