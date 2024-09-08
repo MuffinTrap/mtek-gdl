@@ -21,6 +21,9 @@ CXX_FLAGS += $(MGDL_INCLUDE)
 CXX = clang++
 LIBDIR	:= lib/lnx
 CXX_FLAGS += -DMGDL_PLATFORM_MAC
+
+# Do not complain about OpenAL
+CXX_FLAGS += -Wno-deprecated-declarations
 # Add MacPorts include path
 CXX_FLAGS += -I/opt/local/include
 

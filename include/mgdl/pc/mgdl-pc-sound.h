@@ -1,11 +1,9 @@
 #pragma once
+#include <sndfile.h>
 
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-sound.h>
-
-#include <sndfile.h>
-#include <AL/al.h>
-#include <AL/alc.h>
+#include <mgdl/mgdl-openal.h>
 
 namespace gdl
 {

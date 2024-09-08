@@ -1,10 +1,9 @@
 #pragma once
 
-#include <mgdl/mgdl-platform.h>
-
 #include <sndfile.h>
-#include <AL/al.h>
-#include <AL/alc.h>
+
+#include <mgdl/mgdl-platform.h>
+#include <mgdl/mgdl-openal.h>
 
 namespace gdl
 {
