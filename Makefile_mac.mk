@@ -21,7 +21,18 @@ CXX_FLAGS += $(MGDL_INCLUDE)
 CXX = clang++
 LIBDIR	:= lib/lnx
 CXX_FLAGS += -DMGDL_PLATFORM_MAC
+# Add MacPorts include path
 CXX_FLAGS += -I/opt/local/include
+
+# Intel MacOS homebrew location
+CXX_FLAGS += -I/usr/local/include
+
+# M1 MacOs homebrew location
+CXX_FLAGS += -I/opt/homebrew/include
+
+# Exact locations but should not be needed
+# CXX_FLAGS += -I/opt/homebrew/Cellar/libsndfile/1.2.2/include -I/opt/homebrew/Cellar/openal-soft/1.23.1/include -I/opt/homebrew/Cellar/glm/1.0.1/include -I/opt/homebrew/Cellar/libpng/1.6.43/include
+
 # Different file type for mac object files
 OFILES	:= $(CFILES:.cpp=.mo)
 # Common part
