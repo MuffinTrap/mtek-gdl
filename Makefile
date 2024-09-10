@@ -20,10 +20,10 @@ LIBOGC_LIB	:=	$(DEVKITPRO)/libogc/lib/wii
 PORTLIBS_PPC	:=	$(DEVKITPRO)/portlibs/ppc/include
 PORTLIBS_WII	:=	$(DEVKITPRO)/portlibs/wii/include
 
-INCLUDE	:= -Iinclude -I$(LIBOGC_INC) -I$(PORTLIBS_PPC) -I$(PORTLIBS_WII) -I$(ROCKET_INC)
+INCLUDE	:= -Iinclude -I$(LIBOGC_INC) -I$(PORTLIBS_PPC) -I$(PORTLIBS_WII)
 MACHDEP := -mrvl -mcpu=750 -meabi -mhard-float
 # SYNC_PLAYER is for rocket
-CFLAGS  := -O3 -Werror -Wall -Wextra $(MACHDEP) $(INCLUDE) -DSYNC_PLAYER -DGEKKO
+CFLAGS  := -O3 -Werror -Wall -Wextra $(MACHDEP) $(INCLUDE) -DGEKKO
 
 LIB 	:= mgdl
 CFILES	:= $(wildcard source/wii/*.cpp)

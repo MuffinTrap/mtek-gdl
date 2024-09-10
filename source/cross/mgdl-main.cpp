@@ -64,6 +64,25 @@ gdl::Sound* gdl::LoadSound(std::string filename)
 	}
 }
 
+gdl::Sound* gdl::LoadOgg(std::string filename)
+{
+	gdl::Sound* snd = nullptr;
+#ifdef GEKKO
+	snd = new gdl::MusicWii();
+#else
+	snd = new gdl::MusicPC();
+#endif
+	if(snd->LoadFile(filename.c_str()))
+	{
+		return snd;
+	}
+	else
+	{
+		delete snd;
+		return nullptr;
+	}
+}
+
 gdl::PNGFile* gdl::LoadPNG(std::string filename)
 {
 	gdl::PNGFile* png = new gdl::PNGFile();

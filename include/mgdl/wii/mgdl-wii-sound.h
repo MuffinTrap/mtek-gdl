@@ -130,6 +130,7 @@ public:
 	 */
 	void Stop() override;
 
+	void UpdatePlay() override;
 
 	// muffintrap: Added for version 0.100.0-muffintrap
 	//! Internal sound loading function. Loads a sound from FILE pointer
@@ -171,20 +172,29 @@ void SetMusicVolume(float volume);
 
 // muffintrap: Created a class for music
 // so that ogg buffer memory handling becomes easier
-class Music
+class MusicWii : public gdl::Sound
 {
 	public:
-		Music();
-		~Music();
-		bool LoadFromBuffer(const uint8_t* buffer, size_t size);
-		bool Play(bool loop);
-		void Stop();
-		float GetElapsed();
-		void JumpToSeconds(float seconds);
-		void TogglePauseMusic();
+
+		MusicWii();
+		bool LoadFile(const char* filename) override;
+		bool LoadBuffer(const uint8_t* buffer, size_t size) override;
+		void UnloadData() override;
+		void Play(float pitchOffset = 1.0f, float volumePercent = 100.0f) override;
+		void SetPaused(bool pause) override;
+		void Stop() override;
+		float GetElapsedSeconds() override;
+		void SetElapsedSeconds(float elapsed) override;
+		gdl::SoundStatus GetStatus() override;
+
+		void UpdatePlay() override;
+
+		virtual ~MusicWii() override;
 	private:
 		uint8_t *oggBuffer;
 		size_t bufferSize;
+		FILE* oggFile;
+		const char* filename;
 
 }; // Class Music
 

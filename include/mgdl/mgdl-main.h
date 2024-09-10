@@ -21,6 +21,7 @@ namespace gdl
 	gdl::Image* LoadImage(std::string filename, gdl::TextureFilterModes filterMode);
 	gdl::Image* LoadImage(gdl::PNGFile* png, gdl::TextureFilterModes filterMode);
 	gdl::Sound* LoadSound(std::string filename);
+	gdl::Sound* LoadOgg(std::string filename);
 	gdl::PNGFile* LoadPNG(std::string filename);
 	gdl::Font* LoadFont(std::string filename, short characterWidth, short characterHeight, char firstCharacter);
 

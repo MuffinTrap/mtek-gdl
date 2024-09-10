@@ -105,7 +105,15 @@ void gdl::PlatformPC::InitAudio()
         alcCloseDevice(device);
         return;
     }
-    alcMakeContextCurrent(context);
+    ALboolean contextMadeOK = alcMakeContextCurrent(context);
+    if (contextMadeOK != AL_TRUE)
+    {
+        printf("Failed to make OpenAL context current\n");
+        alcCloseDevice(device);
+        return;
+    }
+
+    printf("OpenAL context created\n");
 }
 
 void gdl::PlatformPC::InitSystem(gdl::ScreenAspect screenAspect, std::function<void ()> initCallback, std::function<void ()> updateCallback, std::function<void ()> drawCallback, u32 initFlags)

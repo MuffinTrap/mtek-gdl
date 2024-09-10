@@ -25,6 +25,7 @@ namespace gdl
 		virtual float GetElapsedSeconds() = 0;
 		virtual void SetElapsedSeconds(float elapsed) = 0;
 		virtual SoundStatus GetStatus() = 0;
+		virtual void UpdatePlay() = 0;
 
 		virtual ~Sound() = default;
 	};

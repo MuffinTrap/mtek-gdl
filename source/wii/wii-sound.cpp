@@ -227,6 +227,11 @@ void gdl::SoundWii::UnloadData() {
 
 }
 
+void gdl::SoundWii::UpdatePlay()
+{
+	// nop
+}
+
 void gdl::SoundWii::Play(float pitch, float volume) {
 
 	// Simple play function
@@ -354,13 +359,13 @@ void gdl::SetMusicVolume(float volume) {
 }
 
 // muffintrap: Added functions of the Music class
-gdl::Music::Music()
+gdl::MusicWii::MusicWii()
 {
 	oggBuffer = NULL;
 	bufferSize = 0;
 }
 
-gdl::Music::~Music()
+gdl::MusicWii::~MusicWii()
 {
 	if (oggBuffer != NULL)
 	{
@@ -369,54 +374,88 @@ gdl::Music::~Music()
 	}
 }
 
-bool gdl::Music::LoadFromBuffer(const uint8_t* buffer, size_t size)
+bool gdl::MusicWii::LoadFile(const char *filename)
+{
+	this->filename = filename;
+	//oggFile = fopen(filename, "rb");
+	// gdl_assert_print((oggFile != nullptr), "Could not open music file as file");
+	return true;
+}
+
+bool gdl::MusicWii::LoadBuffer(const uint8_t* buffer, size_t size)
 {
 	bufferSize = size;
 	oggBuffer = (uint8_t*)malloc(size);
 	gdl_assert_print((oggBuffer != nullptr), "Could not allocate buffer for music");
 	memcpy(oggBuffer, buffer, size);
 	DCFlushRange(oggBuffer, size);
+	oggFile = fmemopen(oggBuffer, bufferSize, "r");
+	gdl_assert_print((oggFile != nullptr), "Could not open music file as file");
 	return true;
 }
 
-bool gdl::Music::Play(bool loop)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+void gdl::MusicWii::Play(float pitchOffset, float volumePercent)
 {
 	if (StatusOgg() == OGG_STATUS_RUNNING)
 	{
-		return false;
+		return;
 	}
 	int playMode = OGG_ONE_TIME;
-	if (loop) {
-		playMode = OGG_INFINITE_TIME;
-	}
-	FILE* file = fmemopen(oggBuffer, bufferSize, "r");
-	gdl_assert_print((file != nullptr), "Could not open music buffer as file");
-	return (PlayOggFilePtr(file, 0, playMode) == 0);
+	SetVolumeOgg(255*((gdl::wii::UserMusicVolume*(gdl::wii::MasterMusicVolume/100.f))/100.f));
+	PlayOgg(filename, 0, playMode);
 }
+#pragma GCC diagnostic pop
 
-float gdl::Music::GetElapsed()
+float gdl::MusicWii::GetElapsedSeconds()
 {
 	return (float)GetTimeOgg()/1000.0f;
 }
 
-void gdl::Music::JumpToSeconds(float seconds)
+void gdl::MusicWii::SetElapsedSeconds(float seconds)
 {
 	SetTimeOgg(s32(seconds*1000.0f));
 }
 
-void gdl::Music::TogglePauseMusic()
+void gdl::MusicWii::SetPaused(bool pause)
 {
-	int pauseValue = 1;
-	if (StatusOgg() == OGG_STATUS_PAUSED)
+	if (pause)
 	{
-		pauseValue = 0;
+		PauseOgg(1);
 	}
-	PauseOgg(pauseValue);
+	else
+	{
+		PauseOgg(0);
+	}
 }
 
-void gdl::Music::Stop()
+void gdl::MusicWii::Stop()
 {
 	StopOgg();
+}
+
+void gdl::MusicWii::UpdatePlay()
+{
+	// nop
+}
+
+void gdl::MusicWii::UnloadData()
+{
+	// nop
+}
+
+
+gdl::SoundStatus gdl::MusicWii::GetStatus()
+{
+	if (StatusOgg() == OGG_STATUS_RUNNING)
+	{
+		return gdl::SoundStatus::Playing;
+	}
+	else
+	{
+		return gdl::SoundStatus::Paused;
+	}
 }
 
 // Added for 0.100.0-muffintrap: added a version that reads from a buffer.
