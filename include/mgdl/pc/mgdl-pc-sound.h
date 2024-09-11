@@ -4,11 +4,6 @@
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-sound.h>
 #include <mgdl/mgdl-openal.h>
-#include <vorbis/vorbisfile.h>
-#include <cstring>
-#include <istream>
-#include <fstream>
-#include <iostream>
 
 namespace gdl
 {
@@ -37,7 +32,19 @@ namespace gdl
 
 		int sample_rate;
 	};
+}
 
+// Work in progress
+#if 0
+
+#include <vorbis/vorbisfile.h>
+#include <cstring>
+#include <istream>
+#include <fstream>
+#include <iostream>
+
+namespace gdl
+{
 	// For ogg playback
 	const std::size_t NUM_BUFFERS = 4;
 	const ALsizei BUFFER_SIZE = 65536;
@@ -103,3 +110,5 @@ namespace gdl
 		char* updateBuffer;
 	};
 }
+
+#endif

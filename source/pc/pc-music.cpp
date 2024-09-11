@@ -1,3 +1,4 @@
+#if 0
 #include <mgdl/pc/mgdl-pc-sound.h>
 #include <stdio.h>
 #include <ostream>
@@ -501,3 +502,5 @@ void gdl::MusicPC::UpdatePlay()
     }
 }
 
+
+#endif

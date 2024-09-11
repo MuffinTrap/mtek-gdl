@@ -376,7 +376,10 @@ gdl::MusicWii::~MusicWii()
 
 bool gdl::MusicWii::LoadFile(const char *filename)
 {
-	this->filename = filename;
+	this->filenameChar = new char[strlen(filename)];
+	strcpy(this->filenameChar, filename);
+	this->fileNameStr = filename;
+	printf("Loaded Ogg %s\n", filenameChar);
 	//oggFile = fopen(filename, "rb");
 	// gdl_assert_print((oggFile != nullptr), "Could not open music file as file");
 	return true;
@@ -398,13 +401,13 @@ bool gdl::MusicWii::LoadBuffer(const uint8_t* buffer, size_t size)
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 void gdl::MusicWii::Play(float pitchOffset, float volumePercent)
 {
-	if (StatusOgg() == OGG_STATUS_RUNNING)
-	{
-		return;
-	}
-	int playMode = OGG_ONE_TIME;
+	int playMode = OGG_INFINITE_TIME;//OGG_ONE_TIME;
 	SetVolumeOgg(255*((gdl::wii::UserMusicVolume*(gdl::wii::MasterMusicVolume/100.f))/100.f));
-	PlayOgg(filename, 0, playMode);
+	int po = PlayOgg(filenameChar, 0, playMode);
+	if (po != 0)
+	{
+		printf("Failed to play ogg file %s\n", filenameChar);
+	}
 }
 #pragma GCC diagnostic pop
 

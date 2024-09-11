@@ -6,6 +6,7 @@
 
 #include <gccore.h>
 #include <cstdio>
+#include <string>
 
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-sound.h>
@@ -194,7 +195,8 @@ class MusicWii : public gdl::Sound
 		uint8_t *oggBuffer;
 		size_t bufferSize;
 		FILE* oggFile;
-		const char* filename;
+		std::string fileNameStr;
+		char* filenameChar;
 
 }; // Class Music
 

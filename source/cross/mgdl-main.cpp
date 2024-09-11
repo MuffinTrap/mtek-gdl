@@ -69,9 +69,6 @@ gdl::Sound* gdl::LoadOgg(std::string filename)
 	gdl::Sound* snd = nullptr;
 #ifdef GEKKO
 	snd = new gdl::MusicWii();
-#else
-	snd = new gdl::MusicPC();
-#endif
 	if(snd->LoadFile(filename.c_str()))
 	{
 		return snd;
@@ -81,6 +78,11 @@ gdl::Sound* gdl::LoadOgg(std::string filename)
 		delete snd;
 		return nullptr;
 	}
+#else
+	printf("No ogg on PC\n");
+	snd = nullptr; //new gdl::MusicPC();
+	return snd;
+#endif
 }
 
 gdl::PNGFile* gdl::LoadPNG(std::string filename)
