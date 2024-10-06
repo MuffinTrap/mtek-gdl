@@ -1,21 +1,6 @@
 # Build a Windows static library
 
-LIB 	:= mgdl
-CFILES	= $(wildcard source/cross/*.cpp)
-CFILES	+= $(wildcard source/pc/*.cpp)
-ARC 	:= lib$(LIB).a
-HDRS_X 	:= $(wildcard include/mgdl/*.h)
-HDRS_PC	:= $(wildcard include/mgdl/pc/*.h)
-HDRS := $(HDRS_X) $(HDRS_PC)
-PCHDR 	:= include/mgdl.h
-INSTALL_DIR = $(HOME)/libmgdl
-
-# Link everything statically
-CXX_FLAGS = -Werror=unused-function -Wall -Wextra -Wpedantic -std=c++11 -static
-
-# Add own include files so that #include <...> works
-MGDL_INCLUDE = -Iinclude/
-CXX_FLAGS += $(MGDL_INCLUDE)
+include Makefile_pc.mk
 
 # Windows specific settings
 CXX = g++

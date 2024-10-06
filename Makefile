@@ -22,12 +22,12 @@ PORTLIBS_WII	:=	$(DEVKITPRO)/portlibs/wii/include
 
 INCLUDE	:= -Iinclude -I$(LIBOGC_INC) -I$(PORTLIBS_PPC) -I$(PORTLIBS_WII)
 MACHDEP := -mrvl -mcpu=750 -meabi -mhard-float
-# SYNC_PLAYER is for rocket
-CFLAGS  := -O3 -Werror -Wall -Wextra $(MACHDEP) $(INCLUDE) -DGEKKO
+CFLAGS  := -O3 -Werror -Wall -Wextra $(MACHDEP) $(INCLUDE) -DGEKKO -DUFBX_REAL_IS_FLOAT
 
 LIB 	:= mgdl
 CFILES	:= $(wildcard source/wii/*.cpp)
 CFILES	+= $(wildcard source/cross/*.cpp)
+CFILES	+= $(wildcard include/ufbx/*.cpp)
 OFILES	:= $(CFILES:.cpp=.o)
 ARC 	:= lib/wii/lib$(LIB).a
 HDR_W 	:= $(wildcard include/mgdl/wii/*.h)
