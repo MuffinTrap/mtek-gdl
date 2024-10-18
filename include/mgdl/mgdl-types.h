@@ -87,6 +87,35 @@ namespace gdl
     {
         float x;
         float y;
+        vec2()
+        {
+            this->x = 0.0f;
+            this->y = 0.0f;
+        }
+        vec2(float px, float py)
+        {
+            this->x = px;
+            this->y = py;
+        }
+    };
+
+    struct vec3
+    {
+        float x;
+        float y;
+        float z;
+        vec3()
+        {
+            this->x = 0.0f;
+            this->y = 0.0f;
+            this->z = 0.0f;
+        }
+        vec3(float px, float py, float pz)
+        {
+            this->x = px;
+            this->y = py;
+            this->z = pz;
+        }
     };
 
     /*!	Color values

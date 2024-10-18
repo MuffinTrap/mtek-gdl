@@ -9,6 +9,7 @@
 #include <vector>
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-opengl.h>
+#include <mgdl/mgdl-image.h>
 namespace gdl
 {
 	/* Material used by a mesh. Contains a
@@ -46,7 +47,14 @@ namespace gdl
 	 */
 	class Model
 	{
+	public:
+		void AddMesh(Mesh* meshIn);
+		void AddTexture(gdl::Image* imageIn);
+		void AddTexturedMesh(Mesh* meshIn, gdl::Image* imageIn);
 
+		void Draw(int texture = 0);
+		std::vector<Mesh*> meshes;
+		std::vector<gdl::Image*> textures;
 	};
 
 	/* Representes a light in a 3D scene.
@@ -61,7 +69,8 @@ namespace gdl
 	 */
 	class Scene
 	{
-
-
+	public:
+		bool LoadFromFBX(gdl::FBXFile* fbxFile);
+		std::vector<Model*> models;
 	};
 }

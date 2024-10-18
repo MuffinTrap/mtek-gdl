@@ -27,9 +27,14 @@ install: $(ARC)
 	@mkdir -p $(INSTALL_DIR)
 	@mkdir -p $(INSTALL_DIR)/mgdl
 	@mkdir -p $(INSTALL_DIR)/mgdl/pc
+
+	# UFBX library
+	@mkdir -p $(INSTALL_DIR)/mgdl/ufbx
+
 	@cp $(LIBDIR)/$(ARC) $(INSTALL_DIR)
 	@cp $(HDRS_X) $(INSTALL_DIR)/mgdl
 	@cp $(HDRS_PC) $(INSTALL_DIR)/mgdl/pc
+	@cp $(UFBX_HDR) $(INSTALL_DIR)/mgdl/ufbx
 	@cp $(PCHDR) $(INSTALL_DIR)
 	@echo installed to $(INSTALL_DIR)
 

@@ -51,6 +51,9 @@ void mouseKey(int button, int state, int x, int y)
 
 void mouseMove(int x, int y) {
 	glutController.cursorX = x;
+
+	// In OpenGL the Y increases up
+	// but these coordinates the y increses down
 	glutController.cursorY = y;
 }
 

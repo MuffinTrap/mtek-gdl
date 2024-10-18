@@ -5,13 +5,13 @@
 gdl::MenuCreator::MenuCreator()
 {
     currentFont = nullptr;
-    fontScale = 1.0f;
+    textHeight = 1.0f;
 }
 
-gdl::MenuCreator::MenuCreator(gdl::Font* font, float fontScale, float rowHeightEm)
+gdl::MenuCreator::MenuCreator(gdl::Font* font, float textHeight, float rowHeightEm)
 {
     this->currentFont = font;
-    this->fontScale = fontScale;
+    this->textHeight = textHeight;
     this->rowHeightEm = rowHeightEm;
 
     // Default colors    
@@ -41,50 +41,42 @@ void gdl::MenuCreator::SetColors(u32 bg, u32 border, u32 text, u32 highlight)
 
 void gdl::MenuCreator::Panel(int h, u32 color)
 {
-    gdl::DrawBoxF(x, y, x + w, y + h, color);
-    y += h;
-}
-
-void gdl::TranslateTo(short x, short y)
-{
-	glTranslatef((float)x, (float)y, 0.0f);
+    gdl::DrawBoxF(x, y, x + w, y - h, color);
+    y -= h;
 }
 
 void gdl::MenuCreator::Text(const char* text)
 {
-    int h = currentFont->GetCharacterHeight() * fontScale * rowHeightEm;
-    TranslateTo(x, y);
-    currentFont->Print(this->text, fontScale, LJustify, LJustify, text);
-    TranslateTo(-x, -y);
-    y += h;
+    int h = currentFont->GetCharacterHeight() * textHeight * rowHeightEm;
+    currentFont->Print(this->text, x, y, h/rowHeightEm, LJustify, LJustify, text);
+    y -= h;
 }
 
 bool gdl::MenuCreator::Button(const char* text)
 {
-    int h = currentFont->GetCharacterHeight() * fontScale * rowHeightEm;
+    int h = currentFont->GetCharacterHeight() * textHeight * rowHeightEm;
 
     bool inside = ((cursorX >= x) &&
                 (cursorX <= x + w) &&
-                (cursorY >= y) &&
-                (cursorY <= y + h));
+                (cursorY <= y) &&
+                (cursorY >= y - h));
 
-    gdl::DrawBoxF(x, y, x + w, y + h, bg);
+    gdl::DrawBoxF(x, y, x + w, y - h, bg);
     if (inside)
     {
-        gdl::DrawBoxF(x, y, x + w, y + h, highlight);
+        gdl::DrawBoxF(x, y, x + w, y - h, highlight);
     }
     else
     {
-        gdl::DrawBox(x, y, x + w, y + h, border);
+        gdl::DrawBox(x, y, x + w, y - h, border);
     }
 
     // TODO Center text
 
-    TranslateTo(x, y);
-    currentFont->Print(this->text, fontScale, LJustify, LJustify, text);
-    TranslateTo(-x, -y);
+    float textH = h/rowHeightEm;
+    currentFont->Print(this->text, x, y, textH, LJustify, LJustify, text);
             
-    y += h ;
+    y -= h ;
 
     return (inside && buttonPress);
 }

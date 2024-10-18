@@ -17,7 +17,7 @@ namespace gdl
     {
         public:
         MenuCreator();
-        MenuCreator(gdl::Font* font, float fontScale, float rowHeightEm);
+        MenuCreator(gdl::Font* font, float textHeigh, float rowHeightEm);
         void StartMenu(int x, int y, int w, float cursorX, float cursorY, bool buttonPress);
         void SetColors(u32 bg, u32 border, u32 text, u32 highlight);
         void Panel(int h, u32 color);
@@ -30,7 +30,7 @@ namespace gdl
         int x;
         int y;
         int w;
-        float fontScale;
+        float textHeight;
         float rowHeightEm;
 
         // Input state

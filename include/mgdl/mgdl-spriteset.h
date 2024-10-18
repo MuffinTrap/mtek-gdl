@@ -9,6 +9,7 @@ namespace gdl
 
 	class SpriteSet : public gdl::Font
 	{
+	public:
 		void LoadFromImage(const char* filename, short spriteWidth, short spriteHeight);
 		void LoadFromBuffer(const u8* buffer, size_t size, short spriteWidth, short spriteHeight);
 		short GetSpriteWidth();

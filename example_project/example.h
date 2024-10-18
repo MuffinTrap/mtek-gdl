@@ -1,24 +1,26 @@
 #pragma once
 
-#include <mgdl-wii.h>
+#include <mgdl.h>
 
-class Template
+class Example
 {
-    gdl::Image barb;
-    gdl::Image mel_image;
+    gdl::Image* barb;
+    gdl::Image* mel_image;
     gdl::SpriteSet mel_sprites;
-    gdl::Image ibmFontImage;
-    gdl::Image pointerImage;
-    gdl::FFont ibmFont;
-    gdl::Music sampleMusic;
-    gdl::Sound blip;
+    gdl::Image* ibmFontImage;
+    gdl::Image* pointerImage;
+    gdl::Font* ibmFont;
+    gdl::Sound* sampleMusic;
+    gdl::Sound* blip;
     gdl::MenuCreator menu;
+    gdl::Scene* wiiScene;
+    gdl::Image* wiiTexture;
 
     float deltaTime;
-    int elapsedMS;
+    float elapsedSeconds;
 
     public:
-        Template();
+        Example();
         void Init();
         void Update();
         void Draw();

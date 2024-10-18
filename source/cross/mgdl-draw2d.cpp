@@ -24,9 +24,9 @@ void gdl::DrawBox(short x, short y, short x2, short y2, u32 color)
 
 void gdl::DrawBoxF(short x, short y, short x2, short y2, u32 color)
 {
+	gdl::RGBA8Floats f= gdl::ColorToFloats(color);
+	glColor3f(f.red, f.green, f.blue);
 	glBegin(GL_QUADS);
-		gdl::RGBA8Floats f= gdl::ColorToFloats(color);
-		glColor3f(f.red, f.green, f.blue);
 		// TOP LEFT
 		glVertex3f(x, y, 0.0f);
 

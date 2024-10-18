@@ -31,8 +31,8 @@ namespace gdl
 			u16 GetScreenWidth();
 			u16 GetScreenHeight();
 			float GetAspectRatio();
-			float GetElapsedSeconds();
-			float GetDeltaTime();
+			virtual float GetElapsedSeconds() = 0;
+			virtual float GetDeltaTime() = 0;
 
 		protected:
 			Platform();

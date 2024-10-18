@@ -45,6 +45,14 @@ bool gdl::FBXFile::LoadFile(std::string fbxFile)
 		if (mesh != nullptr)
 		{
 			printf("\tMesh %s with %zu faces\n", mesh->name.data, mesh->faces.count);
+			if (mesh->vertex_normal.exists)
+			{
+				printf("\t%zu normals\n", mesh->vertex_normal.values.count);
+			}
+			if (mesh->vertex_uv.exists)
+			{
+				printf("\t%zu uvs\n", mesh->vertex_uv.values.count);
+			}
 			continue;
 		}
 		ufbx_light* light = node->light;
@@ -92,6 +100,46 @@ bool gdl::FBXFile::LoadFile(std::string fbxFile)
 	return true;
 }
 
+ufbx_mesh * gdl::FBXFile::GetMesh ( int index )
+{
+	int meshIndex = 0;
+	for (ufbx_node* node : scene->nodes)
+	{
+		if (node->is_root)
+		{
+			// This is the root node
+			continue;
+		}
+		printf("Node: %s\n", node->name.data);
+
+		printf("Transform:");
+		ufbx_vec3 t = node->local_transform.translation;
+		ufbx_vec3 r = node->euler_rotation;
+		printf("position: (%.2f, %.2f, %.2f)", t.x, t.y, t.z);
+		printf("rotation: (%.2f, %.2f, %.2f)", r.x, r.y, r.z);
+		printf("\n");
+
+		size_t childAmount = node->children.count;
+		printf("\t%zu children\n", childAmount);
+
+		ufbx_mesh* mesh = node->mesh;
+		if (mesh != nullptr)
+		{
+			if (index == meshIndex)
+			{
+				printf("\tFound %d: %s\n", index, mesh->name.data);
+				return mesh;
+			}
+			else
+			{
+				meshIndex++;
+			}
+		}
+	}
+	return nullptr;
+}
+
+
 gdl::Mesh * gdl::FBXFile::LoadMesh(ufbx_mesh* fbxMesh)
 {
 	gdl::Mesh *mesh = new gdl::Mesh();
@@ -110,26 +158,42 @@ gdl::Mesh * gdl::FBXFile::LoadMesh(ufbx_mesh* fbxMesh)
 		}
 	}
 	mesh->indices = new GLushort[mesh->indexCount];
+	printf("LoadMesh: %d indices\n", mesh->indexCount);
+
+	// Get indices
 	size_t ii = 0;
+	GLushort indices[4];
 	for(ufbx_face face : fbxMesh->faces)
 	{
+		for(uint32_t corner = 0; corner < face.num_indices; corner++)
+		{
+			// The face index points to vertex_indices array
+			// Read the actual indices
+			uint32_t index = face.index_begin + corner;
+			indices[corner] = static_cast<GLushort>(fbxMesh->vertex_indices[index]);
+		}
+
+		// Create 1 or 2 triangles
+
+
+		// First triangle
+		/*   2 ---1
+			*    \   |
+			*     \  |
+			*      \ |
+			*       \|
+			*        0
+			*/
+		mesh->indices[ii] = indices[0];
+		ii++;
+		mesh->indices[ii] = indices[1];
+		ii++;
+		mesh->indices[ii] = indices[2];
+		ii++;
+
 		bool triangulate = face.num_indices == 4;
 		if (triangulate)
 		{
-			// First triangle
-			/*   2 ---1
-			 *    \   |
-			 *     \  |
-			 *      \ |
-			 *       \|
-			 *        0
-			 */
-			for(uint32_t corner = 0; corner < 3; corner++)
-			{
-				uint32_t index = face.index_begin + corner;
-				mesh->indices[ii] = static_cast<GLushort>(index);
-				ii++;
-			}
 			// Second triangle
 			/*   2
 			 *   |\
@@ -138,71 +202,73 @@ gdl::Mesh * gdl::FBXFile::LoadMesh(ufbx_mesh* fbxMesh)
 			 *   |   \
 			 *   3----0
 			 */
-			uint32_t index = face.index_begin + 0;
-				mesh->indices[ii] = static_cast<GLushort>(index);
-				ii++;
-			index = face.index_begin + 2;
-				mesh->indices[ii] = static_cast<GLushort>(index);
-				ii++;
-			index = face.index_begin + 3;
-				mesh->indices[ii] = static_cast<GLushort>(index);
-				ii++;
-		}
-		else
-		{
-			for(uint32_t corner = 0; corner < face.num_indices; corner++)
-			{
-				uint32_t index = face.index_begin + corner;
-				mesh->indices[ii] = static_cast<GLushort>(index);
-				ii++;
-			}
-		}
 
-		// Read vertices
-		{
-			mesh->vertexCount = fbxMesh->vertices.count;
-			mesh->positions = new GLfloat[fbxMesh->vertices.count * 3];
-			size_t vpi = 0;
-			for (uint32_t pi = 0; pi < fbxMesh->vertices.count; pi++)
-			{
-				ufbx_vec3 v = fbxMesh->vertices[pi];
-				mesh->positions[vpi+0] = v.x;
-				mesh->positions[vpi+1] = v.y;
-				mesh->positions[vpi+2] = v.z;
-				vpi += 3;
-			}
+			mesh->indices[ii] = indices[0];
+			ii++;
+			mesh->indices[ii] = indices[2];
+			ii++;
+			mesh->indices[ii] = indices[3];
+			ii++;
 		}
-		if (fbxMesh->vertex_normal.exists)
-		{
-			size_t vni = 0;
-			mesh->normals = new GLfloat[fbxMesh->vertex_normal.values.count * 3];
-			for (uint32_t ni = 0; ni < fbxMesh->vertex_normal.values.count; ni++)
-			{
-				ufbx_vec3 n = fbxMesh->vertex_normal[ni];
+	}
 
-				mesh->normals[vni+0] = n.x;
-				mesh->normals[vni+1] = n.y;
-				mesh->normals[vni+2] = n.z;
-				vni += 3;
-			}
+	// Indices read
+	printf("LoadMesh indices read \n");
+
+
+	// Read vertices
+	{
+		mesh->vertexCount = fbxMesh->vertices.count;
+		mesh->positions = new GLfloat[fbxMesh->vertices.count * 3];
+		size_t vpi = 0;
+		for (uint32_t pi = 0; pi < fbxMesh->vertices.count; pi++)
+		{
+			ufbx_vec3 v = fbxMesh->vertices[pi];
+			mesh->positions[vpi+0] = v.x;
+			mesh->positions[vpi+1] = v.y;
+			mesh->positions[vpi+2] = v.z;
+			vpi += 3;
 		}
-		if (fbxMesh->vertex_uv.exists)
+	}
+
+	// TODO The normals are indexed separately
+	// not necessarily a normal per vertex
+	if (fbxMesh->vertex_normal.exists)
+	{
+		size_t normalBytes = fbxMesh->vertex_normal.values.count * 3;
+		size_t vni = 0;
+		printf("LoadMesh read normals\n");
+		mesh->normals = new GLfloat[normalBytes];
+		for (uint32_t ni = 0; ni < fbxMesh->vertex_normal.values.count; ni++)
 		{
-			size_t vti = 0;
-			mesh->uvs = new GLfloat[fbxMesh->vertex_uv.values.count * 3];
-			for (uint32_t ti = 0; ti < fbxMesh->vertex_uv.values.count; ti++)
-			{
-				ufbx_vec2 t = fbxMesh->vertex_uv[ti];
+			ufbx_vec3 n = fbxMesh->vertex_normal[ni];
 
-				// Flip the y coordinates because in OpenGL images Y grows upwards
-				float y = t.y;
-				y -= 1.0f;
-				y *= -1.0f;
+			mesh->normals[vni+0] = n.x;
+			mesh->normals[vni+1] = n.y;
+			mesh->normals[vni+2] = n.z;
+			vni += 3;
+		}
+	}
 
-				mesh->normals[vti+0] = t.x;
-				mesh->normals[vti+1] = y;
-				vti += 2;
-			}
+	// TODO The uvs are indexed separately
+	// not necessarily a uv per vertex
+	if (fbxMesh->vertex_uv.exists)
+	{
+		printf("LoadMesh read uvs\n");
+		size_t vti = 0;
+		mesh->uvs = new GLfloat[fbxMesh->vertex_uv.values.count * 3];
+		for (uint32_t ti = 0; ti < fbxMesh->vertex_uv.values.count; ti++)
+		{
+			ufbx_vec2 t = fbxMesh->vertex_uv[ti];
+
+			// Flip the y coordinates because in OpenGL images Y grows upwards
+			float y = t.y;
+			y -= 1.0f;
+			y *= -1.0f;
+
+			mesh->uvs[vti+0] = t.x;
+			mesh->uvs[vti+1] = y;
+			vti += 2;
 		}
 	}
 
@@ -214,7 +280,7 @@ void gdl::FBXFile::DeleteData()
 {
 	if (scene != nullptr)
 	{
-		delete scene;
+		ufbx_free_scene(scene);
 		scene = nullptr;
 	}
 }

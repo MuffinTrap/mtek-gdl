@@ -20,10 +20,16 @@ namespace gdl
 
 	gdl::Image* LoadImage(std::string filename, gdl::TextureFilterModes filterMode);
 	gdl::Image* LoadImage(gdl::PNGFile* png, gdl::TextureFilterModes filterMode);
+	gdl::Image* LoadImage(const u8* buffer, size_t size, gdl::TextureFilterModes filterMode);
+
 	gdl::Sound* LoadSound(std::string filename);
+	gdl::Sound* LoadSound(const u8* buffer, size_t size);
 	gdl::Sound* LoadOgg(std::string filename);
+
 	gdl::PNGFile* LoadPNG(std::string filename);
+
 	gdl::Font* LoadFont(std::string filename, short characterWidth, short characterHeight, char firstCharacter);
+	gdl::Font* LoadFont(const u8* buffer, size_t size, short characterWidth, short characterHeight, char firstCharacter);
 
 	void DoProgramExit();
 

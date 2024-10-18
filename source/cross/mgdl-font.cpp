@@ -49,12 +49,12 @@ void gdl::Font::Bind (short charw, short charh, char firstCharacter )
 	spacingY = 0.0f;
 }
 
-void gdl::Font::Print(u32 color, float scale, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* text)
+void gdl::Font::Print(u32 color, short x, short y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* text)
 {
-	float step = aspect * scale;
+	float step = aspect * textHeight;
 
-	float dx = 0.0f;
-	float dy = 0.0f;
+	float dx = static_cast<float>(x);
+	float dy = static_cast<float>(y);
 	float dz = 0.0f;
 
 	if (alignmentX == RJustify)
@@ -70,11 +70,11 @@ void gdl::Font::Print(u32 color, float scale, gdl::AlignmentModes alignmentX, gd
 	float left = dx;
 	if (alignmentY == RJustify)
 	{
-		dy += scale;
+		dy += textHeight;
 	}
 	else if (alignmentY == Centered)
 	{
-		dy += scale/2.0f;
+		dy += textHeight/2.0f;
 	}
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.3f);
@@ -92,7 +92,7 @@ void gdl::Font::Print(u32 color, float scale, gdl::AlignmentModes alignmentX, gd
 		if (character == '\n')
 		{
 			dx = left;
-			dy -= scale + spacingY;
+			dy -= textHeight + spacingY;
 			continue;
 		}
 		gdl::vec2 tx0 = GetTextureCoordinate(character, 0); // TOP LEFT
@@ -103,11 +103,11 @@ void gdl::Font::Print(u32 color, float scale, gdl::AlignmentModes alignmentX, gd
 
 		// LOW LEFT!
 		glTexCoord2f(tx3.x, tx3.y);
-		glVertex3f(dx, dy - scale, dz);
+		glVertex3f(dx, dy - textHeight, dz);
 
 		// LOW RIGHT
 		glTexCoord2f(tx2.x, tx2.y);
-		glVertex3f(dx + step, dy - scale, dz);
+		glVertex3f(dx + step, dy - textHeight, dz);
 
 		// TOP RIGHT
 		glTexCoord2f(tx1.x, tx1.y);
@@ -127,8 +127,41 @@ void gdl::Font::Print(u32 color, float scale, gdl::AlignmentModes alignmentX, gd
 	spacingY = 0.0f;
 }
 
+void gdl::Font::Print(u32 color, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* text)
+{
+	Print(color, 0, 0, textHeight, alignmentX, alignmentY, text);
+}
 
-void gdl::Font::Printf(u32 color, float scale, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* format, ... )
+void gdl::Font::Print(u32 color, short x, short y, float textHeight, const char* text)
+{
+	Print(color, x, y, textHeight, gdl::AlignmentModes::LJustify, gdl::AlignmentModes::LJustify, text);
+}
+
+void gdl::Font::Printf(u32 color, short x, short y, float textHeight, const char* format, ... )
+{
+	va_list args;
+	char	buff[256];
+
+	va_start(args, format);
+	vsprintf(buff, format, args);
+	va_end(args);
+
+	Print(color, x, y, textHeight, gdl::AlignmentModes::LJustify, gdl::AlignmentModes::LJustify, buff);
+}
+
+void gdl::Font::Printf(u32 color, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* format, ... )
+{
+	va_list args;
+	char	buff[256];
+
+	va_start(args, format);
+	vsprintf(buff, format, args);
+	va_end(args);
+
+	Print(color, 0, 0, textHeight, alignmentX, alignmentY, buff);
+}
+
+void gdl::Font::Printf(u32 color, short x, short y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* format, ... )
 {
 	// Draw quads
 	va_list args;
@@ -138,7 +171,7 @@ void gdl::Font::Printf(u32 color, float scale, gdl::AlignmentModes alignmentX, g
 	vsprintf(buff, format, args);
 	va_end(args);
 
-	Print(color, scale, alignmentX, alignmentY, buff);
+	Print(color, x, y, textHeight, alignmentX, alignmentY, buff);
 }
 
 void gdl::Font::SetSpacingOnce ( float x, float y )

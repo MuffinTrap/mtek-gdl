@@ -14,6 +14,7 @@ namespace gdl
 	public:
 		bool LoadFile(std::string fbxFile);
 		void DeleteData();
+		ufbx_mesh* GetMesh(int index);
 
 		gdl::Mesh* LoadMesh(ufbx_mesh* fbxMesh);
 

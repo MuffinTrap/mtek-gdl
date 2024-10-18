@@ -9,6 +9,9 @@ static int windowHeight = 0;
 static int WII_WIDTH = 640;
 static int WII_HEIGHT = 480;
 
+static int glutElapsedStartMS;
+static int glutElapsedMS;
+
 static std::function<void()> initCall = nullptr;
 static std::function<void()> updateCall = nullptr;
 static std::function<void()> drawCall = nullptr;
@@ -67,10 +70,18 @@ void PauseLoop() {
 #pragma clang diagnostic ignored "-Wunused-parameter"
 void UpdateLoop(int value)
 {
+    // Update delta time
+    // The game will call GetDeltaTime() during updateCall
+    glutElapsedMS = glutGet(GLUT_ELAPSED_TIME);
+
 	updateCall();
     glutTimerFunc(16, UpdateLoop, 0);
+
     // TODO Where is the correct place for this?
+    // Need to have up to date information for the game to read
     glutController.StartFrame();
+
+    glutElapsedStartMS = glutElapsedMS;
     // Tell glut that the window needs to be
     // redrawn.
     glutPostRedisplay();
@@ -187,9 +198,11 @@ void gdl::PlatformPC::InitSystem(gdl::ScreenAspect screenAspect, std::function<v
     }
 
     glutController.ZeroAllInputs();
+    glutController.StartFrame();
     initCall();
     printf("glutMainLoop\n");
     glutTimerFunc(16, UpdateLoop, 0);
+    glutElapsedStartMS = glutGet(GLUT_ELAPSED_TIME);
 	glutMainLoop();
 }
 
@@ -212,3 +225,16 @@ void gdl::PlatformPC::DoProgramExit()
 
 	exit(0);
 }
+
+float gdl::PlatformPC::GetDeltaTime()
+{
+    int deltaMS = glutElapsedMS - glutElapsedStartMS;
+    deltaTimeS= float(deltaMS) / 1000.0f;
+    return deltaTimeS;
+}
+float gdl::PlatformPC::GetElapsedSeconds()
+{
+    return float(glutElapsedMS)/1000.0f;
+}
+
+

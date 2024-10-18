@@ -17,6 +17,9 @@ namespace gdl
 						u32 initFlags) override;
 						gdl::WiiController& GetController(int controllerNumber) override;
 						void DoProgramExit() override;
+
+		float GetDeltaTime() override;
+		float GetElapsedSeconds() override;
 	private:
 		void InitAudio();
 		// OpenAL sound
