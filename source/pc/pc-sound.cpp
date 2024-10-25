@@ -20,7 +20,7 @@ bool gdl::SoundPC::LoadFile(const char* filename) {
         return false;
     }
 
-    printf("Load audio file. Sample rate %d\n", sfinfo.samplerate);
+    printf("\tSample rate %d\n", sfinfo.samplerate);
     sample_rate = sfinfo.samplerate;
 
     alGenBuffers(1, &buffer);

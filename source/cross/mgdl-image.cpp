@@ -26,7 +26,7 @@ bool gdl::Image::LoadBuffer (const u8* buffer, size_t size, gdl::TextureFilterMo
 bool gdl::Image::LoadFile ( const char* filename, gdl::TextureFilterModes filterMode)
 {
 	// Load using png
-	printf("gdl:: Loading image %s for OpenGX...", filename);
+	printf("Loading image %s\n", filename);
 
 	pngFile = new PNGFile();
 	if (pngFile->ReadFile(filename) == false)

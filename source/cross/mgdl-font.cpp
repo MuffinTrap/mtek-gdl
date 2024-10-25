@@ -27,6 +27,7 @@ bool gdl::Font::LoadFromImage(const char* filename, short charw, short charh, ch
 	textureName = fontImage.GetTextureId(); // Store this for rendering the letters
 	if (imageOk)
 	{
+		printf("\tCreating font/sprite coordinates\n");
 		Bind(charw, charh, firstCharacter);
 	}
 	return imageOk;
@@ -34,7 +35,6 @@ bool gdl::Font::LoadFromImage(const char* filename, short charw, short charh, ch
 
 void gdl::Font::Bind (short charw, short charh, char firstCharacter )
 {
-	printf("Binding font\n");
 	short charactersPerRow = fontImage.GetWidth()/ charw;
 	short rows = fontImage.GetHeight() / charh;
 	// Calculate the vertex and texture coordinates (vertices are not used)
@@ -43,7 +43,6 @@ void gdl::Font::Bind (short charw, short charh, char firstCharacter )
 	this->ch = charh;
 	aspect = (float)cw/(float)ch;
 	CreateTextureCoordList(rows, charactersPerRow, fontImage.GetWidth(), fontImage.GetHeight());
-	printf("Bind done\n");
 
 	spacingX = 0.0f;
 	spacingY = 0.0f;

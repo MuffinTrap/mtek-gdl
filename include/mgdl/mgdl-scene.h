@@ -38,6 +38,8 @@ namespace gdl
 		Mesh();
 		void SetupVertexArrays();
 		void DrawElements();
+		void DrawPoints();
+		void DrawLines();
 
 	};
 

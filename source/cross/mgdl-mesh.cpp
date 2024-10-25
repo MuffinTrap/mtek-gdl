@@ -32,4 +32,18 @@ void gdl::Mesh::DrawElements()
 	glDrawRangeElements(GL_TRIANGLES, 0, vertexCount-1, indexCount, GL_UNSIGNED_SHORT, indices);
 }
 
+void gdl::Mesh::DrawPoints()
+{
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(3, GL_FLOAT, 0, positions);
+	glDrawRangeElements(GL_POINTS, 0, vertexCount-1, indexCount, GL_UNSIGNED_SHORT, indices);
+}
+
+void gdl::Mesh::DrawLines()
+{
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(3, GL_FLOAT, 0, positions);
+	glDrawRangeElements(GL_LINES, 0, vertexCount-1, indexCount, GL_UNSIGNED_SHORT, indices);
+}
+
 

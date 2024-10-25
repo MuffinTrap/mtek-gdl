@@ -52,7 +52,7 @@ bool gdl::PNGFile::ReadTextureInfo(int color_type)
 			bytesPerPixel = 4;
 		break;
 		default:
-			printf("Unsupported PNG COLOR TYPE!\n");
+			printf("\tUnsupported PNG COLOR TYPE!\n");
 			return false;
 		break;
 	};
@@ -76,7 +76,7 @@ GLenum gdl::PNGFile::GetGLFormat()
 			return GL_RGBA;
 		break;
 		default:
-			printf("Unsupported PNG COLOR TYPE!\n");
+			printf("\tUnsupported PNG COLOR TYPE!\n");
 			return 0;
 		break;
 	};
@@ -96,7 +96,7 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 	fread(magic, 1, sizeof(magic), fp);
 	if (png_check_sig(magic, sizeof(magic)) == false)
 	{
-		printf("[INVALID PNG]\n");
+		printf("\t[INVALID PNG]\n");
 		fclose(fp);
 		return false;
 	}
@@ -105,7 +105,7 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (png_ptr == nullptr)
 	{
-		printf("[FAILED TO READ]\n");
+		printf("\t[FAILED TO READ]\n");
 		png_destroy_read_struct(&png_ptr, NULL, NULL);
 		fclose(fp);
 		return false;
@@ -115,7 +115,7 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 	info_ptr = png_create_info_struct(png_ptr);
 	if (info_ptr == nullptr)
 	{
-		printf("[FAILED TO GET INFO]\n");
+		printf("\t[FAILED TO GET INFO]\n");
 		png_destroy_read_struct(&png_ptr, NULL, NULL);
 		fclose(fp);
 		return false;
@@ -137,20 +137,18 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 		return false;
 	}
 
-	printf("init io...");
 	// Lets read the file now!
 	png_init_io(png_ptr, fp);
 
 	// Skip magic number since we read it already
 	png_set_sig_bytes(png_ptr, sizeof(magic));
 
-	printf("Read image info: ");
 	png_read_info(png_ptr, info_ptr);
 	bit_depth = png_get_bit_depth(png_ptr, info_ptr);
 	color_type = png_get_color_type(png_ptr, info_ptr);
 
 	// React to info we got
-	printf("Color type: ");
+	printf("\tColor: ");
 	if (color_type == PNG_COLOR_TYPE_PALETTE)
 	{
 		// Read this as RGB image
@@ -197,6 +195,7 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 	{
 		printf("%d ", bit_depth);
 	}
+	printf("\n");
 
 	// Update our changes and read again
 	png_read_update_info(png_ptr, info_ptr);
@@ -205,14 +204,14 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 
 	// Wii cannot handle very big textures
 	if ((w > 1024) || (h > 1024)) {
-		printf("[TOO LARGE: MAX 1024]\n");
+		printf("\t[TOO LARGE: MAX 1024]\n");
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 		fclose(fp);
 		return false;
 	}
 	else
 	{
-		printf("Size: %u x %u\n", w, h);
+		printf("\tSize: %u x %u\n", w, h);
 		width = w;
 		height = h;
 	}
@@ -220,7 +219,7 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 	bool colorOk = ReadTextureInfo(color_type);
 	if (colorOk == false)
 	{
-		printf("[STRANGE PNG COLOR TYPE]\n");
+		printf("\t[STRANGE PNG COLOR TYPE]\n");
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 		fclose(fp);
 		return false;
@@ -228,12 +227,12 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 
 	// Allocate!
 	size_t imageDataSize = sizeof(GLubyte) * w * h * bytesPerPixel;
-	printf("Allocate %zu bytes\n", imageDataSize);
+	printf("\tAllocating %zu bytes\n", imageDataSize);
 	texels = (GLubyte*)AllocateAlignedMemory(imageDataSize);
 
 	if (texels == nullptr)
 	{
-		printf("[OUT OF MEMORY]\n");
+		printf("\t[OUT OF MEMORY]\n");
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 		fclose(fp);
 		return false;
@@ -268,7 +267,7 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 	// Reading is over, rows no longer needed
 	free(row_pointers);
 
-	printf("PNG read done\n");
+	printf("\tPNG read done\n");
 
 	// Flush read texels
 	CacheFlushRange(texels, imageDataSize);

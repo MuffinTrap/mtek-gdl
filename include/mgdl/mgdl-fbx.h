@@ -16,6 +16,7 @@ namespace gdl
 		void DeleteData();
 		ufbx_mesh* GetMesh(int index);
 
+		gdl::Mesh* AllocateMesh(ufbx_mesh* fbxMesh);
 		gdl::Mesh* LoadMesh(ufbx_mesh* fbxMesh);
 
 	private:

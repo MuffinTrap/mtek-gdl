@@ -78,23 +78,19 @@ void DrawTextDouble(const char* text, short x, short y, float textHeight, gdl::F
 
 void Example::Draw()
 {
+    gdl::InitOrthoProjection();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    // Draw Image
-    int CenterX = gdl::GetScreenWidth()/4;
-    barb->Draw2DAligned(
-            gdl::GetScreenWidth()/2,
-            gdl::GetScreenHeight()/2,
-            1.0f,
-            gdl::Centered, gdl::Centered);
+    DrawImage();
 
-    float textHeight = 22.0f;
-    short sh = gdl::GetScreenHeight();
-    DrawTextDouble("MTEK-GDL", CenterX, sh - ibmFont->GetCharacterHeight(), textHeight, ibmFont);
-    DrawTextDouble(GDL_VERSION, CenterX, sh - ibmFont->GetCharacterHeight() * 2, textHeight, ibmFont);
+    DrawWii();
 
+    gdl::InitOrthoProjection();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
     // Input
+    short sh = gdl::GetScreenHeight();
     short top = sh - 32;
     short left = 32;
     DrawMenu(left, top - 120, 120);
@@ -102,13 +98,39 @@ void Example::Draw()
     DrawTimingInfo(left,
                    gdl::GetScreenHeight()/2,
                    ibmFont->GetCharacterHeight());
+    DrawVersion();
     /*
     DrawInputInfo(left, top);
     */
+}
 
+void Example::DrawVersion()
+{
+    float textHeight = 22.0f;
+    short sh = gdl::GetScreenHeight();
+    int CenterX = gdl::GetScreenWidth()/4;
+    DrawTextDouble("MTEK-GDL", CenterX, sh - ibmFont->GetCharacterHeight(), textHeight, ibmFont);
+    DrawTextDouble(GDL_VERSION, CenterX, sh - ibmFont->GetCharacterHeight() * 2, textHeight, ibmFont);
+}
+
+
+void Example::DrawImage()
+{
+    // Draw Image
+    int CenterX = gdl::GetScreenWidth()/4;
+    barb->Draw2DAligned(
+            gdl::GetScreenWidth()/2,
+            gdl::GetScreenHeight()/2,
+            1.0f,
+            gdl::Centered, gdl::Centered);
+}
+
+
+void Example::DrawWii()
+{
     // Try to draw Wii 3D model
     gdl::InitPerspectiveProjection(75.0f, 0.1f, 100.0f);
-    gdl::InitCamera(gdl::vec3(0.0f, 0.0f, 10.0f), gdl::vec3(0.0f, 0.0f, 0.0f), gdl::vec3(0.0f, 1.0f, 0.0f));
+    gdl::InitCamera(gdl::vec3(0.0f, 0.0f, 0.0f), gdl::vec3(0.0f, 0.0f, -1.0f), gdl::vec3(0.0f, 1.0f, 0.0f));
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -118,16 +140,19 @@ void Example::Draw()
 	// hopefully OpenGX handles it
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-
     glShadeModel(GL_FLAT);
+
+    glColor3f(1.0f, 1.0f, 1.0f);
 
     glPushMatrix();
 
+    glTranslatef(5.0f, -5.0f, -12.0f);
     glRotatef(elapsedSeconds * 10.0f, 0.0f, 1.0f, 0.0f);
     glScalef(0.1f, 0.1f, 0.1f);
     wiiScene->models[0]->Draw(0);
 
     glPopMatrix();
+    glDisable(GL_DEPTH_TEST);
 }
 
 static void DrawButtons(short x, short y, short size, gdl::Font* font)

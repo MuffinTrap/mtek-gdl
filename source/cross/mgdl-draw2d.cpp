@@ -9,16 +9,18 @@ void gdl::DrawBox(short x, short y, short x2, short y2, u32 color)
 		gdl::RGBA8Floats f= gdl::ColorToFloats(color);
 		glColor3f(f.red, f.green, f.blue);
 		// TOP LEFT
-		glVertex3f(x, y, 0.0f);
-
-		// TOP RIGHT
-		glVertex3f(x2, y, 0.0f);
-
-		// LOW RIGHT
-		glVertex3f(x2, y2, 0.0f);
+		glVertex2f(x, y);
 
 		// LOW LEFT!
-		glVertex3f(x, y2, 0.0f);
+		glVertex2f(x, y2);
+
+		// LOW RIGHT
+		glVertex2f(x2, y2);
+
+		// TOP RIGHT
+		glVertex2f(x2, y);
+
+
 	glEnd();
 }
 
@@ -28,15 +30,17 @@ void gdl::DrawBoxF(short x, short y, short x2, short y2, u32 color)
 	glColor3f(f.red, f.green, f.blue);
 	glBegin(GL_QUADS);
 		// TOP LEFT
-		glVertex3f(x, y, 0.0f);
-
-		// TOP RIGHT
-		glVertex3f(x2, y, 0.0f);
-
-		// LOW RIGHT
-		glVertex3f(x2, y2, 0.0f);
+		glVertex2f(x, y);
 
 		// LOW LEFT!
-		glVertex3f(x, y2, 0.0f);
+		glVertex2f(x, y2);
+
+		// LOW RIGHT
+		glVertex2f(x2, y2);
+
+		// TOP RIGHT
+		glVertex2f(x2, y);
+
+
 	glEnd();
 }

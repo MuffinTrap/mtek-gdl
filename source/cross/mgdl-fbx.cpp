@@ -29,9 +29,9 @@ bool gdl::FBXFile::LoadFile(std::string fbxFile)
 			// This is the root node
 			continue;
 		}
-		printf("Node: %s\n", node->name.data);
+		printf("\tNode: %s\n", node->name.data);
 
-		printf("Transform:");
+		printf("\tTransform:");
 		ufbx_vec3 t = node->local_transform.translation;
 		ufbx_vec3 r = node->euler_rotation;
 		printf("position: (%.2f, %.2f, %.2f)", t.x, t.y, t.z);
@@ -44,15 +44,16 @@ bool gdl::FBXFile::LoadFile(std::string fbxFile)
 		ufbx_mesh* mesh = node->mesh;
 		if (mesh != nullptr)
 		{
-			printf("\tMesh %s with %zu faces\n", mesh->name.data, mesh->faces.count);
+			printf("\tMesh %s with %zu faces", mesh->name.data, mesh->faces.count);
 			if (mesh->vertex_normal.exists)
 			{
-				printf("\t%zu normals\n", mesh->vertex_normal.values.count);
+				printf(", %zu normals", mesh->vertex_normal.values.count);
 			}
 			if (mesh->vertex_uv.exists)
 			{
-				printf("\t%zu uvs\n", mesh->vertex_uv.values.count);
+				printf(",%zu uvs", mesh->vertex_uv.values.count);
 			}
+			printf("\n");
 			continue;
 		}
 		ufbx_light* light = node->light;
@@ -110,24 +111,12 @@ ufbx_mesh * gdl::FBXFile::GetMesh ( int index )
 			// This is the root node
 			continue;
 		}
-		printf("Node: %s\n", node->name.data);
-
-		printf("Transform:");
-		ufbx_vec3 t = node->local_transform.translation;
-		ufbx_vec3 r = node->euler_rotation;
-		printf("position: (%.2f, %.2f, %.2f)", t.x, t.y, t.z);
-		printf("rotation: (%.2f, %.2f, %.2f)", r.x, r.y, r.z);
-		printf("\n");
-
-		size_t childAmount = node->children.count;
-		printf("\t%zu children\n", childAmount);
-
 		ufbx_mesh* mesh = node->mesh;
 		if (mesh != nullptr)
 		{
 			if (index == meshIndex)
 			{
-				printf("\tFound %d: %s\n", index, mesh->name.data);
+				printf("Found mesh %d: %s\n", index, mesh->name.data);
 				return mesh;
 			}
 			else
@@ -136,145 +125,158 @@ ufbx_mesh * gdl::FBXFile::GetMesh ( int index )
 			}
 		}
 	}
+	printf("No mesh at index %d", index);
 	return nullptr;
 }
 
+void PushPosition(gdl::Mesh* mesh, size_t index, ufbx_vec3 pos)
+{
+	size_t vpi = index * 3;
+	mesh->positions[vpi+0] = pos.x;
+	mesh->positions[vpi+1] = pos.y;
+	mesh->positions[vpi+2] = pos.z;
+}
 
-gdl::Mesh * gdl::FBXFile::LoadMesh(ufbx_mesh* fbxMesh)
+void PushNormal(gdl::Mesh* mesh, size_t index, ufbx_vec3 n)
+{
+	// Where the vec3 begins in array
+	// every vertex has 3 floats
+	size_t vni = index * 3;
+	mesh->normals[vni+0] = n.x;
+	mesh->normals[vni+1] = n.y;
+	mesh->normals[vni+2] = n.z;
+}
+
+void PushUV(gdl::Mesh* mesh, size_t index, ufbx_vec2 uv)
+{
+	// Flip the y coordinates because in OpenGL images Y grows upwards
+	float y = uv.y;
+	y -= 1.0f;
+	y *= -1.0f;
+
+	// Every vertex has 2 floats for uv
+	size_t vti = index * 2;
+	mesh->uvs[vti+0] = uv.x;
+	mesh->uvs[vti+1] = y;
+}
+
+gdl::Mesh * gdl::FBXFile::AllocateMesh ( ufbx_mesh* fbxMesh )
 {
 	gdl::Mesh *mesh = new gdl::Mesh();
 
-	// Calculate how many indices
-	for(ufbx_face face : fbxMesh->faces)
-	{
-		bool triangulate = face.num_indices == 4;
-		if (triangulate)
-		{
-			mesh->indexCount += 6;
-		}
-		else
-		{
-			mesh->indexCount += 3;
-		}
-	}
+	int tris = fbxMesh->num_triangles;
+	mesh->indexCount = tris * 3;
+	printf("Mesh has %d triangles\n", tris);
+
+	// Reserve space
+	int byteCount = 0;
+
 	mesh->indices = new GLushort[mesh->indexCount];
-	printf("LoadMesh: %d indices\n", mesh->indexCount);
+	byteCount += mesh->indexCount * sizeof(float);
 
-	// Get indices
-	size_t ii = 0;
-	GLushort indices[4];
-	for(ufbx_face face : fbxMesh->faces)
+	size_t vertexAmount = tris * 3;
+	mesh->vertexCount = vertexAmount;
 	{
-		for(uint32_t corner = 0; corner < face.num_indices; corner++)
-		{
-			// The face index points to vertex_indices array
-			// Read the actual indices
-			uint32_t index = face.index_begin + corner;
-			indices[corner] = static_cast<GLushort>(fbxMesh->vertex_indices[index]);
-		}
-
-		// Create 1 or 2 triangles
-
-
-		// First triangle
-		/*   2 ---1
-			*    \   |
-			*     \  |
-			*      \ |
-			*       \|
-			*        0
-			*/
-		mesh->indices[ii] = indices[0];
-		ii++;
-		mesh->indices[ii] = indices[1];
-		ii++;
-		mesh->indices[ii] = indices[2];
-		ii++;
-
-		bool triangulate = face.num_indices == 4;
-		if (triangulate)
-		{
-			// Second triangle
-			/*   2
-			 *   |\
-			 *   | \
-			 *   |  \
-			 *   |   \
-			 *   3----0
-			 */
-
-			mesh->indices[ii] = indices[0];
-			ii++;
-			mesh->indices[ii] = indices[2];
-			ii++;
-			mesh->indices[ii] = indices[3];
-			ii++;
-		}
+		// 3 floats per position
+		size_t positionFloats = vertexAmount * 3;
+		mesh->positions = new GLfloat[positionFloats];
+		byteCount += positionFloats * sizeof(float);
 	}
 
-	// Indices read
-	printf("LoadMesh indices read \n");
-
-
-	// Read vertices
+	bool normals = fbxMesh->vertex_normal.exists;
+	if (normals)
 	{
-		mesh->vertexCount = fbxMesh->vertices.count;
-		mesh->positions = new GLfloat[fbxMesh->vertices.count * 3];
-		size_t vpi = 0;
-		for (uint32_t pi = 0; pi < fbxMesh->vertices.count; pi++)
-		{
-			ufbx_vec3 v = fbxMesh->vertices[pi];
-			mesh->positions[vpi+0] = v.x;
-			mesh->positions[vpi+1] = v.y;
-			mesh->positions[vpi+2] = v.z;
-			vpi += 3;
-		}
+		// 3 floats per normal
+		size_t normalFloats = vertexAmount * 3;
+		mesh->normals = new GLfloat[normalFloats];
+		byteCount += normalFloats * sizeof(float);
 	}
-
-	// TODO The normals are indexed separately
-	// not necessarily a normal per vertex
-	if (fbxMesh->vertex_normal.exists)
+	bool uvs = fbxMesh->vertex_uv.exists;
+	if (uvs)
 	{
-		size_t normalBytes = fbxMesh->vertex_normal.values.count * 3;
-		size_t vni = 0;
-		printf("LoadMesh read normals\n");
-		mesh->normals = new GLfloat[normalBytes];
-		for (uint32_t ni = 0; ni < fbxMesh->vertex_normal.values.count; ni++)
-		{
-			ufbx_vec3 n = fbxMesh->vertex_normal[ni];
-
-			mesh->normals[vni+0] = n.x;
-			mesh->normals[vni+1] = n.y;
-			mesh->normals[vni+2] = n.z;
-			vni += 3;
-		}
+		// 2 floats per uv
+		size_t uvFloats = vertexAmount * 2;
+		mesh->uvs = new GLfloat[uvFloats];
+		byteCount += uvFloats * sizeof(float);
 	}
-
-	// TODO The uvs are indexed separately
-	// not necessarily a uv per vertex
-	if (fbxMesh->vertex_uv.exists)
-	{
-		printf("LoadMesh read uvs\n");
-		size_t vti = 0;
-		mesh->uvs = new GLfloat[fbxMesh->vertex_uv.values.count * 3];
-		for (uint32_t ti = 0; ti < fbxMesh->vertex_uv.values.count; ti++)
-		{
-			ufbx_vec2 t = fbxMesh->vertex_uv[ti];
-
-			// Flip the y coordinates because in OpenGL images Y grows upwards
-			float y = t.y;
-			y -= 1.0f;
-			y *= -1.0f;
-
-			mesh->uvs[vti+0] = t.x;
-			mesh->uvs[vti+1] = y;
-			vti += 2;
-		}
-	}
+	printf("Allocated %d bytes for the mesh\n", byteCount);
 
 	return mesh;
 }
 
+
+void PushVertex(ufbx_mesh* fbxMesh, gdl::Mesh* mesh, uint32_t faceIndex, size_t arrayIndex)
+{
+	ufbx_vec3 position = fbxMesh->vertex_position[faceIndex];
+	ufbx_vec3 normal = fbxMesh->vertex_normal[faceIndex];
+	ufbx_vec2 uv = fbxMesh->vertex_uv[faceIndex];
+
+	PushPosition(mesh, arrayIndex, position);
+	PushNormal(mesh, arrayIndex, normal);
+	PushUV(mesh, arrayIndex, uv);
+}
+
+gdl::Mesh * gdl::FBXFile::LoadMesh(ufbx_mesh* fbxMesh)
+{
+	gdl::Mesh* mesh = AllocateMesh(fbxMesh);
+
+	size_t vertexArrayIndex = 0;
+	size_t indiceArrayIndex = 0;
+	GLushort drawIndex = 0;
+	// Read each face and triangulate if needed
+	for(ufbx_face face : fbxMesh->faces)
+	{
+		// Ufbx indices that belong to a single face and
+		// are used to refer to vertex data
+		uint32_t faceIndices[4];
+
+		// This can be 3 or 4 indices;
+		for(uint32_t corner = 0; corner < face.num_indices; corner++)
+		{
+			uint32_t index = face.index_begin + corner;
+			// ufbx face index used later for uvs and normals
+			faceIndices[corner] = index;
+		}
+
+		// 3 new unique vertices. New indice for each one
+		PushVertex(fbxMesh, mesh, faceIndices[0], vertexArrayIndex);
+		mesh->indices[indiceArrayIndex] = drawIndex;
+
+		PushVertex(fbxMesh, mesh, faceIndices[1], vertexArrayIndex+1);
+		mesh->indices[indiceArrayIndex+1] = drawIndex+1;
+
+		PushVertex(fbxMesh, mesh, faceIndices[2], vertexArrayIndex+2);
+		mesh->indices[indiceArrayIndex+2] = drawIndex+2;
+
+		// One more unique vertex. Use the previous indices with it
+		if (face.num_indices == 4)
+		{
+			mesh->indices[indiceArrayIndex+3] = drawIndex;
+			mesh->indices[indiceArrayIndex+4] = drawIndex+2;
+
+			PushVertex(fbxMesh, mesh, faceIndices[3], vertexArrayIndex+3);
+			mesh->indices[indiceArrayIndex+5] = drawIndex+3;
+		}
+
+		// Get ready for next face
+		if (face.num_indices == 4)
+		{
+			// This was a quad
+			drawIndex += 4; 		// Drew the face with 4 vertices
+			vertexArrayIndex += 4; 	// Added 4 unique vertices
+			indiceArrayIndex += 6; 	// Added 6 new indices
+		}
+		else
+		{
+			// This was a triangle
+			drawIndex += 3; 		 // Drew the face with 3 vertices
+			vertexArrayIndex += 3;	 // Added 3 unique vertices
+			indiceArrayIndex += 3;	 // Added 3 new indices
+		}
+	}
+	printf("Loaded mesh\n");
+	return mesh;
+}
 
 void gdl::FBXFile::DeleteData()
 {

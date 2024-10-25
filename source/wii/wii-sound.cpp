@@ -40,13 +40,13 @@ bool gdl::SoundWii::LoadFile(const char* fileName) {
 
 	// Open up the wave file
 	if (gdl::ConsoleActive)
-		printf("gdl: Opening sound file %s... ", fileName);
+		printf("Opening sound file %s\n", fileName);
 
 
 	FILE *fp;
 
 	if (!(fp = fopen(fileName, "r"))) {
-		gdl::CallErrorCallback("Sound file %s not found", fileName);
+		gdl::CallErrorCallback("\tSound file %s not found", fileName);
 		return(false);
 	}
 	return LoadSound(fp);
@@ -64,7 +64,7 @@ bool gdl::SoundWii::LoadBuffer(const u8* buffer, size_t size)
 	if (!(fp = fmemopen(wavBuffer, size, "r")))
 	{
 		openOk = false;
-		gdl::CallErrorCallback("Sound buffer could not be opened");
+		gdl::CallErrorCallback("\tSound buffer could not be opened");
 	}
 	if (openOk)
 	{
@@ -211,7 +211,7 @@ bool gdl::SoundWii::LoadSound(FILE* fp)
 
 
 	if (gdl::ConsoleActive)
-		printf("Sound loaded Ok!\n");
+		printf("\tSound loaded Ok!\n");
 
 	return(true);
 
@@ -379,7 +379,7 @@ bool gdl::MusicWii::LoadFile(const char *filename)
 	this->filenameChar = new char[strlen(filename)];
 	strcpy(this->filenameChar, filename);
 	this->fileNameStr = filename;
-	printf("Loaded Ogg %s\n", filenameChar);
+	printf("Loading Ogg %s\n", filename);
 	//oggFile = fopen(filename, "rb");
 	// gdl_assert_print((oggFile != nullptr), "Could not open music file as file");
 	return true;

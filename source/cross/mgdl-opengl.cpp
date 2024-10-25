@@ -26,6 +26,15 @@ void gdl::InitPerspectiveProjection(float fovy, float near, float far)
     gluPerspective(fovy, gdl::GetAspectRatio(), near, far);
 }
 
+void gdl::InitOrthoProjection()
+{
+    glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+    // Y increases up : OpenGL default
+    gluOrtho2D(0.0, (double)gdl::GetScreenWidth(), 0.0, (double)gdl::GetScreenHeight());
+}
+
+
 // NOTE!!!!
 // Without this setup the Dolphin is
 // all messed up with the

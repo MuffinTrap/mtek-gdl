@@ -17,19 +17,6 @@
 
 static Example example;
 
-
-void Init3D()
-{
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(75.0, gdl::GetAspectRatio(), 0.1, 100.0);
-}
-void Init2D()
-{
-    glMatrixMode(GL_PROJECTION);
-    gluOrtho2D(0.0, (double)gdl::GetScreenWidth(), 0.0, (double)gdl::GetScreenHeight());
-}
-
 void Cross3D()
 {
     glBegin(GL_LINES);
@@ -63,12 +50,7 @@ void init()
     glViewport(0, 0, gdl::GetScreenWidth(), gdl::GetScreenHeight());
 
     glMatrixMode(GL_PROJECTION);
-
-    // Y increases down
-    //gluOrtho2D(0.0, (double)gdl::GetScreenWidth(), (double)gdl::GetScreenHeight(), 0.0f);
-
-    // Y increases up : OpenGL default
-    gluOrtho2D(0.0, (double)gdl::GetScreenWidth(), 0.0, (double)gdl::GetScreenHeight());
+    glLoadIdentity();
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -124,7 +106,6 @@ void render()
     // NOTE Use this instead of glClear() for Wii quirk.
     gdl::cross_glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     example.Draw();
-    Cross2D();
 }
 
 int main()

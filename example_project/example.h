@@ -5,9 +5,7 @@
 class Example
 {
     gdl::Image* barb;
-    gdl::Image* mel_image;
     gdl::SpriteSet mel_sprites;
-    gdl::Image* ibmFontImage;
     gdl::Image* pointerImage;
     gdl::Font* ibmFont;
     gdl::Sound* sampleMusic;
@@ -29,6 +27,9 @@ class Example
         void DrawMenu(int x, int y, int width);
         void DrawInputInfo(int x, int y);
         void DrawTimingInfo(int x, int y, float scale);
+        void DrawImage();
+        void DrawVersion();
         void DrawSprites();
+        void DrawWii();
 
 };
