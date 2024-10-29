@@ -44,15 +44,7 @@ void Example::Init()
     wiiTexture = gdl::LoadImage("data/wii_console_texture.png", gdl::TextureFilterModes::Nearest);
 
     gdl::FBXFile* wiiFbx = new gdl::FBXFile();
-    if (wiiFbx->LoadFile("data/wii_console.fbx"))
-    {
-
-        wiiScene = new gdl::Scene();
-        if (wiiScene->LoadFromFBX(wiiFbx))
-        {
-            wiiScene->models[0]->AddTexture(wiiTexture);
-        }
-    }
+    wiiScene = wiiFbx->LoadFile("data/wii_et_baby.fbx");
 
     menu = gdl::MenuCreator(ibmFont, 1.0f, 1.0f);
 }
@@ -149,7 +141,8 @@ void Example::DrawWii()
     glTranslatef(5.0f, -5.0f, -12.0f);
     glRotatef(elapsedSeconds * 10.0f, 0.0f, 1.0f, 0.0f);
     glScalef(0.1f, 0.1f, 0.1f);
-    wiiScene->models[0]->Draw(0);
+
+    wiiScene->Draw(wiiTexture);
 
     glPopMatrix();
     glDisable(GL_DEPTH_TEST);

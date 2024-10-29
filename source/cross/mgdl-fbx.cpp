@@ -4,7 +4,7 @@
 #include <mgdl/mgdl-scene.h>
 #include <stdio.h>
 
-bool gdl::FBXFile::LoadFile(std::string fbxFile)
+gdl::Scene* gdl::FBXFile::LoadFile(std::string fbxFile)
 {
 	// Right handed for OpenGL
 	// Y is up
@@ -17,116 +17,133 @@ bool gdl::FBXFile::LoadFile(std::string fbxFile)
 	gdl_assert_printf(scene != nullptr, "Cannot load fbx: %s\n", error.description.data);
 	if (scene == nullptr)
 	{
-		return false;
+		return nullptr;
 	}
 
+	gdl::Scene* gdlScene = new gdl::Scene();
 	// What is in this file?
 
-	for (ufbx_node* node : scene->nodes)
+	// Start from the root
+	ufbx_node* root = scene->root_node;
 	{
-		if (node->is_root)
-		{
-			// This is the root node
-			continue;
-		}
-		printf("\tNode: %s\n", node->name.data);
+		gdlScene->SetActiveParentNode(nullptr);
+		LoadNode(gdlScene, root, 0);
+	}
 
-		printf("\tTransform:");
-		ufbx_vec3 t = node->local_transform.translation;
-		ufbx_vec3 r = node->euler_rotation;
-		printf("position: (%.2f, %.2f, %.2f)", t.x, t.y, t.z);
-		printf("rotation: (%.2f, %.2f, %.2f)", r.x, r.y, r.z);
+	return gdlScene;
+}
+
+void Indent(short depth)
+{
+	for (short i = 0; i < depth; i++)
+	{
+		printf("\t");
+	}
+}
+
+bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth )
+{
+	Indent(depth);
+	printf("Node: %s\n", node->name.data);
+
+	Indent(depth);
+	printf("Transform:");
+	ufbx_vec3 t = node->local_transform.translation;
+	ufbx_vec3 r = node->euler_rotation;
+	printf("position: (%.2f, %.2f, %.2f)", t.x, t.y, t.z);
+	printf("rotation: (%.2f, %.2f, %.2f)", r.x, r.y, r.z);
+	printf("\n");
+
+	gdl::Node* n = new gdl::Node();
+	n->transform.position = gdl::vec3(t.x, t.y, t.z);
+	n->transform.rotationRadians = gdl::vec3(r.x, r.y, r.z);
+
+	Indent(depth);
+	if (node->mesh != nullptr)
+	{
+		ufbx_mesh* mesh = node->mesh;
+		printf("Mesh %s with %zu faces", mesh->name.data, mesh->faces.count);
+		if (mesh->vertex_normal.exists)
+		{
+			printf(", %zu normals", mesh->vertex_normal.values.count);
+		}
+		if (mesh->vertex_uv.exists)
+		{
+			printf(",%zu uvs", mesh->vertex_uv.values.count);
+		}
 		printf("\n");
 
-		size_t childAmount = node->children.count;
-		printf("\t%zu children\n", childAmount);
+		// TODO
+		// Is this mesh loaded already?
 
-		ufbx_mesh* mesh = node->mesh;
-		if (mesh != nullptr)
+		gdl::Mesh* m = LoadMesh(mesh);
+		n->mesh = m;
+
+		// Does this node have materials?
+		for(size_t mi = 0; mi < node->materials.count; mi++)
 		{
-			printf("\tMesh %s with %zu faces", mesh->name.data, mesh->faces.count);
-			if (mesh->vertex_normal.exists)
-			{
-				printf(", %zu normals", mesh->vertex_normal.values.count);
-			}
-			if (mesh->vertex_uv.exists)
-			{
-				printf(",%zu uvs", mesh->vertex_uv.values.count);
-			}
-			printf("\n");
-			continue;
+			// TODO How to load the textures automatically
+			// or if loaded later, match them to the meshes?
+			ufbx_material* material = node->materials[mi];
+			Indent(depth);
+			printf("Material: %s\n", material->name.data);
 		}
+
+
+	}
+	else if (node->light != nullptr)
+	{
 		ufbx_light* light = node->light;
-		if (light != nullptr)
+		printf("\tLight %s, color: (%.2f, %.2f, %.2f) intensity: %.2f type: ", light->name.data, light->color.x, light->color.y, light->color.z, light->intensity);
+		if (light->type == UFBX_LIGHT_POINT)
 		{
-			printf("\tLight %s, color: (%.2f, %.2f, %.2f) intensity: %.2f type: ", light->name.data, light->color.x, light->color.y, light->color.z, light->intensity);
-			if (light->type == UFBX_LIGHT_POINT)
-			{
-				printf("point");
-			}
-			else if (light->type == UFBX_LIGHT_SPOT)
-			{
-				printf("spot");
-			}
-			else if (light->type == UFBX_LIGHT_DIRECTIONAL)
-			{
-				printf("directional");
-			}
-			else if (light->type == UFBX_LIGHT_AREA)
-			{
-				printf("area");
-			}
-			else if (light->type == UFBX_LIGHT_VOLUME)
-			{
-				printf("volumetric");
-			}
-			printf("\n");
+			printf("point");
+		}
+		else if (light->type == UFBX_LIGHT_SPOT)
+		{
+			printf("spot");
+		}
+		else if (light->type == UFBX_LIGHT_DIRECTIONAL)
+		{
+			printf("directional");
+		}
+		else if (light->type == UFBX_LIGHT_AREA)
+		{
+			printf("area");
+		}
+		else if (light->type == UFBX_LIGHT_VOLUME)
+		{
+			printf("volumetric");
+		}
+		printf("\n");
 
-			continue;
-		}
+	}
+	else if (node->camera != nullptr)
+	{
 		ufbx_camera* camera = node->camera;
-		if (camera != nullptr)
-		{
-			printf("\tCamera %s\n", camera->name.data);
-			continue;
-		}
+		printf("\tCamera %s\n", camera->name.data);
+	}
+	else if (node->bone != nullptr)
+	{
 		ufbx_bone* bone = node->bone;
-		if (bone != nullptr)
+		printf("\tBone %s, radius: %.2f relative length: %.2f\n", bone->name.data, bone->radius, bone->relative_length);
+	}
+
+	gdlScene->PushChildNode(n);
+
+	size_t childAmount = node->children.count;
+	if (childAmount > 0)
+	{
+		Indent(depth);
+		printf("%zu children\n", childAmount);
+		gdlScene->SetActiveParentNode(n);
+		for(size_t i = 0; i < node->children.count; i++)
 		{
-			printf("\tBone %s, radius: %.2f relative length: %.2f\n", bone->name.data, bone->radius, bone->relative_length);
-			continue;
+			LoadNode(gdlScene, node->children[i], depth+1);
 		}
 	}
 
 	return true;
-}
-
-ufbx_mesh * gdl::FBXFile::GetMesh ( int index )
-{
-	int meshIndex = 0;
-	for (ufbx_node* node : scene->nodes)
-	{
-		if (node->is_root)
-		{
-			// This is the root node
-			continue;
-		}
-		ufbx_mesh* mesh = node->mesh;
-		if (mesh != nullptr)
-		{
-			if (index == meshIndex)
-			{
-				printf("Found mesh %d: %s\n", index, mesh->name.data);
-				return mesh;
-			}
-			else
-			{
-				meshIndex++;
-			}
-		}
-	}
-	printf("No mesh at index %d", index);
-	return nullptr;
 }
 
 void PushPosition(gdl::Mesh* mesh, size_t index, ufbx_vec3 pos)
@@ -237,6 +254,13 @@ gdl::Mesh * gdl::FBXFile::LoadMesh(ufbx_mesh* fbxMesh)
 			// ufbx face index used later for uvs and normals
 			faceIndices[corner] = index;
 		}
+
+		// TODO
+		// Unique vertex is the position, normal and uv index
+		// together.
+		// If a vertex does not exist yet, push it into
+		// array and add a new index for it.
+		// If it exists, add only its index
 
 		// 3 new unique vertices. New indice for each one
 		PushVertex(fbxMesh, mesh, faceIndices[0], vertexArrayIndex);

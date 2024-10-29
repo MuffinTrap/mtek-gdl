@@ -9,17 +9,18 @@
 namespace gdl
 {
 	class Mesh;
+	class Scene;
 	class FBXFile
 	{
 	public:
-		bool LoadFile(std::string fbxFile);
+		gdl::Scene* LoadFile(std::string fbxFile);
 		void DeleteData();
-		ufbx_mesh* GetMesh(int index);
 
 		gdl::Mesh* AllocateMesh(ufbx_mesh* fbxMesh);
 		gdl::Mesh* LoadMesh(ufbx_mesh* fbxMesh);
 
 	private:
+		bool LoadNode(gdl::Scene* scene, ufbx_node* node, short depth);
 		ufbx_scene* scene = nullptr;
 	};
 }

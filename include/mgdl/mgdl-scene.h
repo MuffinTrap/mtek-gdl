@@ -12,13 +12,14 @@
 #include <mgdl/mgdl-image.h>
 namespace gdl
 {
-	/* Material used by a mesh. Contains a
+	/* Material used by a node. Contains a
 	 * pointer to Image and material properties
 	 * used in rendering
 	 */
 	class Material
 	{
-
+	public:
+		gdl::Image* texture;
 	};
 
 	/* Contains vertex data that is needed for
@@ -43,20 +44,11 @@ namespace gdl
 
 	};
 
-	/* Contains one or more Meshes and materials.
-	 * The meshes have a hierarchy and position and rotation
-	 * offsets
-	 */
-	class Model
+	class Transform
 	{
 	public:
-		void AddMesh(Mesh* meshIn);
-		void AddTexture(gdl::Image* imageIn);
-		void AddTexturedMesh(Mesh* meshIn, gdl::Image* imageIn);
-
-		void Draw(int texture = 0);
-		std::vector<Mesh*> meshes;
-		std::vector<gdl::Image*> textures;
+		gdl::vec3 position;
+		gdl::vec3 rotationRadians;
 	};
 
 	/* Representes a light in a 3D scene.
@@ -67,12 +59,35 @@ namespace gdl
 
 	};
 
+	class Node
+	{
+	public:
+		gdl::Mesh* mesh = nullptr;
+		gdl::Material* material = nullptr;
+		Transform transform;
+		std::vector<Node*> children;
+	};
+
+
+	/* Contains one or more Meshes and materials.
+	 * The meshes have a hierarchy and position and rotation
+	 * offsets
+	 */
+
+
 	/* Contains one or more lights and Models
 	 */
 	class Scene
 	{
 	public:
 		bool LoadFromFBX(gdl::FBXFile* fbxFile);
-		std::vector<Model*> models;
+		void SetActiveParentNode(gdl::Node* node);
+		void PushChildNode(gdl::Node* node);
+		void Draw(gdl::Image* texture);
+
+	private:
+		void DrawNode(gdl::Node* node);
+		gdl::Node* rootNode;
+		gdl::Node* parent;
 	};
 }
