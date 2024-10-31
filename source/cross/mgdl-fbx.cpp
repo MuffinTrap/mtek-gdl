@@ -55,6 +55,7 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth
 	printf("\n");
 
 	gdl::Node* n = new gdl::Node();
+	n->name = std::string(node->name.data);
 	n->transform.position = gdl::vec3(t.x, t.y, t.z);
 	n->transform.rotationRadians = gdl::vec3(r.x, r.y, r.z);
 
@@ -84,9 +85,22 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth
 		{
 			// TODO How to load the textures automatically
 			// or if loaded later, match them to the meshes?
+
 			ufbx_material* material = node->materials[mi];
 			Indent(depth);
 			printf("Material: %s\n", material->name.data);
+
+			// Has this material been loaded already?
+			std::string matName = std::string(material->name.data);
+			gdl::Material* mat = gdlScene->GetMaterial(matName);
+			if (mat == nullptr)
+			{
+				mat = new gdl::Material();
+				mat->name = matName;
+				gdlScene->AddMaterial(mat);
+			}
+			n->material = mat;
+			printf("Added material %s\n", n->material->name.c_str());
 		}
 
 

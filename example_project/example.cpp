@@ -45,6 +45,8 @@ void Example::Init()
 
     gdl::FBXFile* wiiFbx = new gdl::FBXFile();
     wiiScene = wiiFbx->LoadFile("data/wii_et_baby.fbx");
+    wiiScene->SetMaterialTexture("wii_console_texture.png", wiiTexture);
+
 
     menu = gdl::MenuCreator(ibmFont, 1.0f, 1.0f);
 }
@@ -55,6 +57,11 @@ void Example::Update()
     // These are available only during update
     elapsedSeconds = gdl::GetElapsedSeconds();
     deltaTime = gdl::GetDeltaTime();
+
+    static std::string babyName = "cuboid";
+    gdl::Node* baby = wiiScene->GetNode(babyName);
+    baby->transform.rotationDegrees.x += deltaTime * 25.0f;
+    baby->transform.rotationDegrees.z += deltaTime * 40.0f;
 }
 
 void DrawTextDouble(const char* text, short x, short y, float textHeight, gdl::Font* font)
@@ -84,11 +91,11 @@ void Example::Draw()
     // Input
     short sh = gdl::GetScreenHeight();
     short top = sh - 32;
-    short left = 32;
+    short left = 16;
     DrawMenu(left, top - 120, 120);
     DrawSprites();
     DrawTimingInfo(left,
-                   gdl::GetScreenHeight()/2,
+                   gdl::GetScreenHeight()/5,
                    ibmFont->GetCharacterHeight());
     DrawVersion();
     /*
@@ -142,7 +149,7 @@ void Example::DrawWii()
     glRotatef(elapsedSeconds * 10.0f, 0.0f, 1.0f, 0.0f);
     glScalef(0.1f, 0.1f, 0.1f);
 
-    wiiScene->Draw(wiiTexture);
+    wiiScene->Draw();
 
     glPopMatrix();
     glDisable(GL_DEPTH_TEST);

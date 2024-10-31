@@ -19,7 +19,9 @@ namespace gdl
 	class Material
 	{
 	public:
+		std::string name;
 		gdl::Image* texture;
+		void Apply();
 	};
 
 	/* Contains vertex data that is needed for
@@ -48,7 +50,8 @@ namespace gdl
 	{
 	public:
 		gdl::vec3 position;
-		gdl::vec3 rotationRadians;
+		gdl::vec3 rotationDegrees;
+		float scale = 1.0f;
 	};
 
 	/* Representes a light in a 3D scene.
@@ -62,6 +65,7 @@ namespace gdl
 	class Node
 	{
 	public:
+		std::string name;
 		gdl::Mesh* mesh = nullptr;
 		gdl::Material* material = nullptr;
 		Transform transform;
@@ -83,11 +87,23 @@ namespace gdl
 		bool LoadFromFBX(gdl::FBXFile* fbxFile);
 		void SetActiveParentNode(gdl::Node* node);
 		void PushChildNode(gdl::Node* node);
-		void Draw(gdl::Image* texture);
+		void Draw();
+
+		void AddMaterial(gdl::Material* material);
+
+		void SetMaterialTexture(const std::string& materialName, gdl::Image* texture);
+		gdl::Material* GetMaterial(const std::string& materialName);
+		gdl::Node* GetRoot();
+		gdl::Node* GetNode(const std::string& name);
 
 	private:
 		void DrawNode(gdl::Node* node);
+
+		gdl::Node* FindNode(gdl::Node* node, const std::string &nodeName);
+		gdl::Material* FindMaterial(gdl::Node* node, const std::string&  materialName);
 		gdl::Node* rootNode;
 		gdl::Node* parent;
+		// Multiple nodes can refer to same material
+		std::vector<gdl::Material*> materials;
 	};
 }
