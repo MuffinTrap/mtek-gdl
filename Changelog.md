@@ -1,5 +1,9 @@
 # Changes made by muffintrap
 
+
+### Version 0.100.3-muffintrap "skrolli"
+This version adds the ufbx library and support for FBX files.
+
 ### Version 0.100.2-muffintrap "nova"
 
 This is a big refactor that makes the library cross platform. The library can now be used on Windows, Linux, OS X(Mac computers) and Wii.

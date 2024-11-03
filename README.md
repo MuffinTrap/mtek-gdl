@@ -11,7 +11,7 @@ All changes made to the original are clearly commented in the code, as required 
 If you use this fork for making a Wii game or demo, I won't be available to give tech support. And naturally, there is no warranty of any kind.
 
 ## Version number
-This is now version 0.100.2-muffintrap "nova"
+This is now version 0.100.3-muffintrap "skrolli"
 
 ## How to compile and install the library and run the example with Dolphin
 1. Install devkitpro following instructions here: [DevkitPro Getting Started](https://devkitpro.org/wiki/Getting_Started)
@@ -41,47 +41,13 @@ This is now version 0.100.2-muffintrap "nova"
 	make
 	sudo -E make install
 ```
-7. Go to mtek-gdl/example_project/ and run the command to compile it. It should produce a file called **example_project.dol**
+7. Go to mtek-gdl/example_project/ and run the command to compile it. It should produce a file called **boot.dol**
 ```sh
 	make
 ```
-8. Open the Dolphin emulator, Select File > Open... and select the file **example_project.dol**
+8. Open the Dolphin emulator, Select File > Open... and select the file **boot.dol**
 
 
-
-## How to compile and install the library and run the example with Dolphin
-1. Install devkitpro following instructions here: [DevkitPro Getting Started](https://devkitpro.org/wiki/Getting_Started)
-2. Add DEVKITPRO and DEVKITPPC to your environment variables. If you used the default install location, they should be:
-```sh
-	DEVKITPRO : /opt/devkitpro
-	DEVKITPPC : /opt/devkitpro/devkitPPC
-```
-3. Using (dkp-)pacman, install the package **wii-dev**
-4. Using (dkp-)pacman, install these packages if they are not already installed:
-	* ppc-png
-	* ppc-zlib
-	* ppc-libvorbis
-	* ppc-libvorbisidec
-	* ppc-libogg
-	* wii-glu
-	* wii-opengx
-	* wii-freeglut
-5. Clone this repository to your computer. In the next steps the folder of the repository is called **mtek-gdl/**
-5. Go to mtek-gdl/3rdparty/libs-wii/ and run these commands. They will compile and install libraries that mtek-gdl uses.
-```sh
-	make
-	sudo -E make install
-```
-6. Go to mtek-gdl/ and run these commands. They will compile and install the library itself.
-```sh
-	make
-	sudo -E make install
-```
-7. Go to mtek-gdl/example_project/ and run the command to compile it. It should produce a file called **example_project.dol**
-```sh
-	make
-```
-8. Open the Dolphin emulator, Select File > Open... and select the file **example_project.dol**
 
 ## How to compile and install on Windows
 ### Development environment and libraries
@@ -118,13 +84,14 @@ You need to include these files when you release your executable.
 - libopus-0.dll
 - libvorbisenc-2.dll
 
+Windows makefile is Makefile_win.mk
+
 ## Libraries needed for Linux port:
 - libsndfile1-dev
 - libopenal-dev
 - freeglut3-dev
 
 Linux makefile is Makefile_linux.mk
-You cannot install the library at least for now. Use -L and -I in a makefile to locate it.
 
 ### Rocket editor
 These libraries are needed if you build the rocket editor on Linux
@@ -132,18 +99,41 @@ These libraries are needed if you build the rocket editor on Linux
 - libqt5websockets5-dev
 - qml-module-qtwebsockets
 
-## Libraries needed for Mac port:
-You need to install these somehow using homebrew. The versions given are ones that worked before.
+## How to compile and install on MacOS
 
-- libsndfile version 1.2.2
-- openal-soft version 1.23.1
-- libpng version 1.6.43
+### Programs
+Open a terminal and give the following commands
+
+> % xcode-select --install
+This will open a pop-up asking if you want to install command line tools. Click Install.
+
+### Libraries
+Install homebrew or MacPorts. Homebrew might not be available if your Mac is too old :(
+
+**MacPorts**
+MacPorts can be found at [www.macports.org](www.macports.org)
+
+**Homebrew**
+Homebrew can be found at [brew.sh](brew.sh)
+
+**Libraries**
+After installing, install these ports:
+- libpng
+- libsndfile
+
+You might want to install glm too
+- glm
+
+These will help with ogg playback once it is enabled on PC platforms
+- libogg
+- libopus
+- libvorbis
+
+MacOS makefile is Makefile_mac.mk
 
 ### Future plans
-1. Add support for reading glTF scenes with tinygltf and FBX support if ufbx
-2. Add Rocket integration for syncing
-3. Add useful math and lerp functions
-4. Add functions to help rendering 3D scenes and objects
+1. Add useful math and lerp functions
+2. Add functions to help rendering 3D scenes and objects
 
 This file was changed for version 0.100.0-muffintrap by muffintrap to add explanation of the fork.
 Original contents of README.md are below:
