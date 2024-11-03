@@ -10,8 +10,8 @@ CXXFILES	= $(wildcard source/cross/*.cpp)
 HDRS_X		:= $(wildcard include/mgdl/*.h)
 
 # Embedded libraries
-CXXFILES	+= $(wildcard include/ufbx/*.cpp)
-UFBX_HDR	:= include/ufbx/ufbx.h
+CXXFILES	+= $(wildcard include/mgdl/ufbx/*.cpp)
+UFBX_HDR	:= include/mgdl/ufbx/ufbx.h
 
 # PC platform
 CXXFILES	+= $(wildcard source/pc/*.cpp)

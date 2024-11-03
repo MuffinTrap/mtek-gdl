@@ -12,8 +12,8 @@ CXXFILES	= $(wildcard source/cross/*.cpp)
 HDRS_X		:= $(wildcard include/mgdl/*.h)
 
 # Embedded libraries
-CXXFILES	+= $(wildcard include/ufbx/*.cpp)
-UFBX_HDR	:= include/ufbx/ufbx.h
+CXXFILES	+= $(wildcard include/mgdl/ufbx/*.cpp)
+UFBX_HDR	:= include/mgdl/ufbx/ufbx.h
 
 # Wii specific settings
 CXXFILES	+= $(wildcard source/wii/*.cpp)
@@ -50,9 +50,7 @@ CXXFLAGS	+= -DUFBX_REAL_IS_FLOAT
 
 # Add own include files so that #include <...> works
 MGDL_INCLUDE = -Iinclude/
-UFBX_INCLUDE = -Iinclude/mgdl/
 CXXFLAGS += $(MGDL_INCLUDE)
-CXXFLAGS += $(UFBX_INCLUDE)
 # NOTE: The order matters. Add OGC last so that includes are
 # searched first from local include/
 CXXFLAGS += $(OGC_INCLUDE)
