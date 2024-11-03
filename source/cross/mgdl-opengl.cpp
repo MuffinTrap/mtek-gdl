@@ -19,11 +19,12 @@ void gdl::cross_glClear(GLbitfield flags)
 #endif
 }
 
-void gdl::InitPerspectiveProjection(float fovy, float near, float far)
+// NOTE: variable names 'near' and 'far' are reserved on Windows
+void gdl::InitPerspectiveProjection(float fovy, float nearZ, float farZ)
 {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(fovy, gdl::GetAspectRatio(), near, far);
+    gluPerspective(fovy, gdl::GetAspectRatio(), nearZ, farZ);
 }
 
 void gdl::InitOrthoProjection()

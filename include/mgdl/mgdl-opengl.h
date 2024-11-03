@@ -30,7 +30,7 @@ namespace gdl
     // NOTE: This exists just to make it easier
     // to init correctly, because Wii needs more setup than PC
     // platforms to get the same result
-    void InitPerspectiveProjection(float fovy, float near, float far);
+    void InitPerspectiveProjection(float fovy, float nearZ, float farZ);
     void InitOrthoProjection();
     void InitCamera(gdl::vec3 cameraPos, gdl::vec3 cameraTarget, gdl::vec3 cameraUp);
 }
