@@ -1,13 +1,10 @@
 # Build a Windows static library
-
 include Makefile_pc.mk
 
 # Windows specific settings
 CXX = g++
 LIBDIR	:= lib/win
-CXX_FLAGS += -DMGDL_PLATFORM_WINDOWS
-# Windows file type
-OFILES	:= $(CFILES:.cpp=.wo)
+CXXFLAGS += -DMGDL_PLATFORM_WINDOWS
 
 # Common part
 
@@ -28,15 +25,22 @@ install: $(ARC)
 	@mkdir -p $(INSTALL_DIR)
 	@mkdir -p $(INSTALL_DIR)/mgdl
 	@mkdir -p $(INSTALL_DIR)/mgdl/pc
+
 	@cp $(LIBDIR)/$(ARC) $(INSTALL_DIR)
+
+	@cp $(LIBHDR) $(INSTALL_DIR)
 	@cp $(HDRS_X) $(INSTALL_DIR)/mgdl
 	@cp $(HDRS_PC) $(INSTALL_DIR)/mgdl/pc
-	@cp $(PCHDR) $(INSTALL_DIR)
+
+# UFBX library
+	@mkdir -p $(INSTALL_DIR)/mgdl/ufbx
+	@cp $(UFBX_HDR) $(INSTALL_DIR)/mgdl/ufbx
+
 	@echo installed to $(INSTALL_DIR)
 
 clean :
 	rm -f $(OFILES) $(ARC)
 	rm -r $(LIBDIR)
 
-%.wo : %.cpp
-	$(CXX) $(CXX_FLAGS) -c $< -o $@
+%.pco : %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@

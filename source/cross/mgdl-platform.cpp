@@ -10,8 +10,6 @@ u16 gdl::Platform::GetScreenHeight() { return screenHeight; }
 u16 gdl::Platform::GetScreenWidth() {return screenWidth;}
 float gdl::Platform::GetAspectRatio() { return aspectRatio; }
 
-float gdl::Platform::GetDeltaTime() { return deltaTimeS; }
-float gdl::Platform::GetElapsedSeconds() { return elapsedTimeS; }
 
 gdl::Platform::Platform()
 {

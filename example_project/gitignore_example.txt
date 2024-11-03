@@ -5,8 +5,10 @@
 *.d
 
 # Compiled Object files
+# .pco  is the object file for PC platforms
+# .o is for the wii
 *.slo
-*.lo
+*.pco
 *.o
 *.obj
 

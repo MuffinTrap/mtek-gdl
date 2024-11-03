@@ -28,13 +28,14 @@ void gdl::Scene::Draw()
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
 }
+
 void gdl::Scene::DrawNode ( gdl::Node* node )
 {
 	gdl::vec3 t = node->transform.position;
 	glPushMatrix();
 		glTranslatef(t.x, t.y, t.z);
 
-		gdl::vec3 r = node->transform.rotationRadians;
+		gdl::vec3 r = node->transform.rotationDegrees;
 		glRotatef(r.x, 1.0f, 0.0f, 0.0f);
 		glRotatef(r.y, 0.0f, 1.0f, 0.0f);
 		glRotatef(r.z, 0.0f, 0.0f, 1.0f);
@@ -78,10 +79,21 @@ void gdl::Scene::AddMaterial ( gdl::Material* material )
 	materials.push_back(material);
 }
 
+void gdl::Scene::AddMesh ( gdl::Mesh* mesh )
+{
+	meshes.push_back(mesh);
+}
+
+gdl::Node * gdl::Scene::GetRootNode()
+{
+	return rootNode;
+}
+
 gdl::Node * gdl::Scene::GetNode (const std::string& name )
 {
 	return FindNode(rootNode, name);
 }
+
 gdl::Node * gdl::Scene::FindNode (gdl::Node* node, const std::string& nodeName )
 {
 	if (node->name.compare(nodeName) == 0)
@@ -100,7 +112,17 @@ gdl::Node * gdl::Scene::FindNode (gdl::Node* node, const std::string& nodeName )
 	return childNode;
 }
 
-
+gdl::Mesh * gdl::Scene::GetMesh ( const std::string& meshName )
+{
+	for(size_t mi = 0; mi < materials.size(); mi++)
+	{
+		if (meshes[mi]->name.compare(meshName) == 0)
+		{
+			return meshes[mi];
+		}
+	}
+	return nullptr;
+}
 
 gdl::Material * gdl::Scene::GetMaterial (const std::string& materialName )
 {
@@ -134,9 +156,3 @@ gdl::Material * gdl::Scene::FindMaterial ( gdl::Node* node, const std::string& m
 	}
 	return childMat;
 }
-
-
-
-
-
-

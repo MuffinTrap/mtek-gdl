@@ -4,22 +4,25 @@
  * that contains one or more meshes and/or a scene
  */
 #include <string>
-#include <ufbx/ufbx.h>
+#include <mgdl/ufbx/ufbx.h>
+#include <mgdl/mgdl-light.h>
+#include <mgdl/mgdl-mesh.h>
+#include <mgdl/mgdl-scene.h>
 
 namespace gdl
 {
-	class Mesh;
-	class Scene;
+
 	class FBXFile
 	{
 	public:
 		gdl::Scene* LoadFile(std::string fbxFile);
 		void DeleteData();
 
-		gdl::Mesh* AllocateMesh(ufbx_mesh* fbxMesh);
-		gdl::Mesh* LoadMesh(ufbx_mesh* fbxMesh);
 
 	private:
+		gdl::Mesh* AllocateMesh(ufbx_mesh* fbxMesh);
+		gdl::Mesh* LoadMesh(ufbx_mesh* fbxMesh);
+		gdl::Light* LoadLight(ufbx_light* fbxLight);
 		bool LoadNode(gdl::Scene* scene, ufbx_node* node, short depth);
 		ufbx_scene* scene = nullptr;
 	};

@@ -83,6 +83,7 @@ void gdl::PlatformWii::InitSystem(gdl::ScreenAspect screenAspect,
 		u64 now = gettime();
 		deltaTimeS = (float)(now - deltaTimeStart) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
 		deltaTimeStart = now;
+		elapsedTimeS += deltaTimeS;
 
 		controller.StartFrame();
 		ReadControllers();
@@ -141,6 +142,9 @@ void gdl::PlatformWii::ReadControllers()
 
 	controller.roll = DegToRad(data1->orient.roll);
 }
+
+float gdl::PlatformWii::GetDeltaTime() { return deltaTimeS; }
+float gdl::PlatformWii::GetElapsedSeconds() { return elapsedTimeS; }
 
 void gdl::PlatformWii::DoProgramExit()
 {

@@ -4,15 +4,6 @@
 
 #include <string>
 
-#ifdef GEKKO
-#include "barb_png.h"
-#include "mel_tiles_png.h"
-#include "pointer_png.h"
-#include "font8x16_png.h"
-#include "sample3_ogg.h"
-#include "blipSelect_wav.h"
-#endif
-
 Example::Example()
 {
 
@@ -21,30 +12,16 @@ Example::Example()
 void Example::Init()
 {
     short spriteHeight = 64;
-#ifdef GEKKO
-    barb = gdl::LoadImage(barb_png, barb_png_size, gdl::TextureFilterModes::Linear);
+    barb = gdl::LoadImage("assets/barb.png", gdl::TextureFilterModes::Linear);
+    mel_sprites.LoadFromImage("assets/mel_tiles.png", spriteHeight, spriteHeight);
+    pointerImage = gdl::LoadImage("assets/pointer.png", gdl::TextureFilterModes::Nearest);
+    ibmFont = gdl::LoadFont("assets/font8x16.png", 8, 16, ' ');
+    blip = gdl::LoadSound("assets/blipSelect.wav");
 
-    mel_sprites.LoadFromBuffer(mel_tiles_png, mel_tiles_png_size, spriteHeight, spriteHeight);
-
-    pointerImage = gdl::LoadImage(pointer_png, pointer_png_size, gdl::Nearest);
-
-
-    ibmFont = gdl::LoadFont(font8x16_png, font8x16_png_size, 8, 16, ' ');
-    
-    blip = gdl::LoadSound(blipSelect_wav, blipSelect_wav_size);
-    //TODO ogg on PC. sampleMusic.LoadFromBuffer(sample3_ogg, sample3_ogg_size);
-#else
-    barb = gdl::LoadImage("data/barb.png", gdl::TextureFilterModes::Linear);
-    mel_sprites.LoadFromImage("data/mel_tiles.png", spriteHeight, spriteHeight);
-    pointerImage = gdl::LoadImage("data/pointer.png", gdl::TextureFilterModes::Nearest);
-    ibmFont = gdl::LoadFont("data/font8x16.png", 8, 16, ' ');
-    blip = gdl::LoadSound("data/blipSelect.wav");
-#endif
-
-    wiiTexture = gdl::LoadImage("data/wii_console_texture.png", gdl::TextureFilterModes::Nearest);
+    wiiTexture = gdl::LoadImage("assets/wii_console_texture.png", gdl::TextureFilterModes::Nearest);
 
     gdl::FBXFile* wiiFbx = new gdl::FBXFile();
-    wiiScene = wiiFbx->LoadFile("data/wii_et_baby.fbx");
+    wiiScene = wiiFbx->LoadFile("assets/wii_et_baby.fbx");
     wiiScene->SetMaterialTexture("wii_console_texture.png", wiiTexture);
 
 
@@ -116,12 +93,11 @@ void Example::DrawVersion()
 void Example::DrawImage()
 {
     // Draw Image
-    int CenterX = gdl::GetScreenWidth()/4;
     barb->Draw2DAligned(
-            gdl::GetScreenWidth()/2,
+            0,
             gdl::GetScreenHeight()/2,
             1.0f,
-            gdl::Centered, gdl::Centered);
+            gdl::LJustify, gdl::Centered);
 }
 
 

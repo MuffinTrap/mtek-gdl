@@ -29,7 +29,9 @@ void gdl::Mesh::SetupVertexArrays()
 void gdl::Mesh::DrawElements()
 {
 	SetupVertexArrays();
-	glDrawRangeElements(GL_TRIANGLES, 0, vertexCount-1, indexCount, GL_UNSIGNED_SHORT, indices);
+	// NOTE OpenGX does not impelement glDrawRangeElements()
+	//glDrawRangeElements(GL_TRIANGLES, 0, vertexCount-1, indexCount, GL_UNSIGNED_SHORT, indices);
+	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_SHORT, indices);
 }
 
 void gdl::Mesh::DrawPoints()

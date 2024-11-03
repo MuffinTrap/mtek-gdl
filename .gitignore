@@ -1,5 +1,5 @@
 # MTEK-GDL gitignore
-# modified from original by muffintrap for version 0.100.0-muffintrap
+# modified from original by muffintrap for version 0.100.2-muffintrap
 *.o
 *.d
 *.a
@@ -25,10 +25,10 @@ build
 # Misc files
 *.txt
 
-# Different object file types for different platforms
-# win
-*.wo
-# linux
+# Object files for PC platforms
+*.pco
+
+# Old, platform specific object files
 *.lo
-# mac
+*.wo
 *.mo

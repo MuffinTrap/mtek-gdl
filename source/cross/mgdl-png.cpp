@@ -203,6 +203,7 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 	png_get_IHDR(png_ptr, info_ptr, &w, &h, &bit_depth, &color_type, NULL, NULL, NULL);
 
 	// Wii cannot handle very big textures
+	//
 	if ((w > 1024) || (h > 1024)) {
 		printf("\t[TOO LARGE: MAX 1024]\n");
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
@@ -227,6 +228,8 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 
 	// Allocate!
 	size_t imageDataSize = sizeof(GLubyte) * w * h * bytesPerPixel;
+
+	// Danger. Wii only has 20 megabytes of texture memoy
 	printf("\tAllocating %zu bytes\n", imageDataSize);
 	texels = (GLubyte*)AllocateAlignedMemory(imageDataSize);
 

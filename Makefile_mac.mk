@@ -2,25 +2,23 @@ include Makefile_pc.mk
 
 # MacOS specific settings
 CXX = clang++
-LIBDIR	:= lib/lnx
-CXX_FLAGS += -DMGDL_PLATFORM_MAC
+LIBDIR	:= lib/mac
+CXXFLAGS += -DMGDL_PLATFORM_MAC
 
 # Do not complain about OpenAL
-CXX_FLAGS += -Wno-deprecated-declarations
+CXXFLAGS += -Wno-deprecated-declarations
 # Add MacPorts include path
-CXX_FLAGS += -I/opt/local/include
+CXXFLAGS += -I/opt/local/include
 
 # Intel MacOS homebrew location
-CXX_FLAGS += -I/usr/local/include
+CXXFLAGS += -I/usr/local/include
 
 # M1 MacOs homebrew location
-CXX_FLAGS += -I/opt/homebrew/include
+CXXFLAGS += -I/opt/homebrew/include
 
 # Exact locations but should not be needed
 # CXX_FLAGS += -I/opt/homebrew/Cellar/libsndfile/1.2.2/include -I/opt/homebrew/Cellar/openal-soft/1.23.1/include -I/opt/homebrew/Cellar/glm/1.0.1/include -I/opt/homebrew/Cellar/libpng/1.6.43/include
 
-# Different file type for mac object files
-OFILES	:= $(CFILES:.cpp=.mo)
 # Common part
 
 .PHONY: all clean install
@@ -40,15 +38,22 @@ install: $(ARC)
 	@mkdir -p $(INSTALL_DIR)
 	@mkdir -p $(INSTALL_DIR)/mgdl
 	@mkdir -p $(INSTALL_DIR)/mgdl/pc
+
 	@cp $(LIBDIR)/$(ARC) $(INSTALL_DIR)
+
+	@cp $(LIBHDR) $(INSTALL_DIR)
 	@cp $(HDRS_X) $(INSTALL_DIR)/mgdl
 	@cp $(HDRS_PC) $(INSTALL_DIR)/mgdl/pc
-	@cp $(PCHDR) $(INSTALL_DIR)
+
+# UFBX library
+	@mkdir -p $(INSTALL_DIR)/mgdl/ufbx
+	@cp $(UFBX_HDR) $(INSTALL_DIR)/mgdl/ufbx
+
 	@echo installed to $(INSTALL_DIR)
 
 clean :
 	rm -f $(OFILES) $(ARC)
 	rm -r $(LIBDIR)
 
-%.mo : %.cpp
-	$(CXX) $(CXX_FLAGS) -c $< -o $@
+%.pco : %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@

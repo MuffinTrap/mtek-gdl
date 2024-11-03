@@ -57,7 +57,7 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth
 	gdl::Node* n = new gdl::Node();
 	n->name = std::string(node->name.data);
 	n->transform.position = gdl::vec3(t.x, t.y, t.z);
-	n->transform.rotationRadians = gdl::vec3(r.x, r.y, r.z);
+	n->transform.rotationDegrees = gdl::vec3(r.x, r.y, r.z);
 
 	Indent(depth);
 	if (node->mesh != nullptr)
@@ -74,10 +74,15 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth
 		}
 		printf("\n");
 
-		// TODO
 		// Is this mesh loaded already?
-
-		gdl::Mesh* m = LoadMesh(mesh);
+		std::string meshName = std::string(mesh->name.data);
+		gdl::Mesh* m = gdlScene->GetMesh(meshName);
+		if (m == nullptr)
+		{
+			m = LoadMesh(mesh);
+			m->name = meshName;
+			gdlScene->AddMesh(m);
+		}
 		n->mesh = m;
 
 		// Does this node have materials?
@@ -100,7 +105,6 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth
 				gdlScene->AddMaterial(mat);
 			}
 			n->material = mat;
-			printf("Added material %s\n", n->material->name.c_str());
 		}
 
 
@@ -129,6 +133,10 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth
 		{
 			printf("volumetric");
 		}
+
+		gdl::Light* gdlLight = LoadLight(light);
+		n->light = gdlLight;
+
 		printf("\n");
 
 	}
@@ -314,6 +322,68 @@ gdl::Mesh * gdl::FBXFile::LoadMesh(ufbx_mesh* fbxMesh)
 	}
 	printf("Loaded mesh\n");
 	return mesh;
+}
+
+gdl::Light* gdl::FBXFile::LoadLight(ufbx_light* fbxLight)
+{
+	gdl::Light* light = new gdl::Light();
+
+	light->color = gdl::vec3(fbxLight->color.x, fbxLight->color.y, fbxLight->color.z);
+	light->intensity = fbxLight->intensity;
+	light->name = std::string(fbxLight->name.data);
+
+	// Light is a spot in OpenGL if this is less than 90
+	// Light is point or directional if this is 180
+	light->spotHalfAngle = 180.0f;
+
+	if (fbxLight->type == UFBX_LIGHT_POINT)
+	{
+		light->type = gdl::LightType::Point;
+	}
+	else if (fbxLight->type == UFBX_LIGHT_SPOT)
+	{
+		light->type = gdl::LightType::Spot;
+		light->spotHalfAngle = fbxLight->outer_angle;
+	}
+	else if (fbxLight->type == UFBX_LIGHT_DIRECTIONAL)
+	{
+		// Light is a directional if the W component of position is 0.0f
+		light->type = gdl::LightType::Directional;
+	}
+	else if (fbxLight->type == UFBX_LIGHT_AREA)
+	{
+		printf("Area lights not supported\n");
+		light->type = gdl::LightType::Point;
+	}
+	else if (fbxLight->type == UFBX_LIGHT_VOLUME)
+	{
+		printf("Volumetric lights not supported\n");
+		light->type = gdl::LightType::Point;
+	}
+
+	switch(fbxLight->decay)
+	{
+		case UFBX_LIGHT_DECAY_NONE:
+			light->constantAttenuation = 1.0f;
+			light->LinearAttenuation = 0.0f;
+			light->QuadraticAttenuation = 0.0f;
+		break;
+		case UFBX_LIGHT_DECAY_LINEAR:
+			light->constantAttenuation = 0.0f;
+			light->LinearAttenuation = 1.0f;
+			light->QuadraticAttenuation = 0.0f;
+		break;
+		case UFBX_LIGHT_DECAY_QUADRATIC:
+		case UFBX_LIGHT_DECAY_CUBIC:
+			light->constantAttenuation = 0.0f;
+			light->LinearAttenuation = 0.0f;
+			light->QuadraticAttenuation = 1.0f;
+		break;
+		default:
+
+		break;
+	}
+	return light;
 }
 
 void gdl::FBXFile::DeleteData()

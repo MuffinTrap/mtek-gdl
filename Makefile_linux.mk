@@ -1,13 +1,10 @@
-# Build a linux static library
-
 include Makefile_pc.mk
 
 # Linux specific settings
 CXX = clang++
 LIBDIR	:= lib/lnx
-CXX_FLAGS += -DMGDL_PLATFORM_LINUX
-# Different file type for linux object files
-OFILES	:= $(CFILES:.cpp=.lo)
+CXXFLAGS += -DMGDL_PLATFORM_LINUX
+
 # Common part
 
 .PHONY: all clean install
@@ -24,23 +21,26 @@ $(ARC): $(OFILES)
 
 # Installs to /home/user/libmgdl
 install: $(ARC)
+# Main library
 	@mkdir -p $(INSTALL_DIR)
-	@mkdir -p $(INSTALL_DIR)/mgdl
-	@mkdir -p $(INSTALL_DIR)/mgdl/pc
-
-	# UFBX library
-	@mkdir -p $(INSTALL_DIR)/mgdl/ufbx
+	@mkdir -p $(INSTALL_DIR)/$(LIB)
+	@mkdir -p $(INSTALL_DIR)/$(LIB)/pc
 
 	@cp $(LIBDIR)/$(ARC) $(INSTALL_DIR)
-	@cp $(HDRS_X) $(INSTALL_DIR)/mgdl
-	@cp $(HDRS_PC) $(INSTALL_DIR)/mgdl/pc
-	@cp $(UFBX_HDR) $(INSTALL_DIR)/mgdl/ufbx
-	@cp $(PCHDR) $(INSTALL_DIR)
+
+	@cp $(LIBHDR) $(INSTALL_DIR)
+	@cp $(HDRS_X) $(INSTALL_DIR)/$(LIB)
+	@cp $(HDRS_PC) $(INSTALL_DIR)/$(LIB)/pc
+
+# UFBX library
+	@mkdir -p $(INSTALL_DIR)/$(LIB)/ufbx
+	@cp $(UFBX_HDR) $(INSTALL_DIR)/$(LIB)/ufbx
+
 	@echo installed to $(INSTALL_DIR)
 
 clean :
 	rm -f $(OFILES) $(ARC)
 	rm -r $(LIBDIR)
 
-%.lo : %.cpp
-	$(CXX) $(CXX_FLAGS) -c $< -o $@
+%.pco : %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
