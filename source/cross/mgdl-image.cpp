@@ -79,8 +79,8 @@ void gdl::Image::Draw2DAbsolute(short x, short y, short x2, short y2)
 {
 	float dx = (float)x;
 	float dy = (float)y;
-	float width = (float)x2-dx;
-	float height = (float)y2-dy;
+	float dx2 = (float)x2;
+	float dy2 = (float)y2;
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, textureId);
@@ -89,16 +89,16 @@ void gdl::Image::Draw2DAbsolute(short x, short y, short x2, short y2)
 
 		// Lower left
 		glTexCoord2f(0.0f, 1.0f);
-		glVertex2f(dx, dy-height);
+		glVertex2f(dx, dy);
 		// Lower right
 		glTexCoord2f(1.0f, 1.0f);
-		glVertex2f(dx+width, dy-height);
+		glVertex2f(dx2, dy);
 		// Upper right
 		glTexCoord2f(1.0f, 0.0f);
-		glVertex2f(dx+width, dy);
+		glVertex2f(dx2, dy2);
 		// Upper left
 		glTexCoord2f(0.0f, 0.0f);
-		glVertex2f(dx, dy);
+		glVertex2f(dx, dy2);
 
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D, 0);
