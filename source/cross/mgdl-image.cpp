@@ -62,7 +62,7 @@ bool gdl::Image::LoadPNG(PNGFile* png, gdl::TextureFilterModes filterMode)
 	glTexImage2D(GL_TEXTURE_2D, 0, png->GetBytesPerPixel(),
 			  png->GetWidth(), png->GetHeight(),
 			  0, png->GetGLFormat(),
-			  GL_UNSIGNED_BYTE,
+			  png->GetGLInternalFormat(),
 			  png->GetTexels());
 
 	// restore previous alignment

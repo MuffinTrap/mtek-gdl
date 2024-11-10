@@ -16,11 +16,14 @@ namespace gdl
 		bool ReadFile(const char* filename);
 		void DeleteData();
 		GLenum GetGLFormat();
+		GLenum GetGLInternalFormat();
 
 		GLsizei GetWidth();
 		GLsizei GetHeight();
 		GLint GetBytesPerPixel();
 		GLubyte *GetTexels();
+		u32 GetRGBA(int x, int y);
+		float GetGrayscale(int x, int y);
 
 	private:
 		bool ReadPNG(FILE* fp);

@@ -21,10 +21,17 @@ namespace gdl
 		GLfloat* uvs;
 		std::string name;
 
+		gdl::vec3 GetPosition(GLushort index);
+		gdl::vec3 GetNormal(GLushort index);
+		void SetNormal(GLsizei index, const gdl::vec3& normal);
+
+		bool GetTriangleIndices(GLsizei triangleIndex, GLushort& outA, GLushort& outB, GLushort& outC);
+
 		Mesh();
 		void SetupVertexArrays();
 		void DrawElements();
 		void DrawPoints();
 		void DrawLines();
+		void DrawNormals();
 	};
 }

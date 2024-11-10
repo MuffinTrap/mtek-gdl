@@ -202,7 +202,7 @@ void gdl::PlatformPC::InitSystem(gdl::ScreenAspect screenAspect, std::function<v
     initCall();
     printf("glutMainLoop\n");
     glutTimerFunc(16, UpdateLoop, 0);
-    glutElapsedStartMS = glutGet(GLUT_ELAPSED_TIME);
+    glutElapsedStartMS = 0; // glutGet(GLUT_ELAPSED_TIME);
 	glutMainLoop();
 }
 

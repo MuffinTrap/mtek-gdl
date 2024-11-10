@@ -3,6 +3,7 @@
 #include <mgdl/mgdl-alloc.h>
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-file.h>
+#include <mgdl/mgdl-util.h>
 
 #include <png.h>
 #include <stdio.h>
@@ -83,6 +84,32 @@ GLenum gdl::PNGFile::GetGLFormat()
 	return 0;
 }
 
+GLenum gdl::PNGFile::GetGLInternalFormat()
+{
+	switch(pngFormat)
+	{
+		case PNG_COLOR_TYPE_GRAY:
+			return GL_UNSIGNED_BYTE;
+		break;
+		case PNG_COLOR_TYPE_GRAY_ALPHA:
+			return GL_UNSIGNED_BYTE;
+		break;
+		case PNG_COLOR_TYPE_RGB:
+			return GL_UNSIGNED_BYTE;
+		break;
+		case PNG_COLOR_TYPE_RGB_ALPHA:
+			return GL_UNSIGNED_BYTE;
+		break;
+		default:
+			printf("\tUnsupported PNG COLOR TYPE!\n");
+			return 0;
+		break;
+	};
+	return 0;
+
+}
+
+
 bool gdl::PNGFile::ReadPNG(FILE* fp)
 {
 	// Read from file pointer
@@ -155,11 +182,14 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 		printf("palette ");
 		png_set_palette_to_rgb(png_ptr);
 	}
-	else if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
+	else if (color_type == PNG_COLOR_TYPE_GRAY)
 	{
+		printf("grayscale ");
 		// Small precision grayscale to 8 bit format
-		printf("grayscale < 8 ");
-		png_set_expand_gray_1_2_4_to_8(png_ptr);
+		if (bit_depth < 8)
+		{
+			png_set_expand_gray_1_2_4_to_8(png_ptr);
+		}
 	}
 	else
 	{
@@ -317,6 +347,32 @@ bool gdl::PNGFile::ReadFile(const char* filename)
 	bool readOk = ReadPNG(fp);
 	fclose(fp);
 	return readOk;
+}
+
+u32 gdl::PNGFile::GetRGBA(int x, int y)
+{
+	size_t index = x + y * width;
+	size_t byteIndex = index * bytesPerPixel;
+	GLubyte red = texels[byteIndex];
+	GLubyte green = texels[byteIndex + 1];
+	GLubyte blue = texels[byteIndex + 2];
+	GLubyte alpha  = 255;
+	if (GetGLFormat() == GL_RGBA)
+	{
+		alpha = texels[byteIndex + 3];
+	}
+
+	u32 c = TO_RGBA(red, green, blue, alpha);
+	return c;
+}
+
+float gdl::PNGFile::GetGrayscale(int x, int y)
+{
+	size_t index = x + y * width;
+	size_t byteIndex = index * bytesPerPixel;
+	GLubyte value = texels[byteIndex];
+
+	return (float)value/256.0f;
 }
 
 GLsizei gdl::PNGFile::GetWidth() { return width; }

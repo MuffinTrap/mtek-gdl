@@ -59,7 +59,7 @@ namespace gdl
 										 *	 \return Alpha component of value
 										 */
 
-#define RGBA(r,g,b,a)	((u32)((((u32)(r))<<24) | \
+#define TO_RGBA(r,g,b,a)	((u32)((((u32)(r))<<24) | \
 						((((u32)(g))&0xFF)<<16) | \
 						((((u32)(b))&0xFF)<<8) | \
 						(((u32)(a))&0xFF)))
@@ -71,7 +71,7 @@ namespace gdl
 										 *	 \return 32-bit color value
 										 */
 
-#define IA(i,a) (i&0xff)|((a&0xff)<<8)	/*!< Constructs a 16-bit intensity with alpha value.
+#define TO_IA(i,a) (i&0xff)|((a&0xff)<<8)	/*!< Constructs a 16-bit intensity with alpha value.
 										 *	 \param[in] i Intensity component
 										 *	 \param[in] a Alpha component
 										 *	 \return 16-bit intensity with alpha value
