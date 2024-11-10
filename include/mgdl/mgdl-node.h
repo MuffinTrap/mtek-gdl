@@ -18,5 +18,8 @@ namespace gdl
 		gdl::Light* light = nullptr;
 		std::string name;
 		std::vector<Node*> children;
+
+		Node();
+		Node(std::string name, gdl::Mesh* meshParam, gdl::Material* materialParam);
 	};
 }

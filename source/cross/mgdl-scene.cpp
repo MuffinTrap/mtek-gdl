@@ -15,7 +15,26 @@ void gdl::Scene::PushChildNode ( gdl::Node* node )
 	else
 	{
 		printf("Set root node\n");
+		node->name = "ROOT";
 		rootNode = node;
+	}
+}
+
+void gdl::Scene::DebugDraw( gdl::Font* font, short x, short y )
+{
+	if (rootNode != nullptr)
+	{
+		DebugDrawNode(rootNode, font, x, y, 0);
+	}
+}
+
+void gdl::Scene::DebugDrawNode ( gdl::Node* node, gdl::Font* font, short x, short& dy, short depth)
+{
+	font->Printf(gdl::Colors::White, x + depth*16, dy, 16.0f, gdl::LJustify, gdl::LJustify, "%s", node->name.c_str());
+	dy -= 18;
+	for(size_t i = 0; i < node->children.size(); i++)
+	{
+		DebugDrawNode(node->children[i], font, x, dy, depth+1);
 	}
 }
 

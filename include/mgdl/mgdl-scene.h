@@ -9,6 +9,7 @@
 #include <mgdl/mgdl-mesh.h>
 #include <mgdl/mgdl-material.h>
 #include <mgdl/mgdl-node.h>
+#include <mgdl/mgdl-font.h>
 
 namespace gdl
 {
@@ -17,6 +18,7 @@ namespace gdl
 	{
 	public:
 		void Draw();
+		void DebugDraw(gdl::Font* font, short x, short y);
 
 		void SetActiveParentNode(gdl::Node* node);
 		void PushChildNode(gdl::Node* node);
@@ -37,6 +39,7 @@ namespace gdl
 
 	private:
 		void DrawNode(gdl::Node* node);
+		void DebugDrawNode ( Node* node, Font* font, short int x, short int& dy, short int depth );
 
 		gdl::Node* FindNode(gdl::Node* node, const std::string &nodeName);
 		gdl::Material* FindMaterial(gdl::Node* node, const std::string&  materialName);

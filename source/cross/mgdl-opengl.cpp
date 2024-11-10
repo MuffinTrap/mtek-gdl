@@ -33,6 +33,12 @@ void gdl::InitOrthoProjection()
 	glLoadIdentity();
     // Y increases up : OpenGL default
     gluOrtho2D(0.0, (double)gdl::GetScreenWidth(), 0.0, (double)gdl::GetScreenHeight());
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	// NOTE: This is from the OpenGL red book. The purpose is to have the vertices
+	// in the middle of the screen pixels
+	glTranslatef(0.375f, 0.375f, 0.0f);
 }
 
 

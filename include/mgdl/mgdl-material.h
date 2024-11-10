@@ -15,10 +15,13 @@ namespace gdl
 	class Material
 	{
 	public:
+
 		std::string name;
 		GLfloat shininess = 1.0f;
 		gdl::vec3 emissiveColor;
 		gdl::Image* texture;
+		Material();
+		Material(std::string name, gdl::Image* texture);
 		void Apply();
 	};
 }
