@@ -1,6 +1,7 @@
 #include "mgdl-rocket.h"
 #include "sync.h"
 
+#include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-sound.h>
 #include <cmath>
 #include <stdio.h>
@@ -134,6 +135,7 @@ bool gdl::RocketSync::InitRocket(gdl::Sound* soundFile, float bpm, int rowsPerBe
 
 void gdl::RocketSync::StartSync()
 {
+    gdl_assert_print(instance!=nullptr, "No RocketSync instance");
     instance->Play();
 }
 
@@ -188,6 +190,7 @@ gdl::RocketSync & gdl::RocketSync::GetSingleton()
 // Call when the music should start
 void gdl::RocketSync::Play()
 {
+    gdl_assert_print(instance->music != nullptr, "No music loaded");
     instance->music->Play();
     instance->syncState = SyncPlay;
 }
@@ -231,7 +234,7 @@ void gdl::RocketSync::Play()
 
 #else
 
-    ROCKET_TRACK gdl::RocketSync::GetTrack(const char* trackName)
+    ROCKET_TRACK gdl::RocketSync::GetTrack(const char* trackName, bool save)
     {
         if (instance == nullptr)
         {
@@ -243,7 +246,12 @@ void gdl::RocketSync::Play()
             printf("No device\n");
             return nullptr;
         }
-        return sync_get_track(instance->rocket_device, trackName);
+        ROCKET_TRACK track = sync_get_track(instance->rocket_device, trackName);
+        if (save)
+        {
+            SetToBeSaved(track);
+        }
+        return track;
     }
 
     // -----------------------------------------------------------

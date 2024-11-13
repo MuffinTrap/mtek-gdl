@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
+#include <string>
 
 #include "sync.h"
 #include "track.h"
@@ -99,7 +100,7 @@ void start_save_sync(const char *filename_h, const char *filename_cpp) {
     fprintf(file_h, "// sync data declaration\n");
     fprintf(file_h, "#ifdef SYNC_PLAYER\n");
     fprintf(file_h, "#pragma once\n");
-    fprintf(file_h, "#include \"../rocket/track.h\"\n");
+    fprintf(file_h, "#include \"rocket/track.h\"\n");
     fclose(file_h);
 
     FILE *file_cpp = fopen(filename_cpp, "w");
@@ -109,7 +110,7 @@ void start_save_sync(const char *filename_h, const char *filename_cpp) {
     }
     fprintf(file_cpp, "// sync data implementation\n");
     fprintf(file_h, "#ifdef SYNC_PLAYER\n");
-    fprintf(file_cpp, "#include \"../rocket/track.h\"\n");
+    fprintf(file_cpp, "#include \"rocket/track.h\"\n");
     fclose(file_cpp);
 }
 
@@ -133,6 +134,7 @@ const char* key_type_to_string(enum key_type tp) {
     };
 }
 
+
 void save_sync(const struct sync_track *t, const char *filename_h, const char *filename_cpp) {
     FILE *file_h = fopen(filename_h, "a");
     if (file_h == NULL) {
@@ -145,8 +147,24 @@ void save_sync(const struct sync_track *t, const char *filename_h, const char *f
         return;
     }
 
+    // NOTE
+    // The rocket editor uses the : in a name
+    // to group together tracks to groups or tabs
+    // but the variable names cannot have the : character
+    // it needs to be written as _
+
+    size_t nameLength = strlen(t->name);
+    std::string underscoreName = std::string(t->name);
+    for (size_t i = 0; i < nameLength; i++)
+    {
+        if (underscoreName[i] == ':')
+        {
+            underscoreName[i] = '_';
+        }
+    }
+
     // Track contents as static in .cpp file
-    fprintf(file_cpp, "static track_key %s_keys[] = {", t->name);
+    fprintf(file_cpp, "static track_key %s_keys[] = {", underscoreName.c_str());
     for (int i = 0; i < t->num_keys; i++) {
         int row = t->keys[i].row;
         float value = t->keys[i].value;
@@ -157,15 +175,15 @@ void save_sync(const struct sync_track *t, const char *filename_h, const char *f
     fprintf(file_cpp, "};\n");
 
     // Track names as extern in .h file
-    fprintf(file_h, "extern const sync_track %s;\n",  t->name);
+    fprintf(file_h, "extern const sync_track %s;\n",  underscoreName.c_str());
 
     // Tracks in .cpp file
     // define the variable
     //fprintf(file_cpp, "const sync_track %s;\n", t->name);
 
     // assign to it
-    fprintf(file_cpp, "const sync_track %s = { \"%s\", ", t->name, t->name);
-    fprintf(file_cpp, "%s_keys", t->name);
+    fprintf(file_cpp, "const sync_track %s = { \"%s\", ", underscoreName.c_str(), t->name);
+    fprintf(file_cpp, "%s_keys", underscoreName.c_str());
     fprintf(file_cpp, ",%d};\n", t->num_keys);
 
     fclose(file_h);

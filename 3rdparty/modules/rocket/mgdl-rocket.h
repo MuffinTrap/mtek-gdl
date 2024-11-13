@@ -50,7 +50,7 @@ namespace gdl
 
 		// TODO how to do this?
 #ifndef SYNC_PLAYER
-		static ROCKET_TRACK GetTrack(const char* trackName);
+		static ROCKET_TRACK GetTrack(const char* trackName, bool save = true);
 #endif
 
 		static void StartSaveToHeader();
