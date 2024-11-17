@@ -1,5 +1,6 @@
 #include <mgdl/mgdl-util.h>
 #include <cstdlib>
+#define _USE_MATH_DEFINES
 #include <math.h>
 
 gdl::RGBA8Components gdl::ColorToComponents(u32 color)
@@ -76,10 +77,10 @@ u32 gdl::maxU32(u32 a, u32 b)
 
 float gdl::Deg2Rad(float degrees)
 {
-    return M_PIf * degrees/180.0f;
+    return (float)M_PI * degrees/180.0f;
 }
 
 float gdl::Rad2Deg(float radians)
 {
-    return 180.0f * radians/M_PIf;
+    return 180.0f * radians/(float)M_PI;
 }
