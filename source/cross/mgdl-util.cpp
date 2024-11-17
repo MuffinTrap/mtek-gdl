@@ -1,5 +1,6 @@
 #include <mgdl/mgdl-util.h>
 #include <cstdlib>
+#include <math.h>
 
 gdl::RGBA8Components gdl::ColorToComponents(u32 color)
 {
@@ -12,7 +13,7 @@ gdl::RGBA8Components gdl::ColorToComponents(u32 color)
 }
 u32 gdl::ComponentsToColor(gdl::RGBA8Components components)
 {
-    u32 color = RGBA(
+    u32 color = TO_RGBA(
     components.red,
     components.green,
     components.blue,
@@ -71,4 +72,14 @@ u32 gdl::minU32(u32 a, u32 b)
 u32 gdl::maxU32(u32 a, u32 b)
 {
 	return (a > b ? a : b);
+}
+
+float gdl::Deg2Rad(float degrees)
+{
+    return M_PIf * degrees/180.0f;
+}
+
+float gdl::Rad2Deg(float radians)
+{
+    return 180.0f * radians/M_PIf;
 }

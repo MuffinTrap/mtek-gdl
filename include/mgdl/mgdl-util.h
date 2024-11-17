@@ -32,6 +32,9 @@ namespace gdl
 	float maxF(float a, float b);
 	u32 minU32(u32 a, u32 b);
 	u32 maxU32(u32 a, u32 b);
+
+	float Deg2Rad(float degrees);
+	float Rad2Deg(float radians);
 };
 
 /*! \addtogroup colorMacros Color Handling Macros

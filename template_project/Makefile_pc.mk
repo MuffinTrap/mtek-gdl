@@ -5,6 +5,9 @@ SRC_DIRS := .
 # Use only CXX to compile all files
 
 # Use find to gather all .cpp and .c files in SRC_DIRS
+# shell find is recursive and on MacOS the compiler
+# does not automatically remove duplicates.
+# Only ever search . and no subdirs.
 cpp_src := $(shell find $(SRC_DIRS) -name '*.cpp')
 
 # Setup compilation options

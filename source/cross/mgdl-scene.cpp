@@ -1,5 +1,11 @@
 #include <mgdl/mgdl-scene.h>
 
+gdl::Scene::Scene()
+{
+	parent = nullptr;
+	rootNode = nullptr;
+}
+
 void gdl::Scene::SetActiveParentNode(gdl::Node* node)
 {
 	parent = node;

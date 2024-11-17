@@ -17,6 +17,7 @@ namespace gdl
 	class Scene
 	{
 	public:
+		Scene();
 		void Draw();
 		void DebugDraw(gdl::Font* font, short x, short y);
 
@@ -44,8 +45,8 @@ namespace gdl
 		gdl::Node* FindNode(gdl::Node* node, const std::string &nodeName);
 		gdl::Material* FindMaterial(gdl::Node* node, const std::string&  materialName);
 
-		gdl::Node* rootNode;
-		gdl::Node* parent;
+		gdl::Node* rootNode = nullptr;
+		gdl::Node* parent = nullptr;
 		// Multiple nodes can refer to same material
 		std::vector<gdl::Material*> materials;
 		// Multiple nodes can refer to same mesh
