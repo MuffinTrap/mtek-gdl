@@ -28,19 +28,22 @@ void gdl::Scene::PushChildNode ( gdl::Node* node )
 
 void gdl::Scene::DebugDraw( gdl::Font* font, short x, short y )
 {
+
 	if (rootNode != nullptr)
 	{
-		DebugDrawNode(rootNode, font, x, y, 0);
+		short index = 0;
+		DebugDrawNode(rootNode, font, x, y, 0, index);
 	}
 }
 
-void gdl::Scene::DebugDrawNode ( gdl::Node* node, gdl::Font* font, short x, short& dy, short depth)
+void gdl::Scene::DebugDrawNode ( gdl::Node* node, gdl::Font* font, short x, short& dy, short depth, short& index)
 {
-	font->Printf(gdl::Colors::White, x + depth*16, dy, 16.0f, gdl::LJustify, gdl::LJustify, "%s", node->name.c_str());
+	font->Printf(gdl::Colors::White, x + depth*16, dy, 16.0f, gdl::LJustify, gdl::LJustify, "%d: %s", index, node->name.c_str());
+	index++;
 	dy -= 18;
 	for(size_t i = 0; i < node->children.size(); i++)
 	{
-		DebugDrawNode(node->children[i], font, x, dy, depth+1);
+		DebugDrawNode(node->children[i], font, x, dy, depth+1, index);
 	}
 }
 
@@ -114,6 +117,31 @@ gdl::Node * gdl::Scene::GetRootNode()
 	return rootNode;
 }
 
+gdl::Node * gdl::Scene::GetNodeByIndex ( short targetIndex )
+{
+	short index = 0;
+	return FindNodeByIndex(rootNode, targetIndex, index);
+}
+
+gdl::Node * gdl::Scene::FindNodeByIndex ( gdl::Node* parent, short targetIndex, short& index )
+{
+	if (index == targetIndex)
+	{
+		return parent;
+	}
+	index++;
+	gdl::Node* childNode = nullptr;
+	for(size_t i = 0; i < parent->children.size(); i++)
+	{
+		childNode = FindNodeByIndex(parent->children[i], targetIndex, index);
+		if (childNode != nullptr)
+		{
+			break;
+		}
+	}
+	return childNode;
+}
+
 gdl::Node * gdl::Scene::GetNode (const std::string& name )
 {
 	return FindNode(rootNode, name);
@@ -137,9 +165,22 @@ gdl::Node * gdl::Scene::FindNode (gdl::Node* node, const std::string& nodeName )
 	return childNode;
 }
 
+gdl::Mesh * gdl::Scene::GetMeshByUniqueId ( uint32_t uniqueId )
+{
+	for(size_t mi = 0; mi < meshes.size(); mi++)
+	{
+		if (meshes[mi]->uniqueId == uniqueId)
+		{
+			return meshes[mi];
+		}
+	}
+	return nullptr;
+}
+
+
 gdl::Mesh * gdl::Scene::GetMesh ( const std::string& meshName )
 {
-	for(size_t mi = 0; mi < materials.size(); mi++)
+	for(size_t mi = 0; mi < meshes.size(); mi++)
 	{
 		if (meshes[mi]->name.compare(meshName) == 0)
 		{

@@ -20,6 +20,7 @@ namespace gdl
 		GLfloat* normals;
 		GLfloat* uvs;
 		std::string name;
+		uint32_t uniqueId;
 
 		gdl::vec3 GetPosition(GLushort index);
 		gdl::vec3 GetNormal(GLushort index);

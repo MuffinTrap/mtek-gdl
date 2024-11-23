@@ -63,7 +63,7 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth
 	if (node->mesh != nullptr)
 	{
 		ufbx_mesh* mesh = node->mesh;
-		printf("Mesh %s with %zu faces", mesh->name.data, mesh->faces.count);
+		printf("Mesh %s (%u) with %zu faces", mesh->name.data, mesh->element_id, mesh->faces.count);
 		if (mesh->vertex_normal.exists)
 		{
 			printf(", %zu normals", mesh->vertex_normal.values.count);
@@ -75,12 +75,16 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth
 		printf("\n");
 
 		// Is this mesh loaded already?
+		// Cannot use name: if multiple meshes have the same name
+		// the ufbx will postfix _1 etc.
+		// element_id is not unique either. Need to compare ufbx* mesh directly?
 		std::string meshName = std::string(mesh->name.data);
-		gdl::Mesh* m = gdlScene->GetMesh(meshName);
+		gdl::Mesh* m = gdlScene->GetMeshByUniqueId(mesh->element_id);
 		if (m == nullptr)
 		{
 			m = LoadMesh(mesh);
 			m->name = meshName;
+			m->uniqueId = mesh->element_id;
 			gdlScene->AddMesh(m);
 		}
 		n->mesh = m;
@@ -158,9 +162,9 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth
 	{
 		Indent(depth);
 		printf("%zu children\n", childAmount);
-		gdlScene->SetActiveParentNode(n);
 		for(size_t i = 0; i < node->children.count; i++)
 		{
+			gdlScene->SetActiveParentNode(n);
 			LoadNode(gdlScene, node->children[i], depth+1);
 		}
 	}

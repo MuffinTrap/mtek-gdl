@@ -32,7 +32,9 @@ namespace gdl
 
 		gdl::Node* GetRootNode();
 		gdl::Node* GetNode(const std::string& name);
+		gdl::Node* GetNodeByIndex(short index);
 		gdl::Mesh* GetMesh(const std::string& meshName);
+		gdl::Mesh* GetMeshByUniqueId(uint32_t uniqueId);
 		gdl::Light* GetLight(const std::string& lightName);
 		gdl::Material* GetMaterial(const std::string& materialName);
 
@@ -40,9 +42,10 @@ namespace gdl
 
 	private:
 		void DrawNode(gdl::Node* node);
-		void DebugDrawNode ( Node* node, Font* font, short int x, short int& dy, short int depth );
+		void DebugDrawNode ( Node* node, Font* font, short int x, short int& dy, short int depth, short int& index );
 
 		gdl::Node* FindNode(gdl::Node* node, const std::string &nodeName);
+		gdl::Node* FindNodeByIndex(gdl::Node* parent, short targetIndex, short& index);
 		gdl::Material* FindMaterial(gdl::Node* node, const std::string&  materialName);
 
 		gdl::Node* rootNode = nullptr;
