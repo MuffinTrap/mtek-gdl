@@ -11,15 +11,24 @@
 #include <mgdl/mgdl-node.h>
 #include <mgdl/mgdl-font.h>
 
+#include <glm/glm.hpp>
+
 namespace gdl
 {
 	// Hiearchy of Nodes
 	class Scene
 	{
 	public:
+		enum DebugFlag : u32
+		{
+			Index = 1,
+			UniqueId = 2,
+			Position = 4,
+			Rotation = 8
+		};
 		Scene();
 		void Draw();
-		void DebugDraw(gdl::Font* font, short x, short y);
+		void DebugDraw(gdl::Font* font, short x, short y, u32 drawFlags);
 
 		void SetActiveParentNode(gdl::Node* node);
 		void PushChildNode(gdl::Node* node);
@@ -38,15 +47,19 @@ namespace gdl
 		gdl::Light* GetLight(const std::string& lightName);
 		gdl::Material* GetMaterial(const std::string& materialName);
 
+		gdl::vec3 GetWorldPosition(gdl::Node* node);
+
 		std::vector<gdl::Light*> lights;
 
 	private:
 		void DrawNode(gdl::Node* node);
-		void DebugDrawNode ( Node* node, Font* font, short int x, short int& dy, short int depth, short int& index );
+		void DebugDrawNode ( Node* node, Font* font, short int x, short int& dy, short int depth, short int& index, u32 drawFlags );
 
 		gdl::Node* FindNode(gdl::Node* node, const std::string &nodeName);
 		gdl::Node* FindNodeByIndex(gdl::Node* parent, short targetIndex, short& index);
 		gdl::Material* FindMaterial(gdl::Node* node, const std::string&  materialName);
+
+		bool CalculateWorldPosition(gdl::Node* parent, gdl::Node* target, glm::mat4& matrix, gdl::vec3& posOut);
 
 		gdl::Node* rootNode = nullptr;
 		gdl::Node* parent = nullptr;

@@ -1,5 +1,5 @@
 #include <mgdl/mgdl-scene.h>
-
+#include <glm/gtc/matrix_transform.hpp>
 gdl::Scene::Scene()
 {
 	parent = nullptr;
@@ -26,24 +26,32 @@ void gdl::Scene::PushChildNode ( gdl::Node* node )
 	}
 }
 
-void gdl::Scene::DebugDraw( gdl::Font* font, short x, short y )
+void gdl::Scene::DebugDraw( gdl::Font* font, short x, short y, u32 debugFlags )
 {
 
 	if (rootNode != nullptr)
 	{
 		short index = 0;
-		DebugDrawNode(rootNode, font, x, y, 0, index);
+		DebugDrawNode(rootNode, font, x, y, 0, index, debugFlags);
 	}
 }
 
-void gdl::Scene::DebugDrawNode ( gdl::Node* node, gdl::Font* font, short x, short& dy, short depth, short& index)
+void gdl::Scene::DebugDrawNode ( gdl::Node* node, gdl::Font* font, short x, short& dy, short depth, short& index, u32 debugFlags)
 {
+
 	font->Printf(gdl::Colors::White, x + depth*16, dy, 16.0f, gdl::LJustify, gdl::LJustify, "%d: %s", index, node->name.c_str());
 	index++;
 	dy -= 18;
+	if ((debugFlags & DebugFlag::Position) > 0)
+	{
+		gdl::vec3 &p = node->transform.position;
+		font->Printf(gdl::Colors::White, x + depth*16, dy, 16.0f, gdl::LJustify, gdl::LJustify, "P(%.1f,%.1f,%.1f)", index, p.x, p.y, p.z);
+		dy -= 18;
+	}
+
 	for(size_t i = 0; i < node->children.size(); i++)
 	{
-		DebugDrawNode(node->children[i], font, x, dy, depth+1, index);
+		DebugDrawNode(node->children[i], font, x, dy, depth+1, index, debugFlags);
 	}
 }
 
@@ -141,6 +149,45 @@ gdl::Node * gdl::Scene::FindNodeByIndex ( gdl::Node* parent, short targetIndex, 
 	}
 	return childNode;
 }
+
+gdl::vec3 gdl::Scene::GetWorldPosition ( gdl::Node* node )
+{
+	glm::mat4 matrix = glm::mat4(1.0f);
+	gdl::vec3 posOut;
+	CalculateWorldPosition(rootNode, node, matrix, posOut);
+	return posOut;
+}
+
+bool gdl::Scene::CalculateWorldPosition ( gdl::Node* parent, gdl::Node* target, glm::mat4& matrix, gdl::vec3& posOut )
+{
+
+	gdl::vec3 p = parent->transform.position;
+	matrix = glm::translate(matrix, glm::vec3(p.x, p.y, p.z));
+	matrix = glm::rotate(matrix, glm::radians(parent->transform.rotationDegrees.x), glm::vec3(1.0f, 0.0f, 0.0f));
+	matrix = glm::rotate(matrix, glm::radians(parent->transform.rotationDegrees.y), glm::vec3(0.0f, 1.0f, 0.0f));
+	matrix = glm::rotate(matrix, glm::radians(parent->transform.rotationDegrees.z), glm::vec3(0.0f, 0.0f, 1.0f));
+	if (parent == target)
+	{
+		glm::vec4 origo = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		glm::vec4 pos = matrix * origo;
+		posOut = gdl::vec3(pos.x, pos.y, pos.z);
+		return true;
+	}
+
+	// Need to store the matrix at this state
+	// so that every child starts from the same matrix
+	for(size_t i = 0; i < parent->children.size(); i++)
+	{
+		glm::mat4 accumulated = matrix;
+		if(CalculateWorldPosition(parent->children[i], target, accumulated, posOut))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+
 
 gdl::Node * gdl::Scene::GetNode (const std::string& name )
 {
