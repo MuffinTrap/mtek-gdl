@@ -33,9 +33,34 @@ bool gdl::Font::LoadFromImage(const char* filename, short charw, short charh, ch
 	return imageOk;
 }
 
-void gdl::Font::Bind (short charw, short charh, char firstCharacter )
+bool gdl::Font::LoadFromImage(const char* filename, short charw, short charh, char firstCharacter, short charactersPerRow )
 {
-	short charactersPerRow = fontImage.GetWidth()/ charw;
+	bool imageOk = fontImage.LoadFile(filename, gdl::TextureFilterModes::Linear);
+	gdl_assert_printf(imageOk, "Did not load font image file: %s", filename);
+	textureName = fontImage.GetTextureId(); // Store this for rendering the letters
+	if (imageOk)
+	{
+		printf("\tCreating font/sprite coordinates\n");
+		Bind(charw, charh, firstCharacter, charactersPerRow);
+	}
+	return imageOk;
+}
+
+bool gdl::Font::LoadFromImage(const char* filename, short charw, short charh, short charactersPerRow, std::string characters )
+{
+	bool imageOk = fontImage.LoadFile(filename, gdl::TextureFilterModes::Linear);
+	gdl_assert_printf(imageOk, "Did not load font image file: %s", filename);
+	textureName = fontImage.GetTextureId(); // Store this for rendering the letters
+	if (imageOk)
+	{
+		printf("\tCreating font/sprite coordinates\n");
+		Bind(charw, charh, characters, charactersPerRow);
+	}
+	return imageOk;
+}
+
+void gdl::Font::Bind (short charw, short charh, char firstCharacter, short charactersPerRow )
+{
 	short rows = fontImage.GetHeight() / charh;
 	// Calculate the vertex and texture coordinates (vertices are not used)
 	this->firstIndex = firstCharacter;
@@ -47,6 +72,28 @@ void gdl::Font::Bind (short charw, short charh, char firstCharacter )
 	spacingX = 0.0f;
 	spacingY = 0.0f;
 }
+
+void gdl::Font::Bind (short charw, short charh, char firstCharacter )
+{
+	short charactersPerRow = fontImage.GetWidth()/ charw;
+	Bind(charw, charh, firstCharacter, charactersPerRow);
+}
+
+void gdl::Font::Bind ( short charw, short charh, std::string characters, short charactersPerRow )
+{
+	short rows = fontImage.GetHeight() / charh;
+	// Calculate the vertex and texture coordinates (vertices are not used)
+	this->firstIndex = characters[0];
+	this->cw = charw;
+	this->ch = charh;
+	aspect = (float)cw/(float)ch;
+	CreateTextureCoordList(rows, charactersPerRow, fontImage.GetWidth(), fontImage.GetHeight(), characters);
+
+	spacingX = 0.0f;
+	spacingY = 0.0f;
+
+}
+
 
 void gdl::Font::Print(u32 color, short x, short y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* text)
 {
@@ -208,6 +255,83 @@ void gdl::Font::DrawSheet ()
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
 }
+
+// Version that only creates texture coordinates for
+// the given characters.
+// All other characters are the same as the first one
+void gdl::Font::CreateTextureCoordList ( short rows, short charactersPerRow, short texW, short texH, std::string characters )
+{
+	gdl_assert_print(cw > 0 && ch > 0, "Character dimensions not set");
+	gdl_assert_print(rows > 0 && charactersPerRow > 0, "Rows and cpr at zero");
+	gdl_assert_print(texW > 0 && texH > 0, "Texture size is 0");
+
+	// Need to also create texture coordinates for characters that are not included
+	short characterAmount = characters[characters.length()-1] - characters[0] + 1;
+
+
+	size_t tListSize = (sizeof(gdl::vec2)*4)*(characterAmount);
+	if (tList == NULL)
+	{
+		tList = (gdl::vec2*)AllocateAlignedMemory(tListSize);
+		gdl_assert_print(tList != nullptr, "Out of memory when allocation font txcord list");
+	}
+
+	char currentCharacter = this->firstIndex;
+	short textureIndex = 0;
+
+	for(short cy=0; cy<rows; cy++) {
+		for(short cx=0; cx<charactersPerRow; cx++) {
+			// Coordinates to source image
+			float tx = cw * cx;
+			float ty = ch * cy;
+			float tx2 = (tx + cw) -1;
+			float ty2 = (ty + ch) -1;
+
+
+
+			// Is this character included
+			bool included = characters.find_first_of(currentCharacter) != std::string::npos;
+			if (!included)
+			{
+				// Not included: set texture coords same as first one
+				tx = 0;
+				ty = 0;
+				tx2 = (tx + cw) -1;
+				ty2 = (ty + ch) -1;
+
+				// Decrement cx so that characters that are not included
+				// do not advance coordinates
+				cx--;
+			}
+
+			u32 tc = textureIndex;
+			// Upper-left
+			tList[tc].x	= tx/texW;
+			tList[tc].y	= ty/texH;
+
+			// Upper-right
+			tList[tc+1].x	= tx2/texW;
+			tList[tc+1].y	= ty/texH;
+
+			// Lower-right
+			tList[tc+2].x	= tx2/texW;
+			tList[tc+2].y	= ty2/texH;
+
+			// Lower-left
+			tList[tc+3].x	= tx/texW;
+			tList[tc+3].y	= ty2/texH;
+
+			// In this version the textureIndex and cx are not the same
+			// Because even the characters that are not included have
+			// coordinates for them
+			textureIndex += 4; // Four coordinates per character
+
+			currentCharacter++;
+		}
+	}
+	CacheFlushRange(tList, tListSize);
+}
+
 
 void gdl::Font::CreateTextureCoordList(short rows, short charactersPerRow, short texW, short texH)
 {

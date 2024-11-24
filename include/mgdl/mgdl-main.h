@@ -29,6 +29,8 @@ namespace gdl
 	gdl::PNGFile* LoadPNG(std::string filename);
 
 	gdl::Font* LoadFont(std::string filename, short characterWidth, short characterHeight, char firstCharacter);
+	gdl::Font* LoadFontCustom(std::string filename, short characterWidth, short characterHeight, char firstCharacter, short charactersPerRow);
+	gdl::Font* LoadFontCustom(std::string filename, short characterWidth, short characterHeight, short charactersPerRow, std::string characters);
 	gdl::Font* LoadFont(const u8* buffer, size_t size, short characterWidth, short characterHeight, char firstCharacter);
 
 	void DoProgramExit();

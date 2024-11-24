@@ -146,6 +146,34 @@ gdl::Font* gdl::LoadFont(std::string filename, short characterWidth, short chara
 	}
 }
 
+gdl::Font* gdl::LoadFontCustom(std::string filename, short characterWidth, short characterHeight, char firstCharacter, short charactersPerRow)
+{
+	gdl::Font* font = new gdl::Font();
+	if (font->LoadFromImage(filename.c_str(), characterWidth, characterHeight, firstCharacter, charactersPerRow))
+	{
+		return font;
+	}
+	else
+	{
+		delete font;
+		return nullptr;
+	}
+}
+
+gdl::Font* gdl::LoadFontCustom(std::string filename, short characterWidth, short characterHeight, short charactersPerRow, std::string characters)
+{
+	gdl::Font* font = new gdl::Font();
+	if (font->LoadFromImage(filename.c_str(), characterWidth, characterHeight, charactersPerRow, characters))
+	{
+		return font;
+	}
+	else
+	{
+		delete font;
+		return nullptr;
+	}
+}
+
 gdl::Font* gdl::LoadFont(const u8* buffer, size_t size, short characterWidth, short characterHeight, char firstCharacter)
 {
 	gdl::Font* font = new gdl::Font();
