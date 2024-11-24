@@ -58,7 +58,6 @@ void mouseMove(int x, int y) {
 }
 
 void keyboardDown(unsigned char key, int x, int y) {
-	printf("Keyboard down %d\n", key);
 	if (key == ascii_ESC) { // ASCII code for 'Escape'
 		glutController.SetButtonDown(gdl::WiiButtons::ButtonHome);
 	}
@@ -89,7 +88,6 @@ void keyboardDown(unsigned char key, int x, int y) {
 }
 
 void keyboardUp(unsigned char key, int x, int y) {
-	printf("Keyboard up %d\n", key);
 	if (key == ascii_ESC) { // ASCII code for 'Escape'
 		glutController.SetButtonUp(gdl::WiiButtons::ButtonHome);
 	}
@@ -107,11 +105,9 @@ void keyboardUp(unsigned char key, int x, int y) {
 	}
 	else if (key == ascii_1) {
 		glutController.SetButtonUp(gdl::WiiButtons::Button1);
-		printf("Button 1 up\n");
 	}
 	else if (key == ascii_2) {
 		glutController.SetButtonUp(gdl::WiiButtons::Button2);
-		printf("Button 2 up\n");
 	}
 	else if (key == ascii_q) {
 		glutController.SetButtonUp(gdl::WiiButtons::ButtonMinus);

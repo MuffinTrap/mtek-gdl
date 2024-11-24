@@ -39,6 +39,8 @@ void Example::Update()
     gdl::Node* baby = wiiScene->GetNode(babyName);
     baby->transform.rotationDegrees.x += deltaTime * 25.0f;
     baby->transform.rotationDegrees.z += deltaTime * 40.0f;
+
+    mouseClick = gdl::GetController(0).ButtonPress(gdl::WiiButtons::ButtonA);
 }
 
 void DrawTextDouble(const char* text, short x, short y, float textHeight, gdl::Font* font)
@@ -75,9 +77,7 @@ void Example::Draw()
                    gdl::GetScreenHeight()/5,
                    ibmFont->GetCharacterHeight());
     DrawVersion();
-    /*
     DrawInputInfo(left, top);
-    */
 }
 
 void Example::DrawVersion()
@@ -153,8 +153,10 @@ static void DrawButtons(short x, short y, short size, gdl::Font* font)
         {
             c = active;
         }
-        gdl::DrawBoxF(x + i * size, y, x+size+i*size,y+size,c);
-        glTranslatef(size, 0.0f, 0.0f);
+        gdl::DrawBoxF(x + i * size,
+                      y,
+                      x+size+i*size,
+                      y-size,c);
         font->Print(gdl::Colors::White, x + i * size, y, 16.0f, gdl::LJustify, gdl::LJustify, names[i].c_str());
     }
 }
@@ -264,7 +266,7 @@ void Example::DrawMenu(int x, int y, int w)
     int h = gdl::GetScreenHeight();
     int flip_y = h-cp.yAxis;
 
-    menu.StartMenu(x, y, w, cp.xAxis, flip_y, gdl::GetController(0).ButtonPress(gdl::WiiButtons::ButtonA));
+    menu.StartMenu(x, y, w, cp.xAxis, flip_y, mouseClick);
 
     menu.Text("Hi! I am menu.");
     menu.Panel(2, gdl::Colors::Yellow);

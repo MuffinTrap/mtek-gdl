@@ -32,4 +32,6 @@ class Example
         void DrawSprites();
         void DrawWii();
 
+        bool mouseClick;
+
 };
