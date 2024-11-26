@@ -27,9 +27,9 @@ namespace gdl
         private:
 
         // Drawing parameters
-        int x;
-        int y;
-        int w;
+        float x;
+        float y;
+        float w;
         float textHeight;
         float rowHeightEm;
 

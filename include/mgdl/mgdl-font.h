@@ -16,11 +16,11 @@ namespace gdl
 
 		// The text height is in units when drawing in 3D.
 		// The text height is in pixels when drawing in 2D.
-		void Printf(u32 color, short x, short y, float textHeight, const char* format, ... );
-		void Print(u32 color, short x, short y, float textHeight, const char* text);
+		void Printf(u32 color, float x, float y, float textHeight, const char* format, ... );
+		void Print(u32 color, float x, float y, float textHeight, const char* text);
 
-		void Printf(u32 color, short x, short y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* format, ... );
-		void Print(u32 color, short x, short y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* text);
+		void Printf(u32 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* format, ... );
+		void Print(u32 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* text);
 
 		void Printf(u32 color, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* format, ... );
 		void Print(u32 color, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* text);

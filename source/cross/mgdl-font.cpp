@@ -95,12 +95,12 @@ void gdl::Font::Bind ( short charw, short charh, std::string characters, short c
 }
 
 
-void gdl::Font::Print(u32 color, short x, short y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* text)
+void gdl::Font::Print(u32 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* text)
 {
 	float step = aspect * textHeight;
 
-	float dx = static_cast<float>(x);
-	float dy = static_cast<float>(y);
+	float dx = x;
+	float dy = y;
 	float dz = 0.0f;
 
 	if (alignmentX == RJustify)
@@ -175,15 +175,15 @@ void gdl::Font::Print(u32 color, short x, short y, float textHeight, gdl::Alignm
 
 void gdl::Font::Print(u32 color, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* text)
 {
-	Print(color, 0, 0, textHeight, alignmentX, alignmentY, text);
+	Print(color, 0.0f, 0.0f, textHeight, alignmentX, alignmentY, text);
 }
 
-void gdl::Font::Print(u32 color, short x, short y, float textHeight, const char* text)
+void gdl::Font::Print(u32 color, float x, float y, float textHeight, const char* text)
 {
 	Print(color, x, y, textHeight, gdl::AlignmentModes::LJustify, gdl::AlignmentModes::LJustify, text);
 }
 
-void gdl::Font::Printf(u32 color, short x, short y, float textHeight, const char* format, ... )
+void gdl::Font::Printf(u32 color, float x, float y, float textHeight, const char* format, ... )
 {
 	va_list args;
 	char	buff[256];
@@ -207,7 +207,7 @@ void gdl::Font::Printf(u32 color, float textHeight, gdl::AlignmentModes alignmen
 	Print(color, 0, 0, textHeight, alignmentX, alignmentY, buff);
 }
 
-void gdl::Font::Printf(u32 color, short x, short y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* format, ... )
+void gdl::Font::Printf(u32 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* format, ... )
 {
 	// Draw quads
 	va_list args;
