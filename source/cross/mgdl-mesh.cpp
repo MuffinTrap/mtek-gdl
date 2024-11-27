@@ -127,6 +127,22 @@ bool gdl::Mesh::GetTriangleIndices ( GLsizei triangleIndex, GLushort& outA, GLus
 }
 
 
+gdl::vec3 gdl::Mesh::GetPositionFromArray(size_t index)
+{
+	if (index < vertexCount)
+	{
+		return gdl::vec3(positions[index+0], positions[index+1], positions[index+2]);
+	}
+	return gdl::vec3(0.0f, 0.0f, 0.0f);
+}
+gdl::vec3 gdl::Mesh::GetNormalFromArray(size_t index)
+{
+	if (index < vertexCount)
+	{
+		return gdl::vec3(normals[index+0], normals[index+1], normals[index+2]);
+	}
+	return gdl::vec3(0.0f, 1.0f, 0.0f);
+}
 
 
 

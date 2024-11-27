@@ -126,7 +126,7 @@ void gdl::Image::Draw2DAligned(short x, short y, float scale, gdl::AlignmentMode
 	}
 	else if (alignY == Centered)
 	{
-		y += h/2;
+		y -= h/2;
 	}
 	Draw2DAbsolute(x, y, x+w, y+h);
 }

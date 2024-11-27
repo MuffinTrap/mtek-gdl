@@ -28,6 +28,7 @@ namespace gdl
 		};
 		Scene();
 		void Draw();
+		void DrawNode(gdl::Node* node);
 		void DebugDraw(gdl::Font* font, short x, short y, u32 drawFlags);
 
 		void SetActiveParentNode(gdl::Node* node);
@@ -52,7 +53,6 @@ namespace gdl
 		std::vector<gdl::Light*> lights;
 
 	private:
-		void DrawNode(gdl::Node* node);
 		void DebugDrawNode ( Node* node, Font* font, short int x, short int& dy, short int depth, short int& index, u32 drawFlags );
 
 		gdl::Node* FindNode(gdl::Node* node, const std::string &nodeName);

@@ -24,6 +24,10 @@ namespace gdl
 
 		gdl::vec3 GetPosition(GLushort index);
 		gdl::vec3 GetNormal(GLushort index);
+
+		gdl::vec3 GetPositionFromArray(size_t index);
+		gdl::vec3 GetNormalFromArray(size_t index);
+
 		void SetNormal(GLsizei index, const gdl::vec3& normal);
 
 		bool GetTriangleIndices(GLsizei triangleIndex, GLushort& outA, GLushort& outB, GLushort& outC);
