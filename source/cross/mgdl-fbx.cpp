@@ -43,6 +43,8 @@ void Indent(short depth)
 
 bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth )
 {
+	gdl_assert_print(node != nullptr, "Tried to load null node");
+	gdl_assert_print(gdlScene != nullptr, "No scene to load nodes to");
 	Indent(depth);
 	printf("Node: %s\n", node->name.data);
 
@@ -55,6 +57,7 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth
 	printf("\n");
 
 	gdl::Node* n = new gdl::Node();
+	gdl_assert_print(n != nullptr, "Could not create new Node");
 	n->name = std::string(node->name.data);
 	n->transform.position = gdl::vec3(t.x, t.y, t.z);
 	n->transform.rotationDegrees = gdl::vec3(r.x, r.y, r.z);

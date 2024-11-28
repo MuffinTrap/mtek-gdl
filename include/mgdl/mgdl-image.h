@@ -20,6 +20,7 @@ namespace gdl
 			void Draw2DAligned(short x, short y, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY);
 			void Draw2DAbsolute(short x, short y, short x2, short y2);
 			void Draw3D(float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY);
+			void SetTint(float red, float green, float blue);
 
 			short GetWidth();
 			short GetHeight();
@@ -31,7 +32,11 @@ namespace gdl
 	private:
 		PNGFile* pngFile;
 
+
 		float aspectRatio;
+		float red = 1.0f;
+		float green = 1.0f;
+		float blue = 1.0f;
 		GLsizei width;
 		GLsizei height;
 		gdl::ColorFormats colorFormat;

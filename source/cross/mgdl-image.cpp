@@ -85,7 +85,7 @@ void gdl::Image::Draw2DAbsolute(short x, short y, short x2, short y2)
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, textureId);
 	glBegin(GL_QUADS);
-		glColor3f(1.0f, 1.0f, 1.0f);
+		glColor3f(red, green, blue);
 
 		// Lower left
 		glTexCoord2f(0.0f, 1.0f);
@@ -160,7 +160,7 @@ void gdl::Image::Draw3D(float scale, gdl::AlignmentModes alignX, gdl::AlignmentM
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, textureId);
 	glBegin(GL_QUADS);
-		glColor3f(1.0f, 1.0f, 1.0f);
+		glColor3f(red, green, blue);
 
 		// Lower left
 		glTexCoord2f(0.0f, 1.0f);
@@ -236,5 +236,13 @@ gdl::ColorFormats gdl::Image::GetColorFormat()
 {
 	return colorFormat;
 }
+
+void gdl::Image::SetTint ( float red, float green, float blue )
+{
+	this->red = red;
+	this->green = green;
+	this->blue = blue;
+}
+
 
 

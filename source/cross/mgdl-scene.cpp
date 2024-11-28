@@ -67,17 +67,17 @@ void gdl::Scene::Draw()
 
 void gdl::Scene::DrawNode ( gdl::Node* node )
 {
-	gdl::vec3 t = node->transform.position;
+	const gdl::vec3& t = node->transform.position;
 	glPushMatrix();
 		glTranslatef(t.x, t.y, t.z);
 
-		gdl::vec3 r = node->transform.rotationDegrees;
+		const gdl::vec3& r = node->transform.rotationDegrees;
 		glRotatef(r.x, 1.0f, 0.0f, 0.0f);
 		glRotatef(r.y, 0.0f, 1.0f, 0.0f);
 		glRotatef(r.z, 0.0f, 0.0f, 1.0f);
 
-		float s = node->transform.scale;
-		glScalef(s, s, s);
+		const gdl::vec3& s = node->transform.scale;
+		glScalef(s.x, s.y, s.z);
 
 		gdl::Mesh* m = node->mesh;
 		if (m != nullptr)

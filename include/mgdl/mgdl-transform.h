@@ -9,9 +9,11 @@ namespace gdl
 		Transform();
 		void Translate(const gdl::vec3& t);
 		void Rotate(short axis, float angle);
+		void SetScalef(float scale);
+		void SetScale3f(const gdl::vec3& scale);
 
 		gdl::vec3 position;
 		gdl::vec3 rotationDegrees;
-		float scale = 1.0f;
+		gdl::vec3 scale;
 	};
 }
