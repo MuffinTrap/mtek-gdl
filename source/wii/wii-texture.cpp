@@ -428,7 +428,7 @@ static void *_gdl_texture_DownscaleImage(short imgWidth, short imgHeight, short 
 			}
 
 			doffs = nx+(newWidth*ny);
-			((int*)outBuff)[doffs] = RGBA(redVal/numVal, grnVal/numVal, bluVal/numVal, alpVal/numVal);
+			((int*)outBuff)[doffs] = TO_RGBA(redVal/numVal, grnVal/numVal, bluVal/numVal, alpVal/numVal);
 
 		}
 	}
@@ -1462,7 +1462,7 @@ u_int gdl::Texture::PeekPixel(short x, short y)
 			u8 red = 0x8 * (compressed & 0xF800);
 			u8 green = 0x4 * (compressed & 0x7E0);
 			u8 blue = 0x8 * compressed & 0x1F;
-			col = RGBA(red, green, blue, 0xff);
+			col = TO_RGBA(red, green, blue, 0xff);
 		}
 		break;
 
@@ -1477,7 +1477,7 @@ u_int gdl::Texture::PeekPixel(short x, short y)
 				u8 red = 0x08 * (compressed & 0x7C00);
 				u8 green = 0x08 * (compressed & 0x7C0);
 				u8 blue = 0x08 * (compressed & 0x1F);
-				col = RGBA(red, green, blue, 0xff);
+				col = TO_RGBA(red, green, blue, 0xff);
 			}
 			else // Top bit is not set, alpha is used
 			{
@@ -1485,7 +1485,7 @@ u_int gdl::Texture::PeekPixel(short x, short y)
 				u8 green = 0x11 * (compressed & 0x0F0);
 				u8 blue = 0x11 * (compressed & 0x00F);
 				u8 alpha = 0x20 * (compressed & 0x7000);
-				col = RGBA(red, green, blue, alpha);
+				col = TO_RGBA(red, green, blue, alpha);
 			}
 		}
 		break;

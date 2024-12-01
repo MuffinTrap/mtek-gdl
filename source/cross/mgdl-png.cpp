@@ -176,25 +176,46 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 
 	// React to info we got
 	printf("\tColor: ");
-	if (color_type == PNG_COLOR_TYPE_PALETTE)
+	switch(color_type)
 	{
-		// Read this as RGB image
-		printf("palette ");
-		png_set_palette_to_rgb(png_ptr);
-	}
-	else if (color_type == PNG_COLOR_TYPE_GRAY)
-	{
-		printf("grayscale ");
-		// Small precision grayscale to 8 bit format
-		if (bit_depth < 8)
+		case PNG_COLOR_TYPE_PALETTE:
 		{
-			png_set_expand_gray_1_2_4_to_8(png_ptr);
+			// Read this as RGB image
+			printf("palette ");
+			png_set_palette_to_rgb(png_ptr);
 		}
-	}
-	else
-	{
-		printf("RGB ");
-	}
+		break;
+		case PNG_COLOR_TYPE_GRAY:
+		{
+			printf("grayscale ");
+			// Small precision grayscale to 8 bit format
+			if (bit_depth < 8)
+			{
+				png_set_expand_gray_1_2_4_to_8(png_ptr);
+			}
+		}
+		break;
+		case PNG_COLOR_TYPE_GRAY_ALPHA:
+		{
+			printf("grayscale with alpha ");
+			// Small precision grayscale to 8 bit format
+			if (bit_depth < 8)
+			{
+				png_set_expand_gray_1_2_4_to_8(png_ptr);
+			}
+		}
+		break;
+		case PNG_COLOR_TYPE_RGB:
+		{
+			printf("RGB ");
+		}
+		break;
+		case PNG_COLOR_TYPE_RGB_ALPHA:
+		{
+			printf("RGBA ");
+		}
+		break;
+	};
 	printf("Alpha: ");
 	// Is transparency info read ok?
 	png_uint_32 getResult = png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS);

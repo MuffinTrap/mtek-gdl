@@ -282,7 +282,7 @@ float gdl::SoundWii::GetElapsedSeconds()
 {
 	if (voiceNumber != SND_INVALID)
 	{
-		return (float)ASND_GetTimerVoice(voiceNumber)/1000.0f;
+		return secondsOffset + (float)ASND_GetTimerVoice(voiceNumber)/1000.0f;
 	}
 	else
 	{
@@ -290,13 +290,10 @@ float gdl::SoundWii::GetElapsedSeconds()
 	}
 }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
 void gdl::SoundWii::SetElapsedSeconds(float elapsed)
 {
-	// NOP
+	secondsOffset = elapsed;
 }
-#pragma GCC diagnostic pop
 
 gdl::SoundStatus gdl::SoundWii::GetStatus()
 {
@@ -413,12 +410,13 @@ void gdl::MusicWii::Play(float pitchOffset, float volumePercent)
 
 float gdl::MusicWii::GetElapsedSeconds()
 {
-	return (float)GetTimeOgg()/1000.0f;
+	return secondsOffset + (float)GetTimeOgg()/1000.0f;
 }
 
 void gdl::MusicWii::SetElapsedSeconds(float seconds)
 {
 	SetTimeOgg(s32(seconds*1000.0f));
+	secondsOffset = seconds;
 }
 
 void gdl::MusicWii::SetPaused(bool pause)

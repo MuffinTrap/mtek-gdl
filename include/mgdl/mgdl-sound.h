@@ -28,5 +28,8 @@ namespace gdl
 		virtual void UpdatePlay() = 0;
 
 		virtual ~Sound() = default;
+
+	protected:
+		float secondsOffset = 0.0f; // This is mainly to allow chaning the play position on Ogg on Wii for debug purposes
 	};
 };

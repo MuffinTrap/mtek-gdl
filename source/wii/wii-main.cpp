@@ -609,9 +609,9 @@ void gdl::Display() {
 			GX_SetScissor(0, 0, gdl::wii::rmode->fbWidth, gdl::wii::rmode->efbHeight);
 
 			if (ceil(wii::DoExitCount)<30)
-				gdl::DrawBoxF(0, 0, gdl::ScreenXres-1, gdl::ScreenYres-1, RGBA(0, 0, 0, 255*(ceil(wii::DoExitCount)/30.f)));
+				gdl::DrawBoxF(0, 0, gdl::ScreenXres-1, gdl::ScreenYres-1, TO_RGBA(0, 0, 0, 255*(ceil(wii::DoExitCount)/30.f)));
 			else
-				gdl::DrawBoxF(0, 0, gdl::ScreenXres-1, gdl::ScreenYres-1, RGBA(0, 0, 0, 255));
+				gdl::DrawBoxF(0, 0, gdl::ScreenXres-1, gdl::ScreenYres-1, TO_RGBA(0, 0, 0, 255));
 		}
 
 	}

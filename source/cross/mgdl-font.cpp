@@ -266,10 +266,14 @@ void gdl::Font::CreateTextureCoordList ( short rows, short charactersPerRow, sho
 	gdl_assert_print(texW > 0 && texH > 0, "Texture size is 0");
 
 	// Need to also create texture coordinates for characters that are not included
-	short characterAmount = characters[characters.length()-1] - characters[0] + 1;
+	char first = characters[0];
+	char last = characters[characters.length()-1];
+	short textureArraySize =  (last - first) + 1;
+	short toBeFoundAmount = static_cast<short>(characters.length());
+	printf("find between %d and %d: %d characters\n", first, last, toBeFoundAmount);
 
 
-	size_t tListSize = (sizeof(gdl::vec2)*4)*(characterAmount);
+	size_t tListSize = (sizeof(gdl::vec2)*4)*(textureArraySize);
 	if (tList == NULL)
 	{
 		tList = (gdl::vec2*)AllocateAlignedMemory(tListSize);
@@ -277,7 +281,13 @@ void gdl::Font::CreateTextureCoordList ( short rows, short charactersPerRow, sho
 	}
 
 	char currentCharacter = this->firstIndex;
+	gdl_assert_print(currentCharacter >= ' ', "First character must be space or bigger");
 	short textureIndex = 0;
+
+	printf("Creating coordinates: rows %d, cperRow %d, textureW %d, textrureH %d\n", rows, charactersPerRow, texW, texH);
+
+	// If the last character in image is not included this crashes unless we keep track of how many should be found
+	short found = 0;
 
 	for(short cy=0; cy<rows; cy++) {
 		for(short cx=0; cx<charactersPerRow; cx++) {
@@ -286,8 +296,6 @@ void gdl::Font::CreateTextureCoordList ( short rows, short charactersPerRow, sho
 			float ty = ch * cy;
 			float tx2 = (tx + cw) -1;
 			float ty2 = (ty + ch) -1;
-
-
 
 			// Is this character included
 			bool included = characters.find_first_of(currentCharacter) != std::string::npos;
@@ -299,9 +307,15 @@ void gdl::Font::CreateTextureCoordList ( short rows, short charactersPerRow, sho
 				tx2 = (tx + cw) -1;
 				ty2 = (ty + ch) -1;
 
+				//printf("Excluded: %c\n", currentCharacter);
 				// Decrement cx so that characters that are not included
 				// do not advance coordinates
 				cx--;
+			}
+			else
+			{
+				found++;
+				// printf("Included: %c. Found %d/%d\n", currentCharacter, found, toBeFoundAmount);
 			}
 
 			u32 tc = textureIndex;
@@ -327,6 +341,16 @@ void gdl::Font::CreateTextureCoordList ( short rows, short charactersPerRow, sho
 			textureIndex += 4; // Four coordinates per character
 
 			currentCharacter++;
+			if (found == toBeFoundAmount)
+			{
+				printf("All %d characters found\n", toBeFoundAmount);
+				break;
+			}
+
+		}
+		if (found == toBeFoundAmount)
+		{
+			break;
 		}
 	}
 	CacheFlushRange(tList, tListSize);
