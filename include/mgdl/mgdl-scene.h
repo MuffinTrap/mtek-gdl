@@ -49,6 +49,7 @@ namespace gdl
 		gdl::Material* GetMaterial(const std::string& materialName);
 
 		gdl::vec3 GetWorldPosition(gdl::Node* node);
+		glm::mat4 GetModelMatrix(gdl::Node* node);
 
 		std::vector<gdl::Light*> lights;
 
@@ -60,6 +61,7 @@ namespace gdl
 		gdl::Material* FindMaterial(gdl::Node* node, const std::string&  materialName);
 
 		bool CalculateWorldPosition(gdl::Node* parent, gdl::Node* target, glm::mat4& matrix, gdl::vec3& posOut);
+		bool CalculateModelMatrix(gdl::Node* parent, gdl::Node* target, glm::mat4& matrixRef);
 
 		gdl::Node* rootNode = nullptr;
 		gdl::Node* parent = nullptr;

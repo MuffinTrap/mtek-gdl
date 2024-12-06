@@ -4,8 +4,9 @@
 #include <mgdl/mgdl-scene.h>
 #include <stdio.h>
 
-gdl::Scene* gdl::FBXFile::LoadFile(std::string fbxFile)
+gdl::Scene* gdl::FBXFile::LoadFile(std::string fbxFile, bool debugPrint)
 {
+	this->debugPrint = debugPrint;
 	// Right handed for OpenGL
 	// Y is up
 	ufbx_load_opts opts = {};
@@ -45,16 +46,20 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth
 {
 	gdl_assert_print(node != nullptr, "Tried to load null node");
 	gdl_assert_print(gdlScene != nullptr, "No scene to load nodes to");
-	Indent(depth);
-	printf("Node: %s\n", node->name.data);
-
-	Indent(depth);
-	printf("Transform:");
 	ufbx_vec3 t = node->local_transform.translation;
 	ufbx_vec3 r = node->euler_rotation;
-	printf("position: (%.2f, %.2f, %.2f)", t.x, t.y, t.z);
-	printf("rotation: (%.2f, %.2f, %.2f)", r.x, r.y, r.z);
-	printf("\n");
+
+	if (debugPrint)
+	{
+		Indent(depth);
+		printf("Node: %s\n", node->name.data);
+
+		Indent(depth);
+		printf("Transform:");
+		printf("position: (%.2f, %.2f, %.2f)", t.x, t.y, t.z);
+		printf("rotation: (%.2f, %.2f, %.2f)", r.x, r.y, r.z);
+		printf("\n");
+	}
 
 	gdl::Node* n = new gdl::Node();
 	gdl_assert_print(n != nullptr, "Could not create new Node");
@@ -66,16 +71,19 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth
 	if (node->mesh != nullptr)
 	{
 		ufbx_mesh* mesh = node->mesh;
-		printf("Mesh %s (%u) with %zu faces", mesh->name.data, mesh->element_id, mesh->faces.count);
-		if (mesh->vertex_normal.exists)
+		if (debugPrint)
 		{
-			printf(", %zu normals", mesh->vertex_normal.values.count);
+			printf("Mesh %s (%u) with %zu faces", mesh->name.data, mesh->element_id, mesh->faces.count);
+			if (mesh->vertex_normal.exists)
+			{
+				printf(", %zu normals", mesh->vertex_normal.values.count);
+			}
+			if (mesh->vertex_uv.exists)
+			{
+				printf(",%zu uvs", mesh->vertex_uv.values.count);
+			}
+			printf("\n");
 		}
-		if (mesh->vertex_uv.exists)
-		{
-			printf(",%zu uvs", mesh->vertex_uv.values.count);
-		}
-		printf("\n");
 
 		// Is this mesh loaded already?
 		// Cannot use name: if multiple meshes have the same name
@@ -99,8 +107,11 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth
 			// or if loaded later, match them to the meshes?
 
 			ufbx_material* material = node->materials[mi];
-			Indent(depth);
-			printf("Material: %s\n", material->name.data);
+			if (debugPrint)
+			{
+				Indent(depth);
+				printf("Material: %s\n", material->name.data);
+			}
 
 			// Has this material been loaded already?
 			std::string matName = std::string(material->name.data);
@@ -163,8 +174,11 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth
 	size_t childAmount = node->children.count;
 	if (childAmount > 0)
 	{
-		Indent(depth);
-		printf("%zu children\n", childAmount);
+		if (debugPrint)
+		{
+			Indent(depth);
+			printf("%zu children\n", childAmount);
+		}
 		for(size_t i = 0; i < node->children.count; i++)
 		{
 			gdlScene->SetActiveParentNode(n);
@@ -212,7 +226,10 @@ gdl::Mesh * gdl::FBXFile::AllocateMesh ( ufbx_mesh* fbxMesh )
 
 	int tris = fbxMesh->num_triangles;
 	mesh->indexCount = tris * 3;
-	printf("Mesh has %d triangles\n", tris);
+	if (debugPrint)
+	{
+		printf("Mesh has %d triangles\n", tris);
+	}
 
 	// Reserve space
 	int byteCount = 0;
@@ -245,7 +262,10 @@ gdl::Mesh * gdl::FBXFile::AllocateMesh ( ufbx_mesh* fbxMesh )
 		mesh->uvs = new GLfloat[uvFloats];
 		byteCount += uvFloats * sizeof(float);
 	}
-	printf("Allocated %d bytes for the mesh\n", byteCount);
+	if (debugPrint)
+	{
+		printf("Allocated %d bytes for the mesh\n", byteCount);
+	}
 
 	return mesh;
 }
@@ -327,7 +347,10 @@ gdl::Mesh * gdl::FBXFile::LoadMesh(ufbx_mesh* fbxMesh)
 			indiceArrayIndex += 3;	 // Added 3 new indices
 		}
 	}
-	printf("Loaded mesh\n");
+	if (debugPrint)
+	{
+		printf("Loaded mesh\n");
+	}
 	return mesh;
 }
 

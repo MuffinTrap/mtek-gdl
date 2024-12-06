@@ -15,12 +15,10 @@ void gdl::Scene::PushChildNode ( gdl::Node* node )
 {
 	if (parent != nullptr)
 	{
-		printf("Added child node\n");
 		parent->children.push_back(node);
 	}
 	else
 	{
-		printf("Set root node\n");
 		node->name = "ROOT";
 		rootNode = node;
 	}
@@ -157,6 +155,41 @@ gdl::vec3 gdl::Scene::GetWorldPosition ( gdl::Node* node )
 	CalculateWorldPosition(rootNode, node, matrix, posOut);
 	return posOut;
 }
+
+glm::mat4 gdl::Scene::GetModelMatrix ( gdl::Node* node )
+{
+	glm::mat4 matrix = glm::mat4(1.0f);
+	CalculateModelMatrix(rootNode, node, matrix);
+	return matrix;
+}
+
+
+bool gdl::Scene::CalculateModelMatrix ( gdl::Node* parent, gdl::Node* target, glm::mat4& matrixRef )
+{
+	gdl::vec3 p = parent->transform.position;
+	matrixRef = glm::translate(matrixRef, glm::vec3(p.x, p.y, p.z));
+	matrixRef = glm::rotate(matrixRef, glm::radians(parent->transform.rotationDegrees.x), glm::vec3(1.0f, 0.0f, 0.0f));
+	matrixRef = glm::rotate(matrixRef, glm::radians(parent->transform.rotationDegrees.y), glm::vec3(0.0f, 1.0f, 0.0f));
+	matrixRef = glm::rotate(matrixRef, glm::radians(parent->transform.rotationDegrees.z), glm::vec3(0.0f, 0.0f, 1.0f));
+	if (parent == target)
+	{
+		return true;
+	}
+
+	// Need to store the matrix at this state
+	// so that every child starts from the same matrix
+	for(size_t i = 0; i < parent->children.size(); i++)
+	{
+		glm::mat4 accumulated = matrixRef;
+		if(CalculateModelMatrix(parent->children[i], target, accumulated))
+		{
+			return true;
+		}
+	}
+	return false;
+
+}
+
 
 bool gdl::Scene::CalculateWorldPosition ( gdl::Node* parent, gdl::Node* target, glm::mat4& matrix, gdl::vec3& posOut )
 {

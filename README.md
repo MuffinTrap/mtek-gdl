@@ -22,11 +22,12 @@ This is now version 0.100.3-muffintrap "skrolli"
 ```
 3. Using (dkp-)pacman, install the package **wii-dev**
 4. Using (dkp-)pacman, install these packages if they are not already installed:
-	* ppc-png
+	* ppc-libpng
 	* ppc-zlib
 	* ppc-libvorbis
 	* ppc-libvorbisidec
 	* ppc-libogg
+	* ppc-glm
 	* wii-glu
 	* wii-opengx
 	* wii-freeglut

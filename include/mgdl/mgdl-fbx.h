@@ -15,7 +15,7 @@ namespace gdl
 	class FBXFile
 	{
 	public:
-		gdl::Scene* LoadFile(std::string fbxFile);
+		gdl::Scene* LoadFile(std::string fbxFile, bool debugPrint = false);
 		void DeleteData();
 
 
@@ -25,6 +25,7 @@ namespace gdl
 		gdl::Light* LoadLight(ufbx_light* fbxLight);
 		bool LoadNode(gdl::Scene* scene, ufbx_node* node, short depth);
 		ufbx_scene* scene = nullptr;
+		bool debugPrint;
 	};
 }
 
