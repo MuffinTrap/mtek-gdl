@@ -18,6 +18,7 @@
     #else
         // Needed on windows
         #include <stdint.h>
+        #include <cstdint>
         #include <AL/al.h>
         #include <AL/alc.h>
     #endif
