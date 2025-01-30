@@ -30,7 +30,7 @@ EXE_SUFFIX = .exe
 # list before it tries to link
 # So the libraries not used by other libraries need to be last
 # and mgdl needs to be first
-LDFLAGS = -lmgdl -lpng -lopenal -lsndfile -lfreeglut -lglu32 -lopengl32 -lws2_32 -Wl,--allow-multiple-definition
+LDFLAGS = -lmgdl -lpng -lopenal -lsndfile -lfreeglut -lglu32 -lopengl32 -lvorbisfile -logg -lws2_32 -Wl,--allow-multiple-definition
 
 
 
