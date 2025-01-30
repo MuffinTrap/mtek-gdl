@@ -232,6 +232,11 @@ void gdl::SoundWii::UpdatePlay()
 	// nop
 }
 
+void gdl::SoundWii::SetLooping(bool looping)
+{
+	this->looping = looping;
+}
+
 void gdl::SoundWii::Play(float pitch, float volume) {
 
 	// Simple play function
@@ -305,7 +310,7 @@ gdl::SoundStatus gdl::SoundWii::GetStatus()
 	{
 		if (sData == nullptr)
 		{
-			return gdl::SoundStatus::Unloaded;
+			return gdl::SoundStatus::Initial;
 		}
 		else
 		{
@@ -447,6 +452,10 @@ void gdl::MusicWii::UnloadData()
 }
 
 
+void gdl::MusicWii::SetLooping(bool looping)
+{
+	this->looping = looping;
+}
 gdl::SoundStatus gdl::MusicWii::GetStatus()
 {
 	if (StatusOgg() == OGG_STATUS_RUNNING)

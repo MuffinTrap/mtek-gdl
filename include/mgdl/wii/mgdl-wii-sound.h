@@ -34,6 +34,7 @@ private:
 	void	*sData;
 	int		sSize;
 	short	voiceNumber; // ASND voice number
+	bool looping;
 
 public:
 
@@ -133,6 +134,8 @@ public:
 
 	void UpdatePlay() override;
 
+	void SetLooping(bool looping) override;
+
 	// muffintrap: Added for version 0.100.0-muffintrap
 	//! Internal sound loading function. Loads a sound from FILE pointer
 	/*!
@@ -190,6 +193,7 @@ class MusicWii : public gdl::Sound
 
 		void UpdatePlay() override;
 
+		void SetLooping(bool looping) override;
 		virtual ~MusicWii() override;
 	private:
 		uint8_t *oggBuffer;
@@ -197,6 +201,7 @@ class MusicWii : public gdl::Sound
 		FILE* oggFile;
 		std::string fileNameStr;
 		char* filenameChar;
+		bool looping;
 
 }; // Class Music
 

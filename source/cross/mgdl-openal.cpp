@@ -1,7 +1,9 @@
 #include <mgdl/mgdl-openal.h>
 
+
 #include <iostream>
 
+#ifndef GEKKO
 
 void check_al_errors(const std::string& filename, const std::uint_fast32_t line)
 {
@@ -32,3 +34,5 @@ void check_al_errors(const std::string& filename, const std::uint_fast32_t line)
         std::cerr << std::endl;
     }
 }
+
+#endif
