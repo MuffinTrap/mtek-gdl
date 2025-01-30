@@ -1,4 +1,5 @@
 #include <mgdl/pc/mgdl-pc-sound.h>
+#include <mgdl/mgdl-assert.h>
 
 gdl::SoundPC::SoundPC()
 {
@@ -13,38 +14,43 @@ gdl::SoundPC::~SoundPC()
 bool gdl::SoundPC::LoadFile(const char* filename) {
 	// Open the WAV file
     SF_INFO sfinfo;
-    printf("Opening Music File: %s\n", filename);
+    printf("Loading sound file: %s\n", filename);
     sndfile = sf_open(filename, SFM_READ, &sfinfo);
     if (!sndfile) {
         printf("Error opening the file '%s'\n", filename);
         return false;
     }
 
-    printf("\tSample rate %d\n", sfinfo.samplerate);
-    sample_rate = sfinfo.samplerate;
-
-    alGenBuffers(1, &buffer);
-    alGenSources(1, &source);
+    alCall(alGenBuffers,1, &buffer);
+    alCall(alGenSources,1, &source);
 
     // Read audio data from the WAV file
-    ALsizei dataSize = sfinfo.frames * sfinfo.channels * sizeof(short);
-    data = (s16*)malloc(dataSize);
-    sf_read_short(sndfile, data, sfinfo.frames * sfinfo.channels);
+    ALsizei dataSize = sfinfo.frames * sfinfo.channels * sizeof(s16);
+    ALuint format = AL_FORMAT_STEREO16;
+    if (sfinfo.channels == 1)
+    {
+        format = AL_FORMAT_MONO16;
+    }
+    data = (ALvoid*)malloc(dataSize);
+    gdl_assert_print(data != nullptr, "Out of memory!");
+    sf_read_raw(sndfile, data, dataSize);
 
     // Fill OpenAL buffer with audio data
-    alBufferData(buffer, AL_FORMAT_STEREO16, data, dataSize, sfinfo.samplerate);
+    alCall(alBufferData, buffer, format, data, dataSize, sfinfo.samplerate);
 
-    // Set the source's buffer and play
-    alSourcei(source, AL_BUFFER, buffer);
+    // Set the source's buffer
+    alCall(alSourcei, source, AL_BUFFER, buffer);
 
+    free(data);
     sf_close(sndfile);
+    printf("Sound loaded\n");
     return true;
 }
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 bool gdl::SoundPC::LoadBuffer(const u8* buffer, size_t size) {
-	// TODO
+    gdl_assert_print(false, "Not implemented");
 	return false;
 }
 void gdl::SoundPC::Play(float pitchOffset, float volumePercent) {
@@ -59,11 +65,9 @@ void gdl::SoundPC::UnloadData() {
     {
         alDeleteSources(1, &source);
         alDeleteBuffers(1, &buffer);
-        free(data);
         data = nullptr;
     }
 }
-
 
 void gdl::SoundPC::SetElapsedSeconds(float elapsed)
 {
@@ -81,19 +85,24 @@ void gdl::SoundPC::SetPaused(bool pause) {
     }
 }
 
+void gdl::SoundPC::SetLooping(bool looping)
+{
+    isLooping = looping;
+    alSourcei(source, AL_LOOPING, looping ? AL_TRUE : AL_FALSE);
+}
+
 void gdl::SoundPC::Stop() {
 	alSourceStop(source);
 }
 
 float gdl::SoundPC::GetElapsedSeconds() {
-	ALint sampleOffset;
-	alGetSourcei(source, AL_SAMPLE_OFFSET, &sampleOffset);
-	float time_secs = (float)sampleOffset / (float)sample_rate;
-	return time_secs;
+	ALfloat secOffset;
+	alGetSourcef(source, AL_SEC_OFFSET, &secOffset);
+	return secOffset;
 }
 
 gdl::SoundStatus gdl::SoundPC::GetStatus() {
-	    // Get the play state of the audio source
+	// Get the play state of the audio source
     ALint sourceState;
     alGetSourcei(source, AL_SOURCE_STATE, &sourceState);
 
@@ -103,7 +112,8 @@ gdl::SoundStatus gdl::SoundPC::GetStatus() {
         return gdl::SoundStatus::Paused;
     } else if (sourceState == AL_STOPPED) {
         return gdl::SoundStatus::Stopped;
-    } else {
-        return gdl::SoundStatus::Unloaded;
+    } else if (sourceState == AL_INITIAL) {
+        return gdl::SoundStatus::Initial;
     }
+    return gdl::SoundStatus::Initial;
 }

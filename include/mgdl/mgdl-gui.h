@@ -23,6 +23,7 @@ namespace gdl
         void Panel(int h, u32 color);
         void Text(const char* text);
         bool Button(const char* text);
+        bool Toggle(const char* text, bool &valueRef);
 
         private:
 

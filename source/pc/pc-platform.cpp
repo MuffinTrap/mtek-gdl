@@ -111,7 +111,7 @@ void gdl::PlatformPC::InitAudio()
     }
     printf("Setting up OpenAL Audio Contex.\n");
     context = alcCreateContext(device, NULL);
-    if (!context) {
+    if (alcGetError(device) != ALC_NO_ERROR || !context) {
         printf("Failed to create OpenAL context\n");
         alcCloseDevice(device);
         return;

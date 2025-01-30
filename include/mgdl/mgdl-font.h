@@ -13,6 +13,7 @@ namespace gdl
 		bool LoadFromImage(const char* filename, short charw, short charh, char firstCharacter);
 		bool LoadFromImage(const char* filename, short charw, short charh, char firstCharacter, short charactersPerRow);
 		bool LoadFromImage(const char* filename, short charw, short charh, short charactersPerRow, std::string characters );
+		bool LoadFromImage(gdl::Image& image, short charw, short charh, char firstCharacter);
 
 		// The text height is in units when drawing in 3D.
 		// The text height is in pixels when drawing in 2D.
@@ -24,6 +25,8 @@ namespace gdl
 
 		void Printf(u32 color, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* format, ... );
 		void Print(u32 color, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* text);
+
+		void Icon(u32 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, gdl::DOSAscii glyph);
 
 		void DrawSheet();
 		void Bind(short charw, short charh, char firstCharacter);
@@ -44,6 +47,7 @@ namespace gdl
 		void CreateTextureCoordList(short rows, short charactersPerRow, short texW, short texH);
 		void CreateTextureCoordList(short rows, short charactersPerRow, short texW, short texH, std::string characters);
 		gdl::vec2 GetTextureCoordinate(char character, char subIndex);
+		gdl::vec2 GetTextureCoordinate(gdl::DOSAscii glyph, char subIndex);
 		GLuint textureName;
 		short		cw,ch;
 		gdl::vec2		*tList;

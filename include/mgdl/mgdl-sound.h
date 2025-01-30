@@ -10,7 +10,7 @@ namespace gdl
 		Stopped,
 		Playing,
 		Paused,
-		Unloaded
+		Initial
 	};
 	// This is an abstract interface for loading and playing sound files of WAV format
 	class Sound
@@ -21,6 +21,8 @@ namespace gdl
 		virtual void UnloadData() = 0;
 		virtual void Play(float pitchOffset = 1.0f, float volumePercent = 100.0f) = 0;
 		virtual void SetPaused(bool pause) = 0;
+		virtual void SetLooping(bool looping) = 0;
+		virtual bool GetLooping() { return isLooping; }
 		virtual void Stop() = 0;
 		virtual float GetElapsedSeconds() = 0;
 		virtual void SetElapsedSeconds(float elapsed) = 0;
@@ -31,5 +33,6 @@ namespace gdl
 
 	protected:
 		float secondsOffset = 0.0f; // This is mainly to allow chaning the play position on Ogg on Wii for debug purposes
+		bool isLooping = false;
 	};
 };

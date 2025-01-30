@@ -14,6 +14,7 @@
 #include "mgdl/mgdl-fbx.h"
 #include "mgdl/mgdl-scene.h"
 #include "mgdl/mgdl-font.h"
+#include "mgdl/mgdl-debugfont.h"
 #include "mgdl/mgdl-gui.h"
 #include "mgdl/mgdl-spriteset.h"
 #include "mgdl/mgdl-sound.h"

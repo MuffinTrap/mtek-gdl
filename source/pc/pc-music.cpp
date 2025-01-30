@@ -1,73 +1,20 @@
-#if 0
 #include <mgdl/pc/mgdl-pc-sound.h>
+#include <mgdl/mgdl-assert.h>
 #include <stdio.h>
 #include <ostream>
 #include <iostream>
 #include <cstring>
 #include <limits>
 
-
-
-// Wrapper to always error check Open AL calls
-#define alCall(function, ...) alCallImpl(__FILE__, __LINE__, function, __VA_ARGS__)
-#define alcCall(function, device, ...) alcCallImpl(__FILE__, __LINE__, function, device, __VA_ARGS__)
-
-void check_al_errors(const std::string& filename, const std::uint_fast32_t line)
-{
-    ALCenum error = alGetError();
-    if(error != AL_NO_ERROR)
-    {
-        std::cerr << "***ERROR*** (" << filename << ": " << line << ")\n" ;
-        switch(error)
-        {
-        case AL_INVALID_NAME:
-            std::cerr << "AL_INVALID_NAME: a bad name (ID) was passed to an OpenAL function";
-            break;
-        case AL_INVALID_ENUM:
-            std::cerr << "AL_INVALID_ENUM: an invalid enum value was passed to an OpenAL function";
-            break;
-        case AL_INVALID_VALUE:
-            std::cerr << "AL_INVALID_VALUE: an invalid value was passed to an OpenAL function";
-            break;
-        case AL_INVALID_OPERATION:
-            std::cerr << "AL_INVALID_OPERATION: the requested operation is not valid";
-            break;
-        case AL_OUT_OF_MEMORY:
-            std::cerr << "AL_OUT_OF_MEMORY: the requested operation resulted in OpenAL running out of memory";
-            break;
-        default:
-            std::cerr << "UNKNOWN AL ERROR: " << error;
-        }
-        std::cerr << std::endl;
-    }
-}
-
-template<typename alFunction, typename... Params>
-auto alCallImpl(const char* filename, const std::uint_fast32_t line, alFunction function, Params... params)
-->typename std::enable_if<std::is_same<void,decltype(function(params...))>::value,decltype(function(params...))>::type
-{
-    function(std::forward<Params>(params)...);
-    check_al_errors(filename,line);
-}
-
-template<typename alFunction, typename... Params>
-auto alCallImpl(const char* filename, const std::uint_fast32_t line, alFunction function, Params... params)
-->typename std::enable_if<!std::is_same<void,decltype(function(params...))>::value,decltype(function(params...))>::type
-{
-    auto ret = function(std::forward<Params>(params)...);
-    check_al_errors(filename,line);
-    return ret;
-}
-
 // ////////////////////////////////////////////////
 // Ogg Vorbis library callbacks
 // ////////////////////////////////////////////////
-std::size_t read_ogg_callback(void* destination, std::size_t size1, std::size_t size2, void* fileHandle)
+std::size_t read_ogg_callback(void* destination, std::size_t size, std::size_t numberMembers, void* fileHandle)
 {
     gdl::StreamingAudioData* audioData = reinterpret_cast<gdl::StreamingAudioData*>(fileHandle);
 
 	// bytes = samples * sample size ?
-    ALsizei length = size1 * size2;
+    ALsizei length = size * numberMembers;
 
 	// If near the end, take only what is left
     if(audioData->sizeConsumed + length > audioData->size)
@@ -166,16 +113,37 @@ long int tell_ogg_callback(void* fileHandle)
     return audioData->sizeConsumed;
 }
 
+int close_ogg_callback(void* fileHandle)
+{
+    gdl::StreamingAudioData* audioData = reinterpret_cast<gdl::StreamingAudioData*>(fileHandle);
+    audioData->file.close();
+    return 0;
+}
+
 // ////////////////////////////////////////////////
 // MusicPC class
 // ////////////////////////////////////////////////
 
 gdl::MusicPC::MusicPC()
 {
-	updateBuffer = new char[BUFFER_SIZE];
-	looping = false;
+    pcmBuffer = nullptr;
 }
-bool gdl::MusicPC::LoadFile(const char* filename)
+
+bool gdl::MusicPC::LoadAudioDataFilePtr ( const char* filename )
+{
+    audioData.filename = filename;
+    audioData.filePointer = fopen(filename, "rb");
+    if (audioData.filePointer == nullptr)
+    {
+		std::cerr << "OGG Error: could not open file" << filename << std::endl;
+        return false;
+    }
+    return true;
+}
+
+
+
+bool gdl::MusicPC::LoadAudioDataStreaming ( const char* filename )
 {
     std::cout << "Loading Ogg file: " << filename << std::endl;
 
@@ -213,13 +181,17 @@ bool gdl::MusicPC::LoadFile(const char* filename)
         std::cerr << "ERROR: file is false" << std::endl;
         return false;
     }
+    return true;
+}
 
+bool gdl::MusicPC::OpenOggCallbacks()
+{
 	// Set up callbacks
 	ov_callbacks oggCallbacks;
 	oggCallbacks.read_func = read_ogg_callback;
 	oggCallbacks.seek_func = seek_ogg_callback;
 	oggCallbacks.tell_func = tell_ogg_callback;
-	oggCallbacks.close_func = nullptr; // TODO Close the file
+	oggCallbacks.close_func = close_ogg_callback;
 
 	// Try opening the file
 	if (ov_open_callbacks(reinterpret_cast<void*>(&audioData), &audioData.oggVorbisFile, nullptr, -1, oggCallbacks) < 0)
@@ -228,8 +200,22 @@ bool gdl::MusicPC::LoadFile(const char* filename)
 		audioData.file.close();
 		return false;
 	}
+	return true;
+}
 
+bool gdl::MusicPC::OpenOggNoCallbacks()
+{
+    if (ov_open_callbacks(audioData.filePointer,
+        &audioData.oggVorbisFile, nullptr, 0, OV_CALLBACKS_NOCLOSE) < 0)
+    {
+        std::cerr << "OGG Error: could not use ov_open_callbacks" << std::endl;
+        return false;
+    }
+    return true;
+}
 
+bool gdl::MusicPC::ReadOggProperties()
+{
 	// Read audio properties
 	vorbis_info* vorbisInfo = ov_info(&audioData.oggVorbisFile, -1);
 	audioData.channels = vorbisInfo->channels;
@@ -252,21 +238,22 @@ bool gdl::MusicPC::LoadFile(const char* filename)
 		audioData.file.close();
 		return false;
 	}
+	return true;
+}
 
-	// Create and setup OpenAL source
+void gdl::MusicPC::SetALSourceToOrigo()
+{
 	alCall(alGenSources, 1, &audioData.source);
 	alCall(alSourcef, audioData.source, AL_PITCH, 1);
 	alCall(alSourcef, audioData.source, AL_GAIN, 1.0f);
 	// Source is at origo and does not move
 	alCall(alSource3f, audioData.source, AL_POSITION, 0,0,0);
 	alCall(alSource3f, audioData.source, AL_VELOCITY, 0,0,0);
-	alCall(alSourcei, audioData.source, AL_LOOPING, AL_FALSE);
-	alCall(alGenBuffers, NUM_BUFFERS, &audioData.buffers[0]);
+	alCall(alSourcei, audioData.source, AL_LOOPING, isLooping ? AL_TRUE : AL_FALSE);
+}
 
-	// Start reading data into OpenAL
-    CopyToAL();
-
-
+bool gdl::MusicPC::VerifyALSource()
+{
     // Last check
     bool sourceOk = alCall(alIsSource, audioData.source);
     if (sourceOk == false)
@@ -282,49 +269,113 @@ bool gdl::MusicPC::LoadFile(const char* filename)
 	return true;
 }
 
+
+
+
+
+
+bool gdl::MusicPC::LoadFile(const char* filename)
+{
+    return LoadFileNonStreaming(filename);
+}
+
+// Simple version that loads whole ogg into memory
+// without streaming
+bool gdl::MusicPC::LoadFileNonStreaming ( const char* filename )
+{
+    // Clear errors
+    alGetError();
+    if (LoadAudioDataFilePtr(filename) == false)
+    {
+        return false;
+    }
+    if (OpenOggNoCallbacks() == false)
+    {
+        return false;
+    }
+    if (ReadOggProperties() == false)
+    {
+        return false;
+    }
+
+    alCall(alGenBuffers, 1, audioData.buffers);
+
+    SetALSourceToOrigo();
+
+    std::int32_t pcmSize = ov_pcm_total(
+        &audioData.oggVorbisFile, -1) * audioData.channels * 2;
+
+    pcmBuffer = new char[pcmSize];
+    gdl_assert_print(pcmBuffer != nullptr, "Out of memory");
+
+    std::int32_t readSize = ReadOggToPCMBuffer(pcmBuffer, pcmSize);
+    if (readSize > 0)
+    {
+        printf("PCM data buffered\n");
+        alCall(alBufferData, audioData.buffers[0], audioData.format, pcmBuffer, readSize, audioData.sampleRate);
+        alCall(alSourcei, audioData.source, AL_BUFFER, audioData.buffers[0]);
+        // alCall(alSourceQueueBuffers, audioData.source, 1, &buffer);
+    }
+    else
+    {
+        return false;
+    }
+
+    if (VerifyALSource() == false)
+    {
+        return false;
+    }
+    // All data is sent to OpenAL, free memory
+    delete pcmBuffer;
+    fclose(audioData.filePointer);
+    ov_clear(&audioData.oggVorbisFile);
+    return true;
+}
+
+
+// Version that has multiple buffers
+bool gdl::MusicPC::LoadFileStreaming ( const char* filename )
+{
+    if (LoadAudioDataStreaming(filename) == false)
+    {
+        return false;
+    }
+
+    if (OpenOggCallbacks() == false)
+    {
+        return false;
+    }
+
+    if (ReadOggProperties() == false)
+    {
+        return false;
+    }
+
+	// Create and setup OpenAL source
+	alCall(alGenBuffers, NUM_BUFFERS, &audioData.buffers[0]);
+
+    SetALSourceToOrigo();
+
+	pcmBuffer = new char[BUFFER_SIZE];
+	// Start reading data into OpenAL
+    CopyToAL();
+
+    if (VerifyALSource() == false)
+    {
+        return false;
+    }
+    return true;
+}
+
 // this reads from vorbis and copies
 // the data to OpenAL memory
 void gdl::MusicPC::CopyToAL()
 {
 	for(std::uint8_t i = 0; i < NUM_BUFFERS; i++)
 	{
-		std::int32_t dataSoFar = 0;
-		while (dataSoFar < BUFFER_SIZE)
-		{
-			std::int32_t result = ov_read(
-				&audioData.oggVorbisFile,
-				&updateBuffer[dataSoFar],
-				BUFFER_SIZE - dataSoFar,
-				0,
-				2,
-				1,
-				&audioData.oggCurrentSection);
-
-            if(result == OV_HOLE)
-            {
-                std::cerr << "ERROR: OV_HOLE found in initial read of buffer " << i << std::endl;
-                break;
-            }
-            else if(result == OV_EBADLINK)
-            {
-                std::cerr << "ERROR: OV_EBADLINK found in initial read of buffer " << i << std::endl;
-                break;
-            }
-            else if(result == OV_EINVAL)
-            {
-                std::cerr << "ERROR: OV_EINVAL found in initial read of buffer " << i << std::endl;
-                break;
-            }
-            else if(result == 0)
-            {
-                std::cerr << "ERROR: EOF found in initial read of buffer " << i << std::endl;
-                break;
-            }
-
-            dataSoFar += result;
-		}
+		std::int32_t dataSoFar = ReadOggToPCMBuffer(pcmBuffer, BUFFER_SIZE);
 		// Send the filled buffer
-		alCall(alBufferData, audioData.buffers[i], audioData.format, updateBuffer, dataSoFar, audioData.sampleRate);
+		alCall(alBufferData, audioData.buffers[i], audioData.format, pcmBuffer, dataSoFar, audioData.sampleRate);
 	}
 	// All is read, queu all buffers to the source
 	alCall(alSourceQueueBuffers, audioData.source, NUM_BUFFERS, &audioData.buffers[0]);
@@ -342,14 +393,17 @@ void gdl::MusicPC::UnloadData()
 {
 	alCall(alDeleteSources, 1, &audioData.source);
 	alCall(alDeleteBuffers, NUM_BUFFERS, &audioData.buffers[0]);
-    delete updateBuffer;
+    if (pcmBuffer != nullptr)
+    {
+        delete pcmBuffer;
+    }
+    ov_clear(&audioData.oggVorbisFile);
 }
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 void gdl::MusicPC::Play(float pitchOffset, float volumePercent)
 {
-	alCall(alSourceStop, audioData.source);
 	alCall(alSourcePlay, audioData.source);
 }
 bool gdl::MusicPC::LoadBuffer(const u8* buffer, size_t size)
@@ -370,15 +424,20 @@ void gdl::MusicPC::SetPaused(bool pause) {
 	}
 }
 
+void gdl::MusicPC::SetLooping(bool looping)
+{
+    isLooping = looping;
+    alCall(alSourcei,audioData.source, AL_LOOPING, looping ? AL_TRUE : AL_FALSE);
+}
+
 void gdl::MusicPC::Stop() {
 	alCall(alSourceStop, audioData.source);
 }
 
 float gdl::MusicPC::GetElapsedSeconds() {
-	ALint sampleOffset;
-	alGetSourcei(source, AL_SAMPLE_OFFSET, &sampleOffset);
-	float time_secs = (float)sampleOffset / (float)audioData.sampleRate;
-	return time_secs;
+	ALfloat secOffset;
+	alGetSourcef(audioData.source, AL_SEC_OFFSET, &secOffset);
+	return secOffset;
 }
 
 void gdl::MusicPC::SetElapsedSeconds(float elapsed) {
@@ -401,15 +460,91 @@ gdl::SoundStatus gdl::MusicPC::GetStatus() {
         return gdl::SoundStatus::Paused;
     } else if (sourceState == AL_STOPPED) {
         return gdl::SoundStatus::Stopped;
-    } else {
-        return gdl::SoundStatus::Unloaded;
+    } else if (sourceState == AL_INITIAL) {
+        return gdl::SoundStatus::Initial;
     }
+
+    return gdl::SoundStatus::Initial;
 }
 
 gdl::MusicPC::~MusicPC()
 {
 	UnloadData();
 }
+
+// Returns how many bytes read
+// -1 Error in reading
+std::int32_t gdl::MusicPC::ReadOggToPCMBuffer ( char* buffer, std::int32_t bufferSize)
+{
+    std::int32_t sizeRead = 0;
+    std::int32_t result = 0;
+
+    do
+    {
+        int readSize = READ_SIZE; // Default amount to read
+        // Make sure not to read
+        // more than fits into buffer
+        int sizeLeft = bufferSize - sizeRead;
+        if (sizeLeft < readSize)
+        {
+            readSize = sizeLeft;
+        }
+
+        result = ov_read(
+            &audioData.oggVorbisFile,
+            &buffer[sizeRead],
+            readSize,
+            0, // 0: Little endiand, 1: Big endian
+            sizeof(short),
+            1, // 1: signed short, 0: unsigned short
+            &audioData.oggCurrentSection);
+
+        if(result == OV_HOLE)
+        {
+            std::cerr << "ERROR: OV_HOLE found in update of buffer " << std::endl;
+            return -1;
+        }
+        else if(result == OV_EBADLINK)
+        {
+            std::cerr << "ERROR: OV_EBADLINK found in update of buffer " << std::endl;
+            return -1;
+        }
+        else if(result == OV_EINVAL)
+        {
+            std::cerr << "ERROR: OV_EINVAL found in update of buffer " << std::endl;
+            return -1;
+        }
+        else if(result == 0)
+        {
+            std::int32_t seekResult = ov_raw_seek(&audioData.oggVorbisFile, 0);
+            if(seekResult == OV_ENOSEEK)
+                std::cerr << "ERROR: OV_ENOSEEK found when trying to loop" << std::endl;
+            else if(seekResult == OV_EINVAL)
+                std::cerr << "ERROR: OV_EINVAL found when trying to loop" << std::endl;
+            else if(seekResult == OV_EREAD)
+                std::cerr << "ERROR: OV_EREAD found when trying to loop" << std::endl;
+            else if(seekResult == OV_EFAULT)
+                std::cerr << "ERROR: OV_EFAULT found when trying to loop" << std::endl;
+            else if(seekResult == OV_EOF)
+                std::cerr << "ERROR: OV_EOF found when trying to loop" << std::endl;
+            else if(seekResult == OV_EBADLINK)
+                std::cerr << "ERROR: OV_EBADLINK found when trying to loop" << std::endl;
+
+            if(seekResult != 0)
+            {
+                std::cerr << "ERROR: Unknown error in ov_raw_seek" << std::endl;
+                return -1;
+            }
+        }
+        else
+        {
+            sizeRead += result;
+        }
+    } while(result > 0);
+
+    return sizeRead;
+}
+
 
 void gdl::MusicPC::UpdatePlay()
 {
@@ -427,59 +562,13 @@ void gdl::MusicPC::UpdatePlay()
         ALuint buffer;
         alCall(alSourceUnqueueBuffers, audioData.source, 1, &buffer);
 
-        std::memset(updateBuffer,0,BUFFER_SIZE);
+        std::memset(pcmBuffer,0,BUFFER_SIZE);
 
-        ALsizei dataSizeToBuffer = 0;
-        std::int32_t sizeRead = 0;
-
-        while(sizeRead < BUFFER_SIZE)
-        {
-			// TODO make a shared read function
-            std::int32_t result = ov_read(&audioData.oggVorbisFile, &updateBuffer[sizeRead], BUFFER_SIZE - sizeRead, 0, 2, 1, &audioData.oggCurrentSection);
-            if(result == OV_HOLE)
-            {
-                std::cerr << "ERROR: OV_HOLE found in update of buffer " << std::endl;
-                break;
-            }
-            else if(result == OV_EBADLINK)
-            {
-                std::cerr << "ERROR: OV_EBADLINK found in update of buffer " << std::endl;
-                break;
-            }
-            else if(result == OV_EINVAL)
-            {
-                std::cerr << "ERROR: OV_EINVAL found in update of buffer " << std::endl;
-                break;
-            }
-            else if(result == 0)
-            {
-               std::int32_t seekResult = ov_raw_seek(&audioData.oggVorbisFile, 0);
-                if(seekResult == OV_ENOSEEK)
-                    std::cerr << "ERROR: OV_ENOSEEK found when trying to loop" << std::endl;
-                else if(seekResult == OV_EINVAL)
-                    std::cerr << "ERROR: OV_EINVAL found when trying to loop" << std::endl;
-                else if(seekResult == OV_EREAD)
-                    std::cerr << "ERROR: OV_EREAD found when trying to loop" << std::endl;
-                else if(seekResult == OV_EFAULT)
-                    std::cerr << "ERROR: OV_EFAULT found when trying to loop" << std::endl;
-                else if(seekResult == OV_EOF)
-                    std::cerr << "ERROR: OV_EOF found when trying to loop" << std::endl;
-                else if(seekResult == OV_EBADLINK)
-                    std::cerr << "ERROR: OV_EBADLINK found when trying to loop" << std::endl;
-
-                if(seekResult != 0)
-                {
-                    std::cerr << "ERROR: Unknown error in ov_raw_seek" << std::endl;
-                    return;
-                }
-            }
-            sizeRead += result;
-        }
-        dataSizeToBuffer = sizeRead;
+        ALsizei dataSizeToBuffer = ReadOggToPCMBuffer(pcmBuffer, BUFFER_SIZE);
 
         if(dataSizeToBuffer > 0)
         {
-            alCall(alBufferData, buffer, audioData.format, updateBuffer, dataSizeToBuffer, audioData.sampleRate);
+            alCall(alBufferData, buffer, audioData.format, pcmBuffer, dataSizeToBuffer, audioData.sampleRate);
             alCall(alSourceQueueBuffers, audioData.source, 1, &buffer);
         }
 
@@ -488,8 +577,9 @@ void gdl::MusicPC::UpdatePlay()
             std::cout << "Data missing" << std::endl;
         }
 
+        /* TODO: Does OpenAL do this automatically?
         // Start over if has stopped
-        if (looping)
+        if (isLooping)
 		{
 			ALint state;
 			alCall(alGetSourcei, audioData.source, AL_SOURCE_STATE, &state);
@@ -499,8 +589,8 @@ void gdl::MusicPC::UpdatePlay()
 				alCall(alSourcePlay, audioData.source);
 			}
 		}
+		*/
     }
 }
 
 
-#endif

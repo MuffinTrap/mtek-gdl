@@ -75,6 +75,15 @@ bool gdl::Image::LoadPNG(PNGFile* png, gdl::TextureFilterModes filterMode)
 	return true;
 }
 
+bool gdl::Image::LoadGLName(GLuint textureName, GLsizei width, GLsizei height, gdl::ColorFormats format)
+{
+	this->width = width;
+	this->height = height;
+	this->textureId = textureName;
+	this->colorFormat = format;
+	return true;
+}
+
 void gdl::Image::Draw2DAbsolute(short x, short y, short x2, short y2)
 {
 	float dx = (float)x;

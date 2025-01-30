@@ -24,7 +24,7 @@ EXE_SUFFIX = .elf
 # Link libraries
 
 # Create a list of libraries that need to be linked
-LDFLAGS = -lmgdl -lpng -lsndfile -lopenal -lGL -lGLU -lglut -Wno-unused-function -z muldefs
+LDFLAGS = -lmgdl -lpng -lsndfile -lopenal -lGL -lGLU -lglut -lvorbisidec -logg -Wno-unused-function -z muldefs
 
 
 

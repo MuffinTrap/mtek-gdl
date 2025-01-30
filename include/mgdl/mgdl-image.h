@@ -17,6 +17,7 @@ namespace gdl
 			bool LoadFile(const char* filename, gdl::TextureFilterModes filterMode);
 			bool LoadBuffer(const u8* buffer, size_t size, gdl::TextureFilterModes filterMode);
 			bool LoadPNG(PNGFile* pngFile, gdl::TextureFilterModes filterMode);
+			bool LoadGLName(GLuint textureName, GLsizei width, GLsizei height, gdl::ColorFormats format);
 			void Draw2DAligned(short x, short y, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY);
 			void Draw2DAbsolute(short x, short y, short x2, short y2);
 			void Draw3D(float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY);

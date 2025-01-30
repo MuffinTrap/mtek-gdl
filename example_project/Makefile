@@ -1,4 +1,4 @@
-
+include Makefile_pc.mk
 .PHONY: wii linux win mac cleanwii cleanlinux cleanwin cleanmac
 
 wii:

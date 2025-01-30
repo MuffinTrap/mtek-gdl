@@ -59,6 +59,16 @@ bool gdl::Font::LoadFromImage(const char* filename, short charw, short charh, sh
 	return imageOk;
 }
 
+bool gdl::Font::LoadFromImage ( gdl::Image& image, short charw, short charh, char firstCharacter )
+{
+	fontImage = image;
+	textureName = fontImage.GetTextureId(); // Store this for rendering the letters
+	printf("\tCreating font/sprite coordinates\n");
+	Bind(charw, charh, firstCharacter);
+	return true;
+}
+
+
 void gdl::Font::Bind (short charw, short charh, char firstCharacter, short charactersPerRow )
 {
 	short rows = fontImage.GetHeight() / charh;
@@ -91,6 +101,71 @@ void gdl::Font::Bind ( short charw, short charh, std::string characters, short c
 
 	spacingX = 0.0f;
 	spacingY = 0.0f;
+
+}
+
+
+void gdl::Font::Icon ( u32 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, gdl::DOSAscii glyph )
+{
+	float step = aspect * textHeight;
+	float dx = x;
+	float dy = y;
+	float dz = 0.0f;
+
+	if (alignmentX == RJustify)
+	{
+		float width = step;
+		dx -= width;
+	}
+	else if (alignmentX == Centered)
+	{
+		float width = step;
+		dx -= width / 2;
+	}
+	if (alignmentY == RJustify)
+	{
+		dy += textHeight;
+	}
+	else if (alignmentY == Centered)
+	{
+		dy += textHeight/2.0f;
+	}
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.3f);
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, textureName);
+    // Discard pixels with low alpha
+
+	gdl::RGBA8Floats f = gdl::ColorToFloats(color);
+	glBegin(GL_QUADS);
+	glColor3f(f.red, f.green, f.blue);
+		gdl::vec2 tx0 = GetTextureCoordinate(glyph, 0); // TOP LEFT
+		gdl::vec2 tx1= GetTextureCoordinate(glyph, 1); // TOP RIGHT
+
+		gdl::vec2 tx2= GetTextureCoordinate(glyph, 2); // LOW RIGHT
+		gdl::vec2 tx3= GetTextureCoordinate(glyph, 3); //LOW LEFT!
+
+		// LOW LEFT!
+		glTexCoord2f(tx3.x, tx3.y);
+		glVertex3f(dx, dy - textHeight, dz);
+
+		// LOW RIGHT
+		glTexCoord2f(tx2.x, tx2.y);
+		glVertex3f(dx + step, dy - textHeight, dz);
+
+		// TOP RIGHT
+		glTexCoord2f(tx1.x, tx1.y);
+		glVertex3f(dx + step, dy, dz);
+
+		// TOP LEFT
+		glTexCoord2f(tx0.x, tx0.y);
+		glVertex3f(dx, dy, dz);
+
+	glEnd();
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_TEXTURE_2D);
 
 }
 
@@ -294,8 +369,8 @@ void gdl::Font::CreateTextureCoordList ( short rows, short charactersPerRow, sho
 			// Coordinates to source image
 			float tx = cw * cx;
 			float ty = ch * cy;
-			float tx2 = (tx + cw) -1;
-			float ty2 = (ty + ch) -1;
+			float tx2 = (tx + cw);
+			float ty2 = (ty + ch);
 
 			// Is this character included
 			bool included = characters.find_first_of(currentCharacter) != std::string::npos;
@@ -304,8 +379,8 @@ void gdl::Font::CreateTextureCoordList ( short rows, short charactersPerRow, sho
 				// Not included: set texture coords same as first one
 				tx = 0;
 				ty = 0;
-				tx2 = (tx + cw) -1;
-				ty2 = (ty + ch) -1;
+				tx2 = (tx + cw);
+				ty2 = (ty + ch);
 
 				//printf("Excluded: %c\n", currentCharacter);
 				// Decrement cx so that characters that are not included
@@ -377,8 +452,8 @@ void gdl::Font::CreateTextureCoordList(short rows, short charactersPerRow, short
 			// Coordinates to source image
 			float tx = cw * cx;
 			float ty = ch * cy;
-			float tx2 = (tx + cw) -1;
-			float ty2 = (ty + ch) -1;
+			float tx2 = (tx + cw);
+			float ty2 = (ty + ch);
 
 			// Texture coordinate array index
 			u32 tc = 4*(cx+(charactersPerRow*cy));
@@ -403,9 +478,15 @@ void gdl::Font::CreateTextureCoordList(short rows, short charactersPerRow, short
 	CacheFlushRange(tList, tListSize);
 }
 
+// TODO: Optimize: return a rectangle
 gdl::vec2 gdl::Font::GetTextureCoordinate(char character, char subIndex)
 {
 	int	tc = 4*(character - firstIndex);
+	return tList[tc + subIndex];
+}
+gdl::vec2 gdl::Font::GetTextureCoordinate(gdl::DOSAscii glyph, char subIndex)
+{
+	int	tc = 4*((short)glyph - firstIndex);
 	return tList[tc + subIndex];
 }
 

@@ -16,7 +16,10 @@ void Example::Init()
     mel_sprites.LoadFromImage("assets/mel_tiles.png", spriteHeight, spriteHeight);
     pointerImage = gdl::LoadImage("assets/pointer.png", gdl::TextureFilterModes::Nearest);
     ibmFont = gdl::LoadFont("assets/font8x16.png", 8, 16, ' ');
+    debugFont = gdl::LoadDebugFont();
+
     blip = gdl::LoadSound("assets/blipSelect.wav");
+    sampleMusic = gdl::LoadOgg("assets/sample3.ogg");
 
     wiiTexture = gdl::LoadImage("assets/wii_console_texture.png", gdl::TextureFilterModes::Nearest);
 
@@ -26,6 +29,8 @@ void Example::Init()
 
 
     menu = gdl::MenuCreator(ibmFont, 1.0f, 1.0f);
+
+    musicLooping = sampleMusic->GetLooping();
 }
 
 void Example::Update()
@@ -70,7 +75,7 @@ void Example::Draw()
     // Input
     short sh = gdl::GetScreenHeight();
     short top = sh - 32;
-    short left = 16;
+    short left = 22;
     DrawMenu(left, top - 120, 120);
     DrawSprites();
     DrawTimingInfo(left,
@@ -82,11 +87,11 @@ void Example::Draw()
 
 void Example::DrawVersion()
 {
-    float textHeight = 22.0f;
+    float textHeight = debugFont->GetCharacterHeight() * 2;
     short sh = gdl::GetScreenHeight();
     int CenterX = gdl::GetScreenWidth()/4;
-    DrawTextDouble("MTEK-GDL", CenterX, sh - ibmFont->GetCharacterHeight(), textHeight, ibmFont);
-    DrawTextDouble(GDL_VERSION, CenterX, sh - ibmFont->GetCharacterHeight() * 2, textHeight, ibmFont);
+    DrawTextDouble("MTEK-GDL", CenterX, sh - textHeight, textHeight, debugFont);
+    DrawTextDouble(GDL_VERSION, CenterX, sh - textHeight * 2, textHeight, debugFont);
 }
 
 
@@ -251,11 +256,52 @@ void Example::DrawTimingInfo(int x, int y, float scale)
 
     if (sampleMusic != nullptr)
     {
-        ibmFont->Printf(gdl::Colors::LightRed, x, y - ystep * 2, scale, "Music elapsed: %f", sampleMusic->GetElapsedSeconds());
+        ibmFont->Printf(gdl::Colors::LightRed, x, y - ystep * 2, scale, "Music elapsed: %.2f", sampleMusic->GetElapsedSeconds());
+        gdl::SoundStatus musicStatus = sampleMusic->GetStatus();
+        gdl::Color musicColor = gdl::Colors::Red;
+        gdl::DOSAscii icon = gdl::DOSAscii::Dot;
+
+        switch(musicStatus)
+        {
+            case gdl::SoundStatus::Playing:
+                musicColor = gdl::Colors::Green;
+                icon = gdl::DOSAscii::TriangleRight;
+                break;
+            case gdl::SoundStatus::Paused:
+                musicColor = gdl::Colors::Yellow;
+                icon = gdl::DOSAscii::TriangleVertical;
+                break;
+            case gdl::SoundStatus::Stopped: musicColor = gdl::Colors::Red;
+                icon = gdl::DOSAscii::BlockUnder;
+                break;
+            case gdl::SoundStatus::Initial: musicColor = gdl::Colors::Black; break;
+        };
+        gdl::DrawBoxF(x-20, y-ystep*2, x, y-ystep*3, musicColor);
+        debugFont->Icon(gdl::Colors::White, x-20, y-ystep*2, ystep, gdl::LJustify, gdl::LJustify, icon);
     }
 
     float blipElapsed = blip->GetElapsedSeconds();
     ibmFont->Printf(gdl::Colors::LightRed, x, y - ystep * 3, scale, "Sound elapsed: %.2f", blipElapsed);
+    gdl::SoundStatus musicStatus = blip->GetStatus();
+    gdl::Color musicColor = gdl::Colors::Red;
+    gdl::DOSAscii icon = gdl::DOSAscii::Dot;
+    switch(musicStatus)
+    {
+        case gdl::SoundStatus::Playing:
+            musicColor = gdl::Colors::Green;
+            icon = gdl::DOSAscii::TriangleRight;
+            break;
+        case gdl::SoundStatus::Paused:
+            musicColor = gdl::Colors::Yellow;
+            icon = gdl::DOSAscii::TriangleVertical;
+            break;
+        case gdl::SoundStatus::Stopped: musicColor = gdl::Colors::Red;
+            icon = gdl::DOSAscii::BlockUnder;
+            break;
+        case gdl::SoundStatus::Initial: musicColor = gdl::Colors::Black; break;
+    };
+    gdl::DrawBoxF(x-20, y-ystep*3, x, y-ystep*4, musicColor);
+    debugFont->Icon(gdl::Colors::White, x-20, y-ystep*3, ystep, gdl::LJustify, gdl::LJustify, icon);
 }
 
 void Example::DrawMenu(int x, int y, int w)
@@ -273,6 +319,19 @@ void Example::DrawMenu(int x, int y, int w)
     if (menu.Button("Play Ogg"))
     {
         sampleMusic->Play();
+    }
+    if (menu.Button("Pause Ogg"))
+    {
+        bool ispaused = sampleMusic->GetStatus() == gdl::SoundStatus::Paused;
+        sampleMusic->SetPaused(!ispaused);
+    }
+    if (menu.Button("Stop Ogg"))
+    {
+        sampleMusic->Stop();
+    }
+    if (menu.Toggle("Loop Ogg", musicLooping ))
+    {
+        sampleMusic->SetLooping(musicLooping);
     }
     if (menu.Button("Play Sound"))
     {

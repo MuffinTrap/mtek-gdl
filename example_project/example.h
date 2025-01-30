@@ -8,6 +8,7 @@ class Example
     gdl::SpriteSet mel_sprites;
     gdl::Image* pointerImage;
     gdl::Font* ibmFont;
+    gdl::Font* debugFont;
     gdl::Sound* sampleMusic;
     gdl::Sound* blip;
     gdl::MenuCreator menu;
@@ -33,5 +34,6 @@ class Example
         void DrawWii();
 
         bool mouseClick;
+        bool musicLooping;
 
 };

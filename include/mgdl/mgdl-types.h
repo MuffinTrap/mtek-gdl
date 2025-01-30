@@ -139,6 +139,43 @@ namespace gdl
     };
 
     typedef u32 Color;
+
+    // Debug font contains these glyphs
+	enum DOSAscii : short
+	{
+		FaceInvert = 0x80,
+		Face,
+		Heart,
+		Diamond,
+		Cross,
+		Spade,
+		Dot,
+		DotInvert,
+		Circle,
+		CircleInvert,
+		Star,
+		TriangleUp,
+		TriangleDown,
+		TriangleLeft,
+		TriangleRight,
+		TriangleVertical,
+		TriangleHorizontal,
+		TriangleScroll,
+		ArrowUp,
+		ArrowDown,
+		ArrowLeft,
+		ArrowRight,
+		Negate,
+		Raster25,
+		Raster50,
+		Raster75,
+		Raster100,
+		BlockDown,
+		BlockLeft,
+		BlockRight,
+		BlockUp,
+		BlockUnder
+	};
 }
 
 

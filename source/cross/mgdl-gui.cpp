@@ -61,13 +61,13 @@ bool gdl::MenuCreator::Button(const char* text)
                 (cursorY <= y) &&
                 (cursorY >= y - h));
 
-    gdl::DrawBoxF(x, y, x + w, y - h, bg);
     if (inside)
     {
         gdl::DrawBoxF(x, y, x + w, y - h, highlight);
     }
     else
     {
+        gdl::DrawBoxF(x, y, x + w, y - h, bg);
         gdl::DrawBox(x, y, x + w, y - h, border);
     }
 
@@ -80,3 +80,46 @@ bool gdl::MenuCreator::Button(const char* text)
 
     return (inside && buttonPress);
 }
+
+bool gdl::MenuCreator::Toggle ( const char* text, bool& valueRef )
+{
+    int h = currentFont->GetCharacterHeight() * textHeight * rowHeightEm;
+
+    bool inside = ((cursorX >= x) &&
+                (cursorX <= x + w) &&
+                (cursorY <= y) &&
+                (cursorY >= y - h));
+
+    short padding = 2;
+    if (inside)
+    {
+        gdl::DrawBoxF(x, y, x + w, y - h, highlight);
+    }
+    else
+    {
+        gdl::DrawBoxF(x, y, x + w, y - h, bg);
+        gdl::DrawBox(x, y, x + w, y - h, border);
+    }
+
+    if (valueRef)
+    {
+        gdl::DrawBoxF(x + padding, y - padding, x + h - padding, y - h + padding, this->text);
+    }
+    else
+    {
+        gdl::DrawBox(x + padding, y - padding, x + h - padding, y - h + padding, this->text);
+    }
+
+    float textH = h/rowHeightEm;
+    currentFont->Print(this->text, x + h + padding, y, textH, LJustify, LJustify, text);
+
+    y -= h ;
+
+    if (inside && buttonPress)
+    {
+        valueRef = !valueRef;
+    }
+
+    return (inside && buttonPress);
+}
+
