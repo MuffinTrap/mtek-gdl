@@ -12,7 +12,8 @@ namespace gdl
 
 	enum PlatformInitFlag
 	{
-		FlagPauseUntilA = 0x01 // Enters a loop after system init and continues when A button is pressed
+		FlagPauseUntilA = 0x01, // Enters a loop after system init and continues when A button is pressed
+		FlagFullScreen = 0x02 // Start in full screen mode
 	};
 
 	class Platform

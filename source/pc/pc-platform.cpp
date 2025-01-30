@@ -173,6 +173,10 @@ void gdl::PlatformPC::InitSystem(gdl::ScreenAspect screenAspect, std::function<v
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(windowWidth, windowHeight);
     glutCreateWindow("Press 2 to write Rocket tracks");
+    if ((initFlags & gdl::PlatformInitFlag::FlagFullScreen) != 0)
+    {
+        glutFullScreen();
+    }
 
 
     // Input callbacks and init
