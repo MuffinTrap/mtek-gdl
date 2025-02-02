@@ -11,12 +11,14 @@ static std::function<void()> drawCall = nullptr;
 
 static gdl::WiiController controller;
 
-void gdl::PlatformWii::InitSystem(gdl::ScreenAspect screenAspect,
+void gdl::PlatformWii::InitSystem(const char* name,
+	gdl::ScreenAspect screenAspect,
 								  std::function<void ()> initCallback,
 								  std::function<void ()> updateCallback,
 								  std::function<void ()> drawCallback,
 								  u32 initFlags)
 {
+	this->name = name;
 	gdl_assert_print(initCallback != nullptr, "Need to provide init callback before system init on PC");
 	gdl_assert_print(updateCallback != nullptr, "Need to provide update callback before system init on PC");
 	gdl_assert_print(drawCallback != nullptr, "Need to provide draw callback before system init on PC");

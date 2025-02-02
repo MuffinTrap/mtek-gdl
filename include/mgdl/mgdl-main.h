@@ -12,11 +12,12 @@
 
 namespace gdl
 {
-	void InitSystem(gdl::ScreenAspect screenAspect,
-								std::function<void()> initCallback,
-								std::function<void()> updateCallback,
-								std::function<void()> drawCallback,
-								u32 initFlags = 0 );
+	void InitSystem(const char* name,
+					gdl::ScreenAspect screenAspect,
+				 std::function<void()> initCallback,
+					std::function<void()> updateCallback,
+					std::function<void()> drawCallback,
+					u32 initFlags = 0 );
 
 	gdl::Image* LoadImage(std::string filename, gdl::TextureFilterModes filterMode);
 	gdl::Image* LoadImage(gdl::PNGFile* png, gdl::TextureFilterModes filterMode);

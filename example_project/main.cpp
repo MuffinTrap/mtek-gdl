@@ -56,7 +56,9 @@ void init()
     glLoadIdentity();
 
 
-    glClearColor(247.0f/255.0f, 1.0f, 174.0f/255.0f, 0.0f);
+    u32 black = gdl::Palette::GetDefaultPalette()->GetColor(0);
+    gdl::RGBA8Floats bf = gdl::ColorToFloats(black);
+    glClearColor(bf.red, bf.green, bf.blue, bf.alpha);
     example.Init();
 
 #ifdef MGDL_ROCKET
@@ -94,9 +96,11 @@ void update()
        gdl::RocketSync::EndSaveToHeader();
     }
 #endif
+/*
     float g = 1.0f;
     float b = 174.0f/255.0f;
     glClearColor(r,g ,b , 0.0f);
+    */
 #endif
 }
 
@@ -110,7 +114,7 @@ void render()
 
 int main()
 {
-    gdl::InitSystem(
+    gdl::InitSystem(MGDL_PLATFORM,
         gdl::ScreenAspect::Screen4x3,
         init,
         update,  // std::function callbacks

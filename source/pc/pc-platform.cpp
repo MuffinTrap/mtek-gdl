@@ -127,8 +127,9 @@ void gdl::PlatformPC::InitAudio()
     printf("OpenAL context created\n");
 }
 
-void gdl::PlatformPC::InitSystem(gdl::ScreenAspect screenAspect, std::function<void ()> initCallback, std::function<void ()> updateCallback, std::function<void ()> drawCallback, u32 initFlags)
+void gdl::PlatformPC::InitSystem(const char* name, gdl::ScreenAspect screenAspect, std::function<void ()> initCallback, std::function<void ()> updateCallback, std::function<void ()> drawCallback, u32 initFlags)
 {
+    this->name = name;
 	gdl_assert_print(initCallback != nullptr, "Need to provide init callback before system init on PC");
 	gdl_assert_print(drawCallback != nullptr, "Need to provide update callback before system init on PC");
 	gdl_assert_print(updateCallback != nullptr, "Need to provide draw callback before system init on PC");

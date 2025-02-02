@@ -531,36 +531,40 @@ static unsigned char header_data[] = {
 	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	};
 
-gdl::Font* gdl::LoadDebugFont()
+gdl::Font* gdl::GetDebugFont()
 {
-	GLubyte fontImage[height][width][4];
-
-	for(unsigned int y = 0; y < height; y++)
+	static gdl::Font* debugFont = nullptr;
+	if (debugFont == nullptr)
 	{
-		for(unsigned int x = 0; x < width; x++)
+		GLubyte fontImage[height][width][4];
+
+		for(unsigned int y = 0; y < height; y++)
 		{
-			unsigned char index = header_data[y * width + x];
-			fontImage[y][x][0] = header_data_cmap[index][0];
-			fontImage[y][x][1] = header_data_cmap[index][1];
-			fontImage[y][x][2] = header_data_cmap[index][2];
-			fontImage[y][x][3] = (index == 0) ? 0 : 255; // index 0 is transparent
+			for(unsigned int x = 0; x < width; x++)
+			{
+				unsigned char index = header_data[y * width + x];
+				fontImage[y][x][0] = header_data_cmap[index][0];
+				fontImage[y][x][1] = header_data_cmap[index][1];
+				fontImage[y][x][2] = header_data_cmap[index][2];
+				fontImage[y][x][3] = (index == 0) ? 0 : 255; // index 0 is transparent
+			}
 		}
+
+		GLint alignment;
+		glGetIntegerv(GL_UNPACK_ALIGNMENT, &alignment);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		GLuint texName;
+		glGenTextures(1, &texName);
+		glBindTexture(GL_TEXTURE_2D, texName);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, fontImage);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
+
+		gdl::Image img;
+		img.LoadGLName(texName, width, height, ColorFormats::RGBA);
+		debugFont = new gdl::Font();
+		debugFont->LoadFromImage(img, 8, 8, ' ');
 	}
-
-	GLint alignment;
-	glGetIntegerv(GL_UNPACK_ALIGNMENT, &alignment);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	GLuint texName;
-	glGenTextures(1, &texName);
-	glBindTexture(GL_TEXTURE_2D, texName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, fontImage);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
-
-	gdl::Image img;
-	img.LoadGLName(texName, width, height, ColorFormats::RGBA);
-	gdl::Font* df = new gdl::Font();
-	df->LoadFromImage(img, 8, 8, ' ');
-	return df;
+	return debugFont;
 }

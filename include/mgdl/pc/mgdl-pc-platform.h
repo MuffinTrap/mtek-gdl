@@ -10,7 +10,8 @@ namespace gdl
 	class PlatformPC : public gdl::Platform
 	{
 	public:
-		void InitSystem(gdl::ScreenAspect screenAspect,
+		void InitSystem(const char* name,
+						gdl::ScreenAspect screenAspect,
 						std::function<void ()> initCallback,
 						std::function<void ()> updateCallback,
 						std::function<void ()> drawCallback,

@@ -21,6 +21,7 @@ namespace gdl
 		gdl::vec3 emissiveColor;
 		gdl::Image* texture;
 		Material();
+		Material(std::string name);
 		Material(std::string name, gdl::Image* texture);
 		void Apply();
 	};

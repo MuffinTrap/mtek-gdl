@@ -2,6 +2,6 @@
 #include <mgdl/mgdl-font.h>
 namespace gdl
 {
-	gdl::Font* LoadDebugFont();
+	gdl::Font* GetDebugFont();
 
 }

@@ -16,7 +16,7 @@ void Example::Init()
     mel_sprites.LoadFromImage("assets/mel_tiles.png", spriteHeight, spriteHeight);
     pointerImage = gdl::LoadImage("assets/pointer.png", gdl::TextureFilterModes::Nearest);
     ibmFont = gdl::LoadFont("assets/font8x16.png", 8, 16, ' ');
-    debugFont = gdl::LoadDebugFont();
+    debugFont = gdl::GetDebugFont();
 
     blip = gdl::LoadSound("assets/blipSelect.wav");
     sampleMusic = gdl::LoadOgg("assets/sample3.ogg");
@@ -61,6 +61,8 @@ void DrawTextDouble(const char* text, short x, short y, float textHeight, gdl::F
 
 void Example::Draw()
 {
+    gdl::DrawSplashScreen(deltaTime);
+    /*
     gdl::InitOrthoProjection();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -83,6 +85,7 @@ void Example::Draw()
                    ibmFont->GetCharacterHeight());
     DrawVersion();
     DrawInputInfo(left, top);
+    */
 }
 
 void Example::DrawVersion()
@@ -259,20 +262,20 @@ void Example::DrawTimingInfo(int x, int y, float scale)
         ibmFont->Printf(gdl::Colors::LightRed, x, y - ystep * 2, scale, "Music elapsed: %.2f", sampleMusic->GetElapsedSeconds());
         gdl::SoundStatus musicStatus = sampleMusic->GetStatus();
         gdl::Color musicColor = gdl::Colors::Red;
-        gdl::DOSAscii icon = gdl::DOSAscii::Dot;
+        gdl::IconSymbol icon = gdl::IconSymbol::Dot;
 
         switch(musicStatus)
         {
             case gdl::SoundStatus::Playing:
                 musicColor = gdl::Colors::Green;
-                icon = gdl::DOSAscii::TriangleRight;
+                icon = gdl::IconSymbol::TriangleRight;
                 break;
             case gdl::SoundStatus::Paused:
                 musicColor = gdl::Colors::Yellow;
-                icon = gdl::DOSAscii::TriangleVertical;
+                icon = gdl::IconSymbol::TriangleVertical;
                 break;
             case gdl::SoundStatus::Stopped: musicColor = gdl::Colors::Red;
-                icon = gdl::DOSAscii::BlockUnder;
+                icon = gdl::IconSymbol::BlockUnder;
                 break;
             case gdl::SoundStatus::Initial: musicColor = gdl::Colors::Black; break;
         };
@@ -284,19 +287,19 @@ void Example::DrawTimingInfo(int x, int y, float scale)
     ibmFont->Printf(gdl::Colors::LightRed, x, y - ystep * 3, scale, "Sound elapsed: %.2f", blipElapsed);
     gdl::SoundStatus musicStatus = blip->GetStatus();
     gdl::Color musicColor = gdl::Colors::Red;
-    gdl::DOSAscii icon = gdl::DOSAscii::Dot;
+    gdl::IconSymbol icon = gdl::IconSymbol::Dot;
     switch(musicStatus)
     {
         case gdl::SoundStatus::Playing:
             musicColor = gdl::Colors::Green;
-            icon = gdl::DOSAscii::TriangleRight;
+            icon = gdl::IconSymbol::TriangleRight;
             break;
         case gdl::SoundStatus::Paused:
             musicColor = gdl::Colors::Yellow;
-            icon = gdl::DOSAscii::TriangleVertical;
+            icon = gdl::IconSymbol::TriangleVertical;
             break;
         case gdl::SoundStatus::Stopped: musicColor = gdl::Colors::Red;
-            icon = gdl::DOSAscii::BlockUnder;
+            icon = gdl::IconSymbol::BlockUnder;
             break;
         case gdl::SoundStatus::Initial: musicColor = gdl::Colors::Black; break;
     };

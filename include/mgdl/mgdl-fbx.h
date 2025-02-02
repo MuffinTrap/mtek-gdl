@@ -23,7 +23,7 @@ namespace gdl
 		gdl::Mesh* AllocateMesh(ufbx_mesh* fbxMesh);
 		gdl::Mesh* LoadMesh(ufbx_mesh* fbxMesh);
 		gdl::Light* LoadLight(ufbx_light* fbxLight);
-		bool LoadNode(gdl::Scene* scene, ufbx_node* node, short depth);
+		bool LoadNode(Scene* gdlScene, Node* parentNode, ufbx_node* node, short int depth);
 		ufbx_scene* scene = nullptr;
 		bool debugPrint;
 	};

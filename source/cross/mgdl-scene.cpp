@@ -2,31 +2,24 @@
 #include <glm/gtc/matrix_transform.hpp>
 gdl::Scene::Scene()
 {
-	parent = nullptr;
 	rootNode = nullptr;
 }
 
-void gdl::Scene::SetActiveParentNode(gdl::Node* node)
-{
-	parent = node;
-}
 
-void gdl::Scene::PushChildNode ( gdl::Node* node )
+void gdl::Scene::AddChildNode (gdl::Node* parent, gdl::Node* child )
 {
-	if (parent != nullptr)
+	if (parent == nullptr)
 	{
-		parent->children.push_back(node);
+		rootNode = child;
 	}
 	else
 	{
-		node->name = "ROOT";
-		rootNode = node;
+		parent->children.push_back(child);
 	}
 }
 
 void gdl::Scene::DebugDraw( gdl::Font* font, short x, short y, u32 debugFlags )
 {
-
 	if (rootNode != nullptr)
 	{
 		short index = 0;
@@ -36,7 +29,6 @@ void gdl::Scene::DebugDraw( gdl::Font* font, short x, short y, u32 debugFlags )
 
 void gdl::Scene::DebugDrawNode ( gdl::Node* node, gdl::Font* font, short x, short& dy, short depth, short& index, u32 debugFlags)
 {
-
 	font->Printf(gdl::Colors::White, x + depth*16, dy, 16.0f, gdl::LJustify, gdl::LJustify, "%d: %s", index, node->name.c_str());
 	index++;
 	dy -= 18;
@@ -111,11 +103,6 @@ void gdl::Scene::SetMaterialTexture (const std::string& materialName, gdl::Image
 void gdl::Scene::AddMaterial ( gdl::Material* material )
 {
 	materials.push_back(material);
-}
-
-void gdl::Scene::AddMesh ( gdl::Mesh* mesh )
-{
-	meshes.push_back(mesh);
 }
 
 gdl::Node * gdl::Scene::GetRootNode()
@@ -243,31 +230,6 @@ gdl::Node * gdl::Scene::FindNode (gdl::Node* node, const std::string& nodeName )
 		}
 	}
 	return childNode;
-}
-
-gdl::Mesh * gdl::Scene::GetMeshByUniqueId ( uint32_t uniqueId )
-{
-	for(size_t mi = 0; mi < meshes.size(); mi++)
-	{
-		if (meshes[mi]->uniqueId == uniqueId)
-		{
-			return meshes[mi];
-		}
-	}
-	return nullptr;
-}
-
-
-gdl::Mesh * gdl::Scene::GetMesh ( const std::string& meshName )
-{
-	for(size_t mi = 0; mi < meshes.size(); mi++)
-	{
-		if (meshes[mi]->name.compare(meshName) == 0)
-		{
-			return meshes[mi];
-		}
-	}
-	return nullptr;
 }
 
 gdl::Material * gdl::Scene::GetMaterial (const std::string& materialName )

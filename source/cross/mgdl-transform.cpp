@@ -7,6 +7,14 @@ gdl::Transform::Transform()
 	scale = gdl::vec3(1.0f, 1.0f, 1.0f);
 }
 
+gdl::Transform::Transform(gdl::vec3 position, gdl::vec3 rotationDegrees, gdl::vec3 scale)
+{
+	this->position = position;
+	this->rotationDegrees = rotationDegrees;
+	this->scale = scale;
+}
+
+
 void gdl::Transform::Rotate ( short axis, float angle )
 {
 	switch(axis)

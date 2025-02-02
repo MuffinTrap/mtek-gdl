@@ -105,7 +105,7 @@ void gdl::Font::Bind ( short charw, short charh, std::string characters, short c
 }
 
 
-void gdl::Font::Icon ( u32 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, gdl::DOSAscii glyph )
+void gdl::Font::Icon ( u32 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, gdl::IconSymbol glyph )
 {
 	float step = aspect * textHeight;
 	float dx = x;
@@ -484,7 +484,7 @@ gdl::vec2 gdl::Font::GetTextureCoordinate(char character, char subIndex)
 	int	tc = 4*(character - firstIndex);
 	return tList[tc + subIndex];
 }
-gdl::vec2 gdl::Font::GetTextureCoordinate(gdl::DOSAscii glyph, char subIndex)
+gdl::vec2 gdl::Font::GetTextureCoordinate(gdl::IconSymbol glyph, char subIndex)
 {
 	int	tc = 4*((short)glyph - firstIndex);
 	return tList[tc + subIndex];

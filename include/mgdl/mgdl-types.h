@@ -83,6 +83,14 @@ namespace gdl
         Screen4x3
     };
 
+    // Flags for initializing the system. They can be combined
+	enum PlatformInitFlag
+	{
+		FlagPauseUntilA = 0x01, // Enters a loop after system init and continues when A button is pressed
+		FlagFullScreen = 0x02, // Start in full screen mode
+        FlagSplashScreen = 0x04, // Show splash screen with logo. If FlagPauseUntilA is set will stay in splash screen
+	};
+
     struct vec2
     {
         float x;
@@ -141,7 +149,7 @@ namespace gdl
     typedef u32 Color;
 
     // Debug font contains these glyphs
-	enum DOSAscii : short
+	enum IconSymbol : short
 	{
 		FaceInvert = 0x80,
 		Face,

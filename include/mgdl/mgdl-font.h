@@ -26,7 +26,7 @@ namespace gdl
 		void Printf(u32 color, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* format, ... );
 		void Print(u32 color, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* text);
 
-		void Icon(u32 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, gdl::DOSAscii glyph);
+		void Icon(u32 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, gdl::IconSymbol glyph);
 
 		void DrawSheet();
 		void Bind(short charw, short charh, char firstCharacter);
@@ -47,7 +47,7 @@ namespace gdl
 		void CreateTextureCoordList(short rows, short charactersPerRow, short texW, short texH);
 		void CreateTextureCoordList(short rows, short charactersPerRow, short texW, short texH, std::string characters);
 		gdl::vec2 GetTextureCoordinate(char character, char subIndex);
-		gdl::vec2 GetTextureCoordinate(gdl::DOSAscii glyph, char subIndex);
+		gdl::vec2 GetTextureCoordinate(gdl::IconSymbol glyph, char subIndex);
 		GLuint textureName;
 		short		cw,ch;
 		gdl::vec2		*tList;

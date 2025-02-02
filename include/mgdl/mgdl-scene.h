@@ -31,27 +31,20 @@ namespace gdl
 		void DrawNode(gdl::Node* node);
 		void DebugDraw(gdl::Font* font, short x, short y, u32 drawFlags);
 
-		void SetActiveParentNode(gdl::Node* node);
-		void PushChildNode(gdl::Node* node);
+		void AddChildNode(gdl::Node* parent, gdl::Node* child);
 
 		void AddMaterial(gdl::Material* material);
-		void AddMesh(gdl::Mesh* mesh);
-		void AddLight(gdl::Light* light);
-
 		void SetMaterialTexture(const std::string& materialName, gdl::Image* texture);
+		void SetAllMaterialTextures(gdl::Image* texture);
 
 		gdl::Node* GetRootNode();
 		gdl::Node* GetNode(const std::string& name);
 		gdl::Node* GetNodeByIndex(short index);
-		gdl::Mesh* GetMesh(const std::string& meshName);
-		gdl::Mesh* GetMeshByUniqueId(uint32_t uniqueId);
-		gdl::Light* GetLight(const std::string& lightName);
 		gdl::Material* GetMaterial(const std::string& materialName);
 
 		gdl::vec3 GetWorldPosition(gdl::Node* node);
 		glm::mat4 GetModelMatrix(gdl::Node* node);
 
-		std::vector<gdl::Light*> lights;
 
 	private:
 		void DebugDrawNode ( Node* node, Font* font, short int x, short int& dy, short int depth, short int& index, u32 drawFlags );
@@ -64,10 +57,10 @@ namespace gdl
 		bool CalculateModelMatrix(gdl::Node* parent, gdl::Node* target, glm::mat4& matrixRef);
 
 		gdl::Node* rootNode = nullptr;
-		gdl::Node* parent = nullptr;
 		// Multiple nodes can refer to same material
 		std::vector<gdl::Material*> materials;
 		// Multiple nodes can refer to same mesh
 		std::vector<gdl::Mesh*> meshes;
+		std::vector<gdl::Light*> lights;
 	};
 }

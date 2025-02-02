@@ -26,9 +26,9 @@ gdl::Scene* gdl::FBXFile::LoadFile(std::string fbxFile, bool debugPrint)
 
 	// Start from the root
 	ufbx_node* root = scene->root_node;
+	gdl::Node* sceneRoot = gdlScene->GetRootNode();
 	{
-		gdlScene->SetActiveParentNode(nullptr);
-		LoadNode(gdlScene, root, 0);
+		LoadNode(gdlScene, gdlScene->GetRootNode(), root, 0);
 	}
 
 	return gdlScene;
@@ -42,7 +42,7 @@ void Indent(short depth)
 	}
 }
 
-bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth )
+bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, gdl::Node* parentNode, ufbx_node* node, short depth )
 {
 	gdl_assert_print(node != nullptr, "Tried to load null node");
 	gdl_assert_print(gdlScene != nullptr, "No scene to load nodes to");
@@ -61,11 +61,10 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth
 		printf("\n");
 	}
 
-	gdl::Node* n = new gdl::Node();
+	gdl::Node* n = new gdl::Node(std::string(node->name.data),
+								 gdl::vec3(t.x, t.y, t.z),
+								 gdl::vec3(r.x, r.y, r.z));
 	gdl_assert_print(n != nullptr, "Could not create new Node");
-	n->name = std::string(node->name.data);
-	n->transform.position = gdl::vec3(t.x, t.y, t.z);
-	n->transform.rotationDegrees = gdl::vec3(r.x, r.y, r.z);
 
 	Indent(depth);
 	if (node->mesh != nullptr)
@@ -89,16 +88,8 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth
 		// Cannot use name: if multiple meshes have the same name
 		// the ufbx will postfix _1 etc.
 		// element_id is not unique either. Need to compare ufbx* mesh directly?
-		std::string meshName = std::string(mesh->name.data);
-		gdl::Mesh* m = gdlScene->GetMeshByUniqueId(mesh->element_id);
-		if (m == nullptr)
-		{
-			m = LoadMesh(mesh);
-			m->name = meshName;
-			m->uniqueId = mesh->element_id;
-			gdlScene->AddMesh(m);
-		}
-		n->mesh = m;
+		n->mesh = LoadMesh(mesh);
+
 
 		// Does this node have materials?
 		for(size_t mi = 0; mi < node->materials.count; mi++)
@@ -118,13 +109,11 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth
 			gdl::Material* mat = gdlScene->GetMaterial(matName);
 			if (mat == nullptr)
 			{
-				mat = new gdl::Material();
-				mat->name = matName;
+				mat = new gdl::Material(matName);
 				gdlScene->AddMaterial(mat);
 			}
 			n->material = mat;
 		}
-
 
 	}
 	else if (node->light != nullptr)
@@ -169,7 +158,7 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth
 		printf("\tBone %s, radius: %.2f relative length: %.2f\n", bone->name.data, bone->radius, bone->relative_length);
 	}
 
-	gdlScene->PushChildNode(n);
+	gdlScene->AddChildNode(parentNode, n);
 
 	size_t childAmount = node->children.count;
 	if (childAmount > 0)
@@ -181,8 +170,7 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, ufbx_node* node, short depth
 		}
 		for(size_t i = 0; i < node->children.count; i++)
 		{
-			gdlScene->SetActiveParentNode(n);
-			LoadNode(gdlScene, node->children[i], depth+1);
+			LoadNode(gdlScene, n, node->children[i], depth+1);
 		}
 	}
 
@@ -351,6 +339,7 @@ gdl::Mesh * gdl::FBXFile::LoadMesh(ufbx_mesh* fbxMesh)
 	{
 		printf("Loaded mesh\n");
 	}
+	mesh->name = fbxMesh->name.data;
 	return mesh;
 }
 

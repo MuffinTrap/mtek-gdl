@@ -3,6 +3,9 @@
 #include "mgdl-types.h"
 #include "mgdl-controller.h"
 
+#include <cstring>
+#include <string.h>
+#include <string>
 #include <functional>
 // Interface class for platform
 
@@ -10,16 +13,12 @@ namespace gdl
 {
 	class WiiController;
 
-	enum PlatformInitFlag
-	{
-		FlagPauseUntilA = 0x01, // Enters a loop after system init and continues when A button is pressed
-		FlagFullScreen = 0x02 // Start in full screen mode
-	};
 
 	class Platform
 	{
 		public:
-			virtual void InitSystem(gdl::ScreenAspect screenAspect,
+			virtual void InitSystem(const char* name,
+									gdl::ScreenAspect screenAspect,
 									std::function<void()> initCallback,
 									std::function<void()> updateCallback,
 									std::function<void()> drawCallback,
@@ -29,6 +28,7 @@ namespace gdl
 
 			static Platform& GetPlatform();
 
+			std::string GetName();
 			u16 GetScreenWidth();
 			u16 GetScreenHeight();
 			float GetAspectRatio();
@@ -38,6 +38,7 @@ namespace gdl
 		protected:
 			Platform();
 
+			std::string name;
 			short screenWidth;
 			short screenHeight;
 			float aspectRatio;

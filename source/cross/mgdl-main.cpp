@@ -8,13 +8,14 @@
 #endif
 
 
-void gdl::InitSystem(gdl::ScreenAspect screenAspect,
+void gdl::InitSystem(const char* name,
+	gdl::ScreenAspect screenAspect,
 								std::function<void()> initCallback,
 								std::function<void()> updateCallback,
 								std::function<void()> drawCallback,
 								u32 initFlags)
 {
-	gdl::Platform::GetPlatform().InitSystem(screenAspect, initCallback, updateCallback, drawCallback, initFlags);
+	gdl::Platform::GetPlatform().InitSystem(name, screenAspect, initCallback, updateCallback, drawCallback, initFlags);
 }
 
 gdl::Image* gdl::LoadImage(std::string filename, gdl::TextureFilterModes filterMode)

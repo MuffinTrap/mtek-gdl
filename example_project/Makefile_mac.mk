@@ -24,7 +24,7 @@ CXXFLAGS += -I/opt/homebrew/include
 # Link libraries
 
 # Create a list of libraries that need to be linked
-LDFLAGS = -lmgdl -lpng -lsndfile -Wno-unused-function
+LDFLAGS = -lmgdl -lpng -lsndfile -vorbisfile -logg -Wno-unused-function
 # MacOS need to tell to use OpenGL, OpenAL and GLUT differently
 LDFLAGS += -framework OpenGL -framework GLUT -framework OpenAL
 
