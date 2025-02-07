@@ -2,6 +2,7 @@ include Makefile_pc.mk
 
 # ############################################
 # MacOS specific settings
+CXXFLAGS += -DMGDL_PLATFORM=\"MacOS\"
 
 # Set Compiler
 CXX = clang++

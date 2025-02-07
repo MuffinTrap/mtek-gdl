@@ -22,13 +22,13 @@ namespace gdl
 		std::string name;
 		uint32_t uniqueId;
 
-		gdl::vec3 GetPosition(GLushort index);
-		gdl::vec3 GetNormal(GLushort index);
+		vec3 GetPosition(GLushort index);
+		vec3 GetNormal(GLushort index);
 
-		gdl::vec3 GetPositionFromArray(size_t index);
-		gdl::vec3 GetNormalFromArray(size_t index);
+		vec3 GetPositionFromArray(size_t index);
+		vec3 GetNormalFromArray(size_t index);
 
-		void SetNormal(GLsizei index, const gdl::vec3& normal);
+		void SetNormal(GLsizei index, const vec3& normal);
 
 		bool GetTriangleIndices(GLsizei triangleIndex, GLushort& outA, GLushort& outB, GLushort& outC);
 

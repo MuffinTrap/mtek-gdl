@@ -12,6 +12,7 @@ HDRS_X		:= $(wildcard include/mgdl/*.h)
 # Embedded libraries
 CXXFILES	+= $(wildcard include/mgdl/ufbx/*.cpp)
 UFBX_HDR	:= include/mgdl/ufbx/ufbx.h
+CCVEC_HDR	:= include/mgdl/ccVector/ccVector.h
 
 # PC platform
 CXXFILES	+= $(wildcard source/pc/*.cpp)

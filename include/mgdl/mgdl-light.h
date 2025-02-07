@@ -18,7 +18,7 @@ namespace gdl
 	class Light
 	{
 	public:
-		gdl::vec3 color;
+		vec3 color;
 		float intensity = 1.0f;
 		gdl::LightType type;
 		float spotHalfAngle = 180.0f;

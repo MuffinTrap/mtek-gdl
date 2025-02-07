@@ -2,5 +2,5 @@
 
 namespace gdl
 {
-	void DrawSplashScreen(float deltaTime);
+	float DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer);
 };

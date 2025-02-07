@@ -7,14 +7,14 @@ namespace gdl
 	{
 	public:
 		Transform();
-		Transform(gdl::vec3 position, gdl::vec3 rotationDegrees, gdl::vec3 scale);
-		void Translate(const gdl::vec3& t);
+		Transform(vec3 position, vec3 rotationDegrees, vec3 scale);
+		void Translate(const vec3& t);
 		void Rotate(short axis, float angle);
 		void SetScalef(float scale);
-		void SetScale3f(const gdl::vec3& scale);
+		void SetScale3f(const vec3& scale);
 
-		gdl::vec3 position;
-		gdl::vec3 rotationDegrees;
-		gdl::vec3 scale;
+		vec3 position;
+		vec3 rotationDegrees;
+		vec3 scale;
 	};
 }

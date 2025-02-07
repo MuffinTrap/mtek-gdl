@@ -42,8 +42,8 @@ namespace gdl
 		gdl::Node* GetNodeByIndex(short index);
 		gdl::Material* GetMaterial(const std::string& materialName);
 
-		gdl::vec3 GetWorldPosition(gdl::Node* node);
-		glm::mat4 GetModelMatrix(gdl::Node* node);
+		vec3 GetWorldPosition(gdl::Node* node);
+		bool GetModelMatrix(gdl::Node* node, mat4x4 modelOut);
 
 
 	private:
@@ -53,8 +53,8 @@ namespace gdl
 		gdl::Node* FindNodeByIndex(gdl::Node* parent, short targetIndex, short& index);
 		gdl::Material* FindMaterial(gdl::Node* node, const std::string&  materialName);
 
-		bool CalculateWorldPosition(gdl::Node* parent, gdl::Node* target, glm::mat4& matrix, gdl::vec3& posOut);
-		bool CalculateModelMatrix(gdl::Node* parent, gdl::Node* target, glm::mat4& matrixRef);
+		bool CalculateWorldPosition(gdl::Node* parent, gdl::Node* target, mat4x4 world, vec3& posOut);
+		bool CalculateModelMatrix(gdl::Node* parent, gdl::Node* target, mat4x4 model);
 
 		gdl::Node* rootNode = nullptr;
 		// Multiple nodes can refer to same material

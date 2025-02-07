@@ -32,5 +32,5 @@ namespace gdl
     // platforms to get the same result
     void InitPerspectiveProjection(float fovy, float nearZ, float farZ);
     void InitOrthoProjection();
-    void InitCamera(gdl::vec3 cameraPos, gdl::vec3 cameraTarget, gdl::vec3 cameraUp);
+    void InitCamera(vec3 cameraPos, vec3 cameraTarget, vec3 cameraUp);
 }

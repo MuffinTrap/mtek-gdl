@@ -48,7 +48,7 @@ void gdl::InitOrthoProjection()
 // rendering
 // Must have gluLookAt for anything to be visible
 // on Wii when using OpenGX
-void gdl::InitCamera(gdl::vec3 cameraPos, gdl::vec3 cameraTarget, gdl::vec3 cameraUp)
+void gdl::InitCamera(vec3 cameraPos, vec3 cameraTarget, vec3 cameraUp)
 {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();

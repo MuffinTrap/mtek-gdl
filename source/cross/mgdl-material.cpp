@@ -9,7 +9,7 @@ gdl::Material::Material ( std::string name)
 {
 	this->name = name;
 	this->shininess = 1.0f;
-	this->emissiveColor = gdl::vec3(0.0f, 0.0f, 0.0f);
+	this->emissiveColor = vec3New(0.0f, 0.0f, 0.0f);
 }
 
 gdl::Material::Material ( std::string name, gdl::Image* texture )
@@ -17,7 +17,7 @@ gdl::Material::Material ( std::string name, gdl::Image* texture )
 	this->name = name;
 	this->texture = texture;
 	this->shininess = 1.0f;
-	this->emissiveColor = gdl::vec3(0.0f, 0.0f, 0.0f);
+	this->emissiveColor = vec3New(0.0f, 0.0f, 0.0f);
 }
 
 

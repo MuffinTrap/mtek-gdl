@@ -46,9 +46,9 @@ void gdl::Mesh::DrawLines()
 	glDisableClientState(GL_VERTEX_ARRAY);
 	for (GLsizei i = 0; i < indexCount; i+=3)
 	{
-		gdl::vec3 a = GetPosition(i);
-		gdl::vec3 b = GetPosition(i+1);
-		gdl::vec3 c = GetPosition(i+2);
+		vec3 a = GetPosition(i);
+		vec3 b = GetPosition(i+1);
+		vec3 c = GetPosition(i+2);
 		glBegin(GL_LINE_LOOP);
 			glVertex3f(a.x, a.y, a.z);
 			glVertex3f(b.x, b.y, b.z);
@@ -63,8 +63,8 @@ void gdl::Mesh::DrawNormals()
 	glBegin(GL_LINES);
 	for (GLsizei i = 0; i < indexCount; i++)
 	{
-		gdl::vec3 n = GetNormal(i);
-		gdl::vec3 a = GetPosition(i);
+		vec3 n = GetNormal(i);
+		vec3 a = GetPosition(i);
 		glVertex3f(a.x, a.y, a.z);
 		glVertex3f(a.x + n.x, a.y + n.y, a.z + n.z);
 	}
@@ -73,7 +73,7 @@ void gdl::Mesh::DrawNormals()
 
 
 // This is a drawing index, not an array index
-gdl::vec3 gdl::Mesh::GetPosition ( GLushort index )
+vec3 gdl::Mesh::GetPosition ( GLushort index )
 {
 	if (index < indexCount)
 	{
@@ -81,13 +81,13 @@ gdl::vec3 gdl::Mesh::GetPosition ( GLushort index )
 		GLushort position = indices[index];
 		// Get the index to float array
 		size_t i = position * 3;
-		return gdl::vec3(positions[i+0], positions[i+1], positions[i+2]);
+		return vec3New(positions[i+0], positions[i+1], positions[i+2]);
 	}
 	printf("No such index! %d > %d\n", index, indexCount);
-	return gdl::vec3(0.0f, 0.0f, 0.0f);
+	return vec3New(0.0f, 0.0f, 0.0f);
 }
 
-gdl::vec3 gdl::Mesh::GetNormal ( GLushort index )
+vec3 gdl::Mesh::GetNormal ( GLushort index )
 {
 	if (index < indexCount)
 	{
@@ -95,14 +95,14 @@ gdl::vec3 gdl::Mesh::GetNormal ( GLushort index )
 		GLushort position = indices[index];
 		// Get the index to float array
 		size_t i = position * 3;
-		return gdl::vec3(normals[i+0], normals[i+1], normals[i+2]);
+		return vec3New(normals[i+0], normals[i+1], normals[i+2]);
 	}
 	printf("No such index! %d > %d\n", index, indexCount);
-	return gdl::vec3(0.0f, 0.0f, 0.0f);
+	return vec3New(0.0f, 0.0f, 0.0f);
 }
 
 
-void gdl::Mesh::SetNormal ( GLsizei index, const gdl::vec3& normal )
+void gdl::Mesh::SetNormal ( GLsizei index, const vec3& normal )
 {
 	if (index < indexCount)
 	{
@@ -127,21 +127,21 @@ bool gdl::Mesh::GetTriangleIndices ( GLsizei triangleIndex, GLushort& outA, GLus
 }
 
 
-gdl::vec3 gdl::Mesh::GetPositionFromArray(size_t index)
+vec3 gdl::Mesh::GetPositionFromArray(size_t index)
 {
 	if (index < vertexCount)
 	{
-		return gdl::vec3(positions[index+0], positions[index+1], positions[index+2]);
+		return vec3New(positions[index+0], positions[index+1], positions[index+2]);
 	}
-	return gdl::vec3(0.0f, 0.0f, 0.0f);
+	return vec3New(0.0f, 0.0f, 0.0f);
 }
-gdl::vec3 gdl::Mesh::GetNormalFromArray(size_t index)
+vec3 gdl::Mesh::GetNormalFromArray(size_t index)
 {
 	if (index < vertexCount)
 	{
-		return gdl::vec3(normals[index+0], normals[index+1], normals[index+2]);
+		return vec3New(normals[index+0], normals[index+1], normals[index+2]);
 	}
-	return gdl::vec3(0.0f, 1.0f, 0.0f);
+	return vec3New(0.0f, 1.0f, 0.0f);
 }
 
 

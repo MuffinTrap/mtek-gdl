@@ -12,7 +12,7 @@ void gdl::SpriteSet::LoadFromBuffer(const u8* buffer, size_t size, short spriteW
 	gdl::Font::LoadFromBuffer(buffer, size, spriteWidth, spriteHeight, 0);
 }
 
-gdl::vec3 gdl::SpriteSet::AdjustDrawingPosition(short x, short y, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY)
+vec3 gdl::SpriteSet::AdjustDrawingPosition(short x, short y, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY)
 {
 	float dx = x;
 	float dy = y;
@@ -36,12 +36,12 @@ gdl::vec3 gdl::SpriteSet::AdjustDrawingPosition(short x, short y, float scale, g
 	{
 		dy += height/2.0f;
 	}
-	return gdl::vec3(dx, dy, dz);
+	return vec3New(dx, dy, dz);
 }
 
 void gdl::SpriteSet::Draw2D(u16 spriteIndex, short x, short y, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY, u32 tintColor)
 {
-	gdl::vec3 drawPos = AdjustDrawingPosition(x, y, scale, alignX, alignY);
+	vec3 drawPos = AdjustDrawingPosition(x, y, scale, alignX, alignY);
 	float width = aspect * scale;
 	float height = scale;
 
@@ -53,11 +53,11 @@ void gdl::SpriteSet::Draw2D(u16 spriteIndex, short x, short y, float scale, gdl:
 
 	glBegin(GL_QUADS);
 
-	gdl::vec2 tx0 = GetTextureCoordinate(spriteIndex, 0); // TOP LEFT
-	gdl::vec2 tx1= GetTextureCoordinate(spriteIndex, 1); // TOP RIGHT
+	vec2 tx0 = GetTextureCoordinate(spriteIndex, 0); // TOP LEFT
+	vec2 tx1= GetTextureCoordinate(spriteIndex, 1); // TOP RIGHT
 
-	gdl::vec2 tx2= GetTextureCoordinate(spriteIndex, 2); // LOW RIGHT
-	gdl::vec2 tx3= GetTextureCoordinate(spriteIndex, 3); //LOW LEFT!
+	vec2 tx2= GetTextureCoordinate(spriteIndex, 2); // LOW RIGHT
+	vec2 tx3= GetTextureCoordinate(spriteIndex, 3); //LOW LEFT!
 
 	// TOP LEFT
 	glTexCoord2f(tx0.x, tx0.y);
@@ -83,7 +83,7 @@ void gdl::SpriteSet::Draw2D(u16 spriteIndex, short x, short y, float scale, gdl:
 
 void gdl::SpriteSet::Draw3D(u16 spriteIndex, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY, u32 tintColor)
 {
-	gdl::vec3 drawPos = AdjustDrawingPosition(0, 0, scale, alignX, alignY);
+	vec3 drawPos = AdjustDrawingPosition(0, 0, scale, alignX, alignY);
 	float width = aspect * scale;
 	float height = scale;
 
@@ -95,11 +95,11 @@ void gdl::SpriteSet::Draw3D(u16 spriteIndex, float scale, gdl::AlignmentModes al
 
 	glBegin(GL_QUADS);
 
-	gdl::vec2 tx0 = GetTextureCoordinate(spriteIndex, 0); // TOP LEFT
-	gdl::vec2 tx1= GetTextureCoordinate(spriteIndex, 1); // TOP RIGHT
+	vec2 tx0 = GetTextureCoordinate(spriteIndex, 0); // TOP LEFT
+	vec2 tx1= GetTextureCoordinate(spriteIndex, 1); // TOP RIGHT
 
-	gdl::vec2 tx2= GetTextureCoordinate(spriteIndex, 2); // LOW RIGHT
-	gdl::vec2 tx3= GetTextureCoordinate(spriteIndex, 3); //LOW LEFT!
+	vec2 tx2= GetTextureCoordinate(spriteIndex, 2); // LOW RIGHT
+	vec2 tx3= GetTextureCoordinate(spriteIndex, 3); //LOW LEFT!
 
 	// TOP LEFT
 	glTexCoord2f(tx0.x, tx0.y);

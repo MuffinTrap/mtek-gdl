@@ -140,11 +140,11 @@ void gdl::Font::Icon ( u32 color, float x, float y, float textHeight, gdl::Align
 	gdl::RGBA8Floats f = gdl::ColorToFloats(color);
 	glBegin(GL_QUADS);
 	glColor3f(f.red, f.green, f.blue);
-		gdl::vec2 tx0 = GetTextureCoordinate(glyph, 0); // TOP LEFT
-		gdl::vec2 tx1= GetTextureCoordinate(glyph, 1); // TOP RIGHT
+		vec2 tx0 = GetTextureCoordinate(glyph, 0); // TOP LEFT
+		vec2 tx1= GetTextureCoordinate(glyph, 1); // TOP RIGHT
 
-		gdl::vec2 tx2= GetTextureCoordinate(glyph, 2); // LOW RIGHT
-		gdl::vec2 tx3= GetTextureCoordinate(glyph, 3); //LOW LEFT!
+		vec2 tx2= GetTextureCoordinate(glyph, 2); // LOW RIGHT
+		vec2 tx3= GetTextureCoordinate(glyph, 3); //LOW LEFT!
 
 		// LOW LEFT!
 		glTexCoord2f(tx3.x, tx3.y);
@@ -216,11 +216,11 @@ void gdl::Font::Print(u32 color, float x, float y, float textHeight, gdl::Alignm
 			dy -= textHeight + spacingY;
 			continue;
 		}
-		gdl::vec2 tx0 = GetTextureCoordinate(character, 0); // TOP LEFT
-		gdl::vec2 tx1= GetTextureCoordinate(character, 1); // TOP RIGHT
+		vec2 tx0 = GetTextureCoordinate(character, 0); // TOP LEFT
+		vec2 tx1= GetTextureCoordinate(character, 1); // TOP RIGHT
 
-		gdl::vec2 tx2= GetTextureCoordinate(character, 2); // LOW RIGHT
-		gdl::vec2 tx3= GetTextureCoordinate(character, 3); //LOW LEFT!
+		vec2 tx2= GetTextureCoordinate(character, 2); // LOW RIGHT
+		vec2 tx3= GetTextureCoordinate(character, 3); //LOW LEFT!
 
 		// LOW LEFT!
 		glTexCoord2f(tx3.x, tx3.y);
@@ -348,10 +348,10 @@ void gdl::Font::CreateTextureCoordList ( short rows, short charactersPerRow, sho
 	printf("find between %d and %d: %d characters\n", first, last, toBeFoundAmount);
 
 
-	size_t tListSize = (sizeof(gdl::vec2)*4)*(textureArraySize);
+	size_t tListSize = (sizeof(vec2)*4)*(textureArraySize);
 	if (tList == NULL)
 	{
-		tList = (gdl::vec2*)AllocateAlignedMemory(tListSize);
+		tList = (vec2*)AllocateAlignedMemory(tListSize);
 		gdl_assert_print(tList != nullptr, "Out of memory when allocation font txcord list");
 	}
 
@@ -439,10 +439,10 @@ void gdl::Font::CreateTextureCoordList(short rows, short charactersPerRow, short
 	gdl_assert_print(texW > 0 && texH > 0, "Texture size is 0");
 
 	short characterAmount = rows * charactersPerRow;
-	size_t tListSize = (sizeof(gdl::vec2)*4)*(characterAmount);
+	size_t tListSize = (sizeof(vec2)*4)*(characterAmount);
 	if (tList == NULL)
 	{
-		tList = (gdl::vec2*)AllocateAlignedMemory(tListSize);
+		tList = (vec2*)AllocateAlignedMemory(tListSize);
 		gdl_assert_print(tList != nullptr, "Out of memory when allocation font txcord list");
 	}
 
@@ -479,12 +479,12 @@ void gdl::Font::CreateTextureCoordList(short rows, short charactersPerRow, short
 }
 
 // TODO: Optimize: return a rectangle
-gdl::vec2 gdl::Font::GetTextureCoordinate(char character, char subIndex)
+vec2 gdl::Font::GetTextureCoordinate(char character, char subIndex)
 {
 	int	tc = 4*(character - firstIndex);
 	return tList[tc + subIndex];
 }
-gdl::vec2 gdl::Font::GetTextureCoordinate(gdl::IconSymbol glyph, char subIndex)
+vec2 gdl::Font::GetTextureCoordinate(gdl::IconSymbol glyph, char subIndex)
 {
 	int	tc = 4*((short)glyph - firstIndex);
 	return tList[tc + subIndex];

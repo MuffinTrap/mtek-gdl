@@ -2,6 +2,7 @@
 #include <wiiuse/wpad.h>
 
 #include <mgdl/mgdl-opengl.h>
+#include <mgdl/mgdl-splash.h>
 #include <mgdl/wii/mgdl-wii-platform.h>
 #include <mgdl/wii/mgdl-wii.h>
 
@@ -58,27 +59,86 @@ void gdl::PlatformWii::InitSystem(const char* name,
 	controller.ZeroAllInputs();
 
 	gdl::ConsoleMode();
-	u64 now = gettime();
-	u64 deltaTimeStart = now;
 
-	printf("Got resolution: %d x %d\n", screenWidth, screenHeight);
-
+	// printf("Got resolution: %d x %d\n", screenWidth, screenHeight);
 	initCall();
+	u64 now = gettime();
+	deltaTimeStart = now;
 
-    if ((initFlags & gdl::PlatformInitFlag::FlagPauseUntilA )!= 0)
-	{
-		while(true)
+	const bool SplashFlag = (initFlags & gdl::PlatformInitFlag::FlagSplashScreen)!= 0;
+	const bool HoldAFlag = (initFlags & gdl::PlatformInitFlag::FlagPauseUntilA)!= 0;
+    if (SplashFlag || HoldAFlag)
+    {
+		if (!SplashFlag && HoldAFlag)
 		{
-			ReadControllers();
-			if (GetController(0).ButtonPress(gdl::WiiButtons::ButtonA))
+			printf("Hold A to start");
+		}
+		SplashHoldLoop(SplashFlag, HoldAFlag);
+    }
+
+    MainLoop();
+}
+
+void gdl::PlatformWii::SplashHoldLoop(bool SplashFlag, bool HoldAFlag)
+{
+	float aHoldTimer = 0.0f;
+	float splashProgress = 0.0f;
+	bool showHoldAMessage = HoldAFlag;
+	bool waiting = true;
+
+	while(waiting)
+	{
+		u64 now = gettime();
+		deltaTimeS = (float)(now - deltaTimeStart) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
+		deltaTimeStart = now;
+		elapsedTimeS += deltaTimeS;
+		controller.StartFrame();
+		ReadControllers();
+
+		if (SplashFlag)
+		{
+			gdl::PrepDisplay();
+			splashProgress = gdl::DrawSplashScreen(deltaTimeS, showHoldAMessage, aHoldTimer);
+		}
+
+		if (showHoldAMessage)
+		{
+			if (controller.ButtonHeld(gdl::WiiButtons::ButtonA))
 			{
-				break;
+				aHoldTimer += deltaTimeS;
+				if (aHoldTimer >= 1.0f)
+				{
+					waiting = false;
+				}
 			}
+			else
+			{
+				aHoldTimer = 0.0f;
+			}
+		}
+		else
+		{
+			waiting = (splashProgress <= 1.0f);
+		}
+
+		if (SplashFlag)
+		{
+			glFlush();
+			gdl::Display();
+		}
+		else
+		{
 			VIDEO_WaitVSync();
 		}
 	}
+	// Reset elapsed time so game gets correct timing
+	elapsedTimeS = 0.0f;
+}
 
 
+
+void gdl::PlatformWii::MainLoop()
+{
 	while(true)
 	{
 		// Timing
@@ -96,6 +156,8 @@ void gdl::PlatformWii::InitSystem(const char* name,
 		gdl::Display();
 	}
 }
+
+
 gdl::WiiController& gdl::PlatformWii::GetController(int controllerNumber)
 {
 	if (controllerNumber == 0)

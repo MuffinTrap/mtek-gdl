@@ -35,6 +35,9 @@ install: $(ARC)
 # UFBX library
 	@mkdir -p $(INSTALL_DIR)/mgdl/ufbx
 	@cp $(UFBX_HDR) $(INSTALL_DIR)/mgdl/ufbx
+# ccVector library
+	@mkdir -p $(INSTALL_DIR)/$(LIB)/ccVector
+	@cp $(CCVEC_HDR) $(INSTALL_DIR)/$(LIB)/ccVector
 
 	@echo installed to $(INSTALL_DIR)
 

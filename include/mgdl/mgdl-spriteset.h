@@ -19,7 +19,7 @@ namespace gdl
 		void Draw3D(u16 spriteIndex, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY, u32 tintColor);
 
 	private:
-		gdl::vec3 AdjustDrawingPosition(short x, short y, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY);
+		vec3 AdjustDrawingPosition(short x, short y, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY);
 
 		// TODO u16 CreateAnimation(u16 start, u16 stop, float frameTime);
 		// TODO PlayAnimation(u16 index);

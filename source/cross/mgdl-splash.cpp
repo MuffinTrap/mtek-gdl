@@ -1,5 +1,4 @@
 #include <mgdl/mgdl-splash.h>
-#include <mgdl/ccVector/ccVector.h>
 #include <mgdl/mgdl-opengl.h>
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-palette.h>
@@ -15,19 +14,22 @@ static float lineWidth;
 static float areaTop;
 static float areaBottom;
 static float animationProgress = 0.0f;
+static std::string holdMessage = "Hold A to start";
 
-	// lean is in pixels
-static void GetCorners(float xOffset, float start, float height, float* cornersOut, float lean)
+
+// lean is in pixels
+// width is in [0, 1]
+static void GetCorners(float xOffset, float start, float height, float* cornersOut, float lean, float width)
 {
+	width = gdl::clampF(width, 0.0f, 1.0f);
+
 	// The lean needs to be the same regardless of segment height
 	vec2 AreaTopLeft = vec2New(xOffset + lean, areaTop);
 	vec2 AreaBottomLeft = vec2New(xOffset, areaBottom);
 
-	// down = bottomleft - topLeft
 	vec2 downwards = vec2Add(AreaBottomLeft, vec2Negate(AreaTopLeft));
 	// Lean vector points left and down
 	vec2 D = vec2Normalize(downwards);
-
 
 	// From area top left go down until segment starts
 	vec2 tl = vec2Add(AreaTopLeft, vec2Multiply(D, (float)(start * lineHeight)));
@@ -40,30 +42,43 @@ static void GetCorners(float xOffset, float start, float height, float* cornersO
 	cornersOut[3] = bl.y;
 
 	// Bottom right
-	cornersOut[4] = bl.x + lineWidth;
+	cornersOut[4] = bl.x + lineWidth * width;
 	cornersOut[5] = bl.y;
 
 	// Top right
-	cornersOut[6] = tl.x + lineWidth;
+	cornersOut[6] = tl.x + lineWidth * width;
 	cornersOut[7] = tl.y;
 }
 
-static float DrawLetter(float x, u8* sl, u8 bars, u32 color, float lean)
+// bars colored is how many bars should
+// have color. Fractional value means bar is not fully coloured
+static float DrawLetter(float x, u8* sl, u8 bars, u32 color, float lean, bool useBars, float barsColored)
 {
 	float startX = x;
 	float corners[] = {0,0,0,0, 0,0,0,0};
+	if (!useBars)
+	{
+		barsColored = bars;
+	}
+
 	for (int i = 0; i < bars; i++)
 	{
 		int line = i *2;
-		GetCorners(x, sl[line+0], sl[line+1], corners, lean);
-		gdl::DrawQuad(corners[0], corners[1], corners[2], corners[3],
-					  corners[4], corners[5], corners[6], corners[7],
-					  color);
+		if (barsColored > 0.0f)
+		{
+			GetCorners(x, sl[line+0], sl[line+1], corners, lean, barsColored);
+
+			gdl::DrawQuad(corners[0], corners[1], corners[2], corners[3],
+						corners[4], corners[5], corners[6], corners[7],
+						color);
+			barsColored -= 1.0f;
+		}
 		x += lineWidth-1;
 	}
 	return x - startX;
 }
-static void DrawLetters(float x, float lean, u32 color, gdl::Font* font, float baseLine)
+// Returns where the version string should be
+static float DrawLetters(float x, float lean, u32 color, bool useBars, float barsColored)
 {
 	// m
 	// start points and lengths
@@ -114,21 +129,32 @@ static void DrawLetters(float x, float lean, u32 color, gdl::Font* font, float b
 		15,1,
 	};
 
+
 	float drawX = x;
-		drawX += DrawLetter(drawX, m_ls, 7, color, lean);
-		DrawLetter(drawX, g_outer, 4, color, lean);
-		DrawLetter(drawX, g_under, 4, color, lean);
-		drawX += DrawLetter(drawX, gl_foot, 5, color, lean) -1;
+		drawX += DrawLetter(drawX, m_ls, 7, color, lean, useBars, barsColored);
+		barsColored -= 7.0f;
+
+		DrawLetter(drawX, g_outer, 4, color, lean, useBars, barsColored);
+		DrawLetter(drawX, g_under, 4, color, lean, useBars, barsColored);
+		drawX += DrawLetter(drawX, gl_foot, 5, color, lean, useBars, barsColored);
+		barsColored -= 5.0f;
+		drawX -= 1; // Prevent gaps between letters
 		float dStart = drawX + lineWidth;
-		DrawLetter(drawX, d_outer, 4, color, lean);
-		drawX += DrawLetter(drawX, d_under, 5, color, lean) -1;
-		drawX += DrawLetter(drawX, l_ls, 2, color, lean);
-	font->Print(color, dStart, baseLine, 8, GDL_VERSION);
-	font->Print(color, dStart, baseLine - 8, 8, gdl::Platform::GetPlatform().GetName().c_str());
+
+		DrawLetter(drawX, d_outer, 4, color, lean, useBars, barsColored);
+		drawX += DrawLetter(drawX, d_under, 5, color, lean, useBars, barsColored);
+		drawX -= 1;
+		barsColored -= 5.0f;
+
+		drawX += DrawLetter(drawX, l_ls, 2, color, lean, useBars, barsColored);
+		barsColored -= 5.0f;
+		return dStart;
 }
 
-void gdl::DrawSplashScreen(float deltaTime)
+// Returns the animation progress
+float gdl::DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer)
 {
+	gdl::cross_glClear(GL_COLOR_BUFFER_BIT);
 	// Draws mgdl
 	// in stylized letters
 	gdl::InitOrthoProjection();
@@ -174,29 +200,49 @@ void gdl::DrawSplashScreen(float deltaTime)
 	// Space on both sides of logo
 	float paddingX = (gdl::GetScreenWidth() - logoWidth) / 2;
 
-	DrawLetters(paddingX, lean, grey, debf, baseLine);
+	float dStart = DrawLetters(paddingX, lean, grey, false, 0.0f);
 
-	float leftX = 0;
-	float rightX = 0;
+	// Draw yellow over grey
+	float barsColored = 0.0f;
 	animationProgress += deltaTime * 0.5f;
-	if (animationProgress <= 1.0f)
+
+	// Loop drawing
 	{
-		leftX = 0.0f;
-		rightX = sw * animationProgress;
+		float drawProgress = animationProgress;
+		while (drawProgress > 2.0f)
+		{
+			drawProgress -= 2.0f;
+		}
+		if (drawProgress <= 1.0f)
+		{
+			barsColored = segments * drawProgress;
+		}
+		else
+		{
+			// Color all yellow
+			barsColored = segments;
+
+		}
+		DrawLetters(paddingX, lean, yellow, true, barsColored);
+
+		// Draw grey over yellow
+		if (drawProgress > 1.0f && drawProgress <= 2.0f)
+		{
+			barsColored = (drawProgress-1.0f) * segments;
+			DrawLetters(paddingX, lean, grey, true, barsColored);
+		}
 	}
-	else if (animationProgress <= 2.0f)
+	debf->Print(grey, dStart, baseLine, 8, GDL_VERSION);
+	debf->Print(grey, dStart, baseLine - 8, 8, gdl::Platform::GetPlatform().GetName().c_str());
+
+	if (drawHoldAMessage)
 	{
-		rightX = sw;
-		leftX = (animationProgress-1.0f) * sw;
+		int messageWidth = (holdMessage.length() * 8) ;
+		int messageLeft = gdl::GetScreenWidth()/2 - messageWidth/2;
+		int messageY = areaBottom - 8;
+		debf->Print(yellow, messageLeft, messageY, 8, holdMessage.c_str());
+
+		gdl::DrawBoxF(messageLeft, messageY - 16, messageLeft + messageWidth * aHoldTimer, messageY - 16 - 4, yellow);
 	}
-	else
-	{
-		animationProgress = 0.0f;
-		leftX = 0.0f;
-	}
-	glEnable(GL_SCISSOR_TEST);
-	glScissor(leftX, 0, rightX, sh);
-	DrawLetters(paddingX, lean, yellow, debf, baseLine);
-	glScissor(0, 0, sw, sh);
-	glDisable(GL_SCISSOR_TEST);
+	return (animationProgress / 2.0f);
 }

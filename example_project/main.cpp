@@ -119,5 +119,8 @@ int main()
         init,
         update,  // std::function callbacks
         render
+        //,gdl::PlatformInitFlag::FlagPauseUntilA
+        //,gdl::PlatformInitFlag::FlagSplashScreen
+        ,gdl::PlatformInitFlag::FlagSplashScreen|gdl::PlatformInitFlag::FlagPauseUntilA
     );
 }

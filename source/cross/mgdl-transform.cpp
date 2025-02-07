@@ -2,12 +2,12 @@
 
 gdl::Transform::Transform()
 {
-	position = gdl::vec3(0.0f, 0.0f, 0.0f);
-	rotationDegrees = gdl::vec3(0.0f, 0.0f, 0.0f);
-	scale = gdl::vec3(1.0f, 1.0f, 1.0f);
+	position = vec3New(0.0f, 0.0f, 0.0f);
+	rotationDegrees = vec3New(0.0f, 0.0f, 0.0f);
+	scale = vec3New(1.0f, 1.0f, 1.0f);
 }
 
-gdl::Transform::Transform(gdl::vec3 position, gdl::vec3 rotationDegrees, gdl::vec3 scale)
+gdl::Transform::Transform(vec3 position, vec3 rotationDegrees, vec3 scale)
 {
 	this->position = position;
 	this->rotationDegrees = rotationDegrees;
@@ -25,21 +25,21 @@ void gdl::Transform::Rotate ( short axis, float angle )
 	};
 }
 
-void gdl::Transform::Translate ( const gdl::vec3& t )
+void gdl::Transform::Translate ( const vec3& t )
 {
 	position.x += t.x;
 	position.y += t.y;
 	position.z += t.z;
 }
 
-void gdl::Transform::SetScale3f ( const gdl::vec3& scale )
+void gdl::Transform::SetScale3f ( const vec3& scale )
 {
 	this->scale = scale;
 }
 
 void gdl::Transform::SetScalef ( float scale )
 {
-	this->scale = gdl::vec3(scale, scale, scale);
+	this->scale = vec3New(scale, scale, scale);
 }
 
 

@@ -1,13 +1,22 @@
 #pragma once
 
+// Vector types
+
+
 // For MacOS
 #include <stddef.h>
 
 #ifdef GEKKO
 
     #include <gctypes.h>
+    #include "ccVector/ccVector.h"
 
 #else
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wnested-anon-types"
+    #pragma GCC diagnostic ignored "-Wgnu-anonymous-struct"
+    #include "ccVector/ccVector.h"
+    #pragma GCC diagnostic pop
 
     // Mimic ogc type names
     #include <cstdint>
@@ -20,6 +29,7 @@
 
 namespace gdl
 {
+
     /*! Input color format options
      *
      *	\details Options for the gdl::Texture::ConvertRawImage() function when converting raw image data into a texture.
@@ -90,41 +100,6 @@ namespace gdl
 		FlagFullScreen = 0x02, // Start in full screen mode
         FlagSplashScreen = 0x04, // Show splash screen with logo. If FlagPauseUntilA is set will stay in splash screen
 	};
-
-    struct vec2
-    {
-        float x;
-        float y;
-        vec2()
-        {
-            this->x = 0.0f;
-            this->y = 0.0f;
-        }
-        vec2(float px, float py)
-        {
-            this->x = px;
-            this->y = py;
-        }
-    };
-
-    struct vec3
-    {
-        float x;
-        float y;
-        float z;
-        vec3()
-        {
-            this->x = 0.0f;
-            this->y = 0.0f;
-            this->z = 0.0f;
-        }
-        vec3(float px, float py, float pz)
-        {
-            this->x = px;
-            this->y = py;
-            this->z = pz;
-        }
-    };
 
     /*!	Color values
      *

@@ -26,10 +26,7 @@ gdl::Scene* gdl::FBXFile::LoadFile(std::string fbxFile, bool debugPrint)
 
 	// Start from the root
 	ufbx_node* root = scene->root_node;
-	gdl::Node* sceneRoot = gdlScene->GetRootNode();
-	{
-		LoadNode(gdlScene, gdlScene->GetRootNode(), root, 0);
-	}
+	LoadNode(gdlScene, gdlScene->GetRootNode(), root, 0);
 
 	return gdlScene;
 }
@@ -62,8 +59,8 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, gdl::Node* parentNode, ufbx_
 	}
 
 	gdl::Node* n = new gdl::Node(std::string(node->name.data),
-								 gdl::vec3(t.x, t.y, t.z),
-								 gdl::vec3(r.x, r.y, r.z));
+								 vec3New(t.x, t.y, t.z),
+								 vec3New(r.x, r.y, r.z));
 	gdl_assert_print(n != nullptr, "Could not create new Node");
 
 	Indent(depth);
@@ -347,7 +344,7 @@ gdl::Light* gdl::FBXFile::LoadLight(ufbx_light* fbxLight)
 {
 	gdl::Light* light = new gdl::Light();
 
-	light->color = gdl::vec3(fbxLight->color.x, fbxLight->color.y, fbxLight->color.z);
+	light->color = vec3New(fbxLight->color.x, fbxLight->color.y, fbxLight->color.z);
 	light->intensity = fbxLight->intensity;
 	light->name = std::string(fbxLight->name.data);
 

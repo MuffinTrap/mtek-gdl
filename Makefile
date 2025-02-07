@@ -14,6 +14,7 @@ HDRS_X		:= $(wildcard include/mgdl/*.h)
 # Embedded libraries
 CXXFILES	+= $(wildcard include/mgdl/ufbx/*.cpp)
 UFBX_HDR	:= include/mgdl/ufbx/ufbx.h
+CCVEC_HDR	:= include/mgdl/ccVector/ccVector.h
 
 # Wii specific settings
 CXXFILES	+= $(wildcard source/wii/*.cpp)
@@ -84,6 +85,9 @@ install :
 # UFBX library
 	@mkdir -p $(INSTALL_DIR)/$(LIB)/ufbx
 	@cp $(UFBX_HDR) $(INSTALL_DIR)/$(LIB)/ufbx
+# ccVector library
+	@mkdir -p $(INSTALL_DIR)/$(LIB)/ccVector
+	@cp $(CCVEC_HDR) $(INSTALL_DIR)/$(LIB)/ccVector
 
 	@echo Library installed
 

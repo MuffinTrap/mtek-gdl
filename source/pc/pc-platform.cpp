@@ -1,7 +1,10 @@
 #include <mgdl/mgdl-opengl.h>
 #include <mgdl/mgdl-assert.h>
+#include <mgdl/mgdl-splash.h>
 #include <mgdl/pc/mgdl-pc-platform.h>
 #include <mgdl/pc/mgdl-pc-input.h>
+
+// Declarations
 
 static int windowWidth = 0;
 static int windowHeight = 0;
@@ -15,6 +18,163 @@ static int glutElapsedMS;
 static std::function<void()> initCall = nullptr;
 static std::function<void()> updateCall = nullptr;
 static std::function<void()> drawCall = nullptr;
+
+
+// Main glut functions
+static void UpdateDeltaMS();
+
+static void UpdateLoop(int value);
+static void RenderLoop();
+
+// For measuring A hold and splash screen
+static int waitElapsedMS;
+static bool showHoldAMessage;
+static float startUpDeltaTimeMs;
+static float splashProgress;
+// For holding until a is held for 1 second
+static float aHoldTimer;
+static void UpdateSplash(int value);
+static void RenderSplash();
+static void UpdateWaitDeltaMS();
+
+static void UpdateAHold(int value);
+static void RenderAHold();
+static bool IncreaseAHoldAndTest();
+
+// Used by all
+static void UpdateEnd();
+static void RenderEnd();
+
+
+// Definitions
+
+
+static void RenderSplash()
+{
+    splashProgress = gdl::DrawSplashScreen(startUpDeltaTimeMs, showHoldAMessage, aHoldTimer);
+    RenderEnd();
+}
+
+static void RenderAHold()
+{
+    RenderEnd();
+}
+
+static void UpdateWaitDeltaMS()
+{
+    glutElapsedMS = glutGet(GLUT_ELAPSED_TIME);
+    int deltaMS = glutElapsedMS - glutElapsedStartMS;
+    startUpDeltaTimeMs = float(deltaMS) / 1000.0f;
+}
+
+static void UpdateDeltaMS()
+{
+    // Update delta time
+    // The game will call GetDeltaTime() during updateCall
+    // Remove waiting time from elapsed so that game starts from 0 elapsed
+    glutElapsedMS = glutGet(GLUT_ELAPSED_TIME) - waitElapsedMS;
+}
+
+static bool IncreaseAHoldAndTest()
+{
+    if (glutController.ButtonHeld(gdl::WiiButtons::ButtonA))
+    {
+        aHoldTimer += startUpDeltaTimeMs;
+        if (aHoldTimer >= 1.0f)
+        {
+            return true;
+        }
+    }
+    else
+    {
+        aHoldTimer = 0.0f;
+    }
+    return false;
+}
+
+
+
+#pragma clang diagnostic push
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic ignored "-Wunused-parameter"
+
+static void UpdateSplash(int value)
+{
+    UpdateWaitDeltaMS();
+    bool waitIsOver = false;
+    if (showHoldAMessage)
+    {
+        waitIsOver = IncreaseAHoldAndTest();
+    }
+    else
+    {
+        waitIsOver = (splashProgress > 1.0f);
+    }
+
+    if (waitIsOver)
+    {
+        // Change to main Update function and render
+        glutTimerFunc(16, UpdateLoop, 0);
+        glutDisplayFunc(RenderLoop);
+    }
+
+    // Keep waiting
+    glutTimerFunc(16, UpdateSplash, 0);
+    UpdateEnd();
+}
+
+static void UpdateAHold(int value)
+{
+    UpdateWaitDeltaMS();
+    if (IncreaseAHoldAndTest())
+    {
+        // Change to main update and render
+        glutDisplayFunc(RenderLoop);
+        glutTimerFunc(16, UpdateLoop, 0);
+    }
+    // Keep waiting
+    glutTimerFunc(16, UpdateAHold, 0);
+    UpdateEnd();
+}
+
+static void UpdateLoop(int value)
+{
+    UpdateDeltaMS();
+
+	updateCall();
+
+    glutTimerFunc(16, UpdateLoop, 0);
+    UpdateEnd();
+}
+#pragma GCC diagnostic pop
+#pragma clang diagnostic pop
+static void UpdateEnd()
+{
+    // TODO Where is the correct place for this?
+    // Need to have up to date information for the game to read
+    glutController.StartFrame();
+
+    glutElapsedStartMS = glutElapsedMS;
+    // Tell glut that the window needs to be
+    // redrawn.
+    glutPostRedisplay();
+}
+
+void RenderLoop()
+{
+	drawCall();
+    RenderEnd();
+}
+
+static void RenderEnd()
+{
+    // End drawing and process all commands
+    glFlush();
+
+    // Wait for v sync and swap
+    glutSwapBuffers();
+}
 
 void onWindowSizeChange(int newWidth, int newHeight)
 {
@@ -43,61 +203,6 @@ void onWindowSizeChange(int newWidth, int newHeight)
 
     // But keep showing the internal resolution scaled
     glViewport(left, top, scaledWidth, scaledHeight);
-}
-
-void RenderLoop();
-
-void PauseLoop() {
-
-    if (glutController.ButtonPress(gdl::WiiButtons::ButtonA))
-    {
-        glutDisplayFunc(RenderLoop);
-    }
-    // End drawing and process all commands
-    glFlush();
-
-    // Wait for v sync and swap
-    glutSwapBuffers();
-
-    // Tell glut that the window needs to be
-    // redrawn.
-    glutPostRedisplay();
-
-}
-#pragma clang diagnostic push
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma clang diagnostic ignored "-Wunused-parameter"
-void UpdateLoop(int value)
-{
-    // Update delta time
-    // The game will call GetDeltaTime() during updateCall
-    glutElapsedMS = glutGet(GLUT_ELAPSED_TIME);
-
-	updateCall();
-    glutTimerFunc(16, UpdateLoop, 0);
-
-    // TODO Where is the correct place for this?
-    // Need to have up to date information for the game to read
-    glutController.StartFrame();
-
-    glutElapsedStartMS = glutElapsedMS;
-    // Tell glut that the window needs to be
-    // redrawn.
-    glutPostRedisplay();
-}
-#pragma GCC diagnostic pop
-#pragma clang diagnostic pop
-
-void RenderLoop() {
-
-	drawCall();
-
-    // End drawing and process all commands
-    glFlush();
-
-    // Wait for v sync and swap
-    glutSwapBuffers();
 }
 
 void gdl::PlatformPC::InitAudio()
@@ -171,14 +276,13 @@ void gdl::PlatformPC::InitSystem(const char* name, gdl::ScreenAspect screenAspec
     printf("GlutInit\n");
     glutInit(&argumentCount, &argumentVector);
     printf("glutInitDisplayMode\n");
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(windowWidth, windowHeight);
     glutCreateWindow("Press 2 to write Rocket tracks");
     if ((initFlags & gdl::PlatformInitFlag::FlagFullScreen) != 0)
     {
         glutFullScreen();
     }
-
 
     // Input callbacks and init
     glutKeyboardFunc(keyboardDown); // Register the keyboard callback
@@ -193,9 +297,25 @@ void gdl::PlatformPC::InitSystem(const char* name, gdl::ScreenAspect screenAspec
 
     glutReshapeFunc(onWindowSizeChange);
 
-    if ((initFlags & gdl::PlatformInitFlag::FlagPauseUntilA )!= 0)
+	const bool SplashFlag = (initFlags & gdl::PlatformInitFlag::FlagSplashScreen)!= 0;
+	const bool HoldAFlag = (initFlags & gdl::PlatformInitFlag::FlagPauseUntilA)!= 0;
+    // Set up A hold variables
+    if (HoldAFlag||SplashFlag)
     {
-        glutDisplayFunc(PauseLoop);
+        waitElapsedMS = 0;
+        aHoldTimer = 0.0f;
+        showHoldAMessage = HoldAFlag;
+    }
+
+    // Select display function
+    if (SplashFlag)
+    {
+        splashProgress = 0.0f;
+        glutDisplayFunc(RenderSplash);
+    }
+    else if (HoldAFlag)
+    {
+        glutDisplayFunc(RenderAHold);
     }
     else
     {
@@ -205,9 +325,21 @@ void gdl::PlatformPC::InitSystem(const char* name, gdl::ScreenAspect screenAspec
     glutController.ZeroAllInputs();
     glutController.StartFrame();
     initCall();
-    printf("glutMainLoop\n");
-    glutTimerFunc(16, UpdateLoop, 0);
-    glutElapsedStartMS = 0; // glutGet(GLUT_ELAPSED_TIME);
+    glutElapsedStartMS = 0;
+
+    // Select update function
+    if (SplashFlag)
+    {
+        glutTimerFunc(16, UpdateSplash, 0);
+    }
+    else if (HoldAFlag)
+    {
+        glutTimerFunc(16, UpdateAHold, 0);
+    }
+    else
+    {
+        glutTimerFunc(16, UpdateLoop, 0);
+    }
 	glutMainLoop();
 }
 
@@ -237,6 +369,7 @@ float gdl::PlatformPC::GetDeltaTime()
     deltaTimeS= float(deltaMS) / 1000.0f;
     return deltaTimeS;
 }
+
 float gdl::PlatformPC::GetElapsedSeconds()
 {
     return float(glutElapsedMS)/1000.0f;

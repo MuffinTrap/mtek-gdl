@@ -6,10 +6,10 @@ gdl::Node::Node()
 
 }
 
-gdl::Node::Node(std::string name, gdl::vec3 position, gdl::vec3 rotationAngles)
+gdl::Node::Node(std::string name, vec3 position, vec3 rotationAngles)
 {
 	this->name = name;
-	transform = gdl::Transform(position, rotationAngles, gdl::vec3(1,1,1));
+	transform = gdl::Transform(position, rotationAngles, vec3New(1,1,1));
 }
 
 

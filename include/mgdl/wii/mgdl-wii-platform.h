@@ -21,5 +21,8 @@ namespace gdl
 		float GetElapsedSeconds() override;
 	private:
 		void ReadControllers();
+		void MainLoop();
+		void SplashHoldLoop(bool SplashFlag, bool HoldAFlag);
+		u64 deltaTimeStart;
 	};
 }

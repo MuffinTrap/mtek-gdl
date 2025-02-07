@@ -46,11 +46,11 @@ namespace gdl
 
 		void CreateTextureCoordList(short rows, short charactersPerRow, short texW, short texH);
 		void CreateTextureCoordList(short rows, short charactersPerRow, short texW, short texH, std::string characters);
-		gdl::vec2 GetTextureCoordinate(char character, char subIndex);
-		gdl::vec2 GetTextureCoordinate(gdl::IconSymbol glyph, char subIndex);
+		vec2 GetTextureCoordinate(char character, char subIndex);
+		vec2 GetTextureCoordinate(gdl::IconSymbol glyph, char subIndex);
 		GLuint textureName;
 		short		cw,ch;
-		gdl::vec2		*tList;
+		vec2		*tList;
 		char		firstIndex; // muffintrap: need to remember the first index to calculate offsets into vertex and uv arrays
 	};
 };

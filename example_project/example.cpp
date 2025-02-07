@@ -61,8 +61,6 @@ void DrawTextDouble(const char* text, short x, short y, float textHeight, gdl::F
 
 void Example::Draw()
 {
-    gdl::DrawSplashScreen(deltaTime);
-    /*
     gdl::InitOrthoProjection();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -85,7 +83,6 @@ void Example::Draw()
                    ibmFont->GetCharacterHeight());
     DrawVersion();
     DrawInputInfo(left, top);
-    */
 }
 
 void Example::DrawVersion()
@@ -113,7 +110,7 @@ void Example::DrawWii()
 {
     // Try to draw Wii 3D model
     gdl::InitPerspectiveProjection(75.0f, 0.1f, 100.0f);
-    gdl::InitCamera(gdl::vec3(0.0f, 0.0f, 0.0f), gdl::vec3(0.0f, 0.0f, -1.0f), gdl::vec3(0.0f, 1.0f, 0.0f));
+    gdl::InitCamera(vec3New(0.0f, 0.0f, 0.0f), vec3New(0.0f, 0.0f, -1.0f), vec3New(0.0f, 1.0f, 0.0f));
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -182,11 +179,11 @@ void DrawDPad(short x, short y, short size)
         gdl::WiiButtons::ButtonLeft,
         gdl::WiiButtons::ButtonRight
     };
-    gdl::vec2 directions[] = {
-        gdl::vec2(0,-1), 
-        gdl::vec2(0,1),
-        gdl::vec2(-1,0),
-        gdl::vec2(1,0)
+    vec2 directions[] = {
+        vec2New(0,-1),
+        vec2New(0,1),
+        vec2New(-1,0),
+        vec2New(1,0)
     };
     for (int i=0;i<4;i++)
     {
@@ -195,7 +192,7 @@ void DrawDPad(short x, short y, short size)
         {
             c = gdl::Colors::Red;
         }
-        gdl::vec2 d=directions[i];
+        vec2 d=directions[i];
         gdl::DrawBoxF(x+d.x*box-h, y+ d.y*box-h, x+box+d.x*box-h, y+box+d.y*box-h, c);
     }
 }
