@@ -12,10 +12,20 @@
     #include "ccVector/ccVector.h"
 
 #else
+// ccVector is written in C and uses anonymous structs
+// to implement vector swizzling. Anonymous structs
+// are not "allowed" in ISO C++ but they work
     #pragma GCC diagnostic push
+#ifdef MGDL_PLATFORM_WINDOWS
+    // Only MSYS UCRT64 GCC complains about -Wpedantic
+    #pragma GCC diagnostic ignored "-Wpedantic"
+#endif
+    // Linux GCC complains about anon types and gnu extension
     #pragma GCC diagnostic ignored "-Wnested-anon-types"
     #pragma GCC diagnostic ignored "-Wgnu-anonymous-struct"
+
     #include "ccVector/ccVector.h"
+
     #pragma GCC diagnostic pop
 
     // Mimic ogc type names
