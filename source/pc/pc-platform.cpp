@@ -94,11 +94,6 @@ static bool IncreaseAHoldAndTest()
 
 
 
-#pragma clang diagnostic push
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma clang diagnostic ignored "-Wunused-parameter"
-
 static void UpdateSplash(int value)
 {
     UpdateWaitDeltaMS();
@@ -115,12 +110,12 @@ static void UpdateSplash(int value)
     if (waitIsOver)
     {
         // Change to main Update function and render
-        glutTimerFunc(16, UpdateLoop, 0);
+        glutTimerFunc(16, UpdateLoop, value);
         glutDisplayFunc(RenderLoop);
     }
 
     // Keep waiting
-    glutTimerFunc(16, UpdateSplash, 0);
+    glutTimerFunc(16, UpdateSplash, value);
     UpdateEnd();
 }
 
@@ -131,10 +126,10 @@ static void UpdateAHold(int value)
     {
         // Change to main update and render
         glutDisplayFunc(RenderLoop);
-        glutTimerFunc(16, UpdateLoop, 0);
+        glutTimerFunc(16, UpdateLoop, value);
     }
     // Keep waiting
-    glutTimerFunc(16, UpdateAHold, 0);
+    glutTimerFunc(16, UpdateAHold, value);
     UpdateEnd();
 }
 
@@ -144,11 +139,9 @@ static void UpdateLoop(int value)
 
 	updateCall();
 
-    glutTimerFunc(16, UpdateLoop, 0);
+    glutTimerFunc(16, UpdateLoop, value);
     UpdateEnd();
 }
-#pragma GCC diagnostic pop
-#pragma clang diagnostic pop
 static void UpdateEnd()
 {
     // TODO Where is the correct place for this?
