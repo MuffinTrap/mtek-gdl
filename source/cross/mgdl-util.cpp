@@ -3,6 +3,13 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+#ifdef MGDL_PLATFORM_WINDOWS
+    // Windows does not find M_PI in math.h
+    #ifndef M_PI
+        #define M_PI  3.14159265358979323846
+    #endif
+#endif
+
 gdl::RGBA8Components gdl::ColorToComponents(u32 color)
 {
     RGBA8Components components = {0,0,0,0};

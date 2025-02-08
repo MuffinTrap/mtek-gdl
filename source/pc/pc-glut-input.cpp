@@ -21,9 +21,12 @@ gdl::WiiController glutController;
 
 
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
+#ifdef MGDL_PLATFORM_MAC
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
 
 void mouseKey(int button, int state, int x, int y)
 {
@@ -155,6 +158,8 @@ void specialKeyUp(int key, int x, int y) {
 }
 
 #pragma GCC diagnostic pop
+#ifdef MGDL_PLATFORM_MAC
 #pragma clang diagnostic pop
+#endif
 
 #endif

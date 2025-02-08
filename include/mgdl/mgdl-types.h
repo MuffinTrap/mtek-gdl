@@ -9,6 +9,7 @@
 #ifdef GEKKO
 
     #include <gctypes.h>
+// Wii gcc does not complain
     #include "ccVector/ccVector.h"
 
 #else
@@ -19,10 +20,11 @@
 #ifdef MGDL_PLATFORM_WINDOWS
     // Only MSYS UCRT64 GCC complains about -Wpedantic
     #pragma GCC diagnostic ignored "-Wpedantic"
-#endif
+#else
     // Linux GCC complains about anon types and gnu extension
     #pragma GCC diagnostic ignored "-Wnested-anon-types"
     #pragma GCC diagnostic ignored "-Wgnu-anonymous-struct"
+#endif
 
     #include "ccVector/ccVector.h"
 

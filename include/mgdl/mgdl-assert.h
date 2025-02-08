@@ -40,8 +40,10 @@ extern "C"
 #else
 	// On Windows and Mac the ##__VA_ARGS__ does not work
 
+#ifdef MGDL_PLATFORM_MAC
 	#pragma clang diagnostic push
 	#pragma clang diagnostic ignored "-Wvariadic-macros"
+#endif
 
 	#define gdl_assert_printf(test, message, ...) \
 	if ((test) == false) \
@@ -52,7 +54,9 @@ extern "C"
 		} \
 	}
 
+#ifdef MGDL_PLATFORM_MAC
 	#pragma clang diagnostic pop
+#endif
 
 #endif
 
