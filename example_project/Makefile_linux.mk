@@ -3,6 +3,7 @@ include Makefile_pc.mk
 # ############################################
 # Linux specific settings
 CXXFLAGS += -DMGDL_PLATFORM=\"Linux\"
+CXXFLAGS += -DMGDL_PLATFORM_LINUX
 
 # Set Compiler
 CXX = clang++

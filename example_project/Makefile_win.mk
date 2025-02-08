@@ -3,6 +3,7 @@ include Makefile_pc.mk
 # ######################################
 # Windows specific settings
 CXXFLAGS += -DMGDL_PLATFORM=\"Windows\"
+CXXFLAGS += -DMGDL_PLATFORM_WINDOWS
 
 # Set Compiler
 CXX = g++
