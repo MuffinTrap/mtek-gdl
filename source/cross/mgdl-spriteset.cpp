@@ -53,27 +53,26 @@ void gdl::SpriteSet::Draw2D(u16 spriteIndex, short x, short y, float scale, gdl:
 
 	glBegin(GL_QUADS);
 
-	vec2 tx0 = GetTextureCoordinate(spriteIndex, 0); // TOP LEFT
-	vec2 tx1= GetTextureCoordinate(spriteIndex, 1); // TOP RIGHT
-
-	vec2 tx2= GetTextureCoordinate(spriteIndex, 2); // LOW RIGHT
-	vec2 tx3= GetTextureCoordinate(spriteIndex, 3); //LOW LEFT!
-
-	// TOP LEFT
-	glTexCoord2f(tx0.x, tx0.y);
-	glVertex2f(drawPos.x, drawPos.y );
+	vec2 tx0= GetTextureCoordinate(spriteIndex, 0); //LOW LEFT!
+	vec2 tx1= GetTextureCoordinate(spriteIndex, 1); // LOW RIGHT
+	vec2 tx2= GetTextureCoordinate(spriteIndex, 2); // TOP RIGHT
+	vec2 tx3 = GetTextureCoordinate(spriteIndex, 3); // TOP LEFT
 
 	// LOW LEFT!
-	glTexCoord2f(tx3.x, tx3.y);
+	glTexCoord2f(tx0.x, tx0.y);
 	glVertex2f(drawPos.x, drawPos.y - height);
 
 	// LOW RIGHT
-	glTexCoord2f(tx2.x, tx2.y);
+	glTexCoord2f(tx1.x, tx1.y);
 	glVertex2f(drawPos.x + width, drawPos.y - height);
 
 	// TOP RIGHT
-	glTexCoord2f(tx1.x, tx1.y);
+	glTexCoord2f(tx2.x, tx2.y);
 	glVertex2f(drawPos.x + width, drawPos.y);
+
+	// TOP LEFT
+	glTexCoord2f(tx3.x, tx3.y);
+	glVertex2f(drawPos.x, drawPos.y );
 
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -95,27 +94,26 @@ void gdl::SpriteSet::Draw3D(u16 spriteIndex, float scale, gdl::AlignmentModes al
 
 	glBegin(GL_QUADS);
 
-	vec2 tx0 = GetTextureCoordinate(spriteIndex, 0); // TOP LEFT
-	vec2 tx1= GetTextureCoordinate(spriteIndex, 1); // TOP RIGHT
-
-	vec2 tx2= GetTextureCoordinate(spriteIndex, 2); // LOW RIGHT
-	vec2 tx3= GetTextureCoordinate(spriteIndex, 3); //LOW LEFT!
-
-	// TOP LEFT
-	glTexCoord2f(tx0.x, tx0.y);
-	glVertex3f(drawPos.x, drawPos.y, drawPos.z);
+	vec2 tx0= GetTextureCoordinate(spriteIndex, 0); //LOW LEFT!
+	vec2 tx1= GetTextureCoordinate(spriteIndex, 1); // LOW RIGHT
+	vec2 tx2= GetTextureCoordinate(spriteIndex, 2); // TOP RIGHT
+	vec2 tx3 = GetTextureCoordinate(spriteIndex, 3); // TOP LEFT
 
 	// LOW LEFT!
-	glTexCoord2f(tx3.x, tx3.y);
+	glTexCoord2f(tx0.x, tx0.y);
 	glVertex3f(drawPos.x, drawPos.y - height, drawPos.z);
 
 	// LOW RIGHT
-	glTexCoord2f(tx2.x, tx2.y);
+	glTexCoord2f(tx1.x, tx1.y);
 	glVertex3f(drawPos.x + width, drawPos.y - height, drawPos.z);
 
 	// TOP RIGHT
-	glTexCoord2f(tx1.x, tx1.y);
+	glTexCoord2f(tx2.x, tx2.y);
 	glVertex3f(drawPos.x + width, drawPos.y, drawPos.z);
+
+	// TOP LEFT
+	glTexCoord2f(tx3.x, tx3.y);
+	glVertex3f(drawPos.x, drawPos.y, drawPos.z);
 
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D, 0);

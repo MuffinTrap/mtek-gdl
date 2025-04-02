@@ -2,6 +2,8 @@ include Makefile_pc.mk
 
 # ############################################
 # MacOS specific settings
+CXXFLAGS += -DMGDL_PLATFORM=\"MacOS\"
+CXXFLAGS += -DMGDL_PLATFORM_MAC
 
 # Set Compiler
 CXX = clang++
@@ -24,7 +26,7 @@ CXXFLAGS += -I/opt/homebrew/include
 # Link libraries
 
 # Create a list of libraries that need to be linked
-LDFLAGS = -lmgdl -lpng -lsndfile -Wno-unused-function
+LDFLAGS = -lmgdl -lpng -lsndfile -lvorbisfile -logg -Wno-unused-function
 # MacOS need to tell to use OpenGL, OpenAL and GLUT differently
 LDFLAGS += -framework OpenGL -framework GLUT -framework OpenAL
 

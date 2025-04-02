@@ -20,9 +20,10 @@ namespace gdl
 		GLfloat shininess = 1.0f;
 		vec3 emissiveColor;
 		gdl::Image* texture;
+		gdl::MaterialType type;
 		Material();
 		Material(std::string name);
-		Material(std::string name, gdl::Image* texture);
+		Material(std::string name, gdl::Image* texture, gdl::MaterialType type);
 		void Apply();
 	};
 }

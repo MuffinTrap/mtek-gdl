@@ -1,6 +1,7 @@
 # Slightly modified makefile for MTek-GDL based projects for the Nintendo Wii
 # muffintrap: added portlibs directories for version 2.6.1
 
+
 #---------------------------------------------------------------------------------
 # Clear the implicit built in rules
 #---------------------------------------------------------------------------------
@@ -42,6 +43,8 @@ INCLUDES += rocket/
 #---------------------------------------------------------------------------------
 CFLAGS	= -g -Werror -Wall -Wextra -DPLATFORM_WII -std=c++11 $(MACHDEP) $(INCLUDE)
 CXXFLAGS	= -Wwrite-strings $(CFLAGS) -DSYNC_PLAYER -DUFBX_REAL_IS_FLOAT
+# Wii specific settings
+CXXFLAGS += -DMGDL_PLATFORM=\"Wii\"
 
 LDFLAGS	=	$(MACHDEP) -Wl,-Map,$(notdir $@).map
 

@@ -140,26 +140,26 @@ void gdl::Font::Icon ( u32 color, float x, float y, float textHeight, gdl::Align
 	gdl::RGBA8Floats f = gdl::ColorToFloats(color);
 	glBegin(GL_QUADS);
 	glColor3f(f.red, f.green, f.blue);
-		vec2 tx0 = GetTextureCoordinate(glyph, 0); // TOP LEFT
-		vec2 tx1= GetTextureCoordinate(glyph, 1); // TOP RIGHT
 
-		vec2 tx2= GetTextureCoordinate(glyph, 2); // LOW RIGHT
-		vec2 tx3= GetTextureCoordinate(glyph, 3); //LOW LEFT!
+		vec2 tx0= GetTextureCoordinate(glyph, 0); //LOW LEFT!
+		vec2 tx1= GetTextureCoordinate(glyph, 1); // LOW RIGHT
+		vec2 tx2= GetTextureCoordinate(glyph, 2); // TOP RIGHT
+		vec2 tx3 = GetTextureCoordinate(glyph, 3); // TOP LEFT
 
 		// LOW LEFT!
-		glTexCoord2f(tx3.x, tx3.y);
+		glTexCoord2f(tx0.x, tx0.y);
 		glVertex3f(dx, dy - textHeight, dz);
 
 		// LOW RIGHT
-		glTexCoord2f(tx2.x, tx2.y);
+		glTexCoord2f(tx1.x, tx1.y);
 		glVertex3f(dx + step, dy - textHeight, dz);
 
 		// TOP RIGHT
-		glTexCoord2f(tx1.x, tx1.y);
+		glTexCoord2f(tx2.x, tx2.y);
 		glVertex3f(dx + step, dy, dz);
 
 		// TOP LEFT
-		glTexCoord2f(tx0.x, tx0.y);
+		glTexCoord2f(tx3.x, tx3.y);
 		glVertex3f(dx, dy, dz);
 
 	glEnd();
@@ -216,26 +216,26 @@ void gdl::Font::Print(u32 color, float x, float y, float textHeight, gdl::Alignm
 			dy -= textHeight + spacingY;
 			continue;
 		}
-		vec2 tx0 = GetTextureCoordinate(character, 0); // TOP LEFT
-		vec2 tx1= GetTextureCoordinate(character, 1); // TOP RIGHT
+		vec2 tx0= GetTextureCoordinate(character, 0); //LOW LEFT!
+		vec2 tx1= GetTextureCoordinate(character, 1); // LOW RIGHT
+		vec2 tx2= GetTextureCoordinate(character, 2); // TOP RIGHT
+		vec2 tx3 = GetTextureCoordinate(character, 3); // TOP LEFT
 
-		vec2 tx2= GetTextureCoordinate(character, 2); // LOW RIGHT
-		vec2 tx3= GetTextureCoordinate(character, 3); //LOW LEFT!
 
 		// LOW LEFT!
-		glTexCoord2f(tx3.x, tx3.y);
+		glTexCoord2f(tx0.x, tx0.y);
 		glVertex3f(dx, dy - textHeight, dz);
 
 		// LOW RIGHT
-		glTexCoord2f(tx2.x, tx2.y);
+		glTexCoord2f(tx1.x, tx1.y);
 		glVertex3f(dx + step, dy - textHeight, dz);
 
 		// TOP RIGHT
-		glTexCoord2f(tx1.x, tx1.y);
+		glTexCoord2f(tx2.x, tx2.y);
 		glVertex3f(dx + step, dy, dz);
 
 		// TOP LEFT
-		glTexCoord2f(tx0.x, tx0.y);
+		glTexCoord2f(tx3.x, tx3.y);
 		glVertex3f(dx, dy, dz);
 		dx += step + spacingX;
 	}
@@ -315,16 +315,16 @@ void gdl::Font::DrawSheet ()
 		glColor3f(1.0f, 1.0f, 1.0f);
 
 		// Lower left
-		glTexCoord2f(0.0f, 1.0f);
+		glTexCoord2f(0.0f, 0.0f);
 		glVertex3f(x-aspect*0.5f, y-0.5f, z);
 		// Lower right
-		glTexCoord2f(1.0f, 1.0f);
+		glTexCoord2f(1.0f, 0.0f);
 		glVertex3f(x+aspect*0.5f, y-0.5f, z);
 		// Upper right
-		glTexCoord2f(1.0f, 0.0f);
+		glTexCoord2f(1.0f, 1.0f);
 		glVertex3f(x+aspect*0.5f, y+0.5f, z);
 		// Upper left
-		glTexCoord2f(0.0f, 0.0f);
+		glTexCoord2f(0.0f, 1.0f);
 		glVertex3f(x-aspect*0.5f, y+0.5f, z);
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -355,33 +355,24 @@ void gdl::Font::CreateTextureCoordList ( short rows, short charactersPerRow, sho
 		gdl_assert_print(tList != nullptr, "Out of memory when allocation font txcord list");
 	}
 
-	char currentCharacter = this->firstIndex;
-	gdl_assert_print(currentCharacter >= ' ', "First character must be space or bigger");
-	short textureIndex = 0;
-
 	printf("Creating coordinates: rows %d, cperRow %d, textureW %d, textrureH %d\n", rows, charactersPerRow, texW, texH);
 
+	char currentCharacter = this->firstIndex;
+	gdl_assert_print(currentCharacter >= ' ', "First character must be space or bigger");
+
 	// If the last character in image is not included this crashes unless we keep track of how many should be found
+	short textureIndex = 0;
 	short found = 0;
 
 	for(short cy=0; cy<rows; cy++) {
 		for(short cx=0; cx<charactersPerRow; cx++) {
 			// Coordinates to source image
-			float tx = cw * cx;
-			float ty = ch * cy;
-			float tx2 = (tx + cw);
-			float ty2 = (ty + ch);
-
 			// Is this character included
 			bool included = characters.find_first_of(currentCharacter) != std::string::npos;
 			if (!included)
 			{
 				// Not included: set texture coords same as first one
-				tx = 0;
-				ty = 0;
-				tx2 = (tx + cw);
-				ty2 = (ty + ch);
-
+				CreateCoordinatesForGlyph(textureIndex, 0, 0, texW, texH);
 				//printf("Excluded: %c\n", currentCharacter);
 				// Decrement cx so that characters that are not included
 				// do not advance coordinates
@@ -391,24 +382,8 @@ void gdl::Font::CreateTextureCoordList ( short rows, short charactersPerRow, sho
 			{
 				found++;
 				// printf("Included: %c. Found %d/%d\n", currentCharacter, found, toBeFoundAmount);
+				CreateCoordinatesForGlyph(textureIndex, cx, cy, texW, texH);
 			}
-
-			u32 tc = textureIndex;
-			// Upper-left
-			tList[tc].x	= tx/texW;
-			tList[tc].y	= ty/texH;
-
-			// Upper-right
-			tList[tc+1].x	= tx2/texW;
-			tList[tc+1].y	= ty/texH;
-
-			// Lower-right
-			tList[tc+2].x	= tx2/texW;
-			tList[tc+2].y	= ty2/texH;
-
-			// Lower-left
-			tList[tc+3].x	= tx/texW;
-			tList[tc+3].y	= ty2/texH;
 
 			// In this version the textureIndex and cx are not the same
 			// Because even the characters that are not included have
@@ -431,6 +406,42 @@ void gdl::Font::CreateTextureCoordList ( short rows, short charactersPerRow, sho
 	CacheFlushRange(tList, tListSize);
 }
 
+void gdl::Font::CreateCoordinatesForGlyph ( u32 textureIndex, short cx, short cy, short texW, short texH )
+{
+	u32 tc = textureIndex;
+	// NOTE: These are pixel coordinates
+	// where origo is in the lower left coordinate
+	// and Y increases upwards
+
+	// But the first glyph is in the top left corner of the
+	// image
+
+	// tx and ty are lower left corner of glyph's area
+	float tx = cw * cx;
+	float ty = texH - ch - ch * cy;
+
+	// tx2 and ty2 are upper right corner of glyph's area
+	float tx2 = (tx + cw);
+	float ty2 = (ty + ch);
+
+	// NOTE: Stored in the quad drawing order
+	// Lower-left
+	tList[tc+0].x	= tx/texW;
+	tList[tc+0].y	= ty/texH;
+
+	// Lower-right
+	tList[tc+1].x	= tx2/texW;
+	tList[tc+1].y	= ty/texH;
+
+	// Upper-right
+	tList[tc+2].x	= tx2/texW;
+	tList[tc+2].y	= ty2/texH;
+
+	// Upper-left
+	tList[tc+3].x	= tx/texW;
+	tList[tc+3].y	= ty2/texH;
+}
+
 
 void gdl::Font::CreateTextureCoordList(short rows, short charactersPerRow, short texW, short texH)
 {
@@ -449,30 +460,9 @@ void gdl::Font::CreateTextureCoordList(short rows, short charactersPerRow, short
 	for(short cy=0; cy<rows; cy++) {
 		for(short cx=0; cx<charactersPerRow; cx++) {
 
-			// Coordinates to source image
-			float tx = cw * cx;
-			float ty = ch * cy;
-			float tx2 = (tx + cw);
-			float ty2 = (ty + ch);
-
 			// Texture coordinate array index
 			u32 tc = 4*(cx+(charactersPerRow*cy));
-
-			// Upper-left
-			tList[tc].x	= tx/texW;
-			tList[tc].y	= ty/texH;
-
-			// Upper-right
-			tList[tc+1].x	= tx2/texW;
-			tList[tc+1].y	= ty/texH;
-
-			// Lower-right
-			tList[tc+2].x	= tx2/texW;
-			tList[tc+2].y	= ty2/texH;
-
-			// Lower-left
-			tList[tc+3].x	= tx/texW;
-			tList[tc+3].y	= ty2/texH;
+			CreateCoordinatesForGlyph(tc, cx, cy, texW, texH);
 		}
 	}
 	CacheFlushRange(tList, tListSize);

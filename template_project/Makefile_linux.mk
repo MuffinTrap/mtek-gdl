@@ -2,6 +2,8 @@ include Makefile_pc.mk
 
 # ############################################
 # Linux specific settings
+CXXFLAGS += -DMGDL_PLATFORM=\"Linux\"
+CXXFLAGS += -DMGDL_PLATFORM_LINUX
 
 # Set Compiler
 CXX = clang++
@@ -24,7 +26,7 @@ EXE_SUFFIX = .elf
 # Link libraries
 
 # Create a list of libraries that need to be linked
-LDFLAGS = -lmgdl -lpng -lsndfile -lopenal -lGL -lGLU -lglut -Wno-unused-function -z muldefs
+LDFLAGS = -lmgdl -lpng -lsndfile -lopenal -lGL -lGLU -lglut -lvorbisfile -logg -Wno-unused-function -z muldefs
 
 
 

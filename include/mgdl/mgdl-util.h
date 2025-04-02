@@ -35,6 +35,7 @@ namespace gdl
 
 	float Deg2Rad(float degrees);
 	float Rad2Deg(float radians);
+
 };
 
 /*! \addtogroup colorMacros Color Handling Macros

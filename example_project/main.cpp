@@ -121,6 +121,6 @@ int main()
         render
         //,gdl::PlatformInitFlag::FlagPauseUntilA
         //,gdl::PlatformInitFlag::FlagSplashScreen
-        ,gdl::PlatformInitFlag::FlagSplashScreen|gdl::PlatformInitFlag::FlagPauseUntilA|gdl::PlatformInitFlag::FlagFullScreen
+        //,gdl::PlatformInitFlag::FlagSplashScreen|gdl::PlatformInitFlag::FlagPauseUntilA|gdl::PlatformInitFlag::FlagFullScreen
     );
 }

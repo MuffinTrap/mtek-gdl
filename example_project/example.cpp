@@ -4,6 +4,7 @@
 
 #include <string>
 
+
 Example::Example()
 {
 
@@ -22,15 +23,43 @@ void Example::Init()
     sampleMusic = gdl::LoadOgg("assets/sample3.ogg");
 
     wiiTexture = gdl::LoadImage("assets/wii_console_texture.png", gdl::TextureFilterModes::Nearest);
+    matcapTexture = gdl::LoadImage("assets/matcap.png", gdl::TextureFilterModes::Linear);
 
     gdl::FBXFile* wiiFbx = new gdl::FBXFile();
     wiiScene = wiiFbx->LoadFile("assets/wii_et_baby.fbx");
     wiiScene->SetMaterialTexture("wii_console_texture.png", wiiTexture);
 
+    matcapMaterial = new gdl::Material("matcap", matcapTexture, gdl::MaterialType::Matcap);
+
+    gdl::FBXFile* ShipFile = new gdl::FBXFile();
+    icosaScene = ShipFile->LoadFile("assets/ship_with_uvs.fbx");
+    icosaScene->SetAllMaterialTextures(matcapTexture);
+    gdl::Material* st = icosaScene->GetMaterial("standardSurface1");
+    gdl::Material* mt2 = icosaScene->GetMaterial("Material.002");
+    if (st!=nullptr)
+    {
+        st->type = gdl::MaterialType::Matcap;
+    }
+    if (mt2!=nullptr)
+    {
+        mt2->type = gdl::MaterialType::Matcap;
+    }
+    /*
+    icosaScene = new gdl::Scene();
+    icosaScene->AddMaterial(matcapMaterial);
+  //  gdl::Mesh* quad = gdl::Mesh::CreateQuad(true, true);
+   gdl::Mesh* icosaMesh = gdl::Mesh::CreateIcosahedron(true, true);
+    gdl::Node* icosaNode = new gdl::Node("icosaNode", icosaMesh, matcapMaterial);
+    icosaScene->AddChildNode(nullptr, icosaNode);
+    */
+
 
     menu = gdl::MenuCreator(ibmFont, 1.0f, 1.0f);
+    cameraMenu = gdl::MenuCreator(debugFont, 1.0f, 1.0f);
 
     musicLooping = sampleMusic->GetLooping();
+    sceneRotation = vec3New(0.0f, 0.0f,0.0f);
+    //quad->DebugPrint();
 }
 
 void Example::Update()
@@ -42,8 +71,11 @@ void Example::Update()
 
     static std::string babyName = "cuboid";
     gdl::Node* baby = wiiScene->GetNode(babyName);
-    baby->transform.rotationDegrees.x += deltaTime * 25.0f;
-    baby->transform.rotationDegrees.z += deltaTime * 40.0f;
+    if (baby != nullptr)
+    {
+        baby->transform.rotationDegrees.x += deltaTime * 25.0f;
+        baby->transform.rotationDegrees.z += deltaTime * 40.0f;
+    }
 
     mouseClick = gdl::GetController(0).ButtonPress(gdl::WiiButtons::ButtonA);
 }
@@ -66,7 +98,8 @@ void Example::Draw()
     glLoadIdentity();
     DrawImage();
 
-    DrawWii();
+    vec3 s = vec3New(1, 1, 1);
+    DrawScene(icosaScene, s);
 
     gdl::InitOrthoProjection();
     glMatrixMode(GL_MODELVIEW);
@@ -76,6 +109,7 @@ void Example::Draw()
     short sh = gdl::GetScreenHeight();
     short top = sh - 32;
     short left = 22;
+    /*
     DrawMenu(left, top - 120, 120);
     DrawSprites();
     DrawTimingInfo(left,
@@ -83,6 +117,9 @@ void Example::Draw()
                    ibmFont->GetCharacterHeight());
     DrawVersion();
     DrawInputInfo(left, top);
+    */
+
+    DrawCameraControls(gdl::GetScreenWidth()-80, top-120, 80);
 }
 
 void Example::DrawVersion()
@@ -106,11 +143,11 @@ void Example::DrawImage()
 }
 
 
-void Example::DrawWii()
+void Example::DrawScene ( gdl::Scene* scene, const vec3& scale)
 {
     // Try to draw Wii 3D model
     gdl::InitPerspectiveProjection(75.0f, 0.1f, 100.0f);
-    gdl::InitCamera(vec3New(0.0f, 0.0f, 0.0f), vec3New(0.0f, 0.0f, -1.0f), vec3New(0.0f, 1.0f, 0.0f));
+    gdl::InitCamera(vec3New(0.0f, 0.0f, cameraDistance), vec3New(0.0f, 0.0f, 0.0f), vec3New(0.0f, 1.0f, 0.0f));
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -126,14 +163,18 @@ void Example::DrawWii()
 
     glPushMatrix();
 
-    glTranslatef(5.0f, -5.0f, -12.0f);
-    glRotatef(elapsedSeconds * 10.0f, 0.0f, 1.0f, 0.0f);
-    glScalef(0.1f, 0.1f, 0.1f);
+    glTranslatef(0.0f, 0.0f, 0.0f);
+    float elp = gdl::GetElapsedSeconds();
+    glRotatef(elp * sceneRotation.x * 10.0f, 1.0f, 0.0f, 0.0f);
+    glRotatef(elp * sceneRotation.y * 10.0f, 0.0f, 1.0f, 0.0f);
+    glRotatef(elp * sceneRotation.z * 10.0f, 0.0f, 0.0f, 1.0f);
+    glScalef(scale.x, scale.y, scale.z);
 
-    wiiScene->Draw();
+    scene->Draw();
 
     glPopMatrix();
     glDisable(GL_DEPTH_TEST);
+
 }
 
 static void DrawButtons(short x, short y, short size, gdl::Font* font)
@@ -315,6 +356,7 @@ void Example::DrawMenu(int x, int y, int w)
     menu.StartMenu(x, y, w, cp.xAxis, flip_y, mouseClick);
 
     menu.Text("Hi! I am menu.");
+
     menu.Panel(2, gdl::Colors::Yellow);
     if (menu.Button("Play Ogg"))
     {
@@ -342,3 +384,51 @@ void Example::DrawMenu(int x, int y, int w)
         gdl_assert_print(false, "Assert button pressed!");
     }
 }
+
+void Example::DrawCameraControls(int x, int y, int w)
+{
+    gdl::ControllerVec2 cp = gdl::GetController(0).GetCursorPosition();
+    int h = gdl::GetScreenHeight();
+    int flip_y = h-cp.yAxis;
+
+    cameraMenu.StartMenu(x, y, w, cp.xAxis, flip_y, mouseClick);
+
+    cameraMenu.Text("Control camera");
+    if (cameraMenu.Button("Closer!"))
+    {
+        cameraDistance -= 1.0f;
+    }
+    if (cameraMenu.Button("Away!"))
+    {
+        cameraDistance += 1.0f;
+    }
+    if (cameraMenu.Button("Rotate Left"))
+    {
+        sceneRotation.y -= 1.0f;
+    }
+    if (cameraMenu.Button("Rotate right!"))
+    {
+        sceneRotation.y += 1.0f;
+    }
+    if (cameraMenu.Button("Rotate Up"))
+    {
+        sceneRotation.x -= 1.0f;
+    }
+    if (cameraMenu.Button("Rotate Down!"))
+    {
+        sceneRotation.x += 1.0f;
+    }
+    if (cameraMenu.Button("Rotate CW"))
+    {
+        sceneRotation.z -= 1.0f;
+    }
+    if (cameraMenu.Button("Rotate CCW!"))
+    {
+        sceneRotation.z += 1.0f;
+    }
+    if (cameraMenu.Button("Reset "))
+    {
+        sceneRotation = vec3Zero();
+    }
+}
+

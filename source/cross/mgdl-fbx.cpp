@@ -184,6 +184,7 @@ void PushPosition(gdl::Mesh* mesh, size_t index, ufbx_vec3 pos)
 
 void PushNormal(gdl::Mesh* mesh, size_t index, ufbx_vec3 n)
 {
+	gdl_assert_print(mesh->normals != nullptr, "Cannot push normal to nullptr");
 	// Where the vec3 begins in array
 	// every vertex has 3 floats
 	size_t vni = index * 3;
@@ -207,51 +208,11 @@ void PushUV(gdl::Mesh* mesh, size_t index, ufbx_vec2 uv)
 
 gdl::Mesh * gdl::FBXFile::AllocateMesh ( ufbx_mesh* fbxMesh )
 {
-	gdl::Mesh *mesh = new gdl::Mesh();
-
-	int tris = fbxMesh->num_triangles;
-	mesh->indexCount = tris * 3;
-	if (debugPrint)
-	{
-		printf("Mesh has %d triangles\n", tris);
-	}
-
-	// Reserve space
-	int byteCount = 0;
-
-	mesh->indices = new GLushort[mesh->indexCount];
-	byteCount += mesh->indexCount * sizeof(float);
-
-	size_t vertexAmount = tris * 3;
-	mesh->vertexCount = vertexAmount;
-	{
-		// 3 floats per position
-		size_t positionFloats = vertexAmount * 3;
-		mesh->positions = new GLfloat[positionFloats];
-		byteCount += positionFloats * sizeof(float);
-	}
-
+	sizetype vertices = fbxMesh->num_triangles * 3;
 	bool normals = fbxMesh->vertex_normal.exists;
-	if (normals)
-	{
-		// 3 floats per normal
-		size_t normalFloats = vertexAmount * 3;
-		mesh->normals = new GLfloat[normalFloats];
-		byteCount += normalFloats * sizeof(float);
-	}
 	bool uvs = fbxMesh->vertex_uv.exists;
-	if (uvs)
-	{
-		// 2 floats per uv
-		size_t uvFloats = vertexAmount * 2;
-		mesh->uvs = new GLfloat[uvFloats];
-		byteCount += uvFloats * sizeof(float);
-	}
-	if (debugPrint)
-	{
-		printf("Allocated %d bytes for the mesh\n", byteCount);
-	}
-
+	gdl::Mesh *mesh = new gdl::Mesh();
+	mesh->Allocate(vertices, vertices, normals, uvs);
 	return mesh;
 }
 

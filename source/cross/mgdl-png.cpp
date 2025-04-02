@@ -300,7 +300,7 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 	size_t rowSize = w * bytesPerPixel;
 
 	// Is the first row at the start or at the end?
-// #define READ_BOTTOM_UP
+ #define READ_BOTTOM_UP
 
 	for (png_uint_32 i = 0; i < h; i++)
 	{

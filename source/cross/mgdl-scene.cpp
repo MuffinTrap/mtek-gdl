@@ -57,28 +57,8 @@ void gdl::Scene::Draw()
 
 void gdl::Scene::DrawNode ( gdl::Node* node )
 {
-	const vec3& t = node->transform.position;
 	glPushMatrix();
-		glTranslatef(t.x, t.y, t.z);
-
-		const vec3& r = node->transform.rotationDegrees;
-		glRotatef(r.x, 1.0f, 0.0f, 0.0f);
-		glRotatef(r.y, 0.0f, 1.0f, 0.0f);
-		glRotatef(r.z, 0.0f, 0.0f, 1.0f);
-
-		const vec3& s = node->transform.scale;
-		glScalef(s.x, s.y, s.z);
-
-		gdl::Mesh* m = node->mesh;
-		if (m != nullptr)
-		{
-			if (node->material != nullptr)
-			{
-				// TODO do not reapply same material
-				node->material->Apply();
-			}
-			m->DrawElements();
-		}
+		node->Draw();
 		for(size_t i = 0; i < node->children.size(); i++)
 		{
 			DrawNode(node->children[i]);
@@ -97,6 +77,14 @@ void gdl::Scene::SetMaterialTexture (const std::string& materialName, gdl::Image
 	{
 		printf("No material found with name %s\n", materialName.c_str());
 		return;
+	}
+}
+
+void gdl::Scene::SetAllMaterialTextures (gdl::Image* texture )
+{
+	for(unsigned long i = 0; i < materials.size(); i++)
+	{
+		materials[i]->texture = texture;
 	}
 }
 

@@ -533,6 +533,8 @@ static unsigned char header_data[] = {
 
 gdl::Font* gdl::GetDebugFont()
 {
+	// NOTE In OpenGL
+	// the origo 0,0 is in lower left coordinate
 	static gdl::Font* debugFont = nullptr;
 	if (debugFont == nullptr)
 	{
@@ -542,7 +544,8 @@ gdl::Font* gdl::GetDebugFont()
 		{
 			for(unsigned int x = 0; x < width; x++)
 			{
-				unsigned char index = header_data[y * width + x];
+				unsigned int read_y = height-1-y;
+				unsigned char index = header_data[read_y * width + x];
 				fontImage[y][x][0] = header_data_cmap[index][0];
 				fontImage[y][x][1] = header_data_cmap[index][1];
 				fontImage[y][x][2] = header_data_cmap[index][2];

@@ -46,6 +46,7 @@ namespace gdl
 
 		void CreateTextureCoordList(short rows, short charactersPerRow, short texW, short texH);
 		void CreateTextureCoordList(short rows, short charactersPerRow, short texW, short texH, std::string characters);
+		void CreateCoordinatesForGlyph(u32 textureIndex, short cx, short cy, short texW, short texH);
 		vec2 GetTextureCoordinate(char character, char subIndex);
 		vec2 GetTextureCoordinate(gdl::IconSymbol glyph, char subIndex);
 		GLuint textureName;

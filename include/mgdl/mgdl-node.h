@@ -22,5 +22,7 @@ namespace gdl
 		Node();
 		Node(std::string name, vec3 position, vec3 rotationAngles);
 		Node(std::string name, gdl::Mesh* meshParam, gdl::Material* materialParam);
+
+		void Draw();
 	};
 }

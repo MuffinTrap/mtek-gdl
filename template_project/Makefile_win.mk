@@ -2,6 +2,8 @@ include Makefile_pc.mk
 
 # ######################################
 # Windows specific settings
+CXXFLAGS += -DMGDL_PLATFORM=\"Windows\"
+CXXFLAGS += -DMGDL_PLATFORM_WINDOWS
 
 # Set Compiler
 CXX = g++
@@ -26,11 +28,11 @@ EXE_SUFFIX = .exe
 # Create a list of libraries that need to be linked
 
 # NOTE ! 
-# Bloody C++ linking order is "last is first" and it does not read the
+# C++ linking order is "last is first" and it does not read the
 # list before it tries to link
 # So the libraries not used by other libraries need to be last
 # and mgdl needs to be first
-LDFLAGS = -lmgdl -lpng -lopenal -lsndfile -lfreeglut -lglu32 -lopengl32 -lws2_32 -Wl,--allow-multiple-definition
+LDFLAGS = -lmgdl -lpng -lopenal -lsndfile -lfreeglut -lglu32 -lopengl32 -lvorbisfile -logg -lws2_32 -Wl,--allow-multiple-definition
 
 
 

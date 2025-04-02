@@ -97,16 +97,16 @@ void gdl::Image::Draw2DAbsolute(short x, short y, short x2, short y2)
 		glColor3f(red, green, blue);
 
 		// Lower left
-		glTexCoord2f(0.0f, 1.0f);
+		glTexCoord2f(0.0f, 0.0f);
 		glVertex2f(dx, dy);
 		// Lower right
-		glTexCoord2f(1.0f, 1.0f);
+		glTexCoord2f(1.0f, 0.0f);
 		glVertex2f(dx2, dy);
 		// Upper right
-		glTexCoord2f(1.0f, 0.0f);
+		glTexCoord2f(1.0f, 1.0f);
 		glVertex2f(dx2, dy2);
 		// Upper left
-		glTexCoord2f(0.0f, 0.0f);
+		glTexCoord2f(0.0f, 1.0f);
 		glVertex2f(dx, dy2);
 
 	glEnd();
@@ -171,20 +171,21 @@ void gdl::Image::Draw3D(float scale, gdl::AlignmentModes alignX, gdl::AlignmentM
 	glBegin(GL_QUADS);
 		glColor3f(red, green, blue);
 
+		// TODO calculate uv to be inside border pixels to avoid repeating
 		// Lower left
-		glTexCoord2f(0.0f, 1.0f);
+		glTexCoord2f(0.0f, 0.0f);
 		glVertex3f(x-aspect*hs, y-hs, z);
 
 		// Lower right
-		glTexCoord2f(1.0f, 1.0f);
+		glTexCoord2f(1.0f, 0.0f);
 		glVertex3f(x+aspect*hs, y-hs, z);
 
 		// Upper right
-		glTexCoord2f(1.0f, 0.0f);
+		glTexCoord2f(1.0f, 1.0f);
 		glVertex3f(x+aspect*hs, y+hs, z);
 
 		// Upper left
-		glTexCoord2f(0.0f, 0.0f);
+		glTexCoord2f(0.0f, 1.0f);
 		glVertex3f(x-aspect*hs, y+hs, z);
 
 

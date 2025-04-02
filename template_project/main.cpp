@@ -27,7 +27,7 @@ void update()
 
 int main()
 {
-    gdl::InitSystem(
+    gdl::InitSystem(MGDL_PLATFORM,
         gdl::ScreenAspect::Screen4x3,
         init,
         update,  // std::function callbacks

@@ -39,6 +39,8 @@
 
 #endif
 
+typedef ssize_t sizetype;
+
 namespace gdl
 {
 
@@ -81,6 +83,19 @@ namespace gdl
         LN_MM_NR,	//!< Linear-mipmap-Near (texture must be mipmapped).
         NR_MM_LN,	//!< Near-mipmap-Linear (texture must be mipmapped).
         LN_MM_LN,	//!< Linear-mipmap-Linear (texture must be mipmapped).
+    };
+
+    /*! Material types
+     *
+     *	\details Different types of materials for rendering meshes.
+     *
+     *	\note Mipmapped filtering modes only work if the texture or image was created with gdl::Texture::CreateMipmapped(),
+     *		gdl::Image::CreateMipmapped() and gdl::Image::LoadImageMipmapped() and must be specified to the minFilt parameter
+     *		of said functions to work.
+     */
+    enum MaterialType {
+        Diffuse,    // Straightforward texture
+        Matcap      // Mesh UV's are recalculated to sample from texture based on the camera view matrix
     };
 
     /*! Alignment modes
