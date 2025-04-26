@@ -36,9 +36,9 @@ PNGFile* LoadPNG(const char* filename)
 	}
 }
 
-gdl::Image* LoadImageFile(const char* filename, gdl::TextureFilterModes filterMode)
+Image* LoadImageFile(const char* filename, gdl::TextureFilterModes filterMode)
 {
-	gdl::Image* img = Image_LoadFile(filename, filterMode);
+	Image* img = Image_LoadFile(filename, filterMode);
 	if (img != nullptr)
 	{
 		AssetManager_LoadImage(&assetManager, img);
@@ -50,9 +50,9 @@ gdl::Image* LoadImageFile(const char* filename, gdl::TextureFilterModes filterMo
 	}
 }
 
-gdl::Image* LoadImagePNG(PNGFile* png, gdl::TextureFilterModes filterMode)
+Image* LoadImagePNG(PNGFile* png, gdl::TextureFilterModes filterMode)
 {
-	gdl::Image* img = Image_LoadPNG(png, filterMode);
+	Image* img = Image_LoadPNG(png, filterMode);
 	if (img != nullptr)
 	{
 		return img;
@@ -123,7 +123,7 @@ gdl::Sound* LoadOgg(const char* filename)
 
 Font* LoadFontFile(const char* filename, short characterWidth, short characterHeight, char firstCharacter)
 {
-	gdl::Image* fontImage = LoadImageFile(filename, gdl::TextureFilterModes::Linear);
+	Image* fontImage = LoadImageFile(filename, gdl::TextureFilterModes::Linear);
 	Font* font = Font_Load(fontImage, characterWidth, characterHeight, firstCharacter);
 	if (font != nullptr)
 	{
@@ -138,7 +138,7 @@ Font* LoadFontFile(const char* filename, short characterWidth, short characterHe
 
 Font* LoadFontCustom(const char* filename, short characterWidth, short characterHeight, char firstCharacter, short charactersPerRow)
 {
-	gdl::Image* fontImage = LoadImageFile(filename, gdl::TextureFilterModes::Linear);
+	Image* fontImage = LoadImageFile(filename, gdl::TextureFilterModes::Linear);
 	Font* font = Font_LoadPadded(fontImage, characterWidth, characterHeight, firstCharacter, charactersPerRow);
 
 	if (font != nullptr)
@@ -154,7 +154,7 @@ Font* LoadFontCustom(const char* filename, short characterWidth, short character
 
 Font* LoadFontCustom(const char* filename, short characterWidth, short characterHeight, short charactersPerRow, const char* characters)
 {
-	gdl::Image* fontImage = LoadImageFile(filename, gdl::TextureFilterModes::Linear);
+	Image* fontImage = LoadImageFile(filename, gdl::TextureFilterModes::Linear);
 	Font* font = Font_LoadSelective(fontImage, characterWidth, characterHeight, charactersPerRow, characters);
 	if (font != nullptr)
 	{

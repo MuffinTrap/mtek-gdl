@@ -91,3 +91,31 @@ float gdl::Rad2Deg(float radians)
 {
     return 180.0f * radians/(float)M_PI;
 }
+
+GLint gdl::TextureFilterToGLFilter(gdl::TextureFilterModes filterMode)
+{
+	switch(filterMode)
+	{
+		case gdl::TextureFilterModes::Linear:
+			return GL_LINEAR;
+			break;
+		case gdl::TextureFilterModes::Nearest:
+			return GL_NEAREST;
+			break;
+		case gdl::TextureFilterModes::LN_MM_LN:
+			return GL_LINEAR_MIPMAP_LINEAR;
+			break;
+		case gdl::TextureFilterModes::LN_MM_NR:
+			return GL_LINEAR_MIPMAP_NEAREST;
+			break;
+		case gdl::TextureFilterModes::NR_MM_LN:
+			return GL_NEAREST_MIPMAP_LINEAR;
+			break;
+		case gdl::TextureFilterModes::NR_MM_NR:
+			return GL_NEAREST_MIPMAP_NEAREST;
+			break;
+		default:
+			return GL_LINEAR;
+			break;
+	};
+}

@@ -18,7 +18,7 @@ struct Font
 	short ch; /**< Character height in pixels.*/
 
 
-	gdl::Image* _fontImage;
+	Image* _fontImage;
 
 	vec2		*_tList;
 	float _uvWidth;
@@ -50,7 +50,7 @@ void Font_SetSpacingOnce(Font* font, float x, float y);
  *
  * @return Loaded font or nullptr if failed to load.
  */
-Font* Font_Load(gdl::Image* fontImage, short charw, short charh, char firstCharacter);
+Font* Font_Load(Image* fontImage, short charw, short charh, char firstCharacter);
 
 /**
  * @brief Loads a font from an image.
@@ -65,7 +65,7 @@ Font* Font_Load(gdl::Image* fontImage, short charw, short charh, char firstChara
  *
  * @return True if the loading succeeded.
  */
-Font* Font_LoadPadded(gdl::Image* fontImage, short charw, short charh, char firstCharacter, short charactersPerRow);
+Font* Font_LoadPadded(Image* fontImage, short charw, short charh, char firstCharacter, short charactersPerRow);
 
 /**
  * @brief Loads a font from an image.
@@ -81,7 +81,7 @@ Font* Font_LoadPadded(gdl::Image* fontImage, short charw, short charh, char firs
  *
  * @return True if the loading succeeded.
  */
-Font* Font_LoadSelective(gdl::Image* fontImage, short charw, short charh, short charactersPerRow, std::string characters );
+Font* Font_LoadSelective(Image* fontImage, short charw, short charh, short charactersPerRow, std::string characters );
 
 /**
  * @brief Draws text either in 2D or 3D.

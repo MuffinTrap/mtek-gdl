@@ -12,5 +12,5 @@ struct AssetManager
 
 void AssetManager_Init(AssetManager* manager);
 void AssetManager_LoadFont(AssetManager* manager, Font* font);
-void AssetManager_LoadImage(AssetManager* manager, gdl::Image* image);
+void AssetManager_LoadImage(AssetManager* manager, Image* image);
 void AssetManager_LoadPNG(AssetManager* manager, PNGFile* png);

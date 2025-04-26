@@ -10,7 +10,7 @@ void AssetManager_LoadFont(AssetManager* manager, Font* font)
 	// TODO how much memory the coordinates take
 }
 
-void AssetManager_LoadFont(AssetManager* manager, gdl::Image* image)
+void AssetManager_LoadFont(AssetManager* manager, Image* image)
 {
 	// TODO how much memory the image data takes extracted
 }

@@ -7,7 +7,9 @@
 #include <cstdlib>
 #include <cstring>
 
-gdl::Image* Image_LoadFile ( const char* filename, gdl::TextureFilterModes filterMode)
+using namespace gdl;
+
+Image* Image_LoadFile ( const char* filename, gdl::TextureFilterModes filterMode)
 {
 	// Load using png
 	printf("Loading image %s\n", filename);
@@ -17,7 +19,7 @@ gdl::Image* Image_LoadFile ( const char* filename, gdl::TextureFilterModes filte
 	{
 		return nullptr;
 	}
-	gdl::Image* image =  Image_LoadPNG(pngFile, filterMode);
+	Image* image =  Image_LoadPNG(pngFile, filterMode);
 
 	// Data is loaded to OpenGX, release the buffers
 	PNG_DeleteData(pngFile);
@@ -25,10 +27,10 @@ gdl::Image* Image_LoadFile ( const char* filename, gdl::TextureFilterModes filte
 }
 
 // The png might belong to someone else, do not free it in this function
-gdl::Image* Image_LoadPNG(PNGFile* png, gdl::TextureFilterModes filterMode)
+Image* Image_LoadPNG(PNGFile* png, gdl::TextureFilterModes filterMode)
 {
-	gdl::Image* image = new gdl::Image();
-	GLint glFilter = gdl::Image::TextureFilterToGLFilter(filterMode);
+	Image* image = new Image();
+	GLint glFilter = gdl::TextureFilterToGLFilter(filterMode);
 
 	GLint alignment;
 	glGenTextures(1, &image->textureId);
@@ -59,16 +61,16 @@ gdl::Image* Image_LoadPNG(PNGFile* png, gdl::TextureFilterModes filterMode)
 	return image;
 }
 
-void gdl::Image::SetGLName(GLuint textureName, GLsizei width, GLsizei height, gdl::ColorFormats format)
+void Image_SetGLName(Image* img, GLuint textureName, GLsizei width, GLsizei height, gdl::ColorFormats format)
 {
-	this->width = width;
-	this->height = height;
-	this->textureId = textureName;
-	this->colorFormat = format;
+	img->width = width;
+	img->height = height;
+	img->textureId = textureName;
+	img->colorFormat = format;
 }
 
 // TODO add padding to UVs so that the corners are inside the pixels and not in between
-void gdl::Image::Draw2DAbsolute(short x, short y, short x2, short y2)
+void Image_Draw2DAbsolute(Image* img, short x, short y, short x2, short y2)
 {
 	float dx = (float)x;
 	float dy = (float)y;
@@ -76,9 +78,9 @@ void gdl::Image::Draw2DAbsolute(short x, short y, short x2, short y2)
 	float dy2 = (float)y2;
 
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, textureId);
+	glBindTexture(GL_TEXTURE_2D, img->textureId);
 	glBegin(GL_QUADS);
-		glColor3f(red, green, blue);
+		glColor3f(img->tint.red, img->tint.green, img->tint.blue);
 
 		// Lower left
 		glTexCoord2f(0.0f, 0.0f);
@@ -98,10 +100,10 @@ void gdl::Image::Draw2DAbsolute(short x, short y, short x2, short y2)
 	glDisable(GL_TEXTURE_2D);
 }
 
-void gdl::Image::Draw2DAligned(short x, short y, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY)
+void Image_Draw2DAligned(Image* img, short x, short y, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY)
 {
-	short w = width * scale;
-	short h = height * scale;
+	short w = img->width * scale;
+	short h = img->height * scale;
 
 
 	if (alignX == RJustify)
@@ -121,12 +123,12 @@ void gdl::Image::Draw2DAligned(short x, short y, float scale, gdl::AlignmentMode
 	{
 		y -= h/2;
 	}
-	Draw2DAbsolute(x, y, x+w, y+h);
+	Image_Draw2DAbsolute(img, x, y, x+w, y+h);
 }
 
-void gdl::Image::Draw3D(float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY)
+void Image_Draw3D(Image* img, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY)
 {
-	float aspect = (float)width/(float)height;
+	float aspect = img->aspectRatio;
 	float x = 0.0f;
 	float y = 0.0f;
 	float z = 0.0f;
@@ -134,7 +136,7 @@ void gdl::Image::Draw3D(float scale, gdl::AlignmentModes alignX, gdl::AlignmentM
 
 	if (alignX == RJustify)
 	{
-		x -= scale * aspect;;
+		x -= scale * aspect;
 	}
 	else if (alignX == Centered)
 	{
@@ -151,9 +153,9 @@ void gdl::Image::Draw3D(float scale, gdl::AlignmentModes alignX, gdl::AlignmentM
 	}
 
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, textureId);
+	glBindTexture(GL_TEXTURE_2D, img->textureId);
 	glBegin(GL_QUADS);
-		glColor3f(red, green, blue);
+		glColor3f(img->tint.red, img->tint.green, img->tint.blue);
 
 		// TODO calculate uv to be inside border pixels to avoid repeating
 		// Lower left
@@ -178,64 +180,13 @@ void gdl::Image::Draw3D(float scale, gdl::AlignmentModes alignX, gdl::AlignmentM
 	glDisable(GL_TEXTURE_2D);
 }
 
-GLint gdl::Image::TextureFilterToGLFilter(gdl::TextureFilterModes filterMode)
-{
-	switch(filterMode)
-	{
-		case gdl::TextureFilterModes::Linear:
-			return GL_LINEAR;
-			break;
-		case gdl::TextureFilterModes::Nearest:
-			return GL_NEAREST;
-			break;
-		case gdl::TextureFilterModes::LN_MM_LN:
-			return GL_LINEAR_MIPMAP_LINEAR;
-			break;
-		case gdl::TextureFilterModes::LN_MM_NR:
-			return GL_LINEAR_MIPMAP_NEAREST;
-			break;
-		case gdl::TextureFilterModes::NR_MM_LN:
-			return GL_NEAREST_MIPMAP_LINEAR;
-			break;
-		case gdl::TextureFilterModes::NR_MM_NR:
-			return GL_NEAREST_MIPMAP_NEAREST;
-			break;
-		default:
-			return GL_LINEAR;
-			break;
-	};
-}
 
-GLuint gdl::Image::GetTextureId()
-{
-	return textureId;
-}
 
-short gdl::Image::GetHeight()
+void Image_SetTint (Image* img, float red, float green, float blue )
 {
-	return height;
-}
-
-short gdl::Image::GetWidth()
-{
-	return width;
-}
-
-float gdl::Image::GetAspectRatio()
-{
-	return aspectRatio;
-}
-
-gdl::ColorFormats gdl::Image::GetColorFormat()
-{
-	return colorFormat;
-}
-
-void gdl::Image::SetTint ( float red, float green, float blue )
-{
-	this->red = red;
-	this->green = green;
-	this->blue = blue;
+	img->tint.red = red;
+	img->tint.green = green;
+	img->tint.blue = blue;
 }
 
 

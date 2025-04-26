@@ -10,7 +10,7 @@
 
 using namespace gdl;
 
-Font* Font_Load(gdl::Image* fontImage, short charw, short charh, char firstCharacter )
+Font* Font_Load(Image* fontImage, short charw, short charh, char firstCharacter )
 {
 	Font* font = new Font();
 	font->_fontImage = fontImage;
@@ -19,7 +19,7 @@ Font* Font_Load(gdl::Image* fontImage, short charw, short charh, char firstChara
 	return font;
 }
 
-Font* Font_LoadPadded(gdl::Image* fontImage, short charw, short charh, char firstCharacter, short charactersPerRow )
+Font* Font_LoadPadded(Image* fontImage, short charw, short charh, char firstCharacter, short charactersPerRow )
 {
 	Font* font = new Font();
 	font->_fontImage = fontImage;
@@ -28,7 +28,7 @@ Font* Font_LoadPadded(gdl::Image* fontImage, short charw, short charh, char firs
 	return font;
 }
 
-Font* Font_LoadSelective(gdl::Image* fontImage, short charw, short charh, short charactersPerRow, std::string characters )
+Font* Font_LoadSelective(Image* fontImage, short charw, short charh, short charactersPerRow, std::string characters )
 {
 	Font* font = new Font();
 	font->_fontImage = fontImage;
@@ -40,8 +40,8 @@ Font* Font_LoadSelective(gdl::Image* fontImage, short charw, short charh, short 
 
 void _Font_BindPadded(Font* font,short charw, short charh, char firstCharacter, short charactersPerRow )
 {
-	const short tw = font->_fontImage->GetWidth();
-	const short th = font->_fontImage->GetHeight();
+	const short tw = font->_fontImage->width;
+	const short th = font->_fontImage->height;
 	short rows = th / charh;
 	// Calculate the vertex and texture coordinates (vertices are not used)
 	font->_firstIndex = firstCharacter;
@@ -59,14 +59,14 @@ void _Font_BindPadded(Font* font,short charw, short charh, char firstCharacter, 
 
 void _Font_Bind(Font* font, short charw, short charh, char firstCharacter )
 {
-	short charactersPerRow = font->_fontImage->GetWidth()/ charw;
+	short charactersPerRow = font->_fontImage->width/ charw;
 	_Font_BindPadded(font, charw, charh, firstCharacter, charactersPerRow);
 }
 
 void _Font_BindSelective (Font* font, short charw, short charh, std::string characters, short charactersPerRow )
 {
-	const short tw = font->_fontImage->GetWidth();
-	const short th = font->_fontImage->GetHeight();
+	const short tw = font->_fontImage->width;
+	const short th = font->_fontImage->height;
 	short rows = th / charh;
 	// Calculate the vertex and texture coordinates (vertices are not used)
 
@@ -87,7 +87,7 @@ void _Font_BindSelective (Font* font, short charw, short charh, std::string char
 
 void Font_Icon (Font* font, u32 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, gdl::IconSymbol glyph )
 {
-	GLuint textureName = font->_fontImage->GetTextureId();
+	GLuint textureName = font->_fontImage->textureId;
 	float step = font->_aspect * textHeight;
 	float dx = x;
 	float dy = y;
@@ -153,7 +153,7 @@ void Font_Icon (Font* font, u32 color, float x, float y, float textHeight, gdl::
 
 void _Font_PrintAligned(Font* font, u32 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* text)
 {
-	GLuint textureName = font->_fontImage->GetTextureId();
+	GLuint textureName = font->_fontImage->textureId;
 	const float step = font->_aspect * textHeight;
 
 	float dx = x;

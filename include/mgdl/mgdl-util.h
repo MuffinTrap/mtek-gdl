@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mgdl-types.h"
+#include <mgdl/mgdl-opengl.h>
 // helper functions
 
 namespace gdl
@@ -35,6 +36,13 @@ namespace gdl
 
 	float Deg2Rad(float degrees);
 	float Rad2Deg(float radians);
+
+	/**
+	 * @brief Converts texture filter enumeration to OpenGL enumeration.
+	 * @param filterMode Filtering mode to convert.
+	 * @return OpenGL enumeration for the given format.
+	 */
+	GLint TextureFilterToGLFilter(gdl::TextureFilterModes filterMode);
 
 };
 

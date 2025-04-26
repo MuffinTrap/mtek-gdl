@@ -19,8 +19,8 @@ void InitSystem(const char* name,
 
 // TODO Move all loading to AssetManager to get memory status and other stats
 PNGFile* LoadPNG(const char* filename);
-gdl::Image* LoadImageFile(const char* filename, gdl::TextureFilterModes filterMode);
-gdl::Image* LoadImagePNG(PNGFile* png, gdl::TextureFilterModes filterMode);
+Image* LoadImageFile(const char* filename, gdl::TextureFilterModes filterMode);
+Image* LoadImagePNG(PNGFile* png, gdl::TextureFilterModes filterMode);
 
 gdl::Sound* LoadSound(const char* filename);
 gdl::Sound* LoadOgg(const char* filename);
