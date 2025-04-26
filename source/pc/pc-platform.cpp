@@ -352,7 +352,6 @@ void gdl::PlatformPC::DoProgramExit()
 	alcMakeContextCurrent(NULL);
 	alcDestroyContext(context);
 	alcCloseDevice(device);
-    alcDestroy();
 
 	exit(0);
 }

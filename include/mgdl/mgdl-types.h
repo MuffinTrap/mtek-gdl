@@ -20,10 +20,10 @@
 
 #endif
 
-#ifdef MGDL_PLATFORM_LINUX
-typedef size_t sizetype;
-#else
+#ifdef MGDL_PLATFORM_WINDOWS
 typedef ssize_t sizetype;
+#else
+typedef size_t sizetype;
 #endif
 
 namespace gdl
