@@ -18,36 +18,36 @@ int gdl::WiiController::GetChannel()
 
 
 bool gdl::WiiController::ButtonPress(int buttonEnum) {
-  return (pressedButtons & buttonEnum) != 0;
+	return (pressedButtons & buttonEnum) != 0;
 }
 
 bool gdl::WiiController::ButtonRelease(int buttonEnum) {
-  return (releasedButtons & buttonEnum) != 0;
+	return (releasedButtons & buttonEnum) != 0;
 }
 
 bool gdl::WiiController::ButtonHeld(int buttonEnum) {
-  return (heldButtons & buttonEnum) != 0;
+	return (heldButtons & buttonEnum) != 0;
 }
 
-gdl::ControllerVec2 gdl::WiiController::GetCursorPosition() {
+vec2 gdl::WiiController::GetCursorPosition() {
 
-  gdl::ControllerVec2 d;
-  d.xAxis = cursorX;
-  d.yAxis = cursorY;
-  return d;
+	vec2 d;
+	d.x = cursorX;
+	d.y = cursorY;
+	return d;
 }
 
-gdl::ControllerVec2 gdl::WiiController::GetNunchukJoystickDirection(float deadzone)
+vec2 gdl::WiiController::GetNunchukJoystickDirection(float deadzone)
 {
-  nunchukJoystickDeadzone = deadzone;
-  gdl::ControllerVec2 d;
-  d.xAxis = nunchukJoystickDirectionX;
-  d.yAxis = nunchukJoystickDirectionY;
-  return d;
+	nunchukJoystickDeadzone = deadzone;
+	vec2 d;
+	d.x = nunchukJoystickDirectionX;
+	d.y = nunchukJoystickDirectionY;
+	return d;
 }
 
 float gdl::WiiController::GetRoll() {
-  return roll;
+	return roll;
 }
 
 void gdl::WiiController::ZeroAllInputs()

@@ -27,6 +27,8 @@ INSTALL_DIR = $(HOME)/libmgdl
 CXXFLAGS = -O3 -Werror=unused-function -Wall -Wextra -Wpedantic -std=c++11 -static
 # UFBX settings
 CXXFLAGS += -DUFBX_REAL_IS_FLOAT
+# Vector library
+CXXFLAGS	+= -DMGDL_USE_CCVECTOR
 
 # Add own include files so that #include <...> works
 MGDL_INCLUDE = -Iinclude/

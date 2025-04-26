@@ -27,7 +27,6 @@ This is now version 0.100.3-muffintrap "skrolli"
 	* ppc-libvorbis
 	* ppc-libvorbisidec
 	* ppc-libogg
-	* ppc-glm
 	* wii-glu
 	* wii-opengx
 	* wii-freeglut
@@ -57,7 +56,7 @@ This is now version 0.100.3-muffintrap "skrolli"
 3. Install the compiler 
 <code>pacman -S mingw-w64-ucrt-x86_64-gcc</code>
 4. Install the required libraries:
-<code>pacman -S mingw-w64-ucrt-x86_64-openal mingw-w64-ucrt-x86_64-freeglut mingw-w64-ucrt-x86_64-libpng mingw-w64-ucrt-x86_64-libsndfile mingw-w64-ucrt-x86_64-glm make</code>
+<code>pacman -S mingw-w64-ucrt-x86_64-openal mingw-w64-ucrt-x86_64-freeglut mingw-w64-ucrt-x86_64-libpng mingw-w64-ucrt-x86_64-libsndfile make</code>
 
 ### Compiling the executable and getting the .dll files
 1. Navigate to the github repository.
@@ -121,20 +120,11 @@ Homebrew can be found at [brew.sh](brew.sh)
 After installing, install these ports:
 - libpng
 - libsndfile
-
-You might want to install glm too
-- glm
-
-These will help with ogg playback once it is enabled on PC platforms
 - libogg
 - libopus
 - libvorbis
 
 MacOS makefile is Makefile_mac.mk
-
-### Future plans
-1. Add useful math and lerp functions
-2. Add functions to help rendering 3D scenes and objects
 
 This file was changed for version 0.100.0-muffintrap by muffintrap to add explanation of the fork.
 Original contents of README.md are below:

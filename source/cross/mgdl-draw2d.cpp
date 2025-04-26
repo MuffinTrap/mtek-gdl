@@ -7,7 +7,6 @@
 #include <mgdl/mgdl-config.h>
 #include <mgdl/mgdl-platform.h>
 
-
 void gdl::DrawBox(short x, short y, short x2, short y2, u32 color)
 {
 	glBegin(GL_LINE_LOOP);
@@ -80,8 +79,4 @@ void gdl::DrawLine ( short x, short y, short x2, short y2, u32 color )
 
 		// LOW LEFT!
 	glEnd();
-
 }
-
-
-

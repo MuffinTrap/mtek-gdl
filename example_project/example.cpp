@@ -25,14 +25,12 @@ void Example::Init()
     wiiTexture = gdl::LoadImage("assets/wii_console_texture.png", gdl::TextureFilterModes::Nearest);
     matcapTexture = gdl::LoadImage("assets/matcap.png", gdl::TextureFilterModes::Linear);
 
-    gdl::FBXFile* wiiFbx = new gdl::FBXFile();
-    wiiScene = wiiFbx->LoadFile("assets/wii_et_baby.fbx");
+    wiiScene = gdl::FBXFile::LoadFile("assets/wii_et_baby.fbx");
     wiiScene->SetMaterialTexture("wii_console_texture.png", wiiTexture);
 
     matcapMaterial = new gdl::Material("matcap", matcapTexture, gdl::MaterialType::Matcap);
 
-    gdl::FBXFile* ShipFile = new gdl::FBXFile();
-    icosaScene = ShipFile->LoadFile("assets/ship_with_uvs.fbx");
+    icosaScene = gdl::FBXFile::LoadFile("assets/ship_with_uvs.fbx");
     icosaScene->SetAllMaterialTextures(matcapTexture);
     gdl::Material* st = icosaScene->GetMaterial("standardSurface1");
     gdl::Material* mt2 = icosaScene->GetMaterial("Material.002");
@@ -109,7 +107,6 @@ void Example::Draw()
     short sh = gdl::GetScreenHeight();
     short top = sh - 32;
     short left = 22;
-    /*
     DrawMenu(left, top - 120, 120);
     DrawSprites();
     DrawTimingInfo(left,
@@ -117,7 +114,6 @@ void Example::Draw()
                    ibmFont->GetCharacterHeight());
     DrawVersion();
     DrawInputInfo(left, top);
-    */
 
     DrawCameraControls(gdl::GetScreenWidth()-80, top-120, 80);
 }
@@ -244,12 +240,12 @@ void DrawJoystick(short x, short y, short size)
     short jsize=size;
     short box = jsize/3;
     short h=box/2;
-    gdl::Color jc = gdl::Colors::Green;
-    gdl::ControllerVec2 jdir = gdl::GetController(0).GetNunchukJoystickDirection(0.0f);
-    short jleft= x + jsize/2 + jdir.xAxis * box-h;
-    short jtop = y + jsize/2 + jdir.yAxis * box-h;
+    gdl::rgba8 jc = gdl::Colors::Green;
+    vec2 jdir = gdl::GetController(0).GetNunchukJoystickDirection(0.0f);
+    short jleft= x + jsize/2 + jdir.x * box-h;
+    short jtop = y + jsize/2 + jdir.y * box-h;
     gdl::DrawBox(x, y, x+jsize, y+jsize, jc);
-    if (jdir.xAxis != 0.0f && jdir.yAxis != 0.0f)
+    if (jdir.x != 0.0f && jdir.y != 0.0f)
     {
         jc = gdl::Colors::LightGreen;
     }
@@ -259,9 +255,9 @@ void DrawJoystick(short x, short y, short size)
 void Example::DrawInputInfo(int x, int y)
 {
     // Draw cursor
-    gdl::ControllerVec2 cp = gdl::GetController(0).GetCursorPosition();
+    vec2 cp = gdl::GetController(0).GetCursorPosition();
 
-    pointerImage->Draw2DAligned(cp.xAxis, cp.yAxis, gdl::Colors::White, gdl::LJustify, gdl::LJustify);
+    pointerImage->Draw2DAligned(cp.x, cp.y, gdl::Colors::White, gdl::LJustify, gdl::LJustify);
 
     DrawButtons(x, y, 20, ibmFont);
     y += 20;
@@ -299,7 +295,7 @@ void Example::DrawTimingInfo(int x, int y, float scale)
     {
         ibmFont->Printf(gdl::Colors::LightRed, x, y - ystep * 2, scale, "Music elapsed: %.2f", sampleMusic->GetElapsedSeconds());
         gdl::SoundStatus musicStatus = sampleMusic->GetStatus();
-        gdl::Color musicColor = gdl::Colors::Red;
+        gdl::rgba8 musicColor = gdl::Colors::Red;
         gdl::IconSymbol icon = gdl::IconSymbol::Dot;
 
         switch(musicStatus)
@@ -324,7 +320,7 @@ void Example::DrawTimingInfo(int x, int y, float scale)
     float blipElapsed = blip->GetElapsedSeconds();
     ibmFont->Printf(gdl::Colors::LightRed, x, y - ystep * 3, scale, "Sound elapsed: %.2f", blipElapsed);
     gdl::SoundStatus musicStatus = blip->GetStatus();
-    gdl::Color musicColor = gdl::Colors::Red;
+    gdl::rgba8 musicColor = gdl::Colors::Red;
     gdl::IconSymbol icon = gdl::IconSymbol::Dot;
     switch(musicStatus)
     {
@@ -347,13 +343,13 @@ void Example::DrawTimingInfo(int x, int y, float scale)
 
 void Example::DrawMenu(int x, int y, int w)
 {
-    gdl::ControllerVec2 cp = gdl::GetController(0).GetCursorPosition();
+    vec2 cp = gdl::GetController(0).GetCursorPosition();
 
     // flip
     int h = gdl::GetScreenHeight();
-    int flip_y = h-cp.yAxis;
+    int flip_y = h-cp.y;
 
-    menu.StartMenu(x, y, w, cp.xAxis, flip_y, mouseClick);
+    menu.StartMenu(x, y, w, cp.x, flip_y, mouseClick);
 
     menu.Text("Hi! I am menu.");
 
@@ -387,11 +383,11 @@ void Example::DrawMenu(int x, int y, int w)
 
 void Example::DrawCameraControls(int x, int y, int w)
 {
-    gdl::ControllerVec2 cp = gdl::GetController(0).GetCursorPosition();
+    vec2 cp = gdl::GetController(0).GetCursorPosition();
     int h = gdl::GetScreenHeight();
-    int flip_y = h-cp.yAxis;
+    int flip_y = h-cp.y;
 
-    cameraMenu.StartMenu(x, y, w, cp.xAxis, flip_y, mouseClick);
+    cameraMenu.StartMenu(x, y, w, cp.x, flip_y, mouseClick);
 
     cameraMenu.Text("Control camera");
     if (cameraMenu.Button("Closer!"))

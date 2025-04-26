@@ -334,6 +334,8 @@ void gdl::Font::DrawSheet ()
 // Version that only creates texture coordinates for
 // the given characters.
 // All other characters are the same as the first one
+
+// TODO add padding to UVs so that the corners are inside the pixels and not in between
 void gdl::Font::CreateTextureCoordList ( short rows, short charactersPerRow, short texW, short texH, std::string characters )
 {
 	gdl_assert_print(cw > 0 && ch > 0, "Character dimensions not set");

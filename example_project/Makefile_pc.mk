@@ -17,6 +17,8 @@ CXXFLAGS = -Werror=unused-function -Wall -Wextra -Wpedantic -std=c++11
 CXXFLAGS += -ggdb
 
 CXXFLAGS += -DUFBX_REAL_IS_FLOAT
+CXXFLAGS += -DMGDL_USE_CCVECTOR
+
 
 # Rocket module
 # Add rocket files to source

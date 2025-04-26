@@ -49,6 +49,9 @@ CXXFLAGS	= -O3 -Werror -Wall -Wextra -std=c++11 $(MACHDEP) -DGEKKO
 # UFBX settings
 CXXFLAGS	+= -DUFBX_REAL_IS_FLOAT
 
+# Vector library
+CXXFLAGS	+= -DMGDL_USE_CCVECTOR
+
 # Add own include files so that #include <...> works
 MGDL_INCLUDE = -Iinclude/
 CXXFLAGS += $(MGDL_INCLUDE)

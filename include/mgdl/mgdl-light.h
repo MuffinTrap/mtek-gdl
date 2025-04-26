@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <mgdl/mgdl-types.h>
+#include "mgdl-vector.h"
 
 namespace gdl
 {

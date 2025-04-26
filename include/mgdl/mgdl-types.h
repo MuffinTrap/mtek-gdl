@@ -2,35 +2,16 @@
 
 // Vector types
 
-
 // For MacOS
 #include <stddef.h>
 
 #ifdef GEKKO
 
     #include <gctypes.h>
-// Wii gcc does not complain
-    #include "ccVector/ccVector.h"
 
 #else
-// ccVector is written in C and uses anonymous structs
-// to implement vector swizzling. Anonymous structs
-// are not "allowed" in ISO C++ but they work
-    #pragma GCC diagnostic push
-#ifdef MGDL_PLATFORM_WINDOWS
-    // Only MSYS UCRT64 GCC complains about -Wpedantic
-    #pragma GCC diagnostic ignored "-Wpedantic"
-#else
-    // Linux GCC complains about anon types and gnu extension
-    #pragma GCC diagnostic ignored "-Wnested-anon-types"
-    #pragma GCC diagnostic ignored "-Wgnu-anonymous-struct"
-#endif
 
-    #include "ccVector/ccVector.h"
-
-    #pragma GCC diagnostic pop
-
-    // Mimic ogc type names
+    // Mimic ogc type names on PC platforms
     #include <cstdint>
     typedef uint8_t u8;
     typedef uint16_t u16;
@@ -39,7 +20,11 @@
 
 #endif
 
+#ifdef MGDL_PLATFORM_LINUX
+typedef size_t sizetype;
+#else
 typedef ssize_t sizetype;
+#endif
 
 namespace gdl
 {
@@ -148,7 +133,8 @@ namespace gdl
         LightBlue	= 0x7f7fffff,	//!< Light blue.
     };
 
-    typedef u32 Color;
+    // Color in four bytes, each from 0 to 255(FF)
+    typedef u32 rgba8;
 
     // Debug font contains these glyphs
 	enum IconSymbol : short

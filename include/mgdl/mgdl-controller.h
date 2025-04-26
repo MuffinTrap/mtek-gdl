@@ -1,15 +1,18 @@
 #pragma once
 
+/**
+ * @file mgdl-controller.h
+ * @brief Header for the controller class.
+ */
+
 #include "mgdl-types.h"
+#include "mgdl-vector.h"
 
 namespace gdl
 {
-	struct ControllerVec2
-	{
-		float xAxis;
-		float yAxis;
-	};
-
+	/**
+	 * @brief Enum values for all the buttons on the Wii Controller.
+	 */
 	enum WiiButtons
 	{
 		Button1 = 		0x0001,
@@ -29,6 +32,12 @@ namespace gdl
 		ButtonC	=		(0x0002 << 16)
 	};
 
+	/**
+	 * @brief Class representing the Wii controller.
+	 *
+	 * This is the Wii controller and nunchuck on Wii and
+	 * mouse and keyboard on PC platforms
+	 */
 	class WiiController
 	{
 	public:
@@ -41,9 +50,9 @@ namespace gdl
 		bool ButtonRelease(int buttonEnum);
 		bool ButtonHeld(int buttonEnum);
 
-		gdl::ControllerVec2 GetCursorPosition();
-		gdl::ControllerVec2 GetNunchukJoystickDirection(float deadzone);
-		gdl::ControllerVec2 GetLeftStickDirection(float deadzone);
+		vec2 GetCursorPosition();
+		vec2 GetNunchukJoystickDirection(float deadzone);
+		vec2 GetLeftStickDirection(float deadzone);
 
 		void SetButtonDown(int buttonEnum);
 		void SetButtonUp(int buttonEnum);
@@ -65,5 +74,6 @@ namespace gdl
 
 		// Which controller number this is: 0-3
 		int channel;
+	private:
 	};
 };

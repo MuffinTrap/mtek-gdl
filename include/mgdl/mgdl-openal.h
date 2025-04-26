@@ -7,10 +7,7 @@
 
 // includes the OpenAL needed by platform
 #ifdef GEKKO
-/* Wii does not have OpenAL
-    #include <AL/al.h>
-    #include <AL/alc.h>
-    */
+/* Wii does not have OpenAL */
 #else
     #ifdef __APPLE__
         #include <OpenAL/al.h>

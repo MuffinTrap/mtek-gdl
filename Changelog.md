@@ -1,8 +1,14 @@
-# Changes made by muffintrap
-
+# Version history and a summary of changes
 
 ### Version 0.100.3-muffintrap "skrolli"
-This version adds the ufbx library and support for FBX files.
+This version is the last one to be completely written in C++. To better integrate this library with other tools the next version will be in C except where C++ makes something much easier.
+
+#### Changes
+- Added the ufbx library and support for FBX files. Also adds a scene and material classes to better use those models
+- Added a splash screen
+- Added matcap material support for meshes
+- Added Ogg playback on PC platforms (it is just loading the whole song to memory though)
+- Removed glm library dependency, the ccVector header only library is now included in the library.
 
 ### Version 0.100.2-muffintrap "nova"
 

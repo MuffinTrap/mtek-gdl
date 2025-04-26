@@ -4,9 +4,8 @@
 #include <mgdl/mgdl-scene.h>
 #include <stdio.h>
 
-gdl::Scene* gdl::FBXFile::LoadFile(std::string fbxFile, bool debugPrint)
+gdl::Scene* gdl::FBXFile::LoadFile(std::string fbxFile)
 {
-	this->debugPrint = debugPrint;
 	// Right handed for OpenGL
 	// Y is up
 	ufbx_load_opts opts = {};
@@ -14,7 +13,7 @@ gdl::Scene* gdl::FBXFile::LoadFile(std::string fbxFile, bool debugPrint)
 	opts.target_unit_meters = 1.0f;
 	ufbx_error error;
 	printf("Reading fbx file %s\n", fbxFile.c_str());
-	scene = ufbx_load_file(fbxFile.c_str(), &opts, &error);
+	ufbx_scene* scene = ufbx_load_file(fbxFile.c_str(), &opts, &error);
 	gdl_assert_printf(scene != nullptr, "Cannot load fbx: %s\n", error.description.data);
 	if (scene == nullptr)
 	{
@@ -27,6 +26,8 @@ gdl::Scene* gdl::FBXFile::LoadFile(std::string fbxFile, bool debugPrint)
 	// Start from the root
 	ufbx_node* root = scene->root_node;
 	LoadNode(gdlScene, gdlScene->GetRootNode(), root, 0);
+
+	ufbx_free_scene(scene);
 
 	return gdlScene;
 }
@@ -46,7 +47,7 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, gdl::Node* parentNode, ufbx_
 	ufbx_vec3 t = node->local_transform.translation;
 	ufbx_vec3 r = node->euler_rotation;
 
-	if (debugPrint)
+	if (false)
 	{
 		Indent(depth);
 		printf("Node: %s\n", node->name.data);
@@ -67,7 +68,7 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, gdl::Node* parentNode, ufbx_
 	if (node->mesh != nullptr)
 	{
 		ufbx_mesh* mesh = node->mesh;
-		if (debugPrint)
+		if (false)
 		{
 			printf("Mesh %s (%u) with %zu faces", mesh->name.data, mesh->element_id, mesh->faces.count);
 			if (mesh->vertex_normal.exists)
@@ -95,7 +96,7 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, gdl::Node* parentNode, ufbx_
 			// or if loaded later, match them to the meshes?
 
 			ufbx_material* material = node->materials[mi];
-			if (debugPrint)
+			if (false)
 			{
 				Indent(depth);
 				printf("Material: %s\n", material->name.data);
@@ -160,7 +161,7 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, gdl::Node* parentNode, ufbx_
 	size_t childAmount = node->children.count;
 	if (childAmount > 0)
 	{
-		if (debugPrint)
+		if (false)
 		{
 			Indent(depth);
 			printf("%zu children\n", childAmount);
@@ -170,6 +171,7 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, gdl::Node* parentNode, ufbx_
 			LoadNode(gdlScene, n, node->children[i], depth+1);
 		}
 	}
+
 
 	return true;
 }
@@ -293,7 +295,7 @@ gdl::Mesh * gdl::FBXFile::LoadMesh(ufbx_mesh* fbxMesh)
 			indiceArrayIndex += 3;	 // Added 3 new indices
 		}
 	}
-	if (debugPrint)
+	if (false)
 	{
 		printf("Loaded mesh\n");
 	}
@@ -362,13 +364,3 @@ gdl::Light* gdl::FBXFile::LoadLight(ufbx_light* fbxLight)
 	}
 	return light;
 }
-
-void gdl::FBXFile::DeleteData()
-{
-	if (scene != nullptr)
-	{
-		ufbx_free_scene(scene);
-		scene = nullptr;
-	}
-}
-

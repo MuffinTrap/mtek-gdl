@@ -565,7 +565,7 @@ gdl::Font* gdl::GetDebugFont()
 		glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
 
 		gdl::Image img;
-		img.LoadGLName(texName, width, height, ColorFormats::RGBA);
+		img.SetGLName(texName, width, height, ColorFormats::RGBA);
 		debugFont = new gdl::Font();
 		debugFont->LoadFromImage(img, 8, 8, ' ');
 	}

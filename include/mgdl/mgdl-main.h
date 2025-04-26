@@ -19,6 +19,7 @@ namespace gdl
 					std::function<void()> drawCallback,
 					u32 initFlags = 0 );
 
+	// TODO Move all loading to AssetManager to get memory status and other stats
 	gdl::Image* LoadImage(std::string filename, gdl::TextureFilterModes filterMode);
 	gdl::Image* LoadImage(gdl::PNGFile* png, gdl::TextureFilterModes filterMode);
 	gdl::Image* LoadImage(const u8* buffer, size_t size, gdl::TextureFilterModes filterMode);

@@ -111,7 +111,6 @@ void gdl::Mesh::CalculateMatcapUVs(const mat4x4& modelViewMatrix, const mat4x4& 
 	// This calculation happens in screen space
 
 	vec3 eye;
-	vec4 eye4; //from camera to vertex
 	vec3 normal; // screen space normalo
 	vec4 normal4;
 	vec3 reflection;
@@ -120,7 +119,8 @@ void gdl::Mesh::CalculateMatcapUVs(const mat4x4& modelViewMatrix, const mat4x4& 
 	vec4 position4;
 	vec2 matcapUV;
 
-	static bool once = true;
+	// Debug print
+	static bool once = false;
 	// Overwrite UVs
 	for (sizetype i = 0; i < vertexCount; i++)
 	{
@@ -154,25 +154,28 @@ void gdl::Mesh::CalculateMatcapUVs(const mat4x4& modelViewMatrix, const mat4x4& 
 		position4 = vec4New(position.x, position.y, position.z, 1.0f);
 		position4 = mat4x4MultiplyVector(modelViewMatrix, position4);
 		position = position4.xyz;
-		eye = vec3Normalize(position);
-		normal4 = mat4x4MultiplyVector(normalMatrix, normal4);
-		normal = vec3Normalize(normal4.xyz);
-
 		matcapUV = vec2New(0.5f, 0.5f);
-		reflection= vec3Reflect(normal, eye);// Reflect eye with normal
-
-		const float rx2 = pow(reflection.x, 2.0f);
-		const float ry2 = pow(reflection.y, 2.0f);
-		const float rz12 = pow(reflection.z+1, 2.0f);
-		const float sqrtR2 = sqrt(rx2 + ry2 + rz12) * 2.0f;
-		R2 = reflection.xy;
-		matcapUV = vec2Add(vec2New(R2.x/sqrtR2, R2.y/sqrtR2), half);
-		if (once)
+		if (vec3Length(position) != 0.0f)
 		{
-			printf("%zu: Pos %.2f, %.2f, %.2f\tN %.2f, %.2f, %.2f ->\tUV %.2f, %.2f\n", i,
-				   eye.x, eye.y, eye.z,
-		  normal.x, normal.y, normal.z,
-		  matcapUV.x, matcapUV.y);
+			eye = vec3Normalize(position);
+			normal4 = mat4x4MultiplyVector(normalMatrix, normal4);
+			normal = vec3Normalize(normal4.xyz);
+
+			reflection= vec3Reflect(normal, eye);// Reflect eye with normal
+
+			const float rx2 = pow(reflection.x, 2.0f);
+			const float ry2 = pow(reflection.y, 2.0f);
+			const float rz12 = pow(reflection.z+1, 2.0f);
+			const float sqrtR2 = sqrt(rx2 + ry2 + rz12) * 2.0f;
+			R2 = reflection.xy;
+			matcapUV = vec2Add(vec2New(R2.x/sqrtR2, R2.y/sqrtR2), half);
+			if (once)
+			{
+				printf("%zu: Pos %.2f, %.2f, %.2f\tN %.2f, %.2f, %.2f ->\tUV %.2f, %.2f\n", i,
+					eye.x, eye.y, eye.z,
+			normal.x, normal.y, normal.z,
+			matcapUV.x, matcapUV.y);
+			}
 		}
 		SetUVToArray(i, matcapUV);
 	}
