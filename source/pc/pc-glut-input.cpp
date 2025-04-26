@@ -6,7 +6,9 @@
 
 #include <stdio.h>
 
-gdl::WiiController glutController;
+using namespace mgdl;
+
+WiiController glutController;
 
 #define ascii_1  49
 #define ascii_2  50
@@ -32,19 +34,19 @@ void mouseKey(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON) {
 		if (state == GLUT_DOWN) {
-			glutController.SetButtonDown(gdl::WiiButtons::ButtonA);
+			_WiiController_SetButtonDown(&glutController, WiiButtons::ButtonA);
 		}
 		else {
-			glutController.SetButtonUp(gdl::WiiButtons::ButtonA);
+			_WiiController_SetButtonUp(&glutController, WiiButtons::ButtonA);
 		}
 	}
 	else if (button == GLUT_RIGHT_BUTTON)
 	{
 		if (state == GLUT_DOWN) {
-			glutController.SetButtonDown(gdl::WiiButtons::ButtonB);
+			_WiiController_SetButtonDown(&glutController, WiiButtons::ButtonB);
 		}
 		else {
-			glutController.SetButtonUp(gdl::WiiButtons::ButtonB);
+			_WiiController_SetButtonUp(&glutController, WiiButtons::ButtonB);
 		}
 	}
 	else if (button == GLUT_MIDDLE_BUTTON) {
@@ -53,107 +55,107 @@ void mouseKey(int button, int state, int x, int y)
 }
 
 void mouseMove(int x, int y) {
-	glutController.cursorX = x;
+	glutController._cursorX = x;
 
 	// In OpenGL the Y increases up
 	// but these coordinates the y increses down
-	glutController.cursorY = y;
+	glutController._cursorY = y;
 }
 
 void keyboardDown(unsigned char key, int x, int y) {
 	if (key == ascii_ESC) { // ASCII code for 'Escape'
-		glutController.SetButtonDown(gdl::WiiButtons::ButtonHome);
+		_WiiController_SetButtonDown(&glutController, WiiButtons::ButtonHome);
 	}
 	else if (key == ascii_w) {
-		glutController.nunchukJoystickDirectionY = -1.0f;
+		glutController._nunchukJoystickDirectionY = -1.0f;
 	}
 	else if (key == ascii_s) {
-		glutController.nunchukJoystickDirectionY = 1.0f;
+		glutController._nunchukJoystickDirectionY = 1.0f;
 	}
 	else if (key == ascii_a) {
-		glutController.nunchukJoystickDirectionX = -1.0f;
+		glutController._nunchukJoystickDirectionX = -1.0f;
 	}
 	else if (key == ascii_d) {
-		glutController.nunchukJoystickDirectionX = 1.0f;
+		glutController._nunchukJoystickDirectionX = 1.0f;
 	}
 	else if (key == ascii_1) {
-		glutController.SetButtonDown(gdl::WiiButtons::Button1);
+		_WiiController_SetButtonDown(&glutController, WiiButtons::Button1);
 	}
 	else if (key == ascii_2) {
-		glutController.SetButtonDown(gdl::WiiButtons::Button2);
+		_WiiController_SetButtonDown(&glutController, WiiButtons::Button2);
 	}
 	else if (key == ascii_q) {
-		glutController.SetButtonDown(gdl::WiiButtons::ButtonMinus);
+		_WiiController_SetButtonDown(&glutController, WiiButtons::ButtonMinus);
 	}
 	else if (key == ascii_e) {
-		glutController.SetButtonDown(gdl::WiiButtons::ButtonPlus);
+		_WiiController_SetButtonDown(&glutController, WiiButtons::ButtonPlus);
 	}
 }
 
 void keyboardUp(unsigned char key, int x, int y) {
 	if (key == ascii_ESC) { // ASCII code for 'Escape'
-		glutController.SetButtonUp(gdl::WiiButtons::ButtonHome);
+		_WiiController_SetButtonUp(&glutController, WiiButtons::ButtonHome);
 	}
 	else if (key == ascii_w) {
-		glutController.nunchukJoystickDirectionY = 0.0f;
+		glutController._nunchukJoystickDirectionY = 0.0f;
 	}
 	else if (key == ascii_s) {
-		glutController.nunchukJoystickDirectionY = 0.0f;
+		glutController._nunchukJoystickDirectionY = 0.0f;
 	}
 	else if (key == ascii_a) {
-		glutController.nunchukJoystickDirectionX = 0.0f;
+		glutController._nunchukJoystickDirectionX = 0.0f;
 	}
 	else if (key == ascii_d) {
-		glutController.nunchukJoystickDirectionX = 0.0f;
+		glutController._nunchukJoystickDirectionX = 0.0f;
 	}
 	else if (key == ascii_1) {
-		glutController.SetButtonUp(gdl::WiiButtons::Button1);
+		_WiiController_SetButtonUp(&glutController, WiiButtons::Button1);
 	}
 	else if (key == ascii_2) {
-		glutController.SetButtonUp(gdl::WiiButtons::Button2);
+		_WiiController_SetButtonUp(&glutController, WiiButtons::Button2);
 	}
 	else if (key == ascii_q) {
-		glutController.SetButtonUp(gdl::WiiButtons::ButtonMinus);
+		_WiiController_SetButtonUp(&glutController, WiiButtons::ButtonMinus);
 	}
 	else if (key == ascii_e) {
-		glutController.SetButtonUp(gdl::WiiButtons::ButtonPlus);
+		_WiiController_SetButtonUp(&glutController, WiiButtons::ButtonPlus);
 	}
 }
 
 void specialKeyDown(int key, int x, int y) {
     if (key == GLUT_KEY_UP) {
-		glutController.SetButtonDown(gdl::WiiButtons::ButtonUp);
+		_WiiController_SetButtonDown(&glutController, WiiButtons::ButtonUp);
 	}
     else if (key == GLUT_KEY_DOWN) {
-		glutController.SetButtonDown(gdl::WiiButtons::ButtonDown);
+		_WiiController_SetButtonDown(&glutController, WiiButtons::ButtonDown);
 	}
     else if (key == GLUT_KEY_LEFT) {
-		glutController.SetButtonDown(gdl::WiiButtons::ButtonLeft);
+		_WiiController_SetButtonDown(&glutController, WiiButtons::ButtonLeft);
 	}
     else if (key == GLUT_KEY_RIGHT) {
-		glutController.SetButtonDown(gdl::WiiButtons::ButtonRight);
+		_WiiController_SetButtonDown(&glutController, WiiButtons::ButtonRight);
 	}
 	else if (key == GLUT_KEY_F5) {
-		glutController.SetButtonDown(gdl::WiiButtons::ButtonPlus);
+		_WiiController_SetButtonDown(&glutController, WiiButtons::ButtonPlus);
 	}
 }
 
 void specialKeyUp(int key, int x, int y) {
 
     if (key == GLUT_KEY_UP) {
-		glutController.SetButtonUp(gdl::WiiButtons::ButtonUp);
+		_WiiController_SetButtonUp(&glutController, WiiButtons::ButtonUp);
 	}
     else if (key == GLUT_KEY_DOWN) {
-		glutController.SetButtonUp(gdl::WiiButtons::ButtonDown);
+		_WiiController_SetButtonUp(&glutController, WiiButtons::ButtonDown);
 	}
     else if (key == GLUT_KEY_LEFT) {
-		glutController.SetButtonUp(gdl::WiiButtons::ButtonLeft);
+		_WiiController_SetButtonUp(&glutController, WiiButtons::ButtonLeft);
 	}
     else if (key == GLUT_KEY_RIGHT) {
-		glutController.SetButtonUp(gdl::WiiButtons::ButtonRight);
+		_WiiController_SetButtonUp(&glutController, WiiButtons::ButtonRight);
 	}
 	else if (key == GLUT_KEY_F5) {
-		glutController.SetButtonUp(gdl::WiiButtons::ButtonPlus);
+		_WiiController_SetButtonUp(&glutController, WiiButtons::ButtonPlus);
 	}
 }
 

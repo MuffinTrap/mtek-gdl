@@ -11,9 +11,6 @@
 
 namespace gdl
 {
-	class WiiController;
-
-
 	class Platform
 	{
 		public:
@@ -23,7 +20,7 @@ namespace gdl
 									std::function<void()> updateCallback,
 									std::function<void()> drawCallback,
 									u32 initFlags = 0 ) = 0;
-			virtual gdl::WiiController& GetController(int controllerNumber) = 0;
+			virtual WiiController* GetController(int controllerNumber) = 0;
 			virtual void DoProgramExit() = 0;
 
 			static Platform& GetPlatform();

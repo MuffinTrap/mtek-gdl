@@ -16,8 +16,9 @@ namespace gdl
 						std::function<void ()> updateCallback,
 						std::function<void ()> drawCallback,
 						u32 initFlags) override;
-						gdl::WiiController& GetController(int controllerNumber) override;
-						void DoProgramExit() override;
+
+		WiiController* GetController(int controllerNumber) override;
+		void DoProgramExit() override;
 
 		float GetDeltaTime() override;
 		float GetElapsedSeconds() override;

@@ -187,7 +187,7 @@ gdl::Font* gdl::LoadFont(const u8* buffer, size_t size, short characterWidth, sh
 	}
 }
 
-gdl::WiiController& gdl::GetController( int controllerNumber)
+WiiController* gdl::GetController( int controllerNumber)
 {
 	return gdl::Platform::GetPlatform().GetController(controllerNumber);
 }

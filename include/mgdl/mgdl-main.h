@@ -37,7 +37,7 @@ namespace gdl
 
 	void DoProgramExit();
 
-	gdl::WiiController& GetController(int controllerNumber);
+	WiiController* GetController(int controllerNumber);
 
 	u16 GetScreenWidth();
 	u16 GetScreenHeight();

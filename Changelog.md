@@ -1,5 +1,13 @@
 # Version history and a summary of changes
 
+### Version 0.101.0-muffintrap "yaris"
+This version changes to C and breaks all backwards compatibility.
+
+#### Changes
+
++ WiiController converted to C. Removed deadzones since they were not used anyway.
+
+
 ### Version 0.100.3-muffintrap "skrolli"
 This version is the last one to be completely written in C++. To better integrate this library with other tools the next version will be in C except where C++ makes something much easier.
 

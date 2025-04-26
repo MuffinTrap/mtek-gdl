@@ -1,83 +1,72 @@
 #include <mgdl/mgdl-controller.h>
+#include <mgdl/mgdl-util.h>
 
-gdl::WiiController::WiiController()
+using namespace mgdl;
+
+void WiiController_Init(WiiController* controller)
 {
-	channel = 0;
-	ZeroAllInputs();
+	controller->_channel = 0;
+	WiiController_ZeroAllInputs(controller);
 }
 
-void gdl::WiiController::SetChannelNumber ( int channel )
+void WiiController_ZeroAllInputs(WiiController* controller)
 {
-	this->channel = channel;
+	controller->_pressedButtons = 0;
+	controller->_releasedButtons = 0;
+	controller->_heldButtons = 0;
+	controller->_nunchukJoystickDirectionX = 0.0f;
+	controller->_nunchukJoystickDirectionY = 0.0f;
+	controller->_cursorX = 0.0f;
+	controller->_cursorY = 0.0f;
+	controller->_roll = 0.0f;
 }
 
-int gdl::WiiController::GetChannel()
+void WiiController_StartFrame(WiiController* controller)
 {
-	return channel;
+	controller->_pressedButtons = 0;
+	controller->_releasedButtons = 0;
 }
 
-
-bool gdl::WiiController::ButtonPress(int buttonEnum) {
-	return (pressedButtons & buttonEnum) != 0;
+bool WiiController_ButtonPress(WiiController* controller, int buttonEnum) {
+	return (controller->_pressedButtons & buttonEnum) != 0;
 }
 
-bool gdl::WiiController::ButtonRelease(int buttonEnum) {
-	return (releasedButtons & buttonEnum) != 0;
+bool WiiController_ButtonRelease(WiiController* controller, int buttonEnum) {
+	return (controller->_releasedButtons & buttonEnum) != 0;
 }
 
-bool gdl::WiiController::ButtonHeld(int buttonEnum) {
-	return (heldButtons & buttonEnum) != 0;
+bool WiiController_ButtonHeld(WiiController* controller, int buttonEnum) {
+	return (controller->_heldButtons & buttonEnum) != 0;
 }
 
-vec2 gdl::WiiController::GetCursorPosition() {
+vec2 WiiController_GetCursorPosition(WiiController* controller) {
 
 	vec2 d;
-	d.x = cursorX;
-	d.y = cursorY;
+	d.x = controller->_cursorX;
+	d.y = controller->_cursorY;
 	return d;
 }
 
-vec2 gdl::WiiController::GetNunchukJoystickDirection(float deadzone)
+vec2 WiiController_GetNunchukJoystickDirection(WiiController* controller)
 {
-	nunchukJoystickDeadzone = deadzone;
 	vec2 d;
-	d.x = nunchukJoystickDirectionX;
-	d.y = nunchukJoystickDirectionY;
+	d.x = controller->_nunchukJoystickDirectionX;
+	d.y = controller->_nunchukJoystickDirectionY;
 	return d;
 }
 
-float gdl::WiiController::GetRoll() {
-	return roll;
+float WiiController_GetRoll(WiiController* controller) {
+	return controller->_roll;
 }
 
-void gdl::WiiController::ZeroAllInputs()
+void _WiiController_SetButtonDown (WiiController* controller, int buttonEnum )
 {
-	pressedButtons = 0;
-	releasedButtons = 0;
-	heldButtons = 0;
-	nunchukJoystickDirectionX = 0.0f;
-	nunchukJoystickDirectionY = 0.0f;
-	nunchukJoystickDeadzone = 0.0f;
-	cursorX = 0.0f;
-	cursorY = 0.0f;
-	roll = 0.0f;
+	controller->_pressedButtons += buttonEnum;
+	controller->_heldButtons += buttonEnum;
 }
-
-void gdl::WiiController::StartFrame()
+void _WiiController_SetButtonUp (WiiController* controller, int buttonEnum )
 {
-	pressedButtons = 0;
-	releasedButtons = 0;
-}
-
-
-void gdl::WiiController::SetButtonDown ( int buttonEnum )
-{
-	pressedButtons += buttonEnum;
-	heldButtons += buttonEnum;
-}
-void gdl::WiiController::SetButtonUp ( int buttonEnum )
-{
-	heldButtons -= buttonEnum;
-	releasedButtons += buttonEnum;
+	controller->_heldButtons -= buttonEnum;
+	controller->_releasedButtons += buttonEnum;
 }
 

@@ -4,7 +4,6 @@
 
 #include <string>
 
-
 Example::Example()
 {
 
@@ -75,7 +74,7 @@ void Example::Update()
         baby->transform.rotationDegrees.z += deltaTime * 40.0f;
     }
 
-    mouseClick = gdl::GetController(0).ButtonPress(gdl::WiiButtons::ButtonA);
+    mouseClick = WiiController_ButtonPress(gdl::GetController(0), WiiButtons::ButtonA);
 }
 
 void DrawTextDouble(const char* text, short x, short y, float textHeight, gdl::Font* font)
@@ -179,19 +178,19 @@ static void DrawButtons(short x, short y, short size, gdl::Font* font)
     gdl::Colors active = gdl::Colors::Blue;
     gdl::Colors inactive = gdl::Colors::LightBlue;
     int buttons[] = {
-        gdl::WiiButtons::ButtonA,
-        gdl::WiiButtons::ButtonB,
-        gdl::WiiButtons::ButtonPlus,
-        gdl::WiiButtons::ButtonMinus,
-        gdl::WiiButtons::Button1,
-        gdl::WiiButtons::Button2
+        WiiButtons::ButtonA,
+        WiiButtons::ButtonB,
+        WiiButtons::ButtonPlus,
+        WiiButtons::ButtonMinus,
+        WiiButtons::Button1,
+        WiiButtons::Button2
         };
     static std::string names[] ={ "A", "B", "+", "-", "1", "2" };
 
     for(int i = 0; i < 6;i++ )
     {
         gdl::Colors c = inactive;
-        if (gdl::GetController(0).ButtonHeld(buttons[i]))
+        if (WiiController_ButtonHeld(gdl::GetController(0), buttons[i]))
         {
             c = active;
         }
@@ -211,10 +210,10 @@ void DrawDPad(short x, short y, short size)
     y += box + h;
     // Dpad
     int dpad_buttons[] = {
-        gdl::WiiButtons::ButtonUp,
-        gdl::WiiButtons::ButtonDown,
-        gdl::WiiButtons::ButtonLeft,
-        gdl::WiiButtons::ButtonRight
+        WiiButtons::ButtonUp,
+        WiiButtons::ButtonDown,
+        WiiButtons::ButtonLeft,
+        WiiButtons::ButtonRight
     };
     vec2 directions[] = {
         vec2New(0,-1),
@@ -225,7 +224,7 @@ void DrawDPad(short x, short y, short size)
     for (int i=0;i<4;i++)
     {
         gdl::Colors c = gdl::Colors::LightRed;
-        if (gdl::GetController(0).ButtonHeld(dpad_buttons[i]))
+        if (WiiController_ButtonHeld(gdl::GetController(0), dpad_buttons[i]))
         {
             c = gdl::Colors::Red;
         }
@@ -241,7 +240,7 @@ void DrawJoystick(short x, short y, short size)
     short box = jsize/3;
     short h=box/2;
     gdl::rgba8 jc = gdl::Colors::Green;
-    vec2 jdir = gdl::GetController(0).GetNunchukJoystickDirection(0.0f);
+    vec2 jdir = WiiController_GetNunchukJoystickDirection(gdl::GetController(0));
     short jleft= x + jsize/2 + jdir.x * box-h;
     short jtop = y + jsize/2 + jdir.y * box-h;
     gdl::DrawBox(x, y, x+jsize, y+jsize, jc);
@@ -255,7 +254,7 @@ void DrawJoystick(short x, short y, short size)
 void Example::DrawInputInfo(int x, int y)
 {
     // Draw cursor
-    vec2 cp = gdl::GetController(0).GetCursorPosition();
+    vec2 cp = WiiController_GetCursorPosition(gdl::GetController(0));
 
     pointerImage->Draw2DAligned(cp.x, cp.y, gdl::Colors::White, gdl::LJustify, gdl::LJustify);
 
@@ -343,7 +342,7 @@ void Example::DrawTimingInfo(int x, int y, float scale)
 
 void Example::DrawMenu(int x, int y, int w)
 {
-    vec2 cp = gdl::GetController(0).GetCursorPosition();
+    vec2 cp = WiiController_GetCursorPosition(gdl::GetController(0));
 
     // flip
     int h = gdl::GetScreenHeight();
@@ -383,7 +382,7 @@ void Example::DrawMenu(int x, int y, int w)
 
 void Example::DrawCameraControls(int x, int y, int w)
 {
-    vec2 cp = gdl::GetController(0).GetCursorPosition();
+    vec2 cp = WiiController_GetCursorPosition(gdl::GetController(0));
     int h = gdl::GetScreenHeight();
     int flip_y = h-cp.y;
 

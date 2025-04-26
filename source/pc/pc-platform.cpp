@@ -4,6 +4,8 @@
 #include <mgdl/pc/mgdl-pc-platform.h>
 #include <mgdl/pc/mgdl-pc-input.h>
 
+using namespace mgdl;
+
 // Declarations
 
 static int windowWidth = 0;
@@ -77,7 +79,7 @@ static void UpdateDeltaMS()
 
 static bool IncreaseAHoldAndTest()
 {
-    if (glutController.ButtonHeld(gdl::WiiButtons::ButtonA))
+    if (WiiController_ButtonHeld(&glutController, WiiButtons::ButtonA))
     {
         aHoldTimer += startUpDeltaTimeMs;
         if (aHoldTimer >= 1.0f)
@@ -146,7 +148,7 @@ static void UpdateEnd()
 {
     // TODO Where is the correct place for this?
     // Need to have up to date information for the game to read
-    glutController.StartFrame();
+    WiiController_StartFrame(&glutController);
 
     glutElapsedStartMS = glutElapsedMS;
     // Tell glut that the window needs to be
@@ -315,8 +317,8 @@ void gdl::PlatformPC::InitSystem(const char* name, gdl::ScreenAspect screenAspec
         glutDisplayFunc(RenderLoop);
     }
 
-    glutController.ZeroAllInputs();
-    glutController.StartFrame();
+    WiiController_ZeroAllInputs(&glutController);
+    WiiController_StartFrame(&glutController);
     initCall();
     glutElapsedStartMS = 0;
 
@@ -336,13 +338,13 @@ void gdl::PlatformPC::InitSystem(const char* name, gdl::ScreenAspect screenAspec
 	glutMainLoop();
 }
 
-gdl::WiiController& gdl::PlatformPC::GetController(int controllerNumber)
+WiiController* gdl::PlatformPC::GetController(int controllerNumber)
 {
     if (controllerNumber == 0)
     {
-        return glutController;
+        return &glutController;
     }
-    return glutController;
+    return &glutController;
 }
 
 void gdl::PlatformPC::DoProgramExit()

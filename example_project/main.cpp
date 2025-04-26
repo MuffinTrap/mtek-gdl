@@ -77,7 +77,7 @@ void init()
 // Called before render()
 void update()
 {
-    if (gdl::GetController(0).ButtonPress(gdl::WiiButtons::ButtonHome))
+    if (WiiController_ButtonPress(gdl::GetController(0), WiiButtons::ButtonHome))
     {
         gdl::Platform& plat = gdl::Platform::GetPlatform();
         plat.DoProgramExit();
@@ -89,7 +89,8 @@ void update()
     gdl::RocketSync::UpdateRow();
     r = gdl::RocketSync::GetFloat(clear_r);
 #ifndef SYNC_PLAYER
-    if (gdl::GetController(0).ButtonPress(gdl::WiiButtons::Button2))
+
+    if (WiiController_ButtonPress(gdl::GetController(0), WiiButtons::Button2))
     {
        gdl::RocketSync::StartSaveToHeader();
        gdl::RocketSync::SaveTrack(clear_r);
