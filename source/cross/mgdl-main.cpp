@@ -21,9 +21,9 @@ void InitSystem(const char* name,
 	AssetManager_Init(&assetManager);
 }
 
-PNGFile* LoadPNG(std::string filename)
+PNGFile* LoadPNG(const char* filename)
 {
-	PNGFile* png = PNG_ReadFile(filename.c_str());
+	PNGFile* png = PNG_ReadFile(filename);
 	if (png != nullptr)
 	{
 		AssetManager_LoadPNG(&assetManager, png);
@@ -36,9 +36,9 @@ PNGFile* LoadPNG(std::string filename)
 	}
 }
 
-gdl::Image* LoadImageFile(std::string filename, gdl::TextureFilterModes filterMode)
+gdl::Image* LoadImageFile(const char* filename, gdl::TextureFilterModes filterMode)
 {
-	gdl::Image* img = Image_LoadFile(filename.c_str(), filterMode);
+	gdl::Image* img = Image_LoadFile(filename, filterMode);
 	if (img != nullptr)
 	{
 		AssetManager_LoadImage(&assetManager, img);
@@ -64,7 +64,7 @@ gdl::Image* LoadImagePNG(PNGFile* png, gdl::TextureFilterModes filterMode)
 	}
 }
 
-gdl::Sound* LoadSound(std::string filename)
+gdl::Sound* LoadSound(const char* filename)
 {
 	gdl::Sound* snd = nullptr;
 #ifdef GEKKO
@@ -72,7 +72,7 @@ gdl::Sound* LoadSound(std::string filename)
 #else
 	snd = new gdl::SoundPC();
 #endif
-	if(snd->LoadFile(filename.c_str()))
+	if(snd->LoadFile(filename))
 	{
 		return snd;
 	}
@@ -102,7 +102,7 @@ gdl::Sound* LoadSound(const u8* buffer, size_t size)
 	}
 }
 
-gdl::Sound* LoadOgg(std::string filename)
+gdl::Sound* LoadOgg(const char* filename)
 {
 	gdl::Sound* snd = nullptr;
 #ifdef GEKKO
@@ -110,7 +110,7 @@ gdl::Sound* LoadOgg(std::string filename)
 #else
 	snd = new gdl::MusicPC();
 #endif
-	if(snd->LoadFile(filename.c_str()))
+	if(snd->LoadFile(filename))
 	{
 		return snd;
 	}
@@ -121,8 +121,7 @@ gdl::Sound* LoadOgg(std::string filename)
 	}
 }
 
-
-Font* LoadFontFile(std::string filename, short characterWidth, short characterHeight, char firstCharacter)
+Font* LoadFontFile(const char* filename, short characterWidth, short characterHeight, char firstCharacter)
 {
 	gdl::Image* fontImage = LoadImageFile(filename, gdl::TextureFilterModes::Linear);
 	Font* font = Font_Load(fontImage, characterWidth, characterHeight, firstCharacter);
@@ -137,7 +136,7 @@ Font* LoadFontFile(std::string filename, short characterWidth, short characterHe
 	}
 }
 
-Font* LoadFontCustom(std::string filename, short characterWidth, short characterHeight, char firstCharacter, short charactersPerRow)
+Font* LoadFontCustom(const char* filename, short characterWidth, short characterHeight, char firstCharacter, short charactersPerRow)
 {
 	gdl::Image* fontImage = LoadImageFile(filename, gdl::TextureFilterModes::Linear);
 	Font* font = Font_LoadPadded(fontImage, characterWidth, characterHeight, firstCharacter, charactersPerRow);
@@ -153,7 +152,7 @@ Font* LoadFontCustom(std::string filename, short characterWidth, short character
 	}
 }
 
-Font* LoadFontCustom(std::string filename, short characterWidth, short characterHeight, short charactersPerRow, std::string characters)
+Font* LoadFontCustom(const char* filename, short characterWidth, short characterHeight, short charactersPerRow, const char* characters)
 {
 	gdl::Image* fontImage = LoadImageFile(filename, gdl::TextureFilterModes::Linear);
 	Font* font = Font_LoadSelective(fontImage, characterWidth, characterHeight, charactersPerRow, characters);

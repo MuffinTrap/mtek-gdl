@@ -18,17 +18,17 @@ void InitSystem(const char* name,
 				u32 initFlags = 0 );
 
 // TODO Move all loading to AssetManager to get memory status and other stats
-PNGFile* LoadPNG(std::string filename);
-gdl::Image* LoadImageFile(std::string filename, gdl::TextureFilterModes filterMode);
+PNGFile* LoadPNG(const char* filename);
+gdl::Image* LoadImageFile(const char* filename, gdl::TextureFilterModes filterMode);
 gdl::Image* LoadImagePNG(PNGFile* png, gdl::TextureFilterModes filterMode);
 
-gdl::Sound* LoadSound(std::string filename);
-gdl::Sound* LoadOgg(std::string filename);
+gdl::Sound* LoadSound(const char* filename);
+gdl::Sound* LoadOgg(const char* filename);
 
 
-Font* LoadFont(std::string filename, short characterWidth, short characterHeight, char firstCharacter);
-Font* LoadFontCustom(std::string filename, short characterWidth, short characterHeight, char firstCharacter, short charactersPerRow);
-Font* LoadFontSelective(std::string filename, short characterWidth, short characterHeight, short charactersPerRow, std::string characters);
+Font* LoadFont(const char* filename, short characterWidth, short characterHeight, char firstCharacter);
+Font* LoadFontCustom(const char* filename, short characterWidth, short characterHeight, char firstCharacter, short charactersPerRow);
+Font* LoadFontSelective(const char* filename, short characterWidth, short characterHeight, short charactersPerRow, const char* characters);
 
 void DoProgramExit();
 
