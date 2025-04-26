@@ -1,8 +1,6 @@
 #include <mgdl/mgdl-controller.h>
 #include <mgdl/mgdl-util.h>
 
-using namespace mgdl;
-
 void WiiController_Init(WiiController* controller)
 {
 	controller->_channel = 0;

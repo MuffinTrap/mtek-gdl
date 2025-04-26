@@ -1,5 +1,6 @@
 #include <mgdl/mgdl-main.h>
 #include <mgdl/mgdl-platform.h>
+#include <mgdl/mgdl-assetmanager.h>
 
 #ifdef GEKKO
 #include <mgdl/wii/mgdl-wii-sound.h>
@@ -7,8 +8,9 @@
 #include <mgdl/pc/mgdl-pc-sound.h>
 #endif
 
+static AssetManager assetManager;
 
-void gdl::InitSystem(const char* name,
+void InitSystem(const char* name,
 	gdl::ScreenAspect screenAspect,
 								std::function<void()> initCallback,
 								std::function<void()> updateCallback,
@@ -16,23 +18,38 @@ void gdl::InitSystem(const char* name,
 								u32 initFlags)
 {
 	gdl::Platform::GetPlatform().InitSystem(name, screenAspect, initCallback, updateCallback, drawCallback, initFlags);
+	AssetManager_Init(&assetManager);
 }
 
-gdl::Image* gdl::LoadImage(std::string filename, gdl::TextureFilterModes filterMode)
+gdl::PNGFile* LoadPNG(std::string filename)
 {
-	gdl::Image* img = new gdl::Image();
-	if(img->LoadFile(filename.c_str(), filterMode))
+	gdl::PNGFile* png = new gdl::PNGFile();
+	if (png->ReadFile(filename.c_str()))
 	{
-		return img;
+		return png;
 	}
 	else
 	{
-		delete img;
+		delete png;
 		return nullptr;
 	}
 }
 
-gdl::Image* gdl::LoadImage(gdl::PNGFile* png, gdl::TextureFilterModes filterMode)
+gdl::Image* LoadImageFile(std::string filename, gdl::TextureFilterModes filterMode)
+{
+	gdl::Image* img = Image_LoadFile(filename.c_str(), filterMode);
+	if (img != nullptr)
+	{
+		AssetManager_LoadImage(&assetManager, img);
+		return img;
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+gdl::Image* LoadImagePNG(gdl::PNGFile* png, gdl::TextureFilterModes filterMode)
 {
 	gdl::Image* img = new gdl::Image();
 	if (img->LoadPNG(png, filterMode))
@@ -46,21 +63,7 @@ gdl::Image* gdl::LoadImage(gdl::PNGFile* png, gdl::TextureFilterModes filterMode
 	}
 }
 
-gdl::Image* gdl::LoadImage(const u8* buffer, size_t size, gdl::TextureFilterModes filterMode)
-{
-	gdl::Image* img = new gdl::Image();
-	if (img->LoadBuffer(buffer, size, filterMode))
-	{
-		return img;
-	}
-	else
-	{
-		delete img;
-		return nullptr;
-	}
-}
-
-gdl::Sound* gdl::LoadSound(std::string filename)
+gdl::Sound* LoadSound(std::string filename)
 {
 	gdl::Sound* snd = nullptr;
 #ifdef GEKKO
@@ -79,7 +82,7 @@ gdl::Sound* gdl::LoadSound(std::string filename)
 	}
 }
 
-gdl::Sound* gdl::LoadSound(const u8* buffer, size_t size)
+gdl::Sound* LoadSound(const u8* buffer, size_t size)
 {
 	gdl::Sound* snd = nullptr;
 #ifdef GEKKO
@@ -98,7 +101,7 @@ gdl::Sound* gdl::LoadSound(const u8* buffer, size_t size)
 	}
 }
 
-gdl::Sound* gdl::LoadOgg(std::string filename)
+gdl::Sound* LoadOgg(std::string filename)
 {
 	gdl::Sound* snd = nullptr;
 #ifdef GEKKO
@@ -117,88 +120,65 @@ gdl::Sound* gdl::LoadOgg(std::string filename)
 	}
 }
 
-gdl::PNGFile* gdl::LoadPNG(std::string filename)
-{
-	gdl::PNGFile* png = new gdl::PNGFile();
-	if (png->ReadFile(filename.c_str()))
-	{
-		return png;
-	}
-	else
-	{
-		delete png;
-		return nullptr;
-	}
-}
 
-gdl::Font* gdl::LoadFont(std::string filename, short characterWidth, short characterHeight, char firstCharacter)
+Font* LoadFontFile(std::string filename, short characterWidth, short characterHeight, char firstCharacter)
 {
-	gdl::Font* font = new gdl::Font();
-	if (font->LoadFromImage(filename.c_str(), characterWidth, characterHeight, firstCharacter))
+	gdl::Image* fontImage = LoadImageFile(filename, gdl::TextureFilterModes::Linear);
+	Font* font = Font_Load(fontImage, characterWidth, characterHeight, firstCharacter);
+	if (font != nullptr)
 	{
+		AssetManager_LoadFont(&assetManager, font);
 		return font;
 	}
 	else
 	{
-		delete font;
 		return nullptr;
 	}
 }
 
-gdl::Font* gdl::LoadFontCustom(std::string filename, short characterWidth, short characterHeight, char firstCharacter, short charactersPerRow)
+Font* LoadFontCustom(std::string filename, short characterWidth, short characterHeight, char firstCharacter, short charactersPerRow)
 {
-	gdl::Font* font = new gdl::Font();
-	if (font->LoadFromImage(filename.c_str(), characterWidth, characterHeight, firstCharacter, charactersPerRow))
+	gdl::Image* fontImage = LoadImageFile(filename, gdl::TextureFilterModes::Linear);
+	Font* font = Font_LoadPadded(fontImage, characterWidth, characterHeight, firstCharacter, charactersPerRow);
+
+	if (font != nullptr)
 	{
+		AssetManager_LoadFont(&assetManager, font);
 		return font;
 	}
 	else
 	{
-		delete font;
 		return nullptr;
 	}
 }
 
-gdl::Font* gdl::LoadFontCustom(std::string filename, short characterWidth, short characterHeight, short charactersPerRow, std::string characters)
+Font* LoadFontCustom(std::string filename, short characterWidth, short characterHeight, short charactersPerRow, std::string characters)
 {
-	gdl::Font* font = new gdl::Font();
-	if (font->LoadFromImage(filename.c_str(), characterWidth, characterHeight, charactersPerRow, characters))
+	gdl::Image* fontImage = LoadImageFile(filename, gdl::TextureFilterModes::Linear);
+	Font* font = Font_LoadSelective(fontImage, characterWidth, characterHeight, charactersPerRow, characters);
+	if (font != nullptr)
 	{
+		AssetManager_LoadFont(&assetManager, font);
 		return font;
 	}
 	else
 	{
-		delete font;
 		return nullptr;
 	}
 }
 
-gdl::Font* gdl::LoadFont(const u8* buffer, size_t size, short characterWidth, short characterHeight, char firstCharacter)
-{
-	gdl::Font* font = new gdl::Font();
-	if (font->LoadFromBuffer(buffer, size, characterWidth, characterHeight, firstCharacter))
-	{
-		return font;
-	}
-	else
-	{
-		delete font;
-		return nullptr;
-	}
-}
-
-WiiController* gdl::GetController( int controllerNumber)
+WiiController* GetController( int controllerNumber)
 {
 	return gdl::Platform::GetPlatform().GetController(controllerNumber);
 }
 
-void gdl::DoProgramExit()
+void DoProgramExit()
 {
 	gdl::Platform::GetPlatform().DoProgramExit();
 }
 
-u16 gdl::GetScreenWidth() { return gdl::Platform::GetPlatform().GetScreenWidth();}
-u16 gdl::GetScreenHeight(){ return gdl::Platform::GetPlatform().GetScreenHeight();};
-float gdl::GetAspectRatio(){ return gdl::Platform::GetPlatform().GetAspectRatio();};
-float gdl::GetElapsedSeconds(){ return gdl::Platform::GetPlatform().GetElapsedSeconds();};
-float gdl::GetDeltaTime(){ return gdl::Platform::GetPlatform().GetDeltaTime();};
+u16 GetScreenWidth() { return gdl::Platform::GetPlatform().GetScreenWidth();}
+u16 GetScreenHeight(){ return gdl::Platform::GetPlatform().GetScreenHeight();};
+float GetAspectRatio(){ return gdl::Platform::GetPlatform().GetAspectRatio();};
+float GetElapsedSeconds(){ return gdl::Platform::GetPlatform().GetElapsedSeconds();};
+float GetDeltaTime(){ return gdl::Platform::GetPlatform().GetDeltaTime();};

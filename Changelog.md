@@ -5,7 +5,10 @@ This version changes to C and breaks all backwards compatibility.
 
 #### Changes
 
++ Removed asset loading functions that load from a memory buffer.
++ Removed namespace gdl mostly.
 + WiiController converted to C. Removed deadzones since they were not used anyway.
++ Font converted to C and removed redundant UVs that were stored.
 
 
 ### Version 0.100.3-muffintrap "skrolli"

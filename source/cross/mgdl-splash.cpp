@@ -68,7 +68,7 @@ static float DrawLetter(float x, u8* sl, u8 bars, u32 color, float lean, bool us
 		{
 			GetCorners(x, sl[line+0], sl[line+1], corners, lean, barsColored);
 
-			gdl::DrawQuad(corners[0], corners[1], corners[2], corners[3],
+			DrawQuad(corners[0], corners[1], corners[2], corners[3],
 						corners[4], corners[5], corners[6], corners[7],
 						color);
 			barsColored -= 1.0f;
@@ -162,7 +162,7 @@ float gdl::DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldT
     glLoadIdentity();
 
 	gdl::Palette* blessing = gdl::Palette::GetDefaultPalette();
-	gdl::Font* debf = gdl::GetDebugFont();
+	gdl::Font* debf = GetDebugFont();
 	u32 yellow = blessing->GetColor(3);
 	u32 grey = blessing->GetColor(6);
 
@@ -242,7 +242,7 @@ float gdl::DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldT
 		int messageY = areaBottom - 8;
 		debf->Print(yellow, messageLeft, messageY, 8, holdMessage.c_str());
 
-		gdl::DrawBoxF(messageLeft, messageY - 16, messageLeft + messageWidth * aHoldTimer, messageY - 16 - 4, yellow);
+		DrawBoxF(messageLeft, messageY - 16, messageLeft + messageWidth * aHoldTimer, messageY - 16 - 4, yellow);
 	}
 	return (animationProgress / 2.0f);
 }

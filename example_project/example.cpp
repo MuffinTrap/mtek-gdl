@@ -16,7 +16,7 @@ void Example::Init()
     mel_sprites.LoadFromImage("assets/mel_tiles.png", spriteHeight, spriteHeight);
     pointerImage = gdl::LoadImage("assets/pointer.png", gdl::TextureFilterModes::Nearest);
     ibmFont = gdl::LoadFont("assets/font8x16.png", 8, 16, ' ');
-    debugFont = gdl::GetDebugFont();
+    debugFont = GetDebugFont();
 
     blip = gdl::LoadSound("assets/blipSelect.wav");
     sampleMusic = gdl::LoadOgg("assets/sample3.ogg");
@@ -194,7 +194,7 @@ static void DrawButtons(short x, short y, short size, gdl::Font* font)
         {
             c = active;
         }
-        gdl::DrawBoxF(x + i * size,
+        DrawBoxF(x + i * size,
                       y,
                       x+size+i*size,
                       y-size,c);
@@ -229,7 +229,7 @@ void DrawDPad(short x, short y, short size)
             c = gdl::Colors::Red;
         }
         vec2 d=directions[i];
-        gdl::DrawBoxF(x+d.x*box-h, y+ d.y*box-h, x+box+d.x*box-h, y+box+d.y*box-h, c);
+        DrawBoxF(x+d.x*box-h, y+ d.y*box-h, x+box+d.x*box-h, y+box+d.y*box-h, c);
     }
 }
 
@@ -243,12 +243,12 @@ void DrawJoystick(short x, short y, short size)
     vec2 jdir = WiiController_GetNunchukJoystickDirection(gdl::GetController(0));
     short jleft= x + jsize/2 + jdir.x * box-h;
     short jtop = y + jsize/2 + jdir.y * box-h;
-    gdl::DrawBox(x, y, x+jsize, y+jsize, jc);
+    DrawBox(x, y, x+jsize, y+jsize, jc);
     if (jdir.x != 0.0f && jdir.y != 0.0f)
     {
         jc = gdl::Colors::LightGreen;
     }
-    gdl::DrawBoxF(jleft, jtop, jleft+box, jtop+box,jc);
+    DrawBoxF(jleft, jtop, jleft+box, jtop+box,jc);
 }
 
 void Example::DrawInputInfo(int x, int y)
@@ -285,7 +285,7 @@ void Example::DrawTimingInfo(int x, int y, float scale)
 {
     float ystep = ibmFont->GetCharacterHeight();
 
-    gdl::DrawBoxF(x, y, x+200, y - ystep* 4, gdl::Colors::Black);
+    DrawBoxF(x, y, x+200, y - ystep* 4, gdl::Colors::Black);
 
     ibmFont->Printf(gdl::Colors::LightRed, x, y - ystep * 0, scale,  "Deltatime %.4f", deltaTime);
     ibmFont->Printf(gdl::Colors::LightRed, x, y - ystep * 1, scale, "Elapsed seconds: %.2f", elapsedSeconds);
@@ -312,7 +312,7 @@ void Example::DrawTimingInfo(int x, int y, float scale)
                 break;
             case gdl::SoundStatus::Initial: musicColor = gdl::Colors::Black; break;
         };
-        gdl::DrawBoxF(x-20, y-ystep*2, x, y-ystep*3, musicColor);
+        DrawBoxF(x-20, y-ystep*2, x, y-ystep*3, musicColor);
         debugFont->Icon(gdl::Colors::White, x-20, y-ystep*2, ystep, gdl::LJustify, gdl::LJustify, icon);
     }
 
@@ -336,7 +336,7 @@ void Example::DrawTimingInfo(int x, int y, float scale)
             break;
         case gdl::SoundStatus::Initial: musicColor = gdl::Colors::Black; break;
     };
-    gdl::DrawBoxF(x-20, y-ystep*3, x, y-ystep*4, musicColor);
+    DrawBoxF(x-20, y-ystep*3, x, y-ystep*4, musicColor);
     debugFont->Icon(gdl::Colors::White, x-20, y-ystep*3, ystep, gdl::LJustify, gdl::LJustify, icon);
 }
 

@@ -20,7 +20,7 @@ gdl::Platform::Platform()
 	elapsedTimeS = 0.0f;
 }
 
-std::string gdl::Platform::GetName()
+const char* gdl::Platform::GetName()
 {
 	return name;
 }

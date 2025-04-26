@@ -6,8 +6,6 @@
 
 #include <stdio.h>
 
-using namespace mgdl;
-
 WiiController glutController;
 
 #define ascii_1  49

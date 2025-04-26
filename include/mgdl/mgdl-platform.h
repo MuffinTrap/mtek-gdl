@@ -25,7 +25,7 @@ namespace gdl
 
 			static Platform& GetPlatform();
 
-			std::string GetName();
+			const char* GetName();
 			u16 GetScreenWidth();
 			u16 GetScreenHeight();
 			float GetAspectRatio();
@@ -35,7 +35,7 @@ namespace gdl
 		protected:
 			Platform();
 
-			std::string name;
+			const char* name;
 			short screenWidth;
 			short screenHeight;
 			float aspectRatio;

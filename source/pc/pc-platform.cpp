@@ -4,8 +4,6 @@
 #include <mgdl/pc/mgdl-pc-platform.h>
 #include <mgdl/pc/mgdl-pc-input.h>
 
-using namespace mgdl;
-
 // Declarations
 
 static int windowWidth = 0;

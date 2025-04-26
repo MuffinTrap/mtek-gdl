@@ -41,7 +41,7 @@ void gdl::MenuCreator::SetColors(u32 bg, u32 border, u32 text, u32 highlight)
 
 void gdl::MenuCreator::Panel(int h, u32 color)
 {
-    gdl::DrawBoxF(x, y, x + w, y - h, color);
+    DrawBoxF(x, y, x + w, y - h, color);
     y -= h;
 }
 
@@ -63,12 +63,12 @@ bool gdl::MenuCreator::Button(const char* text)
 
     if (inside)
     {
-        gdl::DrawBoxF(x, y, x + w, y - h, highlight);
+        DrawBoxF(x, y, x + w, y - h, highlight);
     }
     else
     {
-        gdl::DrawBoxF(x, y, x + w, y - h, bg);
-        gdl::DrawBox(x, y, x + w, y - h, border);
+        DrawBoxF(x, y, x + w, y - h, bg);
+        DrawBox(x, y, x + w, y - h, border);
     }
 
     // TODO Center text
@@ -93,21 +93,21 @@ bool gdl::MenuCreator::Toggle ( const char* text, bool& valueRef )
     short padding = 2;
     if (inside)
     {
-        gdl::DrawBoxF(x, y, x + w, y - h, highlight);
+        DrawBoxF(x, y, x + w, y - h, highlight);
     }
     else
     {
-        gdl::DrawBoxF(x, y, x + w, y - h, bg);
-        gdl::DrawBox(x, y, x + w, y - h, border);
+        DrawBoxF(x, y, x + w, y - h, bg);
+        DrawBox(x, y, x + w, y - h, border);
     }
 
     if (valueRef)
     {
-        gdl::DrawBoxF(x + padding, y - padding, x + h - padding, y - h + padding, this->text);
+        DrawBoxF(x + padding, y - padding, x + h - padding, y - h + padding, this->text);
     }
     else
     {
-        gdl::DrawBox(x + padding, y - padding, x + h - padding, y - h + padding, this->text);
+        DrawBox(x + padding, y - padding, x + h - padding, y - h + padding, this->text);
     }
 
     float textH = h/rowHeightEm;

@@ -531,7 +531,7 @@ static unsigned char header_data[] = {
 	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	};
 
-gdl::Font* gdl::GetDebugFont()
+gdl::Font* GetDebugFont()
 {
 	// NOTE In OpenGL
 	// the origo 0,0 is in lower left coordinate
@@ -565,7 +565,7 @@ gdl::Font* gdl::GetDebugFont()
 		glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
 
 		gdl::Image img;
-		img.SetGLName(texName, width, height, ColorFormats::RGBA);
+		img.SetGLName(texName, width, height, gdl::ColorFormats::RGBA);
 		debugFont = new gdl::Font();
 		debugFont->LoadFromImage(img, 8, 8, ' ');
 	}

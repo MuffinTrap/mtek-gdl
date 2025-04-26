@@ -14,14 +14,6 @@ namespace gdl
 	class Image
 	{
 		public:
-			/**
-			 * @brief Loads an image from a file.
-			 * @param filename Name of the image file.
-			 * @param filterMode Filtering mode to use.
-			 * @return True if loading was succesfull.
-			 */
-			bool LoadFile(const char* filename, gdl::TextureFilterModes filterMode);
-			bool LoadBuffer(const u8* buffer, size_t size, gdl::TextureFilterModes filterMode);
 
 			/**
 			 * @brief Loads an image from a PNG file object.
@@ -135,3 +127,11 @@ namespace gdl
 		GLuint textureId;
 	};
 }
+
+/**
+ * @brief Loads an image from a file.
+ * @param filename Name of the image file.
+ * @param filterMode Filtering mode to use.
+ * @return True if loading was succesfull.
+ */
+gdl::Image* Image_LoadFile(const char* filename, gdl::TextureFilterModes filterMode);
