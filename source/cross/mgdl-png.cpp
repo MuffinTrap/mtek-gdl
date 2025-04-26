@@ -11,29 +11,19 @@
 #include <cstdlib>
 #include <csetjmp>
 
-gdl::PNGFile::PNGFile()
-{
-	texels = nullptr;
 
-}
-
-gdl::PNGFile::~PNGFile()
+void PNG_DeleteData(PNGFile* png)
 {
-	DeleteData();
-}
-
-void gdl::PNGFile::DeleteData()
-{
-	if (texels != nullptr)
+	if (png->_texels != nullptr)
 	{
-		free(texels);
-		texels = nullptr;
+		free(png->_texels);
+		png->_texels = nullptr;
 	}
 }
 
-bool gdl::PNGFile::ReadTextureInfo(int color_type)
+GLint PNG_ColorTypeToBPP(int color_type)
 {
-	pngFormat = color_type;
+	short bytesPerPixel = 0;
 	switch(color_type)
 	{
 		case PNG_COLOR_TYPE_GRAY:
@@ -54,13 +44,21 @@ bool gdl::PNGFile::ReadTextureInfo(int color_type)
 		break;
 		default:
 			printf("\tUnsupported PNG COLOR TYPE!\n");
-			return false;
 		break;
 	};
-	return true;
+	return bytesPerPixel;
 }
 
-GLenum gdl::PNGFile::GetGLFormat()
+GLenum PNG_GetGLFormat(PNGFile* png)
+{
+	return PNG_PNGtoGLFormat(png->_pngFormat);
+}
+GLenum PNG_GetGLInternalFormat(PNGFile* png)
+{
+	return PNG_PNGtoGLInternalFormat(png->_pngFormat);
+}
+
+GLenum PNG_PNGtoGLFormat(int pngFormat)
 {
 	switch(pngFormat)
 	{
@@ -84,7 +82,7 @@ GLenum gdl::PNGFile::GetGLFormat()
 	return 0;
 }
 
-GLenum gdl::PNGFile::GetGLInternalFormat()
+GLenum PNG_PNGtoGLInternalFormat(int pngFormat)
 {
 	switch(pngFormat)
 	{
@@ -110,7 +108,7 @@ GLenum gdl::PNGFile::GetGLInternalFormat()
 }
 
 
-bool gdl::PNGFile::ReadPNG(FILE* fp)
+PNGFile* PNG_ReadFilePointer(FILE* fp)
 {
 	// Read from file pointer
 	png_byte magic[8];
@@ -119,13 +117,17 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 	png_bytep *row_pointers = nullptr;
 	int bit_depth, color_type;
 
+
+	// Temp pointer for texels
+	GLubyte* texelPtr = nullptr;
+
 	// Read Magic number :O
 	fread(magic, 1, sizeof(magic), fp);
 	if (png_check_sig(magic, sizeof(magic)) == false)
 	{
 		printf("\t[INVALID PNG]\n");
 		fclose(fp);
-		return false;
+		return nullptr;
 	}
 
 	// Create struct for reading the file
@@ -135,7 +137,7 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 		printf("\t[FAILED TO READ]\n");
 		png_destroy_read_struct(&png_ptr, NULL, NULL);
 		fclose(fp);
-		return false;
+		return nullptr;
 	}
 
 	// Create struct to hold info about the file
@@ -145,7 +147,7 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 		printf("\t[FAILED TO GET INFO]\n");
 		png_destroy_read_struct(&png_ptr, NULL, NULL);
 		fclose(fp);
-		return false;
+		return nullptr;
 	}
 
 	// This sets what happens if there is an error during read
@@ -155,13 +157,13 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 		{
 			free(row_pointers);
 		}
-		if (texels != nullptr)
+		if (texelPtr != nullptr)
 		{
-			free (texels);
+			free (texelPtr);
 		}
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 		fclose(fp);
-		return false;
+		return nullptr;
 	}
 
 	// Lets read the file now!
@@ -253,13 +255,15 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 	png_uint_32 w, h;
 	png_get_IHDR(png_ptr, info_ptr, &w, &h, &bit_depth, &color_type, NULL, NULL, NULL);
 
+	short width = 0;
+	short height = 0;
 	// Wii cannot handle very big textures
 	//
 	if ((w > 1024) || (h > 1024)) {
 		printf("\t[TOO LARGE: MAX 1024]\n");
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 		fclose(fp);
-		return false;
+		return nullptr;
 	}
 	else
 	{
@@ -268,36 +272,43 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 		height = h;
 	}
 
-	bool colorOk = ReadTextureInfo(color_type);
-	if (colorOk == false)
+	short bpp = PNG_ColorTypeToBPP(color_type);
+	if (bpp == 0)
 	{
 		printf("\t[STRANGE PNG COLOR TYPE]\n");
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 		fclose(fp);
-		return false;
+		return nullptr;
 	}
 
 	// Allocate!
-	size_t imageDataSize = sizeof(GLubyte) * w * h * bytesPerPixel;
+	size_t imageDataSize = sizeof(GLubyte) * w * h * bpp;
 
 	// Danger. Wii only has 20 megabytes of texture memoy
 	printf("\tAllocating %zu bytes\n", imageDataSize);
-	texels = (GLubyte*)AllocateAlignedMemory(imageDataSize);
+	texelPtr = (GLubyte*)gdl::AllocateAlignedMemory(imageDataSize);
 
-	if (texels == nullptr)
+	if (texelPtr == nullptr)
 	{
 		printf("\t[OUT OF MEMORY]\n");
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 		fclose(fp);
-		return false;
+		return nullptr;
 	}
+
+	PNGFile* png = new PNGFile();
+	png->width = width;
+	png->height = height;
+	png->bytesPerPixel = bpp;
+	png->_pngFormat = color_type;
+	png->_texels = texelPtr;
 
 	// Set up array for rows to read
 	size_t rowPointersSize = sizeof(png_bytep) * h;
-	row_pointers = (png_bytep*)AllocateAlignedMemory(rowPointersSize);
+	row_pointers = (png_bytep*)gdl::AllocateAlignedMemory(rowPointersSize);
 
 	// Read all rows
-	size_t rowSize = w * bytesPerPixel;
+	size_t rowSize = w * png->bytesPerPixel;
 
 	// Is the first row at the start or at the end?
  #define READ_BOTTOM_UP
@@ -309,9 +320,9 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 #else
 		size_t readStart = i * rowSize;
 #endif
-		row_pointers[i] = (png_bytep)(texels + readStart);
+		row_pointers[i] = (png_bytep)(png->_texels + readStart);
 	}
-	CacheFlushRange(row_pointers, rowPointersSize);
+	gdl::CacheFlushRange(row_pointers, rowPointersSize);
 
 	// Pointers to rows are set, read the pixels on the rows
 	png_read_image(png_ptr, row_pointers);
@@ -324,79 +335,48 @@ bool gdl::PNGFile::ReadPNG(FILE* fp)
 	printf("\tPNG read done\n");
 
 	// Flush read texels
-	CacheFlushRange(texels, imageDataSize);
-	return true;
+	gdl::CacheFlushRange(png->_texels, imageDataSize);
+	return png;
 }
 
-bool gdl::PNGFile::ReadBuffer(const u8* buffer, size_t size)
-{
-	// fmemopen cannot read from const buffer :U
-	// Copy data to temporary buffer before reading
-	u8 *tempBuffer = (u8*)gdl::AllocateAlignedMemory(size);
-	gdl_assert_print((tempBuffer != nullptr), "Cannot allocate enough memory for image buffer.");
-
-	// Copy
-	memcpy(tempBuffer, buffer, size);
-
-	// Make sure that the data is in the main memory
-	CacheFlushRange(tempBuffer, size);
-
-	// Open file
-	FILE *fp= gdl::BufferOpen(tempBuffer, size, "rb");
-
-	if (fp == nullptr)
-	{
-		printf("Image buffer failed to open\n");
-		free(tempBuffer);
-		return false;
-	}
-	bool readOk = ReadPNG(fp);
-	free(tempBuffer);
-	fclose(fp);
-	return readOk;
-}
-
-bool gdl::PNGFile::ReadFile(const char* filename)
+PNGFile* PNG_ReadFile(const char* filename)
 {
 	FILE *fp = fopen(filename, "rb");
 	if (fp == nullptr)
 	{
 		printf("[NOT FOUND!]\n");
-		return false;
+		return nullptr;
 	}
 
-	bool readOk = ReadPNG(fp);
+	PNGFile* png = PNG_ReadFilePointer(fp);
 	fclose(fp);
-	return readOk;
+	return png;
 }
 
-u32 gdl::PNGFile::GetRGBA(int x, int y)
+gdl::rgba8 PNG_GetRGBA(PNGFile* png, int x, int y)
 {
-	size_t index = x + y * width;
-	size_t byteIndex = index * bytesPerPixel;
-	GLubyte red = texels[byteIndex];
-	GLubyte green = texels[byteIndex + 1];
-	GLubyte blue = texels[byteIndex + 2];
+	size_t index = x + y * png->width;
+	size_t byteIndex = index * png->bytesPerPixel;
+	GLubyte red = png->_texels[byteIndex];
+	GLubyte green = png->_texels[byteIndex + 1];
+	GLubyte blue = png->_texels[byteIndex + 2];
 	GLubyte alpha  = 255;
-	if (GetGLFormat() == GL_RGBA)
+	if (PNG_PNGtoGLFormat(png->_pngFormat) == GL_RGBA)
 	{
-		alpha = texels[byteIndex + 3];
+		alpha = png->_texels[byteIndex + 3];
 	}
 
 	u32 c = TO_RGBA(red, green, blue, alpha);
 	return c;
 }
 
-float gdl::PNGFile::GetGrayscale(int x, int y)
+float PNG_GetGrayscale(PNGFile* png, int x, int y)
 {
-	size_t index = x + y * width;
-	size_t byteIndex = index * bytesPerPixel;
-	GLubyte value = texels[byteIndex];
+	size_t index = x + y * png->width;
+	size_t byteIndex = index * png->bytesPerPixel;
+	GLubyte value = png->_texels[byteIndex];
 
 	return (float)value/256.0f;
 }
 
-GLsizei gdl::PNGFile::GetWidth() { return width; }
-GLsizei gdl::PNGFile::GetHeight() { return height; }
-GLint gdl::PNGFile::GetBytesPerPixel() { return bytesPerPixel; }
-GLubyte *gdl::PNGFile::GetTexels() { return texels; }
+GLubyte* PNG_GetTexels(PNGFile* png) { return png->_texels; }

@@ -2,11 +2,10 @@
 
 #include "mgdl-types.h"
 #include "mgdl-opengl.h"
+#include "mgdl-png.h"
 
 namespace gdl
 {
-
-	class PNGFile;
 
 	/**
 	 * @brief Abstract class for cross platform PNG image loading.
@@ -15,13 +14,6 @@ namespace gdl
 	{
 		public:
 
-			/**
-			 * @brief Loads an image from a PNG file object.
-			 * @param pngFile PNG file object.
-			 * @param filterMode Filtering mode to use.
-			 * @return True if loading was succesfull.
-			 */
-			bool LoadPNG(PNGFile* pngFile, gdl::TextureFilterModes filterMode);
 
 			/**
 			 * @brief Sets the GL name and dimenions of the image.
@@ -114,7 +106,6 @@ namespace gdl
 			 */
 			GLuint GetTextureId();
 
-	private:
 		PNGFile* pngFile;
 
 		float aspectRatio;
@@ -135,3 +126,11 @@ namespace gdl
  * @return True if loading was succesfull.
  */
 gdl::Image* Image_LoadFile(const char* filename, gdl::TextureFilterModes filterMode);
+
+/**
+ * @brief Loads an image from a PNG file object.
+ * @param pngFile PNG file object.
+ * @param filterMode Filtering mode to use.
+ * @return True if loading was succesfull.
+ */
+gdl::Image* Image_LoadPNG(PNGFile* pngFile, gdl::TextureFilterModes filterMode);

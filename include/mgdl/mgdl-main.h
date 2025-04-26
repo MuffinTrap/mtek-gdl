@@ -18,9 +18,9 @@ void InitSystem(const char* name,
 				u32 initFlags = 0 );
 
 // TODO Move all loading to AssetManager to get memory status and other stats
-gdl::PNGFile* LoadPNG(std::string filename);
+PNGFile* LoadPNG(std::string filename);
 gdl::Image* LoadImageFile(std::string filename, gdl::TextureFilterModes filterMode);
-gdl::Image* LoadImagePNG(gdl::PNGFile* png, gdl::TextureFilterModes filterMode);
+gdl::Image* LoadImagePNG(PNGFile* png, gdl::TextureFilterModes filterMode);
 
 gdl::Sound* LoadSound(std::string filename);
 gdl::Sound* LoadOgg(std::string filename);

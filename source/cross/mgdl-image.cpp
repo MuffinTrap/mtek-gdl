@@ -7,48 +7,32 @@
 #include <cstdlib>
 #include <cstring>
 
-bool gdl::Image::LoadBuffer (const u8* buffer, size_t size, gdl::TextureFilterModes filterMode )
-{
-	// Load using png
-	printf("gdl:: Loading image buffer\n");
-	pngFile = new PNGFile();
-	if (pngFile->ReadBuffer(buffer, size) == false)
-	{
-		return false;
-	}
-	bool loadOk =  LoadPNG(pngFile, filterMode);
-	// Data is loaded to OpenGX, release the buffers
-	delete pngFile;
-	pngFile = nullptr;
-	return loadOk;
-}
-
-bool gdl::Image::LoadFile ( const char* filename, gdl::TextureFilterModes filterMode)
+gdl::Image* Image_LoadFile ( const char* filename, gdl::TextureFilterModes filterMode)
 {
 	// Load using png
 	printf("Loading image %s\n", filename);
 
-	pngFile = new PNGFile();
-	if (pngFile->ReadFile(filename) == false)
+	PNGFile* pngFile = PNG_ReadFile(filename);
+	if (pngFile == nullptr)
 	{
-		return false;
+		return nullptr;
 	}
-	bool loadOk =  LoadPNG(pngFile, filterMode);
+	gdl::Image* image =  Image_LoadPNG(pngFile, filterMode);
 
 	// Data is loaded to OpenGX, release the buffers
-	delete pngFile;
-	pngFile = nullptr;
-	return loadOk;
+	PNG_DeleteData(pngFile);
+	return image;
 }
 
 // The png might belong to someone else, do not free it in this function
-bool gdl::Image::LoadPNG(PNGFile* png, gdl::TextureFilterModes filterMode)
+gdl::Image* Image_LoadPNG(PNGFile* png, gdl::TextureFilterModes filterMode)
 {
-	GLint glFilter = TextureFilterToGLFilter(filterMode);
+	gdl::Image* image = new gdl::Image();
+	GLint glFilter = gdl::Image::TextureFilterToGLFilter(filterMode);
 
 	GLint alignment;
-	glGenTextures(1, &textureId);
-	glBindTexture(GL_TEXTURE_2D, textureId);
+	glGenTextures(1, &image->textureId);
+	glBindTexture(GL_TEXTURE_2D, image->textureId);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glFilter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glFilter);
 
@@ -59,20 +43,20 @@ bool gdl::Image::LoadPNG(PNGFile* png, gdl::TextureFilterModes filterMode)
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	// We dont have mipmaps..
-	glTexImage2D(GL_TEXTURE_2D, 0, png->GetBytesPerPixel(),
-			  png->GetWidth(), png->GetHeight(),
-			  0, png->GetGLFormat(),
-			  png->GetGLInternalFormat(),
-			  png->GetTexels());
+	glTexImage2D(GL_TEXTURE_2D, 0, png->bytesPerPixel,
+			  png->width, png->height,
+			  0, PNG_GetGLFormat(png),
+			  PNG_GetGLInternalFormat(png),
+			  PNG_GetTexels(png));
 
 	// restore previous alignment
 	glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
 
 	// copy data
-	width = png->GetWidth();
-	height = png->GetHeight();
+	image->width = png->width;
+	image->height = png->height;
 
-	return true;
+	return image;
 }
 
 void gdl::Image::SetGLName(GLuint textureName, GLsizei width, GLsizei height, gdl::ColorFormats format)

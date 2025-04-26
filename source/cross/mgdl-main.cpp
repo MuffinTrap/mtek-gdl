@@ -21,11 +21,12 @@ void InitSystem(const char* name,
 	AssetManager_Init(&assetManager);
 }
 
-gdl::PNGFile* LoadPNG(std::string filename)
+PNGFile* LoadPNG(std::string filename)
 {
-	gdl::PNGFile* png = new gdl::PNGFile();
-	if (png->ReadFile(filename.c_str()))
+	PNGFile* png = PNG_ReadFile(filename.c_str());
+	if (png != nullptr)
 	{
+		AssetManager_LoadPNG(&assetManager, png);
 		return png;
 	}
 	else
@@ -49,10 +50,10 @@ gdl::Image* LoadImageFile(std::string filename, gdl::TextureFilterModes filterMo
 	}
 }
 
-gdl::Image* LoadImagePNG(gdl::PNGFile* png, gdl::TextureFilterModes filterMode)
+gdl::Image* LoadImagePNG(PNGFile* png, gdl::TextureFilterModes filterMode)
 {
-	gdl::Image* img = new gdl::Image();
-	if (img->LoadPNG(png, filterMode))
+	gdl::Image* img = Image_LoadPNG(png, filterMode);
+	if (img != nullptr)
 	{
 		return img;
 	}

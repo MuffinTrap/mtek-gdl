@@ -14,3 +14,8 @@ void AssetManager_LoadFont(AssetManager* manager, gdl::Image* image)
 {
 	// TODO how much memory the image data takes extracted
 }
+
+void AssetManager_LoadPNG(AssetManager* manager, PNGFile* image)
+{
+	// TODO how much memory the image data takes extracted
+}
