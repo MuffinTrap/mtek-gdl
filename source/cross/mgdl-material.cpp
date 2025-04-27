@@ -5,7 +5,7 @@ gdl::Material::Material()
 
 }
 
-gdl::Material::Material ( std::string name)
+gdl::Material::Material ( const char* name)
 {
 	this->name = name;
 	this->shininess = 1.0f;
@@ -13,7 +13,7 @@ gdl::Material::Material ( std::string name)
 	this->type = MaterialType::Diffuse;
 }
 
-gdl::Material::Material ( std::string name, gdl::Image* texture, gdl::MaterialType type)
+gdl::Material::Material ( const char* name, Image* texture, gdl::MaterialType type)
 {
 	this->name = name;
 	this->texture = texture;
@@ -27,5 +27,5 @@ gdl::Material::Material ( std::string name, gdl::Image* texture, gdl::MaterialTy
 void gdl::Material::Apply()
 {
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texture->GetTextureId());
+	glBindTexture(GL_TEXTURE_2D, texture->textureId);
 }

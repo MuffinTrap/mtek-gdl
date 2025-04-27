@@ -24,7 +24,7 @@ void gdl::InitPerspectiveProjection(float fovy, float nearZ, float farZ)
 {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(fovy, gdl::GetAspectRatio(), nearZ, farZ);
+    gluPerspective(fovy, GetAspectRatio(), nearZ, farZ);
 }
 
 void gdl::InitOrthoProjection()
@@ -32,7 +32,7 @@ void gdl::InitOrthoProjection()
     glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
     // Y increases up : OpenGL default
-    gluOrtho2D(0.0, (double)gdl::GetScreenWidth(), 0.0, (double)gdl::GetScreenHeight());
+    gluOrtho2D(0.0, (double)GetScreenWidth(), 0.0, (double)GetScreenHeight());
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();

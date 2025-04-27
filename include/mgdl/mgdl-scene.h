@@ -29,18 +29,18 @@ namespace gdl
 		Scene();
 		void Draw();
 		void DrawNode(gdl::Node* node);
-		void DebugDraw(gdl::Font* font, short x, short y, u32 drawFlags);
+		void DebugDraw(Font* font, short x, short y, u32 drawFlags);
 
 		void AddChildNode(gdl::Node* parent, gdl::Node* child);
 
 		void AddMaterial(gdl::Material* material);
-		void SetMaterialTexture(const std::string& materialName, gdl::Image* texture);
-		void SetAllMaterialTextures(gdl::Image* texture);
+		void SetMaterialTexture(const char* materialName, Image* texture);
+		void SetAllMaterialTextures(Image* texture);
 
 		gdl::Node* GetRootNode();
-		gdl::Node* GetNode(const std::string& name);
+		gdl::Node* GetNode(const char* name);
 		gdl::Node* GetNodeByIndex(short index);
-		gdl::Material* GetMaterial(const std::string& materialName);
+		gdl::Material* GetMaterial(const char* materialName);
 
 		vec3 GetWorldPosition(gdl::Node* node);
 		bool GetModelMatrix(gdl::Node* node, mat4x4 modelOut);
@@ -49,9 +49,9 @@ namespace gdl
 	private:
 		void DebugDrawNode ( Node* node, Font* font, short int x, short int& dy, short int depth, short int& index, u32 drawFlags );
 
-		gdl::Node* FindNode(gdl::Node* node, const std::string &nodeName);
+		gdl::Node* FindNode(gdl::Node* node, const char* nodeName);
 		gdl::Node* FindNodeByIndex(gdl::Node* parent, short targetIndex, short& index);
-		gdl::Material* FindMaterial(gdl::Node* node, const std::string&  materialName);
+		gdl::Material* FindMaterial(gdl::Node* node, const char*  materialName);
 
 		bool CalculateWorldPosition(gdl::Node* parent, gdl::Node* target, mat4x4 world, vec3& posOut);
 		bool CalculateModelMatrix(gdl::Node* parent, gdl::Node* target, mat4x4 model);

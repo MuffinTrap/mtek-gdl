@@ -7,41 +7,31 @@
 #include <string.h>
 #include <string>
 #include <functional>
-// Interface class for platform
 
-namespace gdl
+struct Platform
 {
-	class Platform
-	{
-		public:
-			virtual void InitSystem(const char* name,
-									gdl::ScreenAspect screenAspect,
-									std::function<void()> initCallback,
-									std::function<void()> updateCallback,
-									std::function<void()> drawCallback,
-									u32 initFlags = 0 ) = 0;
-			virtual WiiController* GetController(int controllerNumber) = 0;
-			virtual void DoProgramExit() = 0;
+	const char* name;
+	short screenWidth;
+	short screenHeight;
+	float aspectRatio;
+	gdl::ScreenAspect aspect;
+	float _deltaTimeS;
+	float _elapsedTimeS;
+};
 
-			static Platform& GetPlatform();
+// These functions are implemented in pc-platform.cpp or wii-platform.cpp
 
-			const char* GetName();
-			u16 GetScreenWidth();
-			u16 GetScreenHeight();
-			float GetAspectRatio();
-			virtual float GetElapsedSeconds() = 0;
-			virtual float GetDeltaTime() = 0;
+void Platform_Init(const char* name,
+						gdl::ScreenAspect screenAspect,
+						std::function<void()> initCallback,
+						std::function<void()> updateCallback,
+						std::function<void()> drawCallback,
+						u32 initFlags = 0 );
 
-		protected:
-			Platform();
+WiiController* Platform_GetController(int controllerNumber);
+void Platform_DoProgramExit();
 
-			const char* name;
-			short screenWidth;
-			short screenHeight;
-			float aspectRatio;
-			gdl::ScreenAspect aspect;
-			float deltaTimeS;
-			float elapsedTimeS;
-	};
-}
+Platform* Platform_GetSingleton();
+float Platform_GetDeltaTime();
+float Platform_GetElapsedSeconds();
 

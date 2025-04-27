@@ -16,14 +16,14 @@ namespace gdl
 	{
 	public:
 
-		std::string name;
+		const char* name;
 		GLfloat shininess = 1.0f;
 		vec3 emissiveColor;
-		gdl::Image* texture;
+		Image* texture;
 		gdl::MaterialType type;
 		Material();
-		Material(std::string name);
-		Material(std::string name, gdl::Image* texture, gdl::MaterialType type);
+		Material(const char* name);
+		Material(const char* name, Image* texture, gdl::MaterialType type);
 		void Apply();
 	};
 }

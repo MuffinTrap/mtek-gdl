@@ -18,7 +18,7 @@ void gdl::Scene::AddChildNode (gdl::Node* parent, gdl::Node* child )
 	}
 }
 
-void gdl::Scene::DebugDraw( gdl::Font* font, short x, short y, u32 debugFlags )
+void gdl::Scene::DebugDraw( Font* font, short x, short y, u32 debugFlags )
 {
 	if (rootNode != nullptr)
 	{
@@ -27,15 +27,15 @@ void gdl::Scene::DebugDraw( gdl::Font* font, short x, short y, u32 debugFlags )
 	}
 }
 
-void gdl::Scene::DebugDrawNode ( gdl::Node* node, gdl::Font* font, short x, short& dy, short depth, short& index, u32 debugFlags)
+void gdl::Scene::DebugDrawNode ( gdl::Node* node, Font* font, short x, short& dy, short depth, short& index, u32 debugFlags)
 {
-	font->Printf(gdl::Colors::White, x + depth*16, dy, 16.0f, gdl::LJustify, gdl::LJustify, "%d: %s", index, node->name.c_str());
+	Font_PrintfAligned(font, gdl::Colors::White, x + depth*16, dy, 16.0f, gdl::LJustify, gdl::LJustify, "%d: %s", index, node->name);
 	index++;
 	dy -= 18;
 	if ((debugFlags & DebugFlag::Position) > 0)
 	{
 		vec3 &p = node->transform.position;
-		font->Printf(gdl::Colors::White, x + depth*16, dy, 16.0f, gdl::LJustify, gdl::LJustify, "P(%.1f,%.1f,%.1f)", index, p.x, p.y, p.z);
+		Font_PrintfAligned(font, gdl::Colors::White, x + depth*16, dy, 16.0f, gdl::LJustify, gdl::LJustify, "P(%.1f,%.1f,%.1f)", index, p.x, p.y, p.z);
 		dy -= 18;
 	}
 
@@ -66,7 +66,7 @@ void gdl::Scene::DrawNode ( gdl::Node* node )
 	glPopMatrix();
 }
 
-void gdl::Scene::SetMaterialTexture (const std::string& materialName, gdl::Image* texture )
+void gdl::Scene::SetMaterialTexture (const char* materialName, Image* texture )
 {
 	gdl::Material* m = GetMaterial(materialName);
 	if (m != nullptr)
@@ -75,12 +75,12 @@ void gdl::Scene::SetMaterialTexture (const std::string& materialName, gdl::Image
 	}
 	else
 	{
-		printf("No material found with name %s\n", materialName.c_str());
+		printf("No material found with name %s\n", materialName);
 		return;
 	}
 }
 
-void gdl::Scene::SetAllMaterialTextures (gdl::Image* texture )
+void gdl::Scene::SetAllMaterialTextures (Image* texture )
 {
 	for(unsigned long i = 0; i < materials.size(); i++)
 	{
@@ -196,14 +196,14 @@ bool gdl::Scene::CalculateWorldPosition ( gdl::Node* parent, gdl::Node* target, 
 	return false;
 }
 
-gdl::Node * gdl::Scene::GetNode (const std::string& name )
+gdl::Node * gdl::Scene::GetNode (const char* name )
 {
 	return FindNode(rootNode, name);
 }
 
-gdl::Node * gdl::Scene::FindNode (gdl::Node* node, const std::string& nodeName )
+gdl::Node * gdl::Scene::FindNode (gdl::Node* node, const char* nodeName )
 {
-	if (node->name.compare(nodeName) == 0)
+	if (strcmp(node->name, nodeName) == 0)
 	{
 		return node;
 	}
@@ -219,11 +219,11 @@ gdl::Node * gdl::Scene::FindNode (gdl::Node* node, const std::string& nodeName )
 	return childNode;
 }
 
-gdl::Material * gdl::Scene::GetMaterial (const std::string& materialName )
+gdl::Material * gdl::Scene::GetMaterial (const char* materialName )
 {
 	for(size_t mi = 0; mi < materials.size(); mi++)
 	{
-		if (materials[mi]->name.compare(materialName) == 0)
+		if (strcmp(materials[mi]->name, materialName) == 0)
 		{
 			return materials[mi];
 		}
@@ -231,11 +231,11 @@ gdl::Material * gdl::Scene::GetMaterial (const std::string& materialName )
 	return nullptr;
 }
 
-gdl::Material * gdl::Scene::FindMaterial ( gdl::Node* node, const std::string& materialName )
+gdl::Material * gdl::Scene::FindMaterial ( gdl::Node* node, const char* materialName )
 {
 	if (node->material != nullptr)
 	{
-		if (node->material->name.compare(materialName) == 0)
+		if (strcmp(node->material->name, materialName) == 0)
 		{
 			return node->material;
 		}

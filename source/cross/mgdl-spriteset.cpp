@@ -4,12 +4,8 @@
 
 void gdl::SpriteSet::LoadFromImage(const char* filename, short spriteWidth, short spriteHeight)
 {
-	gdl::Font::LoadFromImage(filename, spriteWidth, spriteHeight, 0);
-}
-
-void gdl::SpriteSet::LoadFromBuffer(const u8* buffer, size_t size, short spriteWidth, short spriteHeight)
-{
-	gdl::Font::LoadFromBuffer(buffer, size, spriteWidth, spriteHeight, 0);
+	Image* fontImage = Image_LoadFile(filename, gdl::TextureFilterModes::Linear);
+	font = Font_Load(fontImage, spriteWidth, spriteHeight, 0);
 }
 
 vec3 gdl::SpriteSet::AdjustDrawingPosition(short x, short y, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY)
@@ -18,7 +14,7 @@ vec3 gdl::SpriteSet::AdjustDrawingPosition(short x, short y, float scale, gdl::A
 	float dy = y;
 	float dz = 0.0f;
 
-	float width = aspect * scale;
+	float width = font->_aspect * scale;
 	float height = scale;
 	if (alignX == RJustify)
 	{
@@ -42,36 +38,36 @@ vec3 gdl::SpriteSet::AdjustDrawingPosition(short x, short y, float scale, gdl::A
 void gdl::SpriteSet::Draw2D(u16 spriteIndex, short x, short y, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY, u32 tintColor)
 {
 	vec3 drawPos = AdjustDrawingPosition(x, y, scale, alignX, alignY);
-	float width = aspect * scale;
+	float width = font->_aspect * scale;
 	float height = scale;
+	const float uvW = font->_uvWidth;
+	const float uvH = font->_uvHeight;
 
 	gdl::RGBA8Floats f = gdl::ColorToFloats(tintColor);
 	glColor3f(f.red, f.green, f.blue);
 
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, textureName);
+	glBindTexture(GL_TEXTURE_2D, font->_fontImage->textureId);
 
 	glBegin(GL_QUADS);
 
-	vec2 tx0= GetTextureCoordinate(spriteIndex, 0); //LOW LEFT!
-	vec2 tx1= GetTextureCoordinate(spriteIndex, 1); // LOW RIGHT
-	vec2 tx2= GetTextureCoordinate(spriteIndex, 2); // TOP RIGHT
-	vec2 tx3 = GetTextureCoordinate(spriteIndex, 3); // TOP LEFT
+
+	vec2 tx = _Font_GetTextureCoordinate(font, spriteIndex); //LOW LEFT!
 
 	// LOW LEFT!
-	glTexCoord2f(tx0.x, tx0.y);
+	glTexCoord2f(tx.x, tx.y);
 	glVertex2f(drawPos.x, drawPos.y - height);
 
 	// LOW RIGHT
-	glTexCoord2f(tx1.x, tx1.y);
+	glTexCoord2f(tx.x + uvW, tx.y);
 	glVertex2f(drawPos.x + width, drawPos.y - height);
 
 	// TOP RIGHT
-	glTexCoord2f(tx2.x, tx2.y);
+	glTexCoord2f(tx.x + uvW, tx.y + uvH);
 	glVertex2f(drawPos.x + width, drawPos.y);
 
 	// TOP LEFT
-	glTexCoord2f(tx3.x, tx3.y);
+	glTexCoord2f(tx.x, tx.y + uvH);
 	glVertex2f(drawPos.x, drawPos.y );
 
 	glEnd();
@@ -83,36 +79,35 @@ void gdl::SpriteSet::Draw2D(u16 spriteIndex, short x, short y, float scale, gdl:
 void gdl::SpriteSet::Draw3D(u16 spriteIndex, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY, u32 tintColor)
 {
 	vec3 drawPos = AdjustDrawingPosition(0, 0, scale, alignX, alignY);
-	float width = aspect * scale;
+	float width = font->_aspect * scale;
 	float height = scale;
+	const float uvW = font->_uvWidth;
+	const float uvH = font->_uvHeight;
 
 	gdl::RGBA8Floats f = gdl::ColorToFloats(tintColor);
 	glColor3f(f.red, f.green, f.blue);
 
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, textureName);
+	glBindTexture(GL_TEXTURE_2D, font->_fontImage->textureId);
 
 	glBegin(GL_QUADS);
 
-	vec2 tx0= GetTextureCoordinate(spriteIndex, 0); //LOW LEFT!
-	vec2 tx1= GetTextureCoordinate(spriteIndex, 1); // LOW RIGHT
-	vec2 tx2= GetTextureCoordinate(spriteIndex, 2); // TOP RIGHT
-	vec2 tx3 = GetTextureCoordinate(spriteIndex, 3); // TOP LEFT
+	vec2 tx= _Font_GetTextureCoordinate(font, spriteIndex); //LOW LEFT!
 
 	// LOW LEFT!
-	glTexCoord2f(tx0.x, tx0.y);
+	glTexCoord2f(tx.x, tx.y);
 	glVertex3f(drawPos.x, drawPos.y - height, drawPos.z);
 
 	// LOW RIGHT
-	glTexCoord2f(tx1.x, tx1.y);
+	glTexCoord2f(tx.x + uvW, tx.y);
 	glVertex3f(drawPos.x + width, drawPos.y - height, drawPos.z);
 
 	// TOP RIGHT
-	glTexCoord2f(tx2.x, tx2.y);
+	glTexCoord2f(tx.x + uvW, tx.y + uvH);
 	glVertex3f(drawPos.x + width, drawPos.y, drawPos.z);
 
 	// TOP LEFT
-	glTexCoord2f(tx3.x, tx3.y);
+	glTexCoord2f(tx.x, tx.y + uvH);
 	glVertex3f(drawPos.x, drawPos.y, drawPos.z);
 
 	glEnd();
@@ -122,11 +117,11 @@ void gdl::SpriteSet::Draw3D(u16 spriteIndex, float scale, gdl::AlignmentModes al
 
 short gdl::SpriteSet::GetSpriteWidth()
 {
-	return cw;
+	return font->cw;
 }
 
 short gdl::SpriteSet::GetSpriteHeight()
 {
-	return ch;
+	return font->ch;
 }
 

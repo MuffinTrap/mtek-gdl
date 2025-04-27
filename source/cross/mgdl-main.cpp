@@ -17,7 +17,7 @@ void InitSystem(const char* name,
 								std::function<void()> drawCallback,
 								u32 initFlags)
 {
-	gdl::Platform::GetPlatform().InitSystem(name, screenAspect, initCallback, updateCallback, drawCallback, initFlags);
+	Platform_Init(name, screenAspect, initCallback, updateCallback, drawCallback, initFlags);
 	AssetManager_Init(&assetManager);
 }
 
@@ -169,16 +169,16 @@ Font* LoadFontCustom(const char* filename, short characterWidth, short character
 
 WiiController* GetController( int controllerNumber)
 {
-	return gdl::Platform::GetPlatform().GetController(controllerNumber);
+	return Platform_GetController(controllerNumber);
 }
 
 void DoProgramExit()
 {
-	gdl::Platform::GetPlatform().DoProgramExit();
+	Platform_DoProgramExit();
 }
 
-u16 GetScreenWidth() { return gdl::Platform::GetPlatform().GetScreenWidth();}
-u16 GetScreenHeight(){ return gdl::Platform::GetPlatform().GetScreenHeight();};
-float GetAspectRatio(){ return gdl::Platform::GetPlatform().GetAspectRatio();};
-float GetElapsedSeconds(){ return gdl::Platform::GetPlatform().GetElapsedSeconds();};
-float GetDeltaTime(){ return gdl::Platform::GetPlatform().GetDeltaTime();};
+u16 GetScreenWidth() { return Platform_GetSingleton()->screenWidth; }
+u16 GetScreenHeight(){ return Platform_GetSingleton()->screenHeight; }
+float GetAspectRatio(){ return Platform_GetSingleton()->aspectRatio; }
+float GetElapsedSeconds(){ return Platform_GetElapsedSeconds(); };
+float GetDeltaTime(){ return Platform_GetDeltaTime(); };

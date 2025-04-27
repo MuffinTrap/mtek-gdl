@@ -162,13 +162,13 @@ float gdl::DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldT
     glLoadIdentity();
 
 	gdl::Palette* blessing = gdl::Palette::GetDefaultPalette();
-	gdl::Font* debf = GetDebugFont();
+	Font* debf = GetDebugFont();
 	u32 yellow = blessing->GetColor(3);
 	u32 grey = blessing->GetColor(6);
 
 
-	u16 sw = gdl::GetScreenWidth();
-	u16 sh = gdl::GetScreenHeight();
+	const u16 sw = GetScreenWidth();
+	const u16 sh = GetScreenHeight();
 
 	// Logo takes up 6/4 of screen height
 	areaHeight = (sh/6.0f) * 4.0f;
@@ -198,7 +198,7 @@ float gdl::DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldT
 	float logoWidth = lineWidth * segments + lean;
 
 	// Space on both sides of logo
-	float paddingX = (gdl::GetScreenWidth() - logoWidth) / 2;
+	float paddingX = (sw - logoWidth) / 2;
 
 	float dStart = DrawLetters(paddingX, lean, grey, false, 0.0f);
 
@@ -232,15 +232,15 @@ float gdl::DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldT
 			DrawLetters(paddingX, lean, grey, true, barsColored);
 		}
 	}
-	debf->Print(grey, dStart, baseLine, 8, GDL_VERSION);
-	debf->Print(grey, dStart, baseLine - 8, 8, gdl::Platform::GetPlatform().GetName().c_str());
+	Font_Print(debf, grey, dStart, baseLine, 8, GDL_VERSION);
+	Font_Print(debf, grey, dStart, baseLine - 8, 8, Platform_GetSingleton()->name);
 
 	if (drawHoldAMessage)
 	{
 		int messageWidth = (holdMessage.length() * 8) ;
-		int messageLeft = gdl::GetScreenWidth()/2 - messageWidth/2;
+		int messageLeft = sw/2 - messageWidth/2;
 		int messageY = areaBottom - 8;
-		debf->Print(yellow, messageLeft, messageY, 8, holdMessage.c_str());
+		Font_Print(debf, yellow, messageLeft, messageY, 8, holdMessage.c_str());
 
 		DrawBoxF(messageLeft, messageY - 16, messageLeft + messageWidth * aHoldTimer, messageY - 16 - 4, yellow);
 	}

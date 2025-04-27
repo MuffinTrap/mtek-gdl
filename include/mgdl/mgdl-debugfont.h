@@ -12,4 +12,4 @@
 	*
 	* @return Pointer to the Debug Font.
 	*/
-gdl::Font* GetDebugFont();
+Font* GetDebugFont();

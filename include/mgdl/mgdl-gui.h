@@ -29,7 +29,7 @@ namespace gdl
          * @param textHeight Height of the text.
          * @param rowHeightEm Height of the row relative to the text height. 1 Em is same as text height, 2 is twice etc. Controls the amount of padding above and below text on elements.
          */
-        MenuCreator(gdl::Font* font, float textHeigh, float rowHeightEm);
+        MenuCreator(Font* font, float textHeigh, float rowHeightEm);
 
         /**
          * @brief Starts the menu from given position and takes the input status.
@@ -99,6 +99,6 @@ namespace gdl
         rgba8 text;
         rgba8 highlight;
 
-        gdl::Font* currentFont;
+        Font* font;
     };
 };

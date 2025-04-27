@@ -59,7 +59,7 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, gdl::Node* parentNode, ufbx_
 		printf("\n");
 	}
 
-	gdl::Node* n = new gdl::Node(std::string(node->name.data),
+	gdl::Node* n = new gdl::Node(node->name.data,
 								 vec3New(t.x, t.y, t.z),
 								 vec3New(r.x, r.y, r.z));
 	gdl_assert_print(n != nullptr, "Could not create new Node");
@@ -103,11 +103,10 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, gdl::Node* parentNode, ufbx_
 			}
 
 			// Has this material been loaded already?
-			std::string matName = std::string(material->name.data);
-			gdl::Material* mat = gdlScene->GetMaterial(matName);
+			gdl::Material* mat = gdlScene->GetMaterial(material->name.data);
 			if (mat == nullptr)
 			{
-				mat = new gdl::Material(matName);
+				mat = new gdl::Material(material->name.data);
 				gdlScene->AddMaterial(mat);
 			}
 			n->material = mat;

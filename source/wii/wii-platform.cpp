@@ -3,23 +3,30 @@
 
 #include <mgdl/mgdl-opengl.h>
 #include <mgdl/mgdl-splash.h>
-#include <mgdl/wii/mgdl-wii-platform.h>
+#include <mgdl/mgdl-platform.h>
+#include <mgdl/mgdl-controller.h>
 #include <mgdl/wii/mgdl-wii.h>
+
+static Platform* platformWii;
 
 static std::function<void()> initCall = nullptr;
 static std::function<void()> updateCall = nullptr;
 static std::function<void()> drawCall = nullptr;
 
-static gdl::WiiController controller;
+static WiiController controller;
 
-void gdl::PlatformWii::InitSystem(const char* name,
+static void ReadControllers();
+static void MainLoop();
+static void SplashHoldLoop(bool SplashFlag, bool HoldAFlag);
+static u64 deltaTimeStart;
+
+void Platform_Init(const char* name,
 	gdl::ScreenAspect screenAspect,
 								  std::function<void ()> initCallback,
 								  std::function<void ()> updateCallback,
 								  std::function<void ()> drawCallback,
 								  u32 initFlags)
 {
-	this->name = name;
 	gdl_assert_print(initCallback != nullptr, "Need to provide init callback before system init on PC");
 	gdl_assert_print(updateCallback != nullptr, "Need to provide update callback before system init on PC");
 	gdl_assert_print(drawCallback != nullptr, "Need to provide draw callback before system init on PC");
@@ -28,26 +35,35 @@ void gdl::PlatformWii::InitSystem(const char* name,
 	drawCall = drawCallback;
 	updateCall = updateCallback;
 
+	platformWii = new Platform();
+
+	platformWii->name = name;
+
 	// Convert to Wii InitAspectmode for now
 	gdl::InitAspectMode mode = gdl::InitAspectMode::AspectAuto;
 	switch(screenAspect)
 	{
-		case ScreenAuto:
+		case gdl::ScreenAuto:
 			mode = gdl::InitAspectMode::AspectAuto;
 			break;
-		case Screen4x3:
+		case gdl::Screen4x3:
 			mode = gdl::InitAspectMode::Aspect4x3;
-			aspectRatio = 4.0f/3.0f;
+			platformWii->aspectRatio = 4.0f/3.0f;
 			break;
-		case Screen16x9:
+		case gdl::Screen16x9:
 			mode = gdl::InitAspectMode::Aspect16x9;
-			aspectRatio = 16.0f/9.0f;
+			platformWii->aspectRatio = 16.0f/9.0f;
 			break;
 	};
 	fatInitDefault();
 	gdl::InitSystem(gdl::ModeAuto, mode, gdl::HiRes, gdl::InitFlags::OpenGX);
-	screenWidth = gdl::ScreenXres;
-	screenHeight = gdl::ScreenYres;
+
+    platformWii->screenWidth = gdl::ScreenXres;
+    platformWii->screenHeight = gdl::ScreenYres;
+	if (screenAspect == gdl::ScreenAuto)
+	{
+		platformWii->aspectRatio = platformWii->screenWidth / platformWii->screenHeight;
+	}
 
 	ogx_initialize();
 	// Init controller
@@ -55,8 +71,8 @@ void gdl::PlatformWii::InitSystem(const char* name,
 	WPAD_Init();
 	WPAD_SetDataFormat(WPAD_CHAN_0, WPAD_FMT_BTNS_ACC_IR);
 
-	controller.SetChannelNumber(WPAD_CHAN_0);
-	controller.ZeroAllInputs();
+	WiiController_Init(&controller, WPAD_CHAN_0);
+	WiiController_ZeroAllInputs(&controller);
 
 	gdl::ConsoleMode();
 
@@ -79,7 +95,7 @@ void gdl::PlatformWii::InitSystem(const char* name,
     MainLoop();
 }
 
-void gdl::PlatformWii::SplashHoldLoop(bool SplashFlag, bool HoldAFlag)
+void SplashHoldLoop(bool SplashFlag, bool HoldAFlag)
 {
 	float aHoldTimer = 0.0f;
 	float splashProgress = 0.0f;
@@ -89,23 +105,23 @@ void gdl::PlatformWii::SplashHoldLoop(bool SplashFlag, bool HoldAFlag)
 	while(waiting)
 	{
 		u64 now = gettime();
-		deltaTimeS = (float)(now - deltaTimeStart) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
+		platformWii->_deltaTimeS = (float)(now - deltaTimeStart) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
 		deltaTimeStart = now;
-		elapsedTimeS += deltaTimeS;
-		controller.StartFrame();
+		platformWii->_elapsedTimeS += platformWii->_deltaTimeS;
+		WiiController_StartFrame(&controller);
 		ReadControllers();
 
 		if (SplashFlag)
 		{
 			gdl::PrepDisplay();
-			splashProgress = gdl::DrawSplashScreen(deltaTimeS, showHoldAMessage, aHoldTimer);
+			splashProgress = gdl::DrawSplashScreen(platformWii->_deltaTimeS, showHoldAMessage, aHoldTimer);
 		}
 
 		if (showHoldAMessage)
 		{
-			if (controller.ButtonHeld(gdl::WiiButtons::ButtonA))
+			if (WiiController_ButtonHeld(&controller, WiiButtons::ButtonA))
 			{
-				aHoldTimer += deltaTimeS;
+				aHoldTimer += platformWii->_deltaTimeS;
 				if (aHoldTimer >= 1.0f)
 				{
 					waiting = false;
@@ -132,22 +148,22 @@ void gdl::PlatformWii::SplashHoldLoop(bool SplashFlag, bool HoldAFlag)
 		}
 	}
 	// Reset elapsed time so game gets correct timing
-	elapsedTimeS = 0.0f;
+	platformWii->_elapsedTimeS = 0.0f;
 }
 
 
 
-void gdl::PlatformWii::MainLoop()
+void MainLoop()
 {
 	while(true)
 	{
 		// Timing
 		u64 now = gettime();
-		deltaTimeS = (float)(now - deltaTimeStart) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
+		platformWii->_deltaTimeS = (float)(now - deltaTimeStart) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
 		deltaTimeStart = now;
-		elapsedTimeS += deltaTimeS;
+		platformWii->_elapsedTimeS += platformWii->_deltaTimeS;
 
-		controller.StartFrame();
+		WiiController_StartFrame(&controller);
 		ReadControllers();
 		updateCall();
 		gdl::PrepDisplay();
@@ -158,59 +174,59 @@ void gdl::PlatformWii::MainLoop()
 }
 
 
-gdl::WiiController& gdl::PlatformWii::GetController(int controllerNumber)
+WiiController* Platform_GetController(int controllerNumber)
 {
 	if (controllerNumber == 0)
 	{
-		return controller;
+		return &controller;
 	}
-	return controller;
+	return &controller;
 }
 
-void gdl::PlatformWii::ReadControllers()
+void ReadControllers()
 {
 	// TODO This might have to be in a macro
 	WPAD_ScanPads();  // Scan the Wiimotes
-	WPADData *data1 = WPAD_Data(controller.channel);
+	WPADData *data1 = WPAD_Data(controller._channel);
 
 	const ir_t &ir = data1->ir;
 	// Multiply x and y to match them to 16:9 screen
-	controller.cursorX = ir.x * 1.67f - 16.f;
-	controller.cursorY = ir.y * 1.2f - 16.f;
+	controller._cursorX = ir.x * 1.67f - 16.f;
+	controller._cursorY = ir.y * 1.2f - 16.f;
 
-	controller.pressedButtons = WPAD_ButtonsDown(0);
-	controller.releasedButtons = WPAD_ButtonsUp(0);
-	controller.heldButtons = WPAD_ButtonsHeld(0);
+	controller._pressedButtons = WPAD_ButtonsDown(0);
+	controller._releasedButtons = WPAD_ButtonsUp(0);
+	controller._heldButtons = WPAD_ButtonsHeld(0);
 
-	controller.nunchukJoystickDirectionX=0.0f;
-	controller.nunchukJoystickDirectionY=0.0f;
+	controller._nunchukJoystickDirectionX=0.0f;
+	controller._nunchukJoystickDirectionY=0.0f;
 	const expansion_t &ex = data1->exp;
 	if (ex.type == WPAD_EXP_NUNCHUK)
 	{
 		joystick_t n = ex.nunchuk.js;
-		if (n.mag > controller.nunchukJoystickDeadzone)
-		{
-			// Angle is reported in degrees
-			// Angle of 0 means up.
-			// 90 right, 180 down, 270 left
+		// Angle is reported in degrees
+		// Angle of 0 means up.
+		// 90 right, 180 down, 270 left
 
-			float rad = DegToRad(n.ang);
-			float x = 0;
-			float y = -1.0f;
-			float dirx = cos(rad) * x - sin(rad) * y;
-			float diry = sin(rad) * x + cos(rad) * y;
-			controller.nunchukJoystickDirectionX = dirx * n.mag;
-			controller.nunchukJoystickDirectionY = diry * n.mag;
-		}
+		float rad = DegToRad(n.ang);
+		float x = 0;
+		float y = -1.0f;
+		float dirx = cos(rad) * x - sin(rad) * y;
+		float diry = sin(rad) * x + cos(rad) * y;
+		controller._nunchukJoystickDirectionX = dirx * n.mag;
+		controller._nunchukJoystickDirectionY = diry * n.mag;
 	}
 
-	controller.roll = DegToRad(data1->orient.roll);
+	controller._roll = DegToRad(data1->orient.roll);
 }
 
-float gdl::PlatformWii::GetDeltaTime() { return deltaTimeS; }
-float gdl::PlatformWii::GetElapsedSeconds() { return elapsedTimeS; }
+Platform* Platform_GetSingleton() { return platformWii; }
 
-void gdl::PlatformWii::DoProgramExit()
+float Platform_GetDeltaTime() { return platformWii->_deltaTimeS; }
+float Platform_GetElapsedSeconds() { return platformWii->_elapsedTimeS; }
+
+void Platform_DoProgramExit()
 {
+	delete platformWii;
 	gdl::wii::DoProgramExit();
 }

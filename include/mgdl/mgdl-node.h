@@ -16,12 +16,12 @@ namespace gdl
 		gdl::Mesh* mesh = nullptr;
 		gdl::Material* material = nullptr;
 		gdl::Light* light = nullptr;
-		std::string name;
+		const char* name;
 		std::vector<Node*> children;
 
 		Node();
-		Node(std::string name, vec3 position, vec3 rotationAngles);
-		Node(std::string name, gdl::Mesh* meshParam, gdl::Material* materialParam);
+		Node(const char* name, vec3 position, vec3 rotationAngles);
+		Node(const char* name, gdl::Mesh* meshParam, gdl::Material* materialParam);
 
 		void Draw();
 	};

@@ -1,16 +1,23 @@
 #include <mgdl/mgdl-gui.h>
 #include <mgdl/mgdl-font.h>
+#include <mgdl/mgdl-debugfont.h>
 #include <mgdl/mgdl-draw2d.h>
 
 gdl::MenuCreator::MenuCreator()
 {
-    currentFont = nullptr;
+    font = GetDebugFont();
     textHeight = 1.0f;
+    rowHeightEm = 1.1f;
+
+    this->bg = gdl::Colors::Black;
+    this->border = gdl::Colors::Blue;
+    this->text = gdl::Colors::White;
+    this->highlight = gdl::Colors::LightBlue;
 }
 
-gdl::MenuCreator::MenuCreator(gdl::Font* font, float textHeight, float rowHeightEm)
+gdl::MenuCreator::MenuCreator(Font* font, float textHeight, float rowHeightEm)
 {
-    this->currentFont = font;
+    this->font = font;
     this->textHeight = textHeight;
     this->rowHeightEm = rowHeightEm;
 
@@ -47,14 +54,14 @@ void gdl::MenuCreator::Panel(int h, u32 color)
 
 void gdl::MenuCreator::Text(const char* text)
 {
-    int h = currentFont->GetCharacterHeight() * textHeight * rowHeightEm;
-    currentFont->Print(this->text, x, y, h/rowHeightEm, LJustify, LJustify, text);
+    int h = font->ch * textHeight * rowHeightEm;
+    Font_PrintAligned(font, this->text, x, y, h/rowHeightEm, LJustify, LJustify, text);
     y -= h;
 }
 
 bool gdl::MenuCreator::Button(const char* text)
 {
-    int h = currentFont->GetCharacterHeight() * textHeight * rowHeightEm;
+    int h = font->ch * textHeight * rowHeightEm;
 
     bool inside = ((cursorX >= x) &&
                 (cursorX <= x + w) &&
@@ -74,7 +81,7 @@ bool gdl::MenuCreator::Button(const char* text)
     // TODO Center text
 
     float textH = h/rowHeightEm;
-    currentFont->Print(this->text, x, y, textH, LJustify, LJustify, text);
+    Font_PrintAligned(font, this->text, x, y, textH, LJustify, LJustify, text);
             
     y -= h ;
 
@@ -83,7 +90,7 @@ bool gdl::MenuCreator::Button(const char* text)
 
 bool gdl::MenuCreator::Toggle ( const char* text, bool& valueRef )
 {
-    int h = currentFont->GetCharacterHeight() * textHeight * rowHeightEm;
+    int h = font->ch * textHeight * rowHeightEm;
 
     bool inside = ((cursorX >= x) &&
                 (cursorX <= x + w) &&
@@ -111,7 +118,7 @@ bool gdl::MenuCreator::Toggle ( const char* text, bool& valueRef )
     }
 
     float textH = h/rowHeightEm;
-    currentFont->Print(this->text, x + h + padding, y, textH, LJustify, LJustify, text);
+    Font_PrintAligned(font, this->text, x + h + padding, y, textH, LJustify, LJustify, text);
 
     y -= h ;
 

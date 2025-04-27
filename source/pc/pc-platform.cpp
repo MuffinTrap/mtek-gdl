@@ -1,8 +1,14 @@
+#include <mgdl/mgdl-platform.h>
 #include <mgdl/mgdl-opengl.h>
+#include <mgdl/mgdl-openal.h>
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-splash.h>
-#include <mgdl/pc/mgdl-pc-platform.h>
+
 #include <mgdl/pc/mgdl-pc-input.h>
+
+#include <sndfile.h>
+
+static Platform platformPC;
 
 // Declarations
 
@@ -31,6 +37,7 @@ static int waitElapsedMS;
 static bool showHoldAMessage;
 static float startUpDeltaTimeMs;
 static float splashProgress;
+
 // For holding until a is held for 1 second
 static float aHoldTimer;
 static void UpdateSplash(int value);
@@ -40,6 +47,13 @@ static void UpdateWaitDeltaMS();
 static void UpdateAHold(int value);
 static void RenderAHold();
 static bool IncreaseAHoldAndTest();
+
+// For Audio
+
+static void Platform_InitAudio();
+// OpenAL sound
+static ALCdevice* device;
+static ALCcontext* context;
 
 // Used by all
 static void UpdateEnd();
@@ -198,7 +212,7 @@ void onWindowSizeChange(int newWidth, int newHeight)
     glViewport(left, top, scaledWidth, scaledHeight);
 }
 
-void gdl::PlatformPC::InitAudio()
+void Platform_InitAudio()
 {
     printf("Setting up OpenAL Audio Device.\n");
     // Initialize OpenAL
@@ -225,9 +239,8 @@ void gdl::PlatformPC::InitAudio()
     printf("OpenAL context created\n");
 }
 
-void gdl::PlatformPC::InitSystem(const char* name, gdl::ScreenAspect screenAspect, std::function<void ()> initCallback, std::function<void ()> updateCallback, std::function<void ()> drawCallback, u32 initFlags)
+void Platform_Init(const char* name, gdl::ScreenAspect screenAspect, std::function<void ()> initCallback, std::function<void ()> updateCallback, std::function<void ()> drawCallback, u32 initFlags)
 {
-    this->name = name;
 	gdl_assert_print(initCallback != nullptr, "Need to provide init callback before system init on PC");
 	gdl_assert_print(drawCallback != nullptr, "Need to provide update callback before system init on PC");
 	gdl_assert_print(updateCallback != nullptr, "Need to provide draw callback before system init on PC");
@@ -236,31 +249,32 @@ void gdl::PlatformPC::InitSystem(const char* name, gdl::ScreenAspect screenAspec
 	updateCall = updateCallback;
 
 
-    screenWidth = WII_WIDTH;
-    screenHeight = WII_HEIGHT;
+    platformPC.name = name;
+    platformPC.screenWidth = WII_WIDTH;
+    platformPC.screenHeight = WII_HEIGHT;
     switch(screenAspect)
     {
-        case ScreenAuto:
+        case gdl::ScreenAuto:
             windowWidth = 854;
             windowHeight = 480;
-            aspectRatio = 16.0f/9.0f;
+            platformPC.aspectRatio = 16.0f/9.0f;
             break;
-        case Screen4x3:
+        case gdl::Screen4x3:
             windowWidth = 640;
             windowHeight = 480;
-            aspectRatio = 4.0f/3.0f;
+            platformPC.aspectRatio = 4.0f/3.0f;
             break;
-        case Screen16x9:
+        case gdl::Screen16x9:
             // Wii only outputs 640x480, but in this format it is shown wider
             windowWidth = 854;
             windowHeight = 480;
-            aspectRatio = 16.0f/9.0f;
+            platformPC.aspectRatio = 16.0f/9.0f;
             break;
     };
 
     // Store these for the reshape callback
 
-	InitAudio();
+	Platform_InitAudio();
 
     // fake command line arguments
     int argumentCount = 0;
@@ -336,7 +350,7 @@ void gdl::PlatformPC::InitSystem(const char* name, gdl::ScreenAspect screenAspec
 	glutMainLoop();
 }
 
-WiiController* gdl::PlatformPC::GetController(int controllerNumber)
+WiiController* Platform_GetController(int controllerNumber)
 {
     if (controllerNumber == 0)
     {
@@ -345,7 +359,7 @@ WiiController* gdl::PlatformPC::GetController(int controllerNumber)
     return &glutController;
 }
 
-void gdl::PlatformPC::DoProgramExit()
+void Platform_DoProgramExit()
 {
     printf("DoProgramExit\n");
 	// Close sound
@@ -356,14 +370,16 @@ void gdl::PlatformPC::DoProgramExit()
 	exit(0);
 }
 
-float gdl::PlatformPC::GetDeltaTime()
+Platform* Platform_GetSingleton() { return &platformPC; }
+
+float Platform_GetDeltaTime()
 {
     int deltaMS = glutElapsedMS - glutElapsedStartMS;
-    deltaTimeS= float(deltaMS) / 1000.0f;
+    float deltaTimeS = float(deltaMS) / 1000.0f;
     return deltaTimeS;
 }
 
-float gdl::PlatformPC::GetElapsedSeconds()
+float Platform_GetElapsedSeconds()
 {
     return float(glutElapsedMS)/1000.0f;
 }

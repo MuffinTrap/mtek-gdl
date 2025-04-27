@@ -6,14 +6,14 @@ gdl::Node::Node()
 
 }
 
-gdl::Node::Node(std::string name, vec3 position, vec3 rotationAngles)
+gdl::Node::Node(const char* name, vec3 position, vec3 rotationAngles)
 {
 	this->name = name;
 	transform = gdl::Transform(position, rotationAngles, vec3New(1,1,1));
 }
 
 
-gdl::Node::Node ( std::string name, gdl::Mesh* meshParam, gdl::Material* materialParam )
+gdl::Node::Node ( const char* name, gdl::Mesh* meshParam, gdl::Material* materialParam )
 {
 	transform = gdl::Transform();
 	this->name = name;
