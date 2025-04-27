@@ -28,7 +28,7 @@ using namespace gdl;
 		// Multiple nodes can refer to same material
 		std::vector<Material*> materials;
 		// Multiple nodes can refer to same mesh
-		std::vector<gdl::Mesh*> meshes;
+		std::vector<Mesh*> meshes;
 		std::vector<Light*> lights;
 
 	};

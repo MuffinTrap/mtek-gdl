@@ -3,52 +3,45 @@
 #include <string>
 #include <mgdl/mgdl-opengl.h>
 #include <mgdl/mgdl-types.h>
+using namespace gdl;
 
-namespace gdl
+/* Contains vertex data that is needed for
+ * rendering the mesh
+ * positions, normals, uvs, indices
+ */
+struct Mesh
 {
-	/* Contains vertex data that is needed for
-	 * rendering the mesh
-	 * positions, normals, uvs, indices
-	 */
-	class Mesh
-	{
-	public:
-		GLushort* indices;
-		GLsizei indexCount;
-		u32 vertexCount;
-		GLfloat* positions;
-		GLfloat* normals;
-		GLfloat* uvs;
-		std::string name;
-		uint32_t uniqueId;
+	GLushort* indices;
+	GLsizei indexCount;
+	u32 vertexCount;
+	GLfloat* positions;
+	GLfloat* normals;
+	GLfloat* uvs;
+	const char* name;
+	uint32_t uniqueId;
+};
 
-		vec3 GetPosition(GLushort index);
-		vec3 GetNormal(GLushort index);
+vec3 Mesh_GetPosition(Mesh* mesh,GLushort index);
+vec3 Mesh_GetNormal(Mesh* mesh,GLushort index);
+vec3 Mesh_GetPositionFromArray(Mesh* mesh,sizetype index);
+vec3 Mesh_GetNormalFromArray(Mesh* mesh,sizetype index);
+void Mesh_SetDrawingIndex(Mesh* mesh,sizetype index, GLushort drawIndex);
+void Mesh_SetPositionToArray(Mesh* mesh,sizetype index, const vec3& position);
+void Mesh_SetNormalToArray(Mesh* mesh,sizetype index, const vec3& normal);
+void Mesh_SetUVToArray(Mesh* mesh,sizetype index, const vec2& uv);
+bool Mesh_GetTriangleIndices(Mesh* mesh,GLsizei triangleIndex, GLushort& outA, GLushort& outB, GLushort& outC);
+void Mesh_DebugPrint(Mesh* mesh);
 
-		vec3 GetPositionFromArray(sizetype index);
-		vec3 GetNormalFromArray(sizetype index);
+// Returns the amount of bytes reserved
+sizetype Mesh_Init(Mesh* mesh, sizetype vertexCount, sizetype indexCount, bool createNormals, bool createUVs);
 
-		void SetDrawingIndex(sizetype index, GLushort drawIndex);
-		void SetPositionToArray(sizetype index, const vec3& position);
-		void SetNormalToArray(sizetype index, const vec3& normal);
-		void SetUVToArray(sizetype index, const vec2& uv);
+void Mesh_SetupVertexArrays(Mesh* mesh);
+void Mesh_DrawElements(Mesh* mesh);
+void Mesh_DrawPoints(Mesh* mesh);
+void Mesh_DrawLines(Mesh* mesh);
+void Mesh_DrawNormals(Mesh* mesh);
+void Mesh_CalculateMatcapUVs(Mesh* mesh,const mat4x4& modelViewMatrix, const mat4x4& normalMatrix);
 
-		bool GetTriangleIndices(GLsizei triangleIndex, GLushort& outA, GLushort& outB, GLushort& outC);
+Mesh* Mesh_CreateIcosahedron(bool normals, bool uvs);
+Mesh* Mesh_CreateQuad(bool normals, bool uvs);
 
-		void DebugPrint();
-
-		Mesh();
-		// Returns the amount of bytes reserved
-		sizetype Allocate(sizetype vertexCount, sizetype indexCount, bool createNormals, bool createUVs);
-		void SetupVertexArrays();
-		void DrawElements();
-		void DrawPoints();
-		void DrawLines();
-		void DrawNormals();
-		void CalculateMatcapUVs(const mat4x4& modelViewMatrix, const mat4x4& normalMatrix);
-
-		static Mesh* CreateIcosahedron(bool normals, bool uvs);
-		static Mesh* CreateQuad(bool normals, bool uvs);
-	};
-
-}

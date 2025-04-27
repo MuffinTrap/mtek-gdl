@@ -151,7 +151,7 @@ void Font_Icon (Font* font, u32 color, float x, float y, float textHeight, gdl::
 }
 
 
-void _Font_PrintAligned(Font* font, u32 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* text)
+void Font_PrintAligned(Font* font, u32 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* text)
 {
 	GLuint textureName = font->_fontImage->textureId;
 	const float step = font->_aspect * textHeight;
@@ -290,6 +290,7 @@ void _Font_CreateTextureCoordListSelective (Font* font, short rows, short charac
 	printf("find between %d and %d: %d characters\n", first, last, toBeFoundAmount);
 
 
+	font->_characterCount = textureArraySize;
 	size_t tListSize = sizeof(vec2)*textureArraySize;
 	if (font->_tList == NULL)
 	{
@@ -379,6 +380,7 @@ void _Font_CreateTextureCoordList(Font* font, short rows, short charactersPerRow
 	gdl_assert_print(texW > 0 && texH > 0, "Texture size is 0");
 
 	short characterAmount = rows * charactersPerRow;
+	font->_characterCount = characterAmount;
 	size_t tListSize = sizeof(vec2)*characterAmount;
 	if (font->_tList == NULL)
 	{

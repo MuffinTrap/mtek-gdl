@@ -15,11 +15,11 @@ void InitSystem(const char* name,
 				std::function<void()> initCallback,
 				std::function<void()> updateCallback,
 				std::function<void()> drawCallback,
-				u32 initFlags = 0 );
+				u32 initFlags);
 
 // TODO Move all loading to AssetManager to get memory status and other stats
 PNGFile* LoadPNG(const char* filename);
-Image* LoadImageFile(const char* filename, gdl::TextureFilterModes filterMode);
+Image* LoadImage(const char* filename, gdl::TextureFilterModes filterMode);
 Image* LoadImagePNG(PNGFile* png, gdl::TextureFilterModes filterMode);
 
 gdl::Sound* LoadSound(const char* filename);

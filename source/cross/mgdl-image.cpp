@@ -57,6 +57,7 @@ Image* Image_LoadPNG(PNGFile* png, gdl::TextureFilterModes filterMode)
 	// copy data
 	image->width = png->width;
 	image->height = png->height;
+	Image_SetTint(image, 1.0f, 1.0f, 1.0f);
 
 	return image;
 }
@@ -67,6 +68,7 @@ void Image_SetGLName(Image* img, GLuint textureName, GLsizei width, GLsizei heig
 	img->height = height;
 	img->textureId = textureName;
 	img->colorFormat = format;
+	Image_SetTint(img, 1.0f, 1.0f, 1.0f);
 }
 
 // TODO add padding to UVs so that the corners are inside the pixels and not in between

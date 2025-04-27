@@ -24,6 +24,7 @@ struct Font
 	float _uvWidth;
 	float _uvHeight;
 	char _firstIndex; /**< Needed to remember the first index to calculate offsets into vertex and uv arrays */
+	short _characterCount;
 
 	float _spacingX = 0.0f;
 	float _spacingY = 0.0f;

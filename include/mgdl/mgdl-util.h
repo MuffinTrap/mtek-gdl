@@ -2,6 +2,7 @@
 
 #include "mgdl-types.h"
 #include <mgdl/mgdl-opengl.h>
+#include <stdarg.h>
 // helper functions
 
 namespace gdl

@@ -12,7 +12,7 @@ using namespace gdl;
 	struct Node
 	{
 		Transform transform;
-		gdl::Mesh* mesh = nullptr;
+		Mesh* mesh = nullptr;
 		Material* material = nullptr;
 		Light* light = nullptr;
 		const char* name;
@@ -20,6 +20,6 @@ using namespace gdl;
 	};
 
 	void Node_SetTransform(Node* node, const char* name, vec3 position, vec3 rotationAngles);
-	void Node_SetContent(Node* node, const char* name, gdl::Mesh* meshParam, Material* materialParam);
+	void Node_SetContent(Node* node, const char* name, Mesh* meshParam, Material* materialParam);
 
 	void Node_Draw(Node* node);

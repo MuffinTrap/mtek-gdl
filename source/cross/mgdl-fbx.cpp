@@ -180,7 +180,7 @@ bool _FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short d
 	return true;
 }
 
-void PushPosition(gdl::Mesh* mesh, size_t index, ufbx_vec3 pos)
+void PushPosition(Mesh* mesh, size_t index, ufbx_vec3 pos)
 {
 	size_t vpi = index * 3;
 	mesh->positions[vpi+0] = pos.x;
@@ -188,7 +188,7 @@ void PushPosition(gdl::Mesh* mesh, size_t index, ufbx_vec3 pos)
 	mesh->positions[vpi+2] = pos.z;
 }
 
-void PushNormal(gdl::Mesh* mesh, size_t index, ufbx_vec3 n)
+void PushNormal(Mesh* mesh, size_t index, ufbx_vec3 n)
 {
 	gdl_assert_print(mesh->normals != nullptr, "Cannot push normal to nullptr");
 	// Where the vec3 begins in array
@@ -199,7 +199,7 @@ void PushNormal(gdl::Mesh* mesh, size_t index, ufbx_vec3 n)
 	mesh->normals[vni+2] = n.z;
 }
 
-void PushUV(gdl::Mesh* mesh, size_t index, ufbx_vec2 uv)
+void PushUV(Mesh* mesh, size_t index, ufbx_vec2 uv)
 {
 	// Flip the y coordinates because in OpenGL images Y grows upwards
 	float y = uv.y;
@@ -212,18 +212,18 @@ void PushUV(gdl::Mesh* mesh, size_t index, ufbx_vec2 uv)
 	mesh->uvs[vti+1] = y;
 }
 
-gdl::Mesh * _FBX_AllocateMesh ( ufbx_mesh* fbxMesh )
+Mesh * _FBX_AllocateMesh ( ufbx_mesh* fbxMesh )
 {
 	sizetype vertices = fbxMesh->num_triangles * 3;
 	bool normals = fbxMesh->vertex_normal.exists;
 	bool uvs = fbxMesh->vertex_uv.exists;
-	gdl::Mesh *mesh = new gdl::Mesh();
-	mesh->Allocate(vertices, vertices, normals, uvs);
+	Mesh *mesh = new Mesh();
+	Mesh_Init(mesh, vertices, vertices, normals, uvs);
 	return mesh;
 }
 
 
-void PushVertex(ufbx_mesh* fbxMesh, gdl::Mesh* mesh, uint32_t faceIndex, size_t arrayIndex)
+void PushVertex(ufbx_mesh* fbxMesh, Mesh* mesh, uint32_t faceIndex, size_t arrayIndex)
 {
 	ufbx_vec3 position = fbxMesh->vertex_position[faceIndex];
 	ufbx_vec3 normal = fbxMesh->vertex_normal[faceIndex];
@@ -234,9 +234,9 @@ void PushVertex(ufbx_mesh* fbxMesh, gdl::Mesh* mesh, uint32_t faceIndex, size_t 
 	PushUV(mesh, arrayIndex, uv);
 }
 
-gdl::Mesh * _FBXFile_LoadMesh(ufbx_mesh* fbxMesh)
+Mesh * _FBXFile_LoadMesh(ufbx_mesh* fbxMesh)
 {
-	gdl::Mesh* mesh = _FBX_AllocateMesh(fbxMesh);
+	Mesh* mesh = _FBX_AllocateMesh(fbxMesh);
 
 	size_t vertexArrayIndex = 0;
 	size_t indiceArrayIndex = 0;

@@ -7,7 +7,7 @@ void Node_SetTransform(Node* node, const char* name, vec3 position, vec3 rotatio
 }
 
 
-void Node_SetContent (Node* node, const char* name, gdl::Mesh* meshParam, Material* materialParam )
+void Node_SetContent (Node* node, const char* name, Mesh* meshParam, Material* materialParam )
 {
 	node->transform = gdl::Transform();
 	node->name = name;
@@ -29,7 +29,7 @@ void Node_Draw(Node* node)
 	const vec3& s = node->transform.scale;
 	glScalef(s.x, s.y, s.z);
 
-	gdl::Mesh* m = node->mesh;
+	Mesh* m = node->mesh;
 	if (m != nullptr)
 	{
 		if (node->material != nullptr)
@@ -65,10 +65,10 @@ void Node_Draw(Node* node)
 				mat4x4Inverse(inverseView, modelView);
 				mat4x4Transpose(normalMatrix, inverseView);
 
-				m->CalculateMatcapUVs(modelView, normalMatrix);
+				Mesh_CalculateMatcapUVs(m, modelView, normalMatrix);
 			}
 		}
-		m->DrawElements();
+		Mesh_DrawElements(m);
 	}
 }
 

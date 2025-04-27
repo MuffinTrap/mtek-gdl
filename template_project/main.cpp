@@ -3,10 +3,10 @@
 //---------------------------------------------------------------------
 void init()
 {
-    glViewport(0, 0, gdl::GetScreenWidth(), gdl::GetScreenHeight());
+    glViewport(0, 0, GetScreenWidth(), GetScreenHeight());
     gdl::InitOrthoProjection();
 
-    glClearColor(247.0f/255.0f, 1.0f, 174.0f/255.0f, 0.0f);
+    glClearColor(0.4f, 0.4f, 0.39f, 1.0f);
 }
 // Rendering callback. glFlush etc.. is done automatically after it
 void render()
@@ -18,19 +18,20 @@ void render()
 // Called before render()
 void update()
 {
-    if (gdl::GetController(0).ButtonPress(gdl::WiiButtons::ButtonHome))
+    if (WiiController_ButtonPress(GetController(0), WiiButtons::ButtonHome))
     {
-        gdl::Platform& plat = gdl::Platform::GetPlatform();
-        plat.DoProgramExit();
+        DoProgramExit();
     }
 }
 
 int main()
 {
-    gdl::InitSystem(MGDL_PLATFORM,
+    u32 flags = 0;//gdl::PlatformInitFlag::FlagSplashScreen;
+    InitSystem(MGDL_PLATFORM,
         gdl::ScreenAspect::Screen4x3,
         init,
         update,  // std::function callbacks
-        render
+        render,
+        flags
     );
 }

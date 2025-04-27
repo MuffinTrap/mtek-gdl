@@ -1,29 +1,25 @@
 #include <mgdl/mgdl-scene.h>
 
-gdl::Mesh::Mesh()
-{
-	positions = nullptr;
-	vertexCount = 0;
-	indices = nullptr;
-	indexCount = 0;
-	normals = nullptr;
-	uvs=nullptr;
-}
 
-sizetype gdl::Mesh::Allocate ( sizetype vertexCount, sizetype indexCount, bool createNormals, bool createUVs )
+
+sizetype Mesh_Init (Mesh* mesh, sizetype vertexCount, sizetype indexCount, bool createNormals, bool createUVs )
 {
-	this->vertexCount = vertexCount;
-	this->indexCount = indexCount;
+	mesh->positions = nullptr;
+	mesh->indices = nullptr;
+	mesh->normals = nullptr;
+	mesh->uvs=nullptr;
+	mesh->vertexCount = vertexCount;
+	mesh->indexCount = indexCount;
 
 	// Reserve space
 	int byteCount = 0;
-	indices = new GLushort[indexCount];
+	mesh->indices = new GLushort[indexCount];
 	byteCount += indexCount * sizeof(float);
 
 	{
 		// 3 floats per position
 		sizetype positionFloats = vertexCount * 3;
-		positions = new GLfloat[positionFloats];
+		mesh->positions = new GLfloat[positionFloats];
 		byteCount += positionFloats * sizeof(float);
 	}
 
@@ -31,59 +27,59 @@ sizetype gdl::Mesh::Allocate ( sizetype vertexCount, sizetype indexCount, bool c
 	{
 		// 3 floats per normal
 		sizetype normalFloats = vertexCount * 3;
-		normals = new GLfloat[normalFloats];
+		mesh->normals = new GLfloat[normalFloats];
 		byteCount += normalFloats * sizeof(float);
 	}
 	if (createUVs)
 	{
 		// 2 floats per uv
 		sizetype uvFloats = vertexCount * 2;
-		uvs = new GLfloat[uvFloats];
+		mesh->uvs = new GLfloat[uvFloats];
 		byteCount += uvFloats * sizeof(float);
 	}
 	return byteCount;
 }
 
 
-void gdl::Mesh::SetupVertexArrays()
+void Mesh_SetupVertexArrays(Mesh* mesh)
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 0, positions);
-	if (normals != nullptr)
+	glVertexPointer(3, GL_FLOAT, 0, mesh->positions);
+	if (mesh->normals != nullptr)
 	{
 		glEnableClientState(GL_NORMAL_ARRAY);
-		glNormalPointer(GL_FLOAT, 0, normals);
+		glNormalPointer(GL_FLOAT, 0, mesh->normals);
 	}
-	if (uvs != nullptr)
+	if (mesh->uvs != nullptr)
 	{
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glTexCoordPointer(2, GL_FLOAT, 0, uvs);
+		glTexCoordPointer(2, GL_FLOAT, 0, mesh->uvs);
 	}
 }
 
-void gdl::Mesh::DrawElements()
+void Mesh_DrawElements(Mesh* mesh)
 {
-	SetupVertexArrays();
+	Mesh_SetupVertexArrays(mesh);
 	// NOTE OpenGX does not impelement glDrawRangeElements()
 	//glDrawRangeElements(GL_TRIANGLES, 0, vertexCount-1, indexCount, GL_UNSIGNED_SHORT, indices);
-	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_SHORT, indices);
+	glDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_SHORT, mesh->indices);
 }
 
-void gdl::Mesh::DrawPoints()
+void Mesh_DrawPoints(Mesh* mesh)
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 0, positions);
-	glDrawElements(GL_POINTS, indexCount, GL_UNSIGNED_SHORT, indices);
+	glVertexPointer(3, GL_FLOAT, 0, mesh->positions);
+	glDrawElements(GL_POINTS, mesh->indexCount, GL_UNSIGNED_SHORT, mesh->indices);
 }
 
-void gdl::Mesh::DrawLines()
+void Mesh_DrawLines(Mesh* mesh)
 {
 	glDisableClientState(GL_VERTEX_ARRAY);
-	for (GLsizei i = 0; i < indexCount; i+=3)
+	for (GLsizei i = 0; i < mesh->indexCount; i+=3)
 	{
-		vec3 a = GetPosition(i);
-		vec3 b = GetPosition(i+1);
-		vec3 c = GetPosition(i+2);
+		vec3 a = Mesh_GetPosition(mesh, i);
+		vec3 b = Mesh_GetPosition(mesh, i+1);
+		vec3 c = Mesh_GetPosition(mesh, i+2);
 		glBegin(GL_LINE_LOOP);
 			glVertex3f(a.x, a.y, a.z);
 			glVertex3f(b.x, b.y, b.z);
@@ -92,21 +88,21 @@ void gdl::Mesh::DrawLines()
 	}
 }
 
-void gdl::Mesh::DrawNormals()
+void Mesh_DrawNormals(Mesh* mesh)
 {
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glBegin(GL_LINES);
-	for (GLsizei i = 0; i < indexCount; i++)
+	for (GLsizei i = 0; i < mesh->indexCount; i++)
 	{
-		vec3 n = GetNormal(i);
-		vec3 a = GetPosition(i);
+		vec3 n = Mesh_GetNormal(mesh, i);
+		vec3 a = Mesh_GetPosition(mesh, i);
 		glVertex3f(a.x, a.y, a.z);
 		glVertex3f(a.x + n.x, a.y + n.y, a.z + n.z);
 	}
 	glEnd();
 }
 
-void gdl::Mesh::CalculateMatcapUVs(const mat4x4& modelViewMatrix, const mat4x4& normalMatrix)
+void Mesh_CalculateMatcapUVs(Mesh* mesh,const mat4x4& modelViewMatrix, const mat4x4& normalMatrix)
 {
 	// This calculation happens in screen space
 
@@ -122,10 +118,10 @@ void gdl::Mesh::CalculateMatcapUVs(const mat4x4& modelViewMatrix, const mat4x4& 
 	// Debug print
 	static bool once = false;
 	// Overwrite UVs
-	for (sizetype i = 0; i < vertexCount; i++)
+	for (sizetype i = 0; i < mesh->vertexCount; i++)
 	{
-		position = GetPositionFromArray(i);
-		normal = GetNormalFromArray(i);
+		position = Mesh_GetPositionFromArray(mesh, i);
+		normal = Mesh_GetNormalFromArray(mesh, i);
 
 	if (once)
 	{
@@ -145,10 +141,10 @@ void gdl::Mesh::CalculateMatcapUVs(const mat4x4& modelViewMatrix, const mat4x4& 
 		printf("After matrices:\n");
 	}
 	const vec2 half = vec2New(0.5f, 0.5f);
-	for (sizetype i = 0; i < vertexCount; i++)
+	for (sizetype i = 0; i < mesh->vertexCount; i++)
 	{
-		position = GetPositionFromArray(i);
-		normal = GetNormalFromArray(i);
+		position = Mesh_GetPositionFromArray(mesh, i);
+		normal = Mesh_GetNormalFromArray(mesh, i);
 
 		normal4 = vec4New(normal.x, normal.y, normal.z, 0.0f);
 		position4 = vec4New(position.x, position.y, position.z, 1.0f);
@@ -177,124 +173,124 @@ void gdl::Mesh::CalculateMatcapUVs(const mat4x4& modelViewMatrix, const mat4x4& 
 			matcapUV.x, matcapUV.y);
 			}
 		}
-		SetUVToArray(i, matcapUV);
+		Mesh_SetUVToArray(mesh, i, matcapUV);
 	}
 	once = false;
 }
 
-void gdl::Mesh::SetPositionToArray( sizetype index, const vec3& position )
+void Mesh_SetPositionToArray(Mesh* mesh, sizetype index, const vec3& position )
 {
-	if (index < vertexCount)
+	if (index < mesh->vertexCount)
 	{
 		sizetype i = index * 3;
-		positions[i+0] = position.x;
-		positions[i+1] = position.y;
-		positions[i+2] = position.z;
+		mesh->positions[i+0] = position.x;
+		mesh->positions[i+1] = position.y;
+		mesh->positions[i+2] = position.z;
 	}
 }
 
 
 // This is a drawing index, not an array index
-vec3 gdl::Mesh::GetPosition ( GLushort index )
+vec3 Mesh_GetPosition ( Mesh* mesh,GLushort index )
 {
-	if (index < indexCount)
+	if (index < mesh->indexCount)
 	{
 		// What vertex is drawn when index
-		GLushort position = indices[index];
+		GLushort position = mesh->indices[index];
 		// Get the index to float array
 		sizetype i = position * 3;
-		return vec3New(positions[i+0], positions[i+1], positions[i+2]);
+		return vec3New(mesh->positions[i+0], mesh->positions[i+1], mesh->positions[i+2]);
 	}
-	printf("No such index! %d > %d\n", index, indexCount);
+	printf("No such index! %d > %d\n", index, mesh->indexCount);
 	return vec3New(0.0f, 0.0f, 0.0f);
 }
 
-vec3 gdl::Mesh::GetNormal ( GLushort index )
+vec3 Mesh_GetNormal (Mesh* mesh, GLushort index )
 {
-	if (index < indexCount)
+	if (index < mesh->indexCount)
 	{
 		// What vertex is drawn when index
-		GLushort position = indices[index];
+		GLushort position = mesh->indices[index];
 		// Get the index to float array
 		sizetype i = position * 3;
-		return vec3New(normals[i+0], normals[i+1], normals[i+2]);
+		return vec3New(mesh->normals[i+0], mesh->normals[i+1], mesh->normals[i+2]);
 	}
-	printf("No such index! %d > %d\n", index, indexCount);
+	printf("No such index! %d > %d\n", index, mesh->indexCount);
 	return vec3New(0.0f, 0.0f, 0.0f);
 }
 
 
-void gdl::Mesh::SetNormalToArray ( sizetype index, const vec3& normal )
+void Mesh_SetNormalToArray ( Mesh* mesh,sizetype index, const vec3& normal )
 {
-	if (index < vertexCount)
+	if (index < mesh->vertexCount)
 	{
 		sizetype vi = index * 3;
-		normals[vi+0] = normal.x;
-		normals[vi+1] = normal.y;
-		normals[vi+2] = normal.z;
+		mesh->normals[vi+0] = normal.x;
+		mesh->normals[vi+1] = normal.y;
+		mesh->normals[vi+2] = normal.z;
 	}
 }
 
-bool gdl::Mesh::GetTriangleIndices ( GLsizei triangleIndex, GLushort& outA, GLushort& outB, GLushort& outC )
+bool Mesh_GetTriangleIndices (Mesh* mesh, GLsizei triangleIndex, GLushort& outA, GLushort& outB, GLushort& outC )
 {
 	GLsizei indice = triangleIndex * 3;
-	if (indice + 2 < indexCount)
+	if (indice + 2 < mesh->indexCount)
 	{
-		outA = indices[indice];
-		outB = indices[indice+1];
-		outC = indices[indice+2];
+		outA = mesh->indices[indice];
+		outB = mesh->indices[indice+1];
+		outC = mesh->indices[indice+2];
 		return true;
 	}
 	return false;
 }
 
-void gdl::Mesh::SetUVToArray ( sizetype index, const vec2& uv )
+void Mesh_SetUVToArray (Mesh* mesh, sizetype index, const vec2& uv )
 {
-	if (uvs != nullptr)
+	if (mesh->uvs != nullptr)
 	{
 		sizetype vi = index * 2;
-		uvs[vi + 0] = uv.x;
-		uvs[vi + 1] = uv.y;
+		mesh->uvs[vi + 0] = uv.x;
+		mesh->uvs[vi + 1] = uv.y;
 	}
 }
 
-void gdl::Mesh::SetDrawingIndex ( sizetype index, GLushort drawIndex )
+void Mesh_SetDrawingIndex ( Mesh* mesh,sizetype index, GLushort drawIndex )
 {
-	indices[index] = drawIndex;
+	mesh->indices[index] = drawIndex;
 }
 
 
-vec3 gdl::Mesh::GetPositionFromArray(sizetype index)
+vec3 Mesh_GetPositionFromArray(Mesh* mesh,sizetype index)
 {
-	if (index < vertexCount)
+	if (index < mesh->vertexCount)
 	{
 		sizetype vi = index * 3;
-		return vec3New(positions[vi+0], positions[vi+1], positions[vi+2]);
+		return vec3New(mesh->positions[vi+0], mesh->positions[vi+1], mesh->positions[vi+2]);
 	}
-	printf("index %zu > %u vertexCount!\n", index, vertexCount);
+	printf("index %zu > %u vertexCount!\n", index, mesh->vertexCount);
 	return vec3New(0.0f, 0.0f, 0.0f);
 }
-vec3 gdl::Mesh::GetNormalFromArray(sizetype index)
+vec3 Mesh_GetNormalFromArray(Mesh* mesh,sizetype index)
 {
-	if (index < vertexCount)
+	if (index < mesh->vertexCount)
 	{
 		sizetype vi = index * 3;
-		return vec3New(normals[vi+0], normals[vi+1], normals[vi+2]);
+		return vec3New(mesh->normals[vi+0], mesh->normals[vi+1], mesh->normals[vi+2]);
 	}
-	printf("index %zu > %u vertexCount!\n", index, vertexCount);
+	printf("index %zu > %u vertexCount!\n", index, mesh->vertexCount);
 	return vec3New(0.0f, 1.0f, 0.0f);
 }
 
 // Mesh creation functions
 
-gdl::Mesh* gdl::Mesh::CreateIcosahedron(bool normals, bool uvs)
+Mesh* Mesh_CreateIcosahedron(bool normals, bool uvs)
 {
     const float X = 0.525731112119133606;
     const float Z = 0.850650808352039932;
     const float N = 0.0f;
 
 	Mesh* icosa = new Mesh();
-	icosa->Allocate(12, 60, normals, uvs);
+	Mesh_Init(icosa, 12, 60, normals, uvs);
 
 	delete[] icosa->positions;
     icosa->positions = new GLfloat[12*3] {
@@ -347,28 +343,28 @@ gdl::Mesh* gdl::Mesh::CreateIcosahedron(bool normals, bool uvs)
     return icosa;
 }
 
-void gdl::Mesh::DebugPrint()
+void Mesh_DebugPrint(Mesh* mesh)
 {
-	printf("%s mesh has %u vertices and %u indices\n", name.c_str(), vertexCount, indexCount);
-	for (sizetype i = 0; i < vertexCount; i++)
+	printf("%s mesh has %u vertices and %u indices\n", mesh->name, mesh->vertexCount, mesh->indexCount);
+	for (sizetype i = 0; i < mesh->vertexCount; i++)
 	{
 		sizetype vi = i*3;
-		printf("%zu: Pos %.2f, %.2f, %.2f\n", i, positions[vi+0], positions[vi+1], positions[vi+2]);
+		printf("%zu: Pos %.2f, %.2f, %.2f\n", i, mesh->positions[vi+0], mesh->positions[vi+1], mesh->positions[vi+2]);
 	}
 	printf("\n");
-	for (sizetype i = 0; i < vertexCount; i++)
+	for (sizetype i = 0; i < mesh->vertexCount; i++)
 	{
-		vec3 pos = GetPositionFromArray(i);
-		vec3 normal = GetNormalFromArray(i);
+		vec3 pos = Mesh_GetPositionFromArray(mesh, i);
+		vec3 normal = Mesh_GetNormalFromArray(mesh, i);
 		printf("%zu: Pos %.2f, %.2f, %.2f\tN %.2f, %.2f, %.2f\n", i, pos.x, pos.y, pos.z, normal.x, normal.y, normal.z);
 	}
 }
 
 
-gdl::Mesh * gdl::Mesh::CreateQuad ( bool normals, bool uvs )
+Mesh * Mesh_CreateQuad ( bool normals, bool uvs )
 {
-	gdl::Mesh* quad = new Mesh();
-	quad->Allocate(4, 6, normals, uvs);
+	Mesh* quad = new Mesh();
+	Mesh_Init(quad, 4, 6, normals, uvs);
 	delete[] quad->positions;
 
 	float sz = 0.5f;
@@ -385,10 +381,10 @@ gdl::Mesh * gdl::Mesh::CreateQuad ( bool normals, bool uvs )
 		quad->normals[i+2] = 1.0f;
 	}
 
-	quad->SetUVToArray(0, vec2New(0.0f, 0.0f));
-	quad->SetUVToArray(1, vec2New(1.0f, 0.0f));
-	quad->SetUVToArray(2, vec2New(1.0f, 1.0f));
-	quad->SetUVToArray(3, vec2New(0.0f, 1.0f));
+	Mesh_SetUVToArray(quad, 0, vec2New(0.0f, 0.0f));
+	Mesh_SetUVToArray(quad, 1, vec2New(1.0f, 0.0f));
+	Mesh_SetUVToArray(quad, 2, vec2New(1.0f, 1.0f));
+	Mesh_SetUVToArray(quad, 3, vec2New(0.0f, 1.0f));
 
 	quad->indices[0] = 0;
 	quad->indices[1] = 1;

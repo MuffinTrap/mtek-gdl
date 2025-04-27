@@ -36,7 +36,7 @@ PNGFile* LoadPNG(const char* filename)
 	}
 }
 
-Image* LoadImageFile(const char* filename, gdl::TextureFilterModes filterMode)
+Image* LoadImage(const char* filename, gdl::TextureFilterModes filterMode)
 {
 	Image* img = Image_LoadFile(filename, filterMode);
 	if (img != nullptr)
@@ -123,7 +123,7 @@ gdl::Sound* LoadOgg(const char* filename)
 
 Font* LoadFontFile(const char* filename, short characterWidth, short characterHeight, char firstCharacter)
 {
-	Image* fontImage = LoadImageFile(filename, gdl::TextureFilterModes::Linear);
+	Image* fontImage = LoadImage(filename, gdl::TextureFilterModes::Linear);
 	Font* font = Font_Load(fontImage, characterWidth, characterHeight, firstCharacter);
 	if (font != nullptr)
 	{
@@ -138,7 +138,7 @@ Font* LoadFontFile(const char* filename, short characterWidth, short characterHe
 
 Font* LoadFontCustom(const char* filename, short characterWidth, short characterHeight, char firstCharacter, short charactersPerRow)
 {
-	Image* fontImage = LoadImageFile(filename, gdl::TextureFilterModes::Linear);
+	Image* fontImage = LoadImage(filename, gdl::TextureFilterModes::Linear);
 	Font* font = Font_LoadPadded(fontImage, characterWidth, characterHeight, firstCharacter, charactersPerRow);
 
 	if (font != nullptr)
@@ -154,7 +154,7 @@ Font* LoadFontCustom(const char* filename, short characterWidth, short character
 
 Font* LoadFontCustom(const char* filename, short characterWidth, short characterHeight, short charactersPerRow, const char* characters)
 {
-	Image* fontImage = LoadImageFile(filename, gdl::TextureFilterModes::Linear);
+	Image* fontImage = LoadImage(filename, gdl::TextureFilterModes::Linear);
 	Font* font = Font_LoadSelective(fontImage, characterWidth, characterHeight, charactersPerRow, characters);
 	if (font != nullptr)
 	{
