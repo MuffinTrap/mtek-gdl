@@ -9,6 +9,7 @@
 *.lo
 *.o
 *.obj
+*.pco
 
 # Precompiled Headers
 *.gch
@@ -48,7 +49,3 @@ build/
 
 # Kate meta files
 *.kate-swp
-
-*.wo
-*.lo
-*.mo

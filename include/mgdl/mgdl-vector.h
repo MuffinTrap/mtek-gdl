@@ -10,7 +10,12 @@
 #ifdef MGDL_PLATFORM_WII
 #include <ogc/gu.h>
 
+typedef Mtx44 mat4x4;
 typedef guVector vec3;
+
+typedef struct _vecf2 {
+	f32 x, y;
+} vec2;
 
 #else // PC platform
 

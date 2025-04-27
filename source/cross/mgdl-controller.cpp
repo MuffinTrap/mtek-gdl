@@ -1,9 +1,9 @@
 #include <mgdl/mgdl-controller.h>
 #include <mgdl/mgdl-util.h>
 
-void WiiController_Init(WiiController* controller)
+void WiiController_Init(WiiController* controller, u8 channel)
 {
-	controller->_channel = 0;
+	controller->_channel = channel;
 	WiiController_ZeroAllInputs(controller);
 }
 
