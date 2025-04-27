@@ -5,25 +5,20 @@
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-image.h>
 
-namespace gdl
+
+/* Material used by a node. Contains a
+ * pointer to Image and material properties
+ * used in rendering
+ */
+struct Material
 {
+	const char* name;
+	GLfloat shininess = 1.0f;
+	vec3 emissiveColor;
+	Image* texture;
+	gdl::MaterialType type;
+};
 
-	/* Material used by a node. Contains a
-	 * pointer to Image and material properties
-	 * used in rendering
-	 */
-	class Material
-	{
-	public:
+void Material_Init(Material* material, const char* name, Image* texture, gdl::MaterialType type);
 
-		const char* name;
-		GLfloat shininess = 1.0f;
-		vec3 emissiveColor;
-		Image* texture;
-		gdl::MaterialType type;
-		Material();
-		Material(const char* name);
-		Material(const char* name, Image* texture, gdl::MaterialType type);
-		void Apply();
-	};
-}
+void Material_Apply(Material* material);

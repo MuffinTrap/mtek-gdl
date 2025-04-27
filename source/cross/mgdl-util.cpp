@@ -119,3 +119,10 @@ GLint gdl::TextureFilterToGLFilter(gdl::TextureFilterModes filterMode)
 			break;
 	};
 }
+
+static char printfBuffer[256];
+
+char* MGDL_GetPrintfBuffer()
+{
+	return printfBuffer;
+}

@@ -65,6 +65,9 @@ namespace gdl
          * @param text Text to be drawn.
          */
         void Text(const char* text);
+
+        void TextF(const char* text, ...);
+
         /**
          * @brief Draws a button that can be clicked.
          * @param text Text on the button

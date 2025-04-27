@@ -1,16 +1,16 @@
 #include <mgdl/mgdl-scene.h>
 #include <glm/gtc/matrix_transform.hpp>
-gdl::Scene::Scene()
+void Scene_Init(Scene* scene)
 {
-	rootNode = nullptr;
+	scene->rootNode = nullptr;
 }
 
 
-void gdl::Scene::AddChildNode (gdl::Node* parent, gdl::Node* child )
+void Scene_AddChildNode (Scene* scene, Node* parent, Node* child )
 {
 	if (parent == nullptr)
 	{
-		rootNode = child;
+		scene->rootNode = child;
 	}
 	else
 	{
@@ -18,57 +18,55 @@ void gdl::Scene::AddChildNode (gdl::Node* parent, gdl::Node* child )
 	}
 }
 
-void gdl::Scene::DebugDraw( Font* font, short x, short y, u32 debugFlags )
+void Scene_DebugDraw(Scene* scene,  gdl::MenuCreator* menu, u32 debugFlags )
 {
-	if (rootNode != nullptr)
+	if (scene->rootNode != nullptr)
 	{
 		short index = 0;
-		DebugDrawNode(rootNode, font, x, y, 0, index, debugFlags);
+		Scene_DebugDrawNode(scene->rootNode, menu, 0, index, debugFlags);
 	}
 }
 
-void gdl::Scene::DebugDrawNode ( gdl::Node* node, Font* font, short x, short& dy, short depth, short& index, u32 debugFlags)
+void Scene_DebugDrawNode ( Node* node, gdl::MenuCreator* menu, short depth, short& index, u32 debugFlags)
 {
-	Font_PrintfAligned(font, gdl::Colors::White, x + depth*16, dy, 16.0f, gdl::LJustify, gdl::LJustify, "%d: %s", index, node->name);
+	menu->TextF("%d: %s", index, node->name);
 	index++;
-	dy -= 18;
-	if ((debugFlags & DebugFlag::Position) > 0)
+	if ((debugFlags & Scene_DebugFlag::Position) > 0)
 	{
 		vec3 &p = node->transform.position;
-		Font_PrintfAligned(font, gdl::Colors::White, x + depth*16, dy, 16.0f, gdl::LJustify, gdl::LJustify, "P(%.1f,%.1f,%.1f)", index, p.x, p.y, p.z);
-		dy -= 18;
+		menu->TextF("P(%.1f,%.1f,%.1f)", index, p.x, p.y, p.z);
 	}
 
 	for(size_t i = 0; i < node->children.size(); i++)
 	{
-		DebugDrawNode(node->children[i], font, x, dy, depth+1, index, debugFlags);
+		Scene_DebugDrawNode(node->children[i], menu, depth+1, index, debugFlags);
 	}
 }
 
-void gdl::Scene::Draw()
+void Scene_Draw(Scene* scene)
 {
-	if (rootNode != nullptr)
+	if (scene->rootNode != nullptr)
 	{
-		DrawNode(rootNode);
+		Scene_DrawNode(scene->rootNode);
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
 }
 
-void gdl::Scene::DrawNode ( gdl::Node* node )
+void Scene_DrawNode ( Node* node )
 {
 	glPushMatrix();
-		node->Draw();
+		Node_Draw(node);
 		for(size_t i = 0; i < node->children.size(); i++)
 		{
-			DrawNode(node->children[i]);
+			Scene_DrawNode(node->children[i]);
 		}
 	glPopMatrix();
 }
 
-void gdl::Scene::SetMaterialTexture (const char* materialName, Image* texture )
+void Scene_SetMaterialTexture (Scene* scene, const char* materialName, Image* texture )
 {
-	gdl::Material* m = GetMaterial(materialName);
+	Material* m = Scene_GetMaterial(scene, materialName);
 	if (m != nullptr)
 	{
 		m->texture = texture;
@@ -80,41 +78,41 @@ void gdl::Scene::SetMaterialTexture (const char* materialName, Image* texture )
 	}
 }
 
-void gdl::Scene::SetAllMaterialTextures (Image* texture )
+void Scene_SetAllMaterialTextures (Scene* scene, Image* texture )
 {
-	for(unsigned long i = 0; i < materials.size(); i++)
+	for(unsigned long i = 0; i < scene->materials.size(); i++)
 	{
-		materials[i]->texture = texture;
+		scene->materials[i]->texture = texture;
 	}
 }
 
-void gdl::Scene::AddMaterial ( gdl::Material* material )
+void Scene_AddMaterial ( Scene* scene, Material* material )
 {
-	materials.push_back(material);
+	scene->materials.push_back(material);
 }
 
-gdl::Node * gdl::Scene::GetRootNode()
+Node* Scene_GetRootNode(Scene* scene )
 {
-	return rootNode;
+	return scene->rootNode;
 }
 
-gdl::Node * gdl::Scene::GetNodeByIndex ( short targetIndex )
+Node* Scene_GetNodeByIndex ( Scene* scene, short targetIndex )
 {
 	short index = 0;
-	return FindNodeByIndex(rootNode, targetIndex, index);
+	return Scene_FindChildNodeByIndex(scene->rootNode, targetIndex, index);
 }
 
-gdl::Node * gdl::Scene::FindNodeByIndex ( gdl::Node* parent, short targetIndex, short& index )
+Node* Scene_FindChildNodeByIndex (Node* parent, short targetIndex, short& index )
 {
 	if (index == targetIndex)
 	{
 		return parent;
 	}
 	index++;
-	gdl::Node* childNode = nullptr;
+	Node* childNode = nullptr;
 	for(size_t i = 0; i < parent->children.size(); i++)
 	{
-		childNode = FindNodeByIndex(parent->children[i], targetIndex, index);
+		childNode = Scene_FindChildNodeByIndex(parent->children[i], targetIndex, index);
 		if (childNode != nullptr)
 		{
 			break;
@@ -123,23 +121,24 @@ gdl::Node * gdl::Scene::FindNodeByIndex ( gdl::Node* parent, short targetIndex, 
 	return childNode;
 }
 
-vec3 gdl::Scene::GetWorldPosition ( gdl::Node* node )
+vec3 Scene_GetNodePosition ( Scene* scene, Node* node )
 {
 	mat4x4 matrix;
 	mat4x4Identity(matrix);
 	vec3 posOut;
-	CalculateWorldPosition(rootNode, node, matrix, posOut);
+	Scene_CalculateNodePosition(scene->rootNode, node, matrix, posOut);
+
 	return posOut;
 }
 
-bool gdl::Scene::GetModelMatrix ( gdl::Node* node, mat4x4 modelOut )
+bool Scene_GetNodeModelMatrix ( Scene* scene, Node* node, mat4x4 modelOut )
 {
 	mat4x4Identity(modelOut);
-	return CalculateModelMatrix(rootNode, node, modelOut);
+	return Scene_CalculateNodeModelMatrix(scene->rootNode, node, modelOut);
 }
 
 
-bool gdl::Scene::CalculateModelMatrix ( gdl::Node* parent, gdl::Node* target, mat4x4 model )
+bool Scene_CalculateNodeModelMatrix (Node* parent, Node* target, mat4x4 model )
 {
 	vec3 p = parent->transform.position;
 	mat4x4Translate(model, vec3New(p.x, p.y, p.z));
@@ -157,7 +156,7 @@ bool gdl::Scene::CalculateModelMatrix ( gdl::Node* parent, gdl::Node* target, ma
 	{
 		mat4x4 accumulated;
 		mat4x4Copy(accumulated, model);
-		if(CalculateModelMatrix(parent->children[i], target, accumulated))
+		if(Scene_CalculateNodeModelMatrix(parent->children[i], target, accumulated))
 		{
 			return true;
 		}
@@ -166,7 +165,7 @@ bool gdl::Scene::CalculateModelMatrix ( gdl::Node* parent, gdl::Node* target, ma
 }
 
 
-bool gdl::Scene::CalculateWorldPosition ( gdl::Node* parent, gdl::Node* target, mat4x4 world, vec3& posOut )
+bool Scene_CalculateNodePosition ( Node* parent, Node* target, mat4x4 world, vec3& posOut )
 {
 
 	vec3 p = parent->transform.position;
@@ -188,7 +187,7 @@ bool gdl::Scene::CalculateWorldPosition ( gdl::Node* parent, gdl::Node* target, 
 	{
 		mat4x4 accumulated;
 		mat4x4Copy(accumulated, world);
-		if(CalculateWorldPosition(parent->children[i], target, accumulated, posOut))
+		if(Scene_CalculateNodePosition(parent->children[i], target, accumulated, posOut))
 		{
 			return true;
 		}
@@ -196,21 +195,21 @@ bool gdl::Scene::CalculateWorldPosition ( gdl::Node* parent, gdl::Node* target, 
 	return false;
 }
 
-gdl::Node * gdl::Scene::GetNode (const char* name )
+Node* Scene_GetNode (Scene* scene, const char* name )
 {
-	return FindNode(rootNode, name);
+	return Scene_FindChildNode(scene->rootNode, name);
 }
 
-gdl::Node * gdl::Scene::FindNode (gdl::Node* node, const char* nodeName )
+Node* Scene_FindChildNode (Node* node, const char* nodeName )
 {
 	if (strcmp(node->name, nodeName) == 0)
 	{
 		return node;
 	}
-	gdl::Node* childNode = nullptr;
+	Node* childNode = nullptr;
 	for(size_t i = 0; i < node->children.size(); i++)
 	{
-		childNode = FindNode(node->children[i], nodeName);
+		childNode = Scene_FindChildNode(node->children[i], nodeName);
 		if (childNode != nullptr)
 		{
 			break;
@@ -219,19 +218,19 @@ gdl::Node * gdl::Scene::FindNode (gdl::Node* node, const char* nodeName )
 	return childNode;
 }
 
-gdl::Material * gdl::Scene::GetMaterial (const char* materialName )
+Material* Scene_GetMaterial (Scene* scene, const char* materialName )
 {
-	for(size_t mi = 0; mi < materials.size(); mi++)
+	for(size_t mi = 0; mi < scene->materials.size(); mi++)
 	{
-		if (strcmp(materials[mi]->name, materialName) == 0)
+		if (strcmp(scene->materials[mi]->name, materialName) == 0)
 		{
-			return materials[mi];
+			return scene->materials[mi];
 		}
 	}
 	return nullptr;
 }
 
-gdl::Material * gdl::Scene::FindMaterial ( gdl::Node* node, const char* materialName )
+Material* Scene_FindMaterial ( Scene* scene, Node* node, const char* materialName )
 {
 	if (node->material != nullptr)
 	{
@@ -240,10 +239,10 @@ gdl::Material * gdl::Scene::FindMaterial ( gdl::Node* node, const char* material
 			return node->material;
 		}
 	}
-	gdl::Material* childMat = nullptr;
+	Material* childMat = nullptr;
 	for(size_t i = 0; i < node->children.size(); i++)
 	{
-		childMat = FindMaterial(node->children[i], materialName);
+		childMat = Scene_FindMaterial(scene, node->children[i], materialName);
 		if (childMat != nullptr)
 		{
 			break;

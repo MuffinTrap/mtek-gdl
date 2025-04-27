@@ -2,6 +2,7 @@
 #include <mgdl/mgdl-font.h>
 #include <mgdl/mgdl-debugfont.h>
 #include <mgdl/mgdl-draw2d.h>
+#include <mgdl/mgdl-util.h>
 
 gdl::MenuCreator::MenuCreator()
 {
@@ -50,6 +51,11 @@ void gdl::MenuCreator::Panel(int h, u32 color)
 {
     DrawBoxF(x, y, x + w, y - h, color);
     y -= h;
+}
+void gdl::MenuCreator::TextF(const char* text, ...)
+{
+    MGDL_PRINTF_TO_BUFFER(text);
+    Text(MGDL_GetPrintfBuffer());
 }
 
 void gdl::MenuCreator::Text(const char* text)

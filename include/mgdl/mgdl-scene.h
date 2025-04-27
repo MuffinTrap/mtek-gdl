@@ -9,58 +9,53 @@
 #include <mgdl/mgdl-mesh.h>
 #include <mgdl/mgdl-material.h>
 #include <mgdl/mgdl-node.h>
-#include <mgdl/mgdl-font.h>
-
+#include <mgdl/mgdl-gui.h>
 #include <glm/glm.hpp>
 
-namespace gdl
-{
-	// Hiearchy of Nodes
-	class Scene
+using namespace gdl;
+
+	enum Scene_DebugFlag : u32
 	{
-	public:
-		enum DebugFlag : u32
-		{
-			Index = 1,
-			UniqueId = 2,
-			Position = 4,
-			Rotation = 8
-		};
-		Scene();
-		void Draw();
-		void DrawNode(gdl::Node* node);
-		void DebugDraw(Font* font, short x, short y, u32 drawFlags);
+		Index = 1,
+		UniqueId = 2,
+		Position = 4,
+		Rotation = 8
+	};
 
-		void AddChildNode(gdl::Node* parent, gdl::Node* child);
-
-		void AddMaterial(gdl::Material* material);
-		void SetMaterialTexture(const char* materialName, Image* texture);
-		void SetAllMaterialTextures(Image* texture);
-
-		gdl::Node* GetRootNode();
-		gdl::Node* GetNode(const char* name);
-		gdl::Node* GetNodeByIndex(short index);
-		gdl::Material* GetMaterial(const char* materialName);
-
-		vec3 GetWorldPosition(gdl::Node* node);
-		bool GetModelMatrix(gdl::Node* node, mat4x4 modelOut);
-
-
-	private:
-		void DebugDrawNode ( Node* node, Font* font, short int x, short int& dy, short int depth, short int& index, u32 drawFlags );
-
-		gdl::Node* FindNode(gdl::Node* node, const char* nodeName);
-		gdl::Node* FindNodeByIndex(gdl::Node* parent, short targetIndex, short& index);
-		gdl::Material* FindMaterial(gdl::Node* node, const char*  materialName);
-
-		bool CalculateWorldPosition(gdl::Node* parent, gdl::Node* target, mat4x4 world, vec3& posOut);
-		bool CalculateModelMatrix(gdl::Node* parent, gdl::Node* target, mat4x4 model);
-
-		gdl::Node* rootNode = nullptr;
+	struct Scene
+	{
+		Node* rootNode = nullptr;
 		// Multiple nodes can refer to same material
-		std::vector<gdl::Material*> materials;
+		std::vector<Material*> materials;
 		// Multiple nodes can refer to same mesh
 		std::vector<gdl::Mesh*> meshes;
-		std::vector<gdl::Light*> lights;
+		std::vector<Light*> lights;
+
 	};
-}
+		void Scene_Init(Scene* scene);
+
+		void Scene_Draw(Scene* scene);
+		void Scene_DrawNode(Node* node);
+		void Scene_DebugDraw(Scene* scene, MenuCreator* menu, short x, short y, u32 drawFlags);
+		void Scene_AddChildNode(Scene* scene, Node* parent, Node* child);
+		void Scene_AddMaterial(Scene* scene, Material* material);
+		void Scene_SetMaterialTexture(Scene* scene, const char* materialName, Image* texture);
+		void Scene_SetAllMaterialTextures(Scene* scene, Image* texture);
+
+		Node* Scene_GetRootNode(Scene* scene);
+		Node* Scene_GetNode(Scene* scene, const char* name);
+		Node* Scene_GetNodeByIndex(Scene* scene, short index);
+		Material* Scene_GetMaterial(Scene* scene, const char* materialName);
+
+		vec3 Scene_GetNodePosition(Scene* scene, Node* node);
+		bool Scene_GetNodeModelMatrix(Scene* scene, Node* node, mat4x4 modelOut);
+
+		void Scene_DebugDrawNode (Node* node, MenuCreator* menu, short int depth, short int& index, u32 drawFlags );
+
+		Node* Scene_FindChildNode(Node* node, const char* nodeName);
+		Node* Scene_FindChildNodeByIndex(Node* parent, short targetIndex, short& index);
+		Material* Scene_FindNodeMaterial(Scene* scene, Node* node, const char*  materialName);
+
+		bool Scene_CalculateNodePosition(Node* parent, Node* target, mat4x4 world, vec3& posOut);
+		bool Scene_CalculateNodeModelMatrix(Node* parent, Node* target, mat4x4 model);
+

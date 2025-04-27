@@ -7,8 +7,14 @@
  * by providing macro definitions.
  */
 
-#ifdef MGDL_USE_CCVECTOR
+#ifdef MGDL_PLATFORM_WII
+#include <ogc/gu.h>
 
+typedef guVector vec3;
+
+#else // PC platform
+
+#ifdef MGDL_USE_CCVECTOR
 	#ifdef GEKKO
 
 		// Wii gcc does not complain about ccVector's tricks
@@ -35,3 +41,13 @@
 
 	#endif
 #endif
+
+#ifdef MGDL_USE_CGLM
+
+#include <cglm/cglm.h>
+
+#endif
+
+#endif // PC platform
+
+#include "mgdl-vectorfunctions.h"

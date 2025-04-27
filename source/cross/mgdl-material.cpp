@@ -1,31 +1,16 @@
 #include <mgdl/mgdl-scene.h>
 
-gdl::Material::Material()
+void Material_Init (Material* material, const char* name, Image* texture, gdl::MaterialType type)
 {
-
+	material->name = name;
+	material->texture = texture;
+	material->shininess = 1.0f;
+	material->emissiveColor = vec3New(0.0f, 0.0f, 0.0f);
+	material->type = type;
 }
 
-gdl::Material::Material ( const char* name)
-{
-	this->name = name;
-	this->shininess = 1.0f;
-	this->emissiveColor = vec3New(0.0f, 0.0f, 0.0f);
-	this->type = MaterialType::Diffuse;
-}
-
-gdl::Material::Material ( const char* name, Image* texture, gdl::MaterialType type)
-{
-	this->name = name;
-	this->texture = texture;
-	this->shininess = 1.0f;
-	this->emissiveColor = vec3New(0.0f, 0.0f, 0.0f);
-	this->type = type;
-}
-
-
-
-void gdl::Material::Apply()
+void Material_Apply(Material* material)
 {
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texture->textureId);
+	glBindTexture(GL_TEXTURE_2D, material->texture->textureId);
 }

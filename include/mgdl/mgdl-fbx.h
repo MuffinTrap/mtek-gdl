@@ -11,28 +11,17 @@
 #include <mgdl/mgdl-mesh.h>
 #include <mgdl/mgdl-scene.h>
 
-namespace gdl
-{
-	/**
-	 * @brief Represents a FBX file.
-	 */
-	class FBXFile
-	{
-	public:
 
-		/**
-		 * @brief Loads a FBX file and returns the contents as a Scene.
-		 *
-		 * @param fbxFile Filename of the file.
-		 * @return Loaded scene.
-		 */
-		static gdl::Scene* LoadFile(std::string fbxFile);
+/**
+ * @brief Loads a FBX file and returns the contents as a Scene.
+ *
+ * @param fbxFile Filename of the file.
+ * @return Loaded scene.
+ */
+Scene* FBX_LoadScene(const char* fbxFile);
 
-	private:
-		static gdl::Mesh* AllocateMesh(ufbx_mesh* fbxMesh);
-		static gdl::Mesh* LoadMesh(ufbx_mesh* fbxMesh);
-		static gdl::Light* LoadLight(ufbx_light* fbxLight);
-		static bool LoadNode(Scene* gdlScene, Node* parentNode, ufbx_node* node, short int depth);
-	};
-}
+gdl::Mesh* _FBX_AllocateMesh(ufbx_mesh* fbxMesh);
+gdl::Mesh* _FBX_LoadMesh(ufbx_mesh* fbxMesh);
+Light* _FBX_LoadLight(ufbx_light* fbxLight);
+bool _FBX_LoadNode(Scene* gdlScene, Node* parentNode, ufbx_node* node, short int depth);
 

@@ -1,48 +1,42 @@
 #include <mgdl/mgdl-node.h>
 
-gdl::Node::Node()
+void Node_SetTransform(Node* node, const char* name, vec3 position, vec3 rotationAngles)
 {
-	transform = gdl::Transform();
-
-}
-
-gdl::Node::Node(const char* name, vec3 position, vec3 rotationAngles)
-{
-	this->name = name;
-	transform = gdl::Transform(position, rotationAngles, vec3New(1,1,1));
+	node->name = name;
+	node->transform = gdl::Transform(position, rotationAngles, vec3New(1,1,1));
 }
 
 
-gdl::Node::Node ( const char* name, gdl::Mesh* meshParam, gdl::Material* materialParam )
+void Node_SetContent (Node* node, const char* name, gdl::Mesh* meshParam, Material* materialParam )
 {
-	transform = gdl::Transform();
-	this->name = name;
-	mesh = meshParam;
-	material = materialParam;
+	node->transform = gdl::Transform();
+	node->name = name;
+	node->mesh = meshParam;
+	node->material = materialParam;
 }
 
-void gdl::Node::Draw()
+void Node_Draw(Node* node)
 {
 
-	const vec3& t = transform.position;
+	const vec3& t = node->transform.position;
 	glTranslatef(t.x, t.y, t.z);
 
-	const vec3& r = transform.rotationDegrees;
+	const vec3& r = node->transform.rotationDegrees;
 	glRotatef(r.x, 1.0f, 0.0f, 0.0f);
 	glRotatef(r.y, 0.0f, 1.0f, 0.0f);
 	glRotatef(r.z, 0.0f, 0.0f, 1.0f);
 
-	const vec3& s = transform.scale;
+	const vec3& s = node->transform.scale;
 	glScalef(s.x, s.y, s.z);
 
-	gdl::Mesh* m = mesh;
+	gdl::Mesh* m = node->mesh;
 	if (m != nullptr)
 	{
-		if (material != nullptr)
+		if (node->material != nullptr)
 		{
 			// TODO do not reapply same material
-			material->Apply();
-			if (material->type == gdl::MaterialType::Matcap)
+			Material_Apply(node->material);
+			if (node->material->type == gdl::MaterialType::Matcap)
 			{
 				// If material is matcap material
 				float modelViewMatrix[16];

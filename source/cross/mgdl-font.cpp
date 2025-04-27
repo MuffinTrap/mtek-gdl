@@ -244,39 +244,25 @@ void Font_PrintOrigo(Font* font, u32 color, float textHeight, gdl::AlignmentMode
 
 void Font_Printf(Font* font, u32 color, float x, float y, float textHeight, const char* format, ... )
 {
-	va_list args;
-	char	buff[256];
+	MGDL_PRINTF_TO_BUFFER(format)
 
-	va_start(args, format);
-	vsprintf(buff, format, args);
-	va_end(args);
-
-	Font_PrintAligned(font, color, x, y, textHeight, gdl::AlignmentModes::LJustify, gdl::AlignmentModes::LJustify, buff);
+	Font_PrintAligned(font, color, x, y, textHeight, gdl::AlignmentModes::LJustify, gdl::AlignmentModes::LJustify, MGDL_GetPrintfBuffer());
 }
 
 void Font_PrintfOrigo(Font* font, u32 color, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* format, ... )
 {
-	va_list args;
-	char	buff[256];
+	MGDL_PRINTF_TO_BUFFER(format)
 
-	va_start(args, format);
-	vsprintf(buff, format, args);
-	va_end(args);
-
-	Font_PrintAligned(font, color, 0, 0, textHeight, alignmentX, alignmentY, buff);
+	Font_PrintAligned(font, color, 0, 0, textHeight, alignmentX, alignmentY, MGDL_GetPrintfBuffer());
 }
 
 void Font_PrintfAligned( Font* font, u32 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* format, ... )
 {
 	// Draw quads
-	va_list args;
-	char	buff[256];
 
-	va_start(args, format);
-	vsprintf(buff, format, args);
-	va_end(args);
+	MGDL_PRINTF_TO_BUFFER(format)
 
-	Font_PrintAligned(font, color, x, y, textHeight, alignmentX, alignmentY, buff);
+	Font_PrintAligned(font, color, x, y, textHeight, alignmentX, alignmentY, MGDL_GetPrintfBuffer());
 }
 
 void Font_SetSpacingOnce (Font* font, float x, float y )

@@ -4,7 +4,9 @@
 #include <mgdl/mgdl-scene.h>
 #include <stdio.h>
 
-gdl::Scene* gdl::FBXFile::LoadFile(std::string fbxFile)
+using namespace gdl;
+
+Scene* FBX_LoadScene(const char* fbxFile)
 {
 	// Right handed for OpenGL
 	// Y is up
@@ -12,20 +14,20 @@ gdl::Scene* gdl::FBXFile::LoadFile(std::string fbxFile)
 	opts.target_axes = ufbx_axes_right_handed_y_up;
 	opts.target_unit_meters = 1.0f;
 	ufbx_error error;
-	printf("Reading fbx file %s\n", fbxFile.c_str());
-	ufbx_scene* scene = ufbx_load_file(fbxFile.c_str(), &opts, &error);
+	printf("Reading fbx file %s\n", fbxFile);
+	ufbx_scene* scene = ufbx_load_file(fbxFile, &opts, &error);
 	gdl_assert_printf(scene != nullptr, "Cannot load fbx: %s\n", error.description.data);
 	if (scene == nullptr)
 	{
 		return nullptr;
 	}
 
-	gdl::Scene* gdlScene = new gdl::Scene();
+	Scene* gdlScene = new Scene();
 	// What is in this file?
 
 	// Start from the root
 	ufbx_node* root = scene->root_node;
-	LoadNode(gdlScene, gdlScene->GetRootNode(), root, 0);
+	_FBX_LoadNode(gdlScene, Scene_GetRootNode(gdlScene), root, 0);
 
 	ufbx_free_scene(scene);
 
@@ -40,7 +42,7 @@ void Indent(short depth)
 	}
 }
 
-bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, gdl::Node* parentNode, ufbx_node* node, short depth )
+bool _FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short depth )
 {
 	gdl_assert_print(node != nullptr, "Tried to load null node");
 	gdl_assert_print(gdlScene != nullptr, "No scene to load nodes to");
@@ -59,10 +61,12 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, gdl::Node* parentNode, ufbx_
 		printf("\n");
 	}
 
-	gdl::Node* n = new gdl::Node(node->name.data,
+	Node* n = new Node();
+	gdl_assert_print(n != nullptr, "Could not create new Node");
+
+	Node_SetTransform(n, node->name.data,
 								 vec3New(t.x, t.y, t.z),
 								 vec3New(r.x, r.y, r.z));
-	gdl_assert_print(n != nullptr, "Could not create new Node");
 
 	Indent(depth);
 	if (node->mesh != nullptr)
@@ -86,7 +90,7 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, gdl::Node* parentNode, ufbx_
 		// Cannot use name: if multiple meshes have the same name
 		// the ufbx will postfix _1 etc.
 		// element_id is not unique either. Need to compare ufbx* mesh directly?
-		n->mesh = LoadMesh(mesh);
+		n->mesh = _FBX_LoadMesh(mesh);
 
 
 		// Does this node have materials?
@@ -103,11 +107,12 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, gdl::Node* parentNode, ufbx_
 			}
 
 			// Has this material been loaded already?
-			gdl::Material* mat = gdlScene->GetMaterial(material->name.data);
+			Material* mat = Scene_GetMaterial(gdlScene, material->name.data);
 			if (mat == nullptr)
 			{
-				mat = new gdl::Material(material->name.data);
-				gdlScene->AddMaterial(mat);
+				mat = new Material();
+				Material_Init(mat, material->name.data, nullptr, MaterialType::Diffuse);
+				Scene_AddMaterial(gdlScene, mat);
 			}
 			n->material = mat;
 		}
@@ -138,7 +143,7 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, gdl::Node* parentNode, ufbx_
 			printf("volumetric");
 		}
 
-		gdl::Light* gdlLight = LoadLight(light);
+		Light* gdlLight = _FBX_LoadLight(light);
 		n->light = gdlLight;
 
 		printf("\n");
@@ -155,7 +160,7 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, gdl::Node* parentNode, ufbx_
 		printf("\tBone %s, radius: %.2f relative length: %.2f\n", bone->name.data, bone->radius, bone->relative_length);
 	}
 
-	gdlScene->AddChildNode(parentNode, n);
+	Scene_AddChildNode(gdlScene, parentNode, n);
 
 	size_t childAmount = node->children.count;
 	if (childAmount > 0)
@@ -167,7 +172,7 @@ bool gdl::FBXFile::LoadNode ( gdl::Scene* gdlScene, gdl::Node* parentNode, ufbx_
 		}
 		for(size_t i = 0; i < node->children.count; i++)
 		{
-			LoadNode(gdlScene, n, node->children[i], depth+1);
+			_FBX_LoadNode(gdlScene, n, node->children[i], depth+1);
 		}
 	}
 
@@ -207,7 +212,7 @@ void PushUV(gdl::Mesh* mesh, size_t index, ufbx_vec2 uv)
 	mesh->uvs[vti+1] = y;
 }
 
-gdl::Mesh * gdl::FBXFile::AllocateMesh ( ufbx_mesh* fbxMesh )
+gdl::Mesh * _FBX_AllocateMesh ( ufbx_mesh* fbxMesh )
 {
 	sizetype vertices = fbxMesh->num_triangles * 3;
 	bool normals = fbxMesh->vertex_normal.exists;
@@ -229,9 +234,9 @@ void PushVertex(ufbx_mesh* fbxMesh, gdl::Mesh* mesh, uint32_t faceIndex, size_t 
 	PushUV(mesh, arrayIndex, uv);
 }
 
-gdl::Mesh * gdl::FBXFile::LoadMesh(ufbx_mesh* fbxMesh)
+gdl::Mesh * _FBXFile_LoadMesh(ufbx_mesh* fbxMesh)
 {
-	gdl::Mesh* mesh = AllocateMesh(fbxMesh);
+	gdl::Mesh* mesh = _FBX_AllocateMesh(fbxMesh);
 
 	size_t vertexArrayIndex = 0;
 	size_t indiceArrayIndex = 0;
@@ -302,13 +307,13 @@ gdl::Mesh * gdl::FBXFile::LoadMesh(ufbx_mesh* fbxMesh)
 	return mesh;
 }
 
-gdl::Light* gdl::FBXFile::LoadLight(ufbx_light* fbxLight)
+Light* _FBXFile_LoadLight(ufbx_light* fbxLight)
 {
-	gdl::Light* light = new gdl::Light();
+	Light* light = new Light();
 
 	light->color = vec3New(fbxLight->color.x, fbxLight->color.y, fbxLight->color.z);
 	light->intensity = fbxLight->intensity;
-	light->name = std::string(fbxLight->name.data);
+	light->name = fbxLight->name.data;
 
 	// Light is a spot in OpenGL if this is less than 90
 	// Light is point or directional if this is 180
@@ -316,27 +321,27 @@ gdl::Light* gdl::FBXFile::LoadLight(ufbx_light* fbxLight)
 
 	if (fbxLight->type == UFBX_LIGHT_POINT)
 	{
-		light->type = gdl::LightType::Point;
+		light->type = LightType::Point;
 	}
 	else if (fbxLight->type == UFBX_LIGHT_SPOT)
 	{
-		light->type = gdl::LightType::Spot;
+		light->type = LightType::Spot;
 		light->spotHalfAngle = fbxLight->outer_angle;
 	}
 	else if (fbxLight->type == UFBX_LIGHT_DIRECTIONAL)
 	{
 		// Light is a directional if the W component of position is 0.0f
-		light->type = gdl::LightType::Directional;
+		light->type = LightType::Directional;
 	}
 	else if (fbxLight->type == UFBX_LIGHT_AREA)
 	{
 		printf("Area lights not supported\n");
-		light->type = gdl::LightType::Point;
+		light->type = LightType::Point;
 	}
 	else if (fbxLight->type == UFBX_LIGHT_VOLUME)
 	{
 		printf("Volumetric lights not supported\n");
-		light->type = gdl::LightType::Point;
+		light->type = LightType::Point;
 	}
 
 	switch(fbxLight->decay)
