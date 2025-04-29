@@ -18,7 +18,7 @@
  * @param fbxFile Filename of the file.
  * @return Loaded scene.
  */
-Scene* FBX_LoadScene(const char* fbxFile);
+Scene* FBX_Load(const char* fbxFile);
 
 Mesh* _FBX_AllocateMesh(ufbx_mesh* fbxMesh);
 Mesh* _FBX_LoadMesh(ufbx_mesh* fbxMesh);

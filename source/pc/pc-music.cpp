@@ -1,4 +1,7 @@
+#ifndef GEKKO
+
 #include <mgdl/pc/mgdl-pc-sound.h>
+#include <mgdl/mgdl-music.h>
 #include <mgdl/mgdl-assert.h>
 #include <stdio.h>
 #include <ostream>
@@ -6,12 +9,23 @@
 #include <cstring>
 #include <limits>
 
+#include <mgdl/mgdl-music.h>
+
+
+
+static char* pcmBuffer; // Used to transfer data from Ogg file to OpenAL
+
+static StreamingAudioData audioData;
+
+// Disabled for now since the whole ogg is loaded into OpenAL
+#if 0
+
 // ////////////////////////////////////////////////
 // Ogg Vorbis library callbacks
 // ////////////////////////////////////////////////
 std::size_t read_ogg_callback(void* destination, std::size_t size, std::size_t numberMembers, void* fileHandle)
 {
-    gdl::StreamingAudioData* audioData = reinterpret_cast<gdl::StreamingAudioData*>(fileHandle);
+    StreamingAudioData* audioData = reinterpret_cast<StreamingAudioData*>(fileHandle);
 
 	// bytes = samples * sample size ?
     ALsizei length = size * numberMembers;
@@ -76,7 +90,7 @@ std::size_t read_ogg_callback(void* destination, std::size_t size, std::size_t n
 // Called when play position is changed.
 std::int32_t seek_ogg_callback(void* fileHandle, ogg_int64_t to, std::int32_t type)
 {
-    gdl::StreamingAudioData* audioData = reinterpret_cast<gdl::StreamingAudioData*>(fileHandle);
+    StreamingAudioData* audioData = reinterpret_cast<StreamingAudioData*>(fileHandle);
 
     if(type == SEEK_CUR)
     {
@@ -109,41 +123,26 @@ std::int32_t seek_ogg_callback(void* fileHandle, ogg_int64_t to, std::int32_t ty
 
 long int tell_ogg_callback(void* fileHandle)
 {
-    gdl::StreamingAudioData* audioData = reinterpret_cast<gdl::StreamingAudioData*>(fileHandle);
+    StreamingAudioData* audioData = reinterpret_cast<StreamingAudioData*>(fileHandle);
     return audioData->sizeConsumed;
 }
 
 int close_ogg_callback(void* fileHandle)
 {
-    gdl::StreamingAudioData* audioData = reinterpret_cast<gdl::StreamingAudioData*>(fileHandle);
+    StreamingAudioData* audioData = reinterpret_cast<StreamingAudioData*>(fileHandle);
     audioData->file.close();
     return 0;
 }
+#endif
 
 // ////////////////////////////////////////////////
 // MusicPC class
 // ////////////////////////////////////////////////
 
-gdl::MusicPC::MusicPC()
-{
-    pcmBuffer = nullptr;
-}
-
-bool gdl::MusicPC::LoadAudioDataFilePtr ( const char* filename )
-{
-    audioData.filename = filename;
-    audioData.filePointer = fopen(filename, "rb");
-    if (audioData.filePointer == nullptr)
-    {
-		std::cerr << "OGG Error: could not open file" << filename << std::endl;
-        return false;
-    }
-    return true;
-}
 
 
-
-bool gdl::MusicPC::LoadAudioDataStreaming ( const char* filename )
+#if 0
+bool LoadAudioDataStreaming ( const char* filename )
 {
     std::cout << "Loading Ogg file: " << filename << std::endl;
 
@@ -184,7 +183,7 @@ bool gdl::MusicPC::LoadAudioDataStreaming ( const char* filename )
     return true;
 }
 
-bool gdl::MusicPC::OpenOggCallbacks()
+bool OpenOggCallbacks()
 {
 	// Set up callbacks
 	ov_callbacks oggCallbacks;
@@ -203,7 +202,9 @@ bool gdl::MusicPC::OpenOggCallbacks()
 	return true;
 }
 
-bool gdl::MusicPC::OpenOggNoCallbacks()
+#endif
+
+bool OpenOggNoCallbacks()
 {
     if (ov_open_callbacks(audioData.filePointer,
         &audioData.oggVorbisFile, nullptr, 0, OV_CALLBACKS_NOCLOSE) < 0)
@@ -214,7 +215,7 @@ bool gdl::MusicPC::OpenOggNoCallbacks()
     return true;
 }
 
-bool gdl::MusicPC::ReadOggProperties()
+bool ReadOggProperties()
 {
 	// Read audio properties
 	vorbis_info* vorbisInfo = ov_info(&audioData.oggVorbisFile, -1);
@@ -241,18 +242,17 @@ bool gdl::MusicPC::ReadOggProperties()
 	return true;
 }
 
-void gdl::MusicPC::SetALSourceToOrigo()
+void SetALSourceToOrigo(Music* music)
 {
-	alCall(alGenSources, 1, &audioData.source);
 	alCall(alSourcef, audioData.source, AL_PITCH, 1);
 	alCall(alSourcef, audioData.source, AL_GAIN, 1.0f);
 	// Source is at origo and does not move
 	alCall(alSource3f, audioData.source, AL_POSITION, 0,0,0);
 	alCall(alSource3f, audioData.source, AL_VELOCITY, 0,0,0);
-	alCall(alSourcei, audioData.source, AL_LOOPING, isLooping ? AL_TRUE : AL_FALSE);
+	alCall(alSourcei, audioData.source, AL_LOOPING, music->isLooping ? AL_TRUE : AL_FALSE);
 }
 
-bool gdl::MusicPC::VerifyALSource()
+bool VerifyALSource()
 {
     // Last check
     bool sourceOk = alCall(alIsSource, audioData.source);
@@ -269,19 +269,43 @@ bool gdl::MusicPC::VerifyALSource()
 	return true;
 }
 
-
-
-
-
-
-bool gdl::MusicPC::LoadFile(const char* filename)
+Music* Music_Load(const char* filename)
 {
-    return LoadFileNonStreaming(filename);
+    Music* music = new Music();
+    Music_Init(music);
+    if (LoadFileNonStreaming(filename, music))
+    {
+        return music;
+    }
+    else
+    {
+        delete music;
+        return nullptr;
+    }
 }
+
+void Music_Init(Music* music)
+{
+    pcmBuffer = nullptr;
+    music->isLooping = false;
+}
+
+bool LoadAudioDataFilePtr ( const char* filename )
+{
+    audioData.filename = filename;
+    audioData.filePointer = fopen(filename, "rb");
+    if (audioData.filePointer == nullptr)
+    {
+		std::cerr << "OGG Error: could not open file" << filename << std::endl;
+        return false;
+    }
+    return true;
+}
+
 
 // Simple version that loads whole ogg into memory
 // without streaming
-bool gdl::MusicPC::LoadFileNonStreaming ( const char* filename )
+bool LoadFileNonStreaming ( const char* filename, Music* music )
 {
     // Clear errors
     alGetError();
@@ -299,8 +323,9 @@ bool gdl::MusicPC::LoadFileNonStreaming ( const char* filename )
     }
 
     alCall(alGenBuffers, 1, audioData.buffers);
+	alCall(alGenSources, 1, &audioData.source);
+    music->source = audioData.source;
 
-    SetALSourceToOrigo();
 
     std::int32_t pcmSize = ov_pcm_total(
         &audioData.oggVorbisFile, -1) * audioData.channels * 2;
@@ -308,6 +333,7 @@ bool gdl::MusicPC::LoadFileNonStreaming ( const char* filename )
     pcmBuffer = new char[pcmSize];
     gdl_assert_print(pcmBuffer != nullptr, "Out of memory");
 
+    bool result = true;
     std::int32_t readSize = ReadOggToPCMBuffer(pcmBuffer, pcmSize);
     if (readSize > 0)
     {
@@ -318,23 +344,27 @@ bool gdl::MusicPC::LoadFileNonStreaming ( const char* filename )
     }
     else
     {
-        return false;
+        result = false;
     }
 
-    if (VerifyALSource() == false)
-    {
-        return false;
-    }
+    result = VerifyALSource();
+
     // All data is sent to OpenAL, free memory
     delete pcmBuffer;
+    pcmBuffer = nullptr;
+
     fclose(audioData.filePointer);
+
     ov_clear(&audioData.oggVorbisFile);
-    return true;
+
+    SetALSourceToOrigo(music);
+
+    return result;
 }
 
-
+#if 0
 // Version that has multiple buffers
-bool gdl::MusicPC::LoadFileStreaming ( const char* filename )
+bool LoadFileStreaming ( const char* filename )
 {
     if (LoadAudioDataStreaming(filename) == false)
     {
@@ -367,9 +397,17 @@ bool gdl::MusicPC::LoadFileStreaming ( const char* filename )
     return true;
 }
 
+// Call this after changing play position to
+// reload the data into buffers
+void Rebuffer()
+{
+    CopyToAL();
+}
+#endif
+
 // this reads from vorbis and copies
 // the data to OpenAL memory
-void gdl::MusicPC::CopyToAL()
+void CopyToAL()
 {
 	for(std::uint8_t i = 0; i < NUM_BUFFERS; i++)
 	{
@@ -381,100 +419,89 @@ void gdl::MusicPC::CopyToAL()
 	alCall(alSourceQueueBuffers, audioData.source, NUM_BUFFERS, &audioData.buffers[0]);
 }
 
-// Call this after changing play position to
-// reload the data into buffers
-void gdl::MusicPC::Rebuffer()
+void Music_DeleteData(Music* music)
 {
-    CopyToAL();
-}
-
-
-void gdl::MusicPC::UnloadData()
-{
-	alCall(alDeleteSources, 1, &audioData.source);
+	alCall(alDeleteSources, 1, &music->source);
 	alCall(alDeleteBuffers, NUM_BUFFERS, &audioData.buffers[0]);
     if (pcmBuffer != nullptr)
     {
         delete pcmBuffer;
     }
-    ov_clear(&audioData.oggVorbisFile);
+    // ov_clear(&audioData.oggVorbisFile); // Already cleared after loading
 }
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-void gdl::MusicPC::Play(float pitchOffset, float volumePercent)
+void Music_Play(Music* music, float pitchOffset, float volumePercent)
 {
-	alCall(alSourcePlay, audioData.source);
-}
-bool gdl::MusicPC::LoadBuffer(const u8* buffer, size_t size)
-{
-	return false;
+	alCall(alSourcePlay, music->source);
 }
 #pragma GCC diagnostic pop
 
-void gdl::MusicPC::SetPaused(bool pause) {
+void Music_SetPaused(Music* music, bool pause) {
     ALint sourceState;
-    alGetSourcei(audioData.source, AL_SOURCE_STATE, &sourceState);
+    alGetSourcei(music->source, AL_SOURCE_STATE, &sourceState);
 
     if (sourceState == AL_PLAYING && pause) {
-        alCall(alSourcePause, audioData.source);
+        alCall(alSourcePause, music->source);
     }
     else if (sourceState == AL_PAUSED && !pause) {
-		alCall(alSourcePlay, audioData.source);
+		alCall(alSourcePlay, music->source);
 	}
 }
 
-void gdl::MusicPC::SetLooping(bool looping)
+void Music_SetLooping(Music* music, bool looping)
 {
-    isLooping = looping;
-    alCall(alSourcei,audioData.source, AL_LOOPING, looping ? AL_TRUE : AL_FALSE);
+    music->isLooping = looping;
+    alCall(alSourcei, music->source, AL_LOOPING, looping ? AL_TRUE : AL_FALSE);
 }
 
-void gdl::MusicPC::Stop() {
-	alCall(alSourceStop, audioData.source);
+bool Music_GetLooping(Music* music)
+{
+    return music->isLooping;
 }
 
-float gdl::MusicPC::GetElapsedSeconds() {
+void Music_Stop(Music* music ) {
+	alCall(alSourceStop, music->source);
+}
+
+float Music_GetElapsedSeconds(Music* music) {
 	ALfloat secOffset;
-	alGetSourcef(audioData.source, AL_SEC_OFFSET, &secOffset);
+	alGetSourcef(music->source, AL_SEC_OFFSET, &secOffset);
 	return secOffset;
 }
 
-void gdl::MusicPC::SetElapsedSeconds(float elapsed) {
+void Music_SetElapsedSeconds(Music* music, float elapsed) {
     // Need to set the vorbis position
-    // directly since the file is streamed
+    // directly since the file is streamed??
     //ov_time_seek(&audioData.oggVorbisFile, elapsed);
     //Rebuffer();
     // Go back to start
-	alCall(alSourcef, audioData.source, AL_SEC_OFFSET,elapsed);
+
+	alCall(alSourcef, music->source, AL_SEC_OFFSET,elapsed);
 }
 
-gdl::SoundStatus gdl::MusicPC::GetStatus() {
+Sound_Status Music_GetStatus(Music* music) {
 	    // Get the play state of the audio source
     ALint sourceState;
-    alGetSourcei(audioData.source, AL_SOURCE_STATE, &sourceState);
+    alGetSourcei(music->source, AL_SOURCE_STATE, &sourceState);
 
     if (sourceState == AL_PLAYING) {
-        return gdl::SoundStatus::Playing;
+        return Sound_Status::Playing;
     } else if (sourceState == AL_PAUSED) {
-        return gdl::SoundStatus::Paused;
+        return Sound_Status::Paused;
     } else if (sourceState == AL_STOPPED) {
-        return gdl::SoundStatus::Stopped;
+        return Sound_Status::Stopped;
     } else if (sourceState == AL_INITIAL) {
-        return gdl::SoundStatus::Initial;
+        return Sound_Status::Initial;
     }
 
-    return gdl::SoundStatus::Initial;
-}
-
-gdl::MusicPC::~MusicPC()
-{
-	UnloadData();
+    return Sound_Status::Initial;
 }
 
 // Returns how many bytes read
 // -1 Error in reading
-std::int32_t gdl::MusicPC::ReadOggToPCMBuffer ( char* buffer, std::int32_t bufferSize)
+std::int32_t ReadOggToPCMBuffer ( char* buffer, std::int32_t bufferSize)
 {
     std::int32_t sizeRead = 0;
     std::int32_t result = 0;
@@ -546,7 +573,8 @@ std::int32_t gdl::MusicPC::ReadOggToPCMBuffer ( char* buffer, std::int32_t buffe
 }
 
 
-void gdl::MusicPC::UpdatePlay()
+#if 0
+void Music_UpdatePlay(Music* music)
 {
 	// How far in are we?
 	ALint buffersProcessed = 0;
@@ -592,5 +620,6 @@ void gdl::MusicPC::UpdatePlay()
 		*/
     }
 }
+#endif
 
-
+#endif // not GEKKO

@@ -35,10 +35,10 @@ void Cross2D()
     glColor3f(0.0f, 0.0f, 0.0f);
     glBegin(GL_LINES);
     glVertex2f(0.0f, 0.0f);
-    glVertex2f((float)gdl::GetScreenWidth(), (float)gdl::GetScreenHeight());
+    glVertex2f((float)GetScreenWidth(), (float)GetScreenHeight());
 
-    glVertex2f(0.0f, (float)gdl::GetScreenHeight());
-    glVertex2f((float)gdl::GetScreenWidth(), 0.0f);
+    glVertex2f(0.0f, (float)GetScreenHeight());
+    glVertex2f((float)GetScreenWidth(), 0.0f);
     glEnd();
 }
 
@@ -47,7 +47,7 @@ void Cross2D()
 
 void init()
 {
-    glViewport(0, 0, gdl::GetScreenWidth(), gdl::GetScreenHeight());
+    glViewport(0, 0, GetScreenWidth(), GetScreenHeight());
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -65,7 +65,7 @@ void init()
     bool rocketInit = gdl::RocketSync::InitRocket(numbers, 120, 4);
     if (rocketInit == false)
     {
-        gdl::DoProgramExit();
+        DoProgramExit();
     }
 #ifndef SYNC_PLAYER
     clear_r = gdl::RocketSync::GetTrack("clear_r");
@@ -77,12 +77,11 @@ void init()
 // Called before render()
 void update()
 {
-    if (WiiController_ButtonPress(gdl::GetController(0), WiiButtons::ButtonHome))
+    if (WiiController_ButtonPress(GetController(0), WiiButtons::ButtonHome))
     {
-        gdl::Platform& plat = gdl::Platform::GetPlatform();
-        plat.DoProgramExit();
+        DoProgramExit();
     }
-    example.Update();
+    //example.Update();
 
 #ifdef MGDL_ROCKET
     float r = 1.0f;
@@ -90,7 +89,7 @@ void update()
     r = gdl::RocketSync::GetFloat(clear_r);
 #ifndef SYNC_PLAYER
 
-    if (WiiController_ButtonPress(gdl::GetController(0), WiiButtons::Button2))
+    if (WiiController_ButtonPress(GetController(0), WiiButtons::Button2))
     {
        gdl::RocketSync::StartSaveToHeader();
        gdl::RocketSync::SaveTrack(clear_r);
@@ -115,11 +114,12 @@ void render()
 
 int main()
 {
-    gdl::InitSystem(MGDL_PLATFORM,
+    InitSystem(MGDL_PLATFORM,
         gdl::ScreenAspect::Screen4x3,
         init,
         update,  // std::function callbacks
-        render
+        render,
+        0
         //,gdl::PlatformInitFlag::FlagPauseUntilA
         //,gdl::PlatformInitFlag::FlagSplashScreen
         //,gdl::PlatformInitFlag::FlagSplashScreen|gdl::PlatformInitFlag::FlagPauseUntilA|gdl::PlatformInitFlag::FlagFullScreen

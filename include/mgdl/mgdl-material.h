@@ -19,6 +19,6 @@ struct Material
 	gdl::MaterialType type;
 };
 
-void Material_Init(Material* material, const char* name, Image* texture, gdl::MaterialType type);
+Material* Material_Load(const char* name, Image* texture, gdl::MaterialType type);
 
 void Material_Apply(Material* material);

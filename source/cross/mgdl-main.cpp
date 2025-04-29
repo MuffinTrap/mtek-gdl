@@ -1,6 +1,7 @@
 #include <mgdl/mgdl-main.h>
 #include <mgdl/mgdl-platform.h>
 #include <mgdl/mgdl-assetmanager.h>
+#include <mgdl/mgdl-fbx.h>
 
 #ifdef GEKKO
 #include <mgdl/wii/mgdl-wii-sound.h>
@@ -64,64 +65,35 @@ Image* LoadImagePNG(PNGFile* png, gdl::TextureFilterModes filterMode)
 	}
 }
 
-gdl::Sound* LoadSound(const char* filename)
+Sound* LoadSound(const char* filename)
 {
-	gdl::Sound* snd = nullptr;
-#ifdef GEKKO
-	snd = new gdl::SoundWii();
-#else
-	snd = new gdl::SoundPC();
-#endif
-	if(snd->LoadFile(filename))
+	Sound* snd = Sound_Load(filename);
+	if(snd != nullptr)
 	{
+		AssetManager_LoadSound(&assetManager, snd);
 		return snd;
 	}
 	else
 	{
-		delete snd;
 		return nullptr;
 	}
 }
 
-gdl::Sound* LoadSound(const u8* buffer, size_t size)
+
+Music* LoadOgg(const char* filename)
 {
-	gdl::Sound* snd = nullptr;
-#ifdef GEKKO
-	snd = new gdl::SoundWii();
-#else
-	snd = new gdl::SoundPC();
-#endif
-	if(snd->LoadBuffer(buffer, size))
+	Music* music = Music_Load(filename);
+	if(music != nullptr)
 	{
-		return snd;
+		return music;
 	}
 	else
 	{
-		delete snd;
 		return nullptr;
 	}
 }
 
-gdl::Sound* LoadOgg(const char* filename)
-{
-	gdl::Sound* snd = nullptr;
-#ifdef GEKKO
-	snd = new gdl::MusicWii();
-#else
-	snd = new gdl::MusicPC();
-#endif
-	if(snd->LoadFile(filename))
-	{
-		return snd;
-	}
-	else
-	{
-		delete snd;
-		return nullptr;
-	}
-}
-
-Font* LoadFontFile(const char* filename, short characterWidth, short characterHeight, char firstCharacter)
+Font* LoadFont(const char* filename, short characterWidth, short characterHeight, char firstCharacter)
 {
 	Image* fontImage = LoadImage(filename, gdl::TextureFilterModes::Linear);
 	Font* font = Font_Load(fontImage, characterWidth, characterHeight, firstCharacter);
@@ -165,6 +137,14 @@ Font* LoadFontCustom(const char* filename, short characterWidth, short character
 	{
 		return nullptr;
 	}
+}
+
+Scene* LoadFBX(const char* filename)
+{
+	Scene* s = FBX_Load(filename);
+
+	// TODO calculate size
+	return s;
 }
 
 WiiController* GetController( int controllerNumber)

@@ -6,7 +6,7 @@
 
 using namespace gdl;
 
-Scene* FBX_LoadScene(const char* fbxFile)
+Scene* FBX_Load(const char* fbxFile)
 {
 	// Right handed for OpenGL
 	// Y is up
@@ -110,8 +110,7 @@ bool _FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short d
 			Material* mat = Scene_GetMaterial(gdlScene, material->name.data);
 			if (mat == nullptr)
 			{
-				mat = new Material();
-				Material_Init(mat, material->name.data, nullptr, MaterialType::Diffuse);
+				mat = Material_Load(material->name.data, nullptr, MaterialType::Diffuse);
 				Scene_AddMaterial(gdlScene, mat);
 			}
 			n->material = mat;
@@ -234,7 +233,7 @@ void PushVertex(ufbx_mesh* fbxMesh, Mesh* mesh, uint32_t faceIndex, size_t array
 	PushUV(mesh, arrayIndex, uv);
 }
 
-Mesh * _FBXFile_LoadMesh(ufbx_mesh* fbxMesh)
+Mesh * _FBX_LoadMesh(ufbx_mesh* fbxMesh)
 {
 	Mesh* mesh = _FBX_AllocateMesh(fbxMesh);
 
@@ -307,7 +306,7 @@ Mesh * _FBXFile_LoadMesh(ufbx_mesh* fbxMesh)
 	return mesh;
 }
 
-Light* _FBXFile_LoadLight(ufbx_light* fbxLight)
+Light* _FBX_LoadLight(ufbx_light* fbxLight)
 {
 	Light* light = new Light();
 

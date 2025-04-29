@@ -1,14 +1,16 @@
 #pragma once
 
-#include <cstring>
 #include <string>
 #include <limits>
 #include <stdio.h>
 
 // includes the OpenAL needed by platform
 #ifdef GEKKO
+
 /* Wii does not have OpenAL */
-#else
+
+#else // PC platform
+
     #ifdef __APPLE__
         #include <OpenAL/al.h>
         #include <OpenAL/alc.h>
@@ -45,4 +47,4 @@ auto alCallImpl(const char* filename, const std::uint_fast32_t line, alFunction 
 #define alCall(function, ...) alCallImpl(__FILE__, __LINE__, function, __VA_ARGS__)
 #define alcCall(function, device, ...) alcCallImpl(__FILE__, __LINE__, function, device, __VA_ARGS__)
 
-#endif
+#endif // PC platform

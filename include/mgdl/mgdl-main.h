@@ -6,6 +6,8 @@
 #include <mgdl/mgdl-image.h>
 #include <mgdl/mgdl-font.h>
 #include <mgdl/mgdl-sound.h>
+#include <mgdl/mgdl-music.h>
+#include <mgdl/mgdl-scene.h>
 
 #include <functional>
 #include <string>
@@ -22,8 +24,10 @@ PNGFile* LoadPNG(const char* filename);
 Image* LoadImage(const char* filename, gdl::TextureFilterModes filterMode);
 Image* LoadImagePNG(PNGFile* png, gdl::TextureFilterModes filterMode);
 
-gdl::Sound* LoadSound(const char* filename);
-gdl::Sound* LoadOgg(const char* filename);
+Sound* LoadSound(const char* filename);
+Music* LoadOgg(const char* filename);
+
+Scene* LoadFBX(const char* filename);
 
 
 Font* LoadFont(const char* filename, short characterWidth, short characterHeight, char firstCharacter);

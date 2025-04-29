@@ -4,21 +4,21 @@
 
 class Example
 {
-    gdl::Image* barb;
+    Image* barb;
     gdl::SpriteSet mel_sprites;
-    gdl::Image* pointerImage;
-    gdl::Font* ibmFont;
-    gdl::Font* debugFont;
-    gdl::Sound* sampleMusic;
-    gdl::Sound* blip;
+    Image* pointerImage;
+    Font* ibmFont;
+    Font* debugFont;
+    Music* sampleMusic;
+    Sound* blip;
     gdl::MenuCreator menu;
     gdl::MenuCreator cameraMenu;
-    gdl::Scene* wiiScene;
-    gdl::Image* wiiTexture;
+    Scene* wiiScene;
+    Image* wiiTexture;
 
-    gdl::Image* matcapTexture;
-    gdl::Scene* icosaScene;
-    gdl::Material* matcapMaterial;
+    Image* matcapTexture;
+    Scene* icosaScene;
+    Material* matcapMaterial;
 
     float cameraDistance = 1.0f;
     vec3 sceneRotation;
@@ -41,7 +41,7 @@ class Example
         void DrawVersion();
         void DrawSprites();
         void DrawIcosa();
-        void DrawScene(gdl::Scene* scene, const vec3& scale);
+        void DrawScene(Scene* scene, const vec3& scale);
 
         bool mouseClick;
         bool musicLooping;

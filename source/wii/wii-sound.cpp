@@ -1,9 +1,6 @@
 // Sound class module functions
 
-#ifndef _GDL_WII_SOUND
-#define _GDL_WII_SOUND
-
-#if GDL_NO_SOUND == FALSE
+#ifdef GEKKO
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,62 +17,22 @@
 #include "mgdl/wii/mgdl-wii-assert.h"
 
 
-gdl::SoundWii::SoundWii() {
 
-	format=0;
-	freq=0;
-	sData=NULL;
-	sSize=0;
-	voiceNumber = SND_INVALID;
-}
-
-gdl::SoundWii::~SoundWii() {
-
-	if (sData != NULL)
-		vfree(sData);
-
-}
-
-bool gdl::SoundWii::LoadFile(const char* fileName) {
+Sound* Sound_Load(const char* fileName) {
 
 	// Open up the wave file
 	if (gdl::ConsoleActive)
 		printf("Opening sound file %s\n", fileName);
 
 
-	FILE *fp;
+	FILE *fp = fopen(fileName, "r");
 
-	if (!(fp = fopen(fileName, "r"))) {
+	if (fp == nullptr)
+	{
 		gdl::CallErrorCallback("\tSound file %s not found", fileName);
-		return(false);
+		return nullptr;
 	}
-	return LoadSound(fp);
-}
 
-bool gdl::SoundWii::LoadBuffer(const u8* buffer, size_t size)
-{
-	FILE *fp;
-
-	uint8_t* wavBuffer = (uint8_t*)malloc(size);
-	memcpy(wavBuffer, buffer, size);
-	DCFlushRange(wavBuffer, size);
-
-	bool openOk = true;
-	if (!(fp = fmemopen(wavBuffer, size, "r")))
-	{
-		openOk = false;
-		gdl::CallErrorCallback("\tSound buffer could not be opened");
-	}
-	if (openOk)
-	{
-		openOk = LoadSound(fp);
-	}
-	free(wavBuffer);
-	return openOk;
-}
-
-bool gdl::SoundWii::LoadSound(FILE* fp)
-{
 	// Get header chunk
 	struct {
 		char	id[4];
@@ -88,11 +45,10 @@ bool gdl::SoundWii::LoadSound(FILE* fp)
 	if (memcmp(&WAV_Chunk.id, "RIFF", 4) || memcmp(&WAV_Chunk.format, "WAVE", 4)) {
 		gdl::CallErrorCallback("Sound file is not a Microsoft WAVE file");
 		fclose(fp);
-		return(false);
+		return nullptr;
 	}
 
 	gdl::wii::RevBytes(&WAV_Chunk.size, sizeof(int));
-
 
 	// Get header chunk
 	struct {
@@ -108,7 +64,6 @@ bool gdl::SoundWii::LoadSound(FILE* fp)
 
 	fread(&WAV_Subchunk1, 1, sizeof(WAV_Subchunk1), fp);
 
-
 	// Convert values we need into BE
 	gdl::wii::RevBytes(&WAV_Subchunk1.size, sizeof(int));
 	gdl::wii::RevBytes(&WAV_Subchunk1.format, sizeof(short));
@@ -119,7 +74,7 @@ bool gdl::SoundWii::LoadSound(FILE* fp)
 	if (memcmp(&WAV_Subchunk1.id, "fmt ", 4)) {
 		gdl::CallErrorCallback("Unsupported WAV format variant in sound file");
 		fclose(fp);
-		return(0);
+		return nullptr;
 	}
 
 
@@ -129,7 +84,7 @@ bool gdl::SoundWii::LoadSound(FILE* fp)
 		int		size;
 	} WAV_Subchunk2;
 
-	while(1) {
+	while(true) {
 
 		fread(&WAV_Subchunk2, 1, sizeof(WAV_Subchunk2), fp);
 		gdl::wii::RevBytes(&WAV_Subchunk2.size, sizeof(int));
@@ -142,17 +97,18 @@ bool gdl::SoundWii::LoadSound(FILE* fp)
 
 	}
 
+	Sound* sound = new Sound();
 
 	// If all is valid, allocate memory for storing the wave data
-	if (sData != NULL) vfree(sData);	// If already allocated, deallocate it for reallocation
-	sData	= valloc(WAV_Subchunk2.size);
-	sSize	= WAV_Subchunk2.size;
-	freq	= WAV_Subchunk1.freq;
+	if (sound->sData != NULL) { vfree(sound->sData); } // If already allocated, deallocate it for reallocation
+	sound->sData	= valloc(WAV_Subchunk2.size);
+	sound->sSize	= WAV_Subchunk2.size;
+	sound->freq	= WAV_Subchunk1.freq;
 
 
 	// Load the sound data, flush it, and then close
-	memset(sData, 0x00, sSize);
-	fread(sData, 1, sSize, fp);
+	memset(sound->sData, 0x00, sound->sSize);
+	fread(sound->sData, 1, sound->sSize, fp);
 	fclose(fp);
 
 
@@ -163,12 +119,12 @@ bool gdl::SoundWii::LoadSound(FILE* fp)
 		switch(WAV_Subchunk1.bps) {
 			case 8:
 
-				format = VOICE_MONO_8BIT_U;
+				sound->format = VOICE_MONO_8BIT_U;
 				break;
 
 			case 16:
 
-				format = VOICE_MONO_16BIT_LE;
+				sound->format = VOICE_MONO_16BIT_LE;
 				break;
 
 		}
@@ -181,24 +137,24 @@ bool gdl::SoundWii::LoadSound(FILE* fp)
 		switch(WAV_Subchunk1.bps) {
 			case 8:
 
-				format = VOICE_STEREO_8BIT_U;
+				sound->format = VOICE_STEREO_8BIT_U;
 
-				for(int s=0; s<sSize; s+=2) {	// Swap stereo samples
-					buff = ((u_char*)sData)[s];
-					((u_char*)sData)[s] = ((u_char*)sData)[s+1];
-					((u_char*)sData)[s+1] = buff;
+				for(sizetype s=0; s<sound->sSize; s+=2) {	// Swap stereo samples
+					buff = ((u_char*)sound->sData)[s];
+					((u_char*)sound->sData)[s] = ((u_char*)sound->sData)[s+1];
+					((u_char*)sound->sData)[s+1] = buff;
 				}
 
 				break;
 
 			case 16:
 
-				format = VOICE_STEREO_16BIT_LE;
+				sound->format = VOICE_STEREO_16BIT_LE;
 
-				for(int s=0; s<sSize/2; s+=2) {	// Swap stereo samples
-					buff = ((u_short*)sData)[s];
-					((u_short*)sData)[s] = ((u_short*)sData)[s+1];
-					((u_short*)sData)[s+1] = buff;
+				for(sizetype s=0; s<sound->sSize/2; s+=2) {	// Swap stereo samples
+					buff = ((u_short*)sound->sData)[s];
+					((u_short*)sound->sData)[s] = ((u_short*)sound->sData)[s+1];
+					((u_short*)sound->sData)[s+1] = buff;
 				}
 
 				break;
@@ -207,58 +163,92 @@ bool gdl::SoundWii::LoadSound(FILE* fp)
 
 	}
 
-	DCFlushRange(sData, sSize);
+	DCFlushRange(sound->sData, sound->sSize);
 
 
 	if (gdl::ConsoleActive)
 		printf("\tSound loaded Ok!\n");
 
-	return(true);
+	return sound;
+}
 
+void Sound_Init(Sound* sound) {
+
+	sound->format=0;
+	sound->freq=0;
+	sound->sData=NULL;
+	sound->sSize=0;
+	sound->voiceNumber = SND_INVALID;
 }
 
 
-void gdl::SoundWii::UnloadData() {
-
-	if (sData != nullptr)
-		vfree(sData);
-
-	sData = nullptr;
-
-}
-
-void gdl::SoundWii::UpdatePlay()
+void Sound_DeleteData(Sound* sound)
 {
-	// nop
+	if (sound->sData != nullptr)
+	{
+		vfree(sound->sData);
+	}
+	sound->sData = nullptr;
 }
 
-void gdl::SoundWii::SetLooping(bool looping)
-{
-	this->looping = looping;
-}
-
-void gdl::SoundWii::Play(float pitch, float volume) {
+void Sound_Play(Sound* sound, float pitch, float volume) {
 
 	// Simple play function
-	if (sData == nullptr)
+	if (sound->sData == nullptr)
 		return;
 
-	voiceNumber = ASND_GetFirstUnusedVoice();
-	if (voiceNumber == SND_INVALID)
+	sound->voiceNumber = ASND_GetFirstUnusedVoice();
+	if (sound->voiceNumber == SND_INVALID)
 	{
 		return;
 	}
 
 	ASND_Pause(0);
-	ASND_SetVoice(voiceNumber, format, freq*pitch, 0,
-		sData, sSize, volume*((float)gdl::wii::MasterSfxVolume/100.f), volume*((float)gdl::wii::MasterSfxVolume/100.f), NULL);
+	ASND_SetVoice(
+		sound->voiceNumber,
+		sound->format,
+		sound->freq*pitch,
+		0,
+		sound->sData,
+		sound->sSize,
+		volume*((float)gdl::wii::MasterSfxVolume/100.f),
+		volume*((float)gdl::wii::MasterSfxVolume/100.f),
+		NULL);
 }
+
+void Sound_Stop(Sound* sound)
+{
+	if (sound->voiceNumber != SND_INVALID)
+	{
+		ASND_StopVoice(sound->voiceNumber);
+	}
+}
+
+void Sound_SetPaused(Sound* sound, bool setPaused)
+{
+	if (sound->voiceNumber != SND_INVALID)
+	{
+		ASND_PauseVoice(sound->voiceNumber, setPaused ? 1 : 0);
+	}
+}
+
+void Sound_SetLooping(Sound* sound, bool looping)
+{
+	sound->isLooping = looping;
+}
+
+bool Sound_GetLooping(Sound* sound)
+{
+	return sound->isLooping;
+
+}
+
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-void gdl::SoundWii::Play2D(float pitch, float volume, float x, float y) {
+void Sound_Play2D(Sound* sound, float pitch, float volume, float x, float y) {
 
-	if (sData == nullptr)
+	if (sound->sData == nullptr)
 		return;
 
 	short tslot = ASND_GetFirstUnusedVoice();
@@ -276,18 +266,25 @@ void gdl::SoundWii::Play2D(float pitch, float volume, float x, float y) {
 	}
 
 	ASND_Pause(0);
-	ASND_SetVoice(tslot, format, freq*pitch, 0,
-		sData, sSize, (volume*((float)gdl::wii::MasterSfxVolume/100.f))*lvol, (volume*((float)gdl::wii::MasterSfxVolume/100.f))*rvol, NULL);
-
+	ASND_SetVoice(
+		tslot,
+		sound->format,
+		sound->freq*pitch,
+		0,
+		sound->sData,
+		sound->sSize,
+		(volume*((float)gdl::wii::MasterSfxVolume/100.f))*lvol,
+		(volume*((float)gdl::wii::MasterSfxVolume/100.f))*rvol,
+		NULL);
 }
 
 #pragma GCC diagnostic pop
 
-float gdl::SoundWii::GetElapsedSeconds()
+float Sound_GetElapsedSeconds(Sound* sound)
 {
-	if (voiceNumber != SND_INVALID)
+	if (sound->voiceNumber != SND_INVALID)
 	{
-		return secondsOffset + (float)ASND_GetTimerVoice(voiceNumber)/1000.0f;
+		return sound->secondsOffset + (float)ASND_GetTimerVoice(sound->voiceNumber)/1000.0f;
 	}
 	else
 	{
@@ -295,252 +292,33 @@ float gdl::SoundWii::GetElapsedSeconds()
 	}
 }
 
-void gdl::SoundWii::SetElapsedSeconds(float elapsed)
+void Sound_SetElapsedSeconds(Sound* sound, float elapsed)
 {
-	secondsOffset = elapsed;
+	sound->secondsOffset = elapsed;
 }
 
-gdl::SoundStatus gdl::SoundWii::GetStatus()
+Sound_Status Sound_GetStatus(Sound* sound)
 {
-	s32 status = ASND_StatusVoice(voiceNumber);
-	if (status == SND_WORKING) {
-		return gdl::SoundStatus::Playing;
+	s32 status = ASND_StatusVoice(sound->voiceNumber);
+	if (status == SND_WORKING)
+	{
+		return Sound_Status::Playing;
 	}
 	else if (status == SND_UNUSED)
 	{
-		if (sData == nullptr)
+		if (sound->sData == nullptr)
 		{
-			return gdl::SoundStatus::Initial;
+			return Sound_Status::Initial;
 		}
 		else
 		{
-			return gdl::SoundStatus::Stopped;
+			return Sound_Status::Stopped;
 		}
 	}
 	else
 	{
-		return gdl::SoundStatus::Paused;
+		return Sound_Status::Paused;
 	}
 }
 
-void gdl::SoundWii::SetPaused(bool setPaused)
-{
-	if (voiceNumber != SND_INVALID)
-	{
-		ASND_PauseVoice(voiceNumber, setPaused ? 1 : 0);
-	}
-}
-
-void gdl::SoundWii::Stop()
-{
-	if (voiceNumber != SND_INVALID)
-	{
-		ASND_StopVoice(voiceNumber);
-	}
-}
-
-// Sound system functions
-
-void gdl::SetMasterVolumes(float musicVol, float soundVol) {
-
-    gdl::wii::MasterMusicVolume  = musicVol;
-    gdl::wii::MasterSfxVolume    = soundVol;
-
-	SetVolumeOgg(255*((gdl::wii::UserMusicVolume*(gdl::wii::MasterMusicVolume/100.f))/100.f));
-
-}
-
-
-// Music functions
-
-void gdl::SetMusicVolume(float volume) {
-
-	gdl::wii::UserMusicVolume = volume;
-    SetVolumeOgg(255*((gdl::wii::UserMusicVolume*(gdl::wii::MasterMusicVolume/100.f))/100.f));
-
-}
-
-// muffintrap: Added functions of the Music class
-gdl::MusicWii::MusicWii()
-{
-	oggBuffer = NULL;
-	bufferSize = 0;
-}
-
-gdl::MusicWii::~MusicWii()
-{
-	if (oggBuffer != NULL)
-	{
-		free(oggBuffer);
-		oggBuffer = NULL;
-	}
-}
-
-bool gdl::MusicWii::LoadFile(const char *filename)
-{
-	this->filenameChar = new char[strlen(filename)];
-	strcpy(this->filenameChar, filename);
-	this->fileNameStr = filename;
-	printf("Loading Ogg %s\n", filename);
-	//oggFile = fopen(filename, "rb");
-	// gdl_assert_print((oggFile != nullptr), "Could not open music file as file");
-	return true;
-}
-
-bool gdl::MusicWii::LoadBuffer(const uint8_t* buffer, size_t size)
-{
-	bufferSize = size;
-	oggBuffer = (uint8_t*)malloc(size);
-	gdl_assert_print((oggBuffer != nullptr), "Could not allocate buffer for music");
-	memcpy(oggBuffer, buffer, size);
-	DCFlushRange(oggBuffer, size);
-	oggFile = fmemopen(oggBuffer, bufferSize, "r");
-	gdl_assert_print((oggFile != nullptr), "Could not open music file as file");
-	return true;
-}
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-void gdl::MusicWii::Play(float pitchOffset, float volumePercent)
-{
-	int playMode = OGG_INFINITE_TIME;//OGG_ONE_TIME;
-	SetVolumeOgg(255*((gdl::wii::UserMusicVolume*(gdl::wii::MasterMusicVolume/100.f))/100.f));
-	int po = PlayOgg(filenameChar, 0, playMode);
-	if (po != 0)
-	{
-		printf("Failed to play ogg file %s\n", filenameChar);
-	}
-}
-#pragma GCC diagnostic pop
-
-float gdl::MusicWii::GetElapsedSeconds()
-{
-	return secondsOffset + (float)GetTimeOgg()/1000.0f;
-}
-
-void gdl::MusicWii::SetElapsedSeconds(float seconds)
-{
-	SetTimeOgg(s32(seconds*1000.0f));
-	secondsOffset = seconds;
-}
-
-void gdl::MusicWii::SetPaused(bool pause)
-{
-	if (pause)
-	{
-		PauseOgg(1);
-	}
-	else
-	{
-		PauseOgg(0);
-	}
-}
-
-void gdl::MusicWii::Stop()
-{
-	StopOgg();
-}
-
-void gdl::MusicWii::UpdatePlay()
-{
-	// nop
-}
-
-void gdl::MusicWii::UnloadData()
-{
-	// nop
-}
-
-
-void gdl::MusicWii::SetLooping(bool looping)
-{
-	this->looping = looping;
-}
-gdl::SoundStatus gdl::MusicWii::GetStatus()
-{
-	if (StatusOgg() == OGG_STATUS_RUNNING)
-	{
-		return gdl::SoundStatus::Playing;
-	}
-	else
-	{
-		return gdl::SoundStatus::Paused;
-	}
-}
-
-// Added for 0.100.0-muffintrap: added a version that reads from a buffer.
-// TODO: Python tool or some other way to strip const from the
-// headers generated by bin2s
-bool gdl::PlayMusic(u_char* buffer, size_t size, bool loop)
-{
-	// fmemopen cannot read from const buffer :U
-	// Copy data to temporary buffer before reading
-	/*
-	if (oggTempBuffer != NULL)
-	{
-		free(oggTempBuffer);
-	}
-	oggTempBuffer = malloc(size);
-	memcpy(oggTempBuffer, buffer, size);
-	*/
-	FILE* file = fmemopen(buffer, size, "r");
-	bool result = PlayMusic(file, loop);
-	return result;
-}
-
-// Added for 0.100.0-muffintrap: separated PlayMusic into two parts to avoid copying code
-bool gdl::PlayMusic(const char* fileName, bool loop)
-{
-	FILE* file = fopen(fileName, "r");
-	bool result = PlayMusic(file, loop);
-	if (result)
-	{
-		gdl::wii::LastMusicFile = fileName;	// Save for possible later use
-	}
-	else {
-		if ((StatusOgg() == OGG_STATUS_ERR) || (StatusOgg() == OGG_STATUS_EOF)) {
-
-			if (PlayOgg(gdl::wii::LastMusicFile, 0, loop) != 0)
-				return(false);
-		}
-	}
-	return result;
-}
-
-// muffintrap: NOTE  oggplayer.c will close the file access.
-bool gdl::PlayMusic(FILE* file, bool loop)
-{
-    if (file != NULL) {
-		int playMode = OGG_ONE_TIME;
-		if (loop) {
-			playMode = OGG_INFINITE_TIME;
-		}
-
-		if (PlayOggFilePtr(file, 0, playMode) != 0)
-			return(false);
-
-		SetVolumeOgg(255*((gdl::wii::UserMusicVolume*(gdl::wii::MasterMusicVolume/100.f))/100.f));
-		return(true);
-
-    } 
-	else {
-		return false;
-	}
-}
-
-void gdl::PauseMusic() {
-
-    PauseOgg(1);
-
-}
-
-void gdl::StopMusic() {
-
-    StopOgg();
-
-}
-
-#endif
-
-
-#endif // _GDL_WII_SOUND
+#endif // GEKKO

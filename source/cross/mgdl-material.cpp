@@ -1,12 +1,14 @@
 #include <mgdl/mgdl-scene.h>
 
-void Material_Init (Material* material, const char* name, Image* texture, gdl::MaterialType type)
+Material* Material_Load (const char* name, Image* texture, gdl::MaterialType type)
 {
+	Material* material = new Material();
 	material->name = name;
 	material->texture = texture;
 	material->shininess = 1.0f;
 	material->emissiveColor = vec3New(0.0f, 0.0f, 0.0f);
 	material->type = type;
+	return material;
 }
 
 void Material_Apply(Material* material)

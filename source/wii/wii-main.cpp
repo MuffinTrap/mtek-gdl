@@ -16,10 +16,7 @@
 
 #include <gccore.h>
 
-
-#if GDL_NO_SOUND == FALSE
 #include <asndlib.h>
-#endif
 
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-config.h>
@@ -432,9 +429,7 @@ void gdl::InitSystem(gdl::InitVideoMode videoMode, gdl::InitAspectMode aspectMod
 
 
 	// Initialize the ASND sound subsystems
-	#if GDL_NO_SOUND == FALSE
 	ASND_Init();
-	#endif
 
 
 	gdl::ScreenCenterX = gdl::ScreenXres/2;

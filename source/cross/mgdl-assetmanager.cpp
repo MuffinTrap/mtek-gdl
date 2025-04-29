@@ -7,7 +7,6 @@ void AssetManager_Init(AssetManager* manager)
 
 void AssetManager_LoadFont(AssetManager* manager, Font* font)
 {
-	// TODO how much memory the coordinates take
 	manager->_memoryInUse += font->_characterCount * sizeof(vec2);
 }
 
@@ -20,6 +19,10 @@ void AssetManager_LoadImage(AssetManager* manager, Image* image)
 
 void AssetManager_LoadPNG(AssetManager* manager, PNGFile* image)
 {
-	// TODO how much memory the image data takes extracted
 	manager->_memoryInUse += image->width * image->height * image->bytesPerPixel;
+}
+
+void AssetManager_LoadSound(AssetManager* manager, Sound* snd)
+{
+	manager->_memoryInUse += snd->sSize;
 }

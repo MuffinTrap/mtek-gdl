@@ -12,27 +12,27 @@ Example::Example()
 void Example::Init()
 {
     short spriteHeight = 64;
-    barb = gdl::LoadImage("assets/barb.png", gdl::TextureFilterModes::Linear);
+    barb = LoadImage("assets/barb.png", gdl::TextureFilterModes::Linear);
     mel_sprites.LoadFromImage("assets/mel_tiles.png", spriteHeight, spriteHeight);
-    pointerImage = gdl::LoadImage("assets/pointer.png", gdl::TextureFilterModes::Nearest);
-    ibmFont = gdl::LoadFont("assets/font8x16.png", 8, 16, ' ');
+    pointerImage = LoadImage("assets/pointer.png", gdl::TextureFilterModes::Nearest);
+    ibmFont = LoadFont("assets/font8x16.png", 8, 16, ' ');
     debugFont = GetDebugFont();
 
-    blip = gdl::LoadSound("assets/blipSelect.wav");
-    sampleMusic = gdl::LoadOgg("assets/sample3.ogg");
+    blip = LoadSound("assets/blipSelect.wav");
+    sampleMusic = LoadOgg("assets/sample3.ogg");
 
-    wiiTexture = gdl::LoadImage("assets/wii_console_texture.png", gdl::TextureFilterModes::Nearest);
-    matcapTexture = gdl::LoadImage("assets/matcap.png", gdl::TextureFilterModes::Linear);
+    wiiTexture = LoadImage("assets/wii_console_texture.png", gdl::TextureFilterModes::Nearest);
+    matcapTexture = LoadImage("assets/matcap.png", gdl::TextureFilterModes::Linear);
 
-    wiiScene = gdl::FBXFile::LoadFile("assets/wii_et_baby.fbx");
-    wiiScene->SetMaterialTexture("wii_console_texture.png", wiiTexture);
+    wiiScene = LoadFBX("assets/wii_et_baby.fbx");
+    Scene_SetMaterialTexture(wiiScene, "wii_console_texture.png", wiiTexture);
 
-    matcapMaterial = new gdl::Material("matcap", matcapTexture, gdl::MaterialType::Matcap);
+    matcapMaterial = Material_Load("matcap", matcapTexture, gdl::MaterialType::Matcap);
 
-    icosaScene = gdl::FBXFile::LoadFile("assets/ship_with_uvs.fbx");
-    icosaScene->SetAllMaterialTextures(matcapTexture);
-    gdl::Material* st = icosaScene->GetMaterial("standardSurface1");
-    gdl::Material* mt2 = icosaScene->GetMaterial("Material.002");
+    icosaScene = LoadFBX("assets/ship_with_uvs.fbx");
+    Scene_SetAllMaterialTextures(icosaScene, matcapTexture);
+    Material* st = Scene_GetMaterial(icosaScene, "standardSurface1");
+    Material* mt2 = Scene_GetMaterial(icosaScene, "Material.002");
     if (st!=nullptr)
     {
         st->type = gdl::MaterialType::Matcap;
@@ -54,11 +54,12 @@ void Example::Init()
     menu = gdl::MenuCreator(ibmFont, 1.0f, 1.0f);
     cameraMenu = gdl::MenuCreator(debugFont, 1.0f, 1.0f);
 
-    musicLooping = sampleMusic->GetLooping();
+    musicLooping = Music_GetLooping(sampleMusic);
     sceneRotation = vec3New(0.0f, 0.0f,0.0f);
     //quad->DebugPrint();
 }
 
+#if 0
 void Example::Update()
 {
 
@@ -87,6 +88,7 @@ void DrawTextDouble(const char* text, short x, short y, float textHeight, gdl::F
         font->Print(gdl::Colors::LightGreen, textHeight, gdl::LJustify, gdl::LJustify, text);
     glPopMatrix();
 }
+#endif
 
 void Example::Draw()
 {
@@ -94,7 +96,19 @@ void Example::Draw()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     DrawImage();
+}
 
+void Example::DrawImage()
+{
+    // Draw Image
+    Image_Draw2DAligned(barb,
+            0,
+            GetScreenHeight()/2,
+            1.0f,
+            gdl::LJustify, gdl::Centered);
+}
+
+#if 0
     vec3 s = vec3New(1, 1, 1);
     DrawScene(icosaScene, s);
 
@@ -127,15 +141,6 @@ void Example::DrawVersion()
 }
 
 
-void Example::DrawImage()
-{
-    // Draw Image
-    barb->Draw2DAligned(
-            0,
-            gdl::GetScreenHeight()/2,
-            1.0f,
-            gdl::LJustify, gdl::Centered);
-}
 
 
 void Example::DrawScene ( gdl::Scene* scene, const vec3& scale)
@@ -427,3 +432,4 @@ void Example::DrawCameraControls(int x, int y, int w)
     }
 }
 
+#endif
