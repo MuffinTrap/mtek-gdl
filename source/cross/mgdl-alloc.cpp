@@ -3,13 +3,13 @@
 
 #ifdef GEKKO
 
-void* gdl::AllocateAlignedMemory(size_t size) {
+void* mgdl_AllocateAlignedMemory(sizetype size) {
 	return aligned_alloc(32, size);
 }
 
 #else // Win-Mac-Linux
 
-void* gdl::AllocateAlignedMemory(size_t size) {
+void* mgdl_AllocateAlignedMemory(sizetype size) {
 	return malloc(size);
 }
 

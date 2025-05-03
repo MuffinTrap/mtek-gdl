@@ -36,7 +36,7 @@ using namespace gdl;
 
 		void Scene_Draw(Scene* scene);
 		void Scene_DrawNode(Node* node);
-		void Scene_DebugDraw(Scene* scene, MenuCreator* menu, short x, short y, u32 drawFlags);
+		void Scene_DebugDraw(Scene* scene, Menu* menu, short x, short y, u32 drawFlags);
 		void Scene_AddChildNode(Scene* scene, Node* parent, Node* child);
 		void Scene_AddMaterial(Scene* scene, Material* material);
 		void Scene_SetMaterialTexture(Scene* scene, const char* materialName, Image* texture);
@@ -50,7 +50,7 @@ using namespace gdl;
 		vec3 Scene_GetNodePosition(Scene* scene, Node* node);
 		bool Scene_GetNodeModelMatrix(Scene* scene, Node* node, mat4x4 modelOut);
 
-		void Scene_DebugDrawNode (Node* node, MenuCreator* menu, short int depth, short int& index, u32 drawFlags );
+		void _Scene_DebugDrawNode (Node* node, short depth, short* index, u32 drawFlags );
 
 		Node* Scene_FindChildNode(Node* node, const char* nodeName);
 		Node* Scene_FindChildNodeByIndex(Node* parent, short targetIndex, short& index);

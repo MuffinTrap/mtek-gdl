@@ -1,7 +1,7 @@
 #include <mgdl/mgdl-opengl.h>
 #include <mgdl/mgdl-main.h>
 
-void gdl::cross_glClear(GLbitfield flags)
+void mgdl_glClear(GLbitfield flags)
 {
 #ifdef GEKKO
 	if ((flags & GL_DEPTH_BUFFER_BIT) != 0)
@@ -20,14 +20,14 @@ void gdl::cross_glClear(GLbitfield flags)
 }
 
 // NOTE: variable names 'near' and 'far' are reserved on Windows
-void gdl::InitPerspectiveProjection(float fovy, float nearZ, float farZ)
+void mgdl_InitPerspectiveProjection(float fovy, float nearZ, float farZ)
 {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(fovy, GetAspectRatio(), nearZ, farZ);
 }
 
-void gdl::InitOrthoProjection()
+void mgdl_InitOrthoProjection()
 {
     glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -41,14 +41,7 @@ void gdl::InitOrthoProjection()
 	glTranslatef(0.375f, 0.375f, 0.0f);
 }
 
-
-// NOTE!!!!
-// Without this setup the Dolphin is
-// all messed up with the
-// rendering
-// Must have gluLookAt for anything to be visible
-// on Wii when using OpenGX
-void gdl::InitCamera(vec3 cameraPos, vec3 cameraTarget, vec3 cameraUp)
+void mgdl_InitCamera(vec3 cameraPos, vec3 cameraTarget, vec3 cameraUp)
 {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();

@@ -7,16 +7,16 @@
 
 #ifdef GEKKO
 
-    #include <gctypes.h>
+#include <gctypes.h>
 
 #else
 
-    // Mimic ogc type names on PC platforms
-    #include <cstdint>
-    typedef uint8_t u8;
-    typedef uint16_t u16;
-    typedef int16_t s16;
-    typedef uint32_t u32;
+// Mimic ogc type names on PC platforms
+#include <cstdint>
+typedef uint8_t u8;
+typedef uint16_t u16;
+typedef int16_t s16;
+typedef uint32_t u32;
 
 #endif
 
@@ -106,12 +106,12 @@ namespace gdl
     };
 
     // Flags for initializing the system. They can be combined
-	enum PlatformInitFlag
-	{
-		FlagPauseUntilA = 0x01, // Enters a loop after system init and continues when A button is pressed
-		FlagFullScreen = 0x02, // Start in full screen mode
+    enum PlatformInitFlag
+    {
+        FlagPauseUntilA = 0x01, // Enters a loop after system init and continues when A button is pressed
+        FlagFullScreen = 0x02, // Start in full screen mode
         FlagSplashScreen = 0x04, // Show splash screen with logo. If FlagPauseUntilA is set will stay in splash screen
-	};
+    };
 
     /*!	Color values
      *
@@ -137,41 +137,41 @@ namespace gdl
     typedef u32 rgba8;
 
     // Debug font contains these glyphs
-	enum IconSymbol : short
-	{
-		FaceInvert = 0x80,
-		Face,
-		Heart,
-		Diamond,
-		Cross,
-		Spade,
-		Dot,
-		DotInvert,
-		Circle,
-		CircleInvert,
-		Star,
-		TriangleUp,
-		TriangleDown,
-		TriangleLeft,
-		TriangleRight,
-		TriangleVertical,
-		TriangleHorizontal,
-		TriangleScroll,
-		ArrowUp,
-		ArrowDown,
-		ArrowLeft,
-		ArrowRight,
-		Negate,
-		Raster25,
-		Raster50,
-		Raster75,
-		Raster100,
-		BlockDown,
-		BlockLeft,
-		BlockRight,
-		BlockUp,
-		BlockUnder
-	};
+    enum IconSymbol : short
+    {
+        FaceInvert = 0x80,
+        Face,
+        Heart,
+        Diamond,
+        Cross,
+        Spade,
+        Dot,
+        DotInvert,
+        Circle,
+        CircleInvert,
+        Star,
+        TriangleUp,
+        TriangleDown,
+        TriangleLeft,
+        TriangleRight,
+        TriangleVertical,
+        TriangleHorizontal,
+        TriangleScroll,
+        ArrowUp,
+        ArrowDown,
+        ArrowLeft,
+        ArrowRight,
+        Negate,
+        Raster25,
+        Raster50,
+        Raster75,
+        Raster100,
+        BlockDown,
+        BlockLeft,
+        BlockRight,
+        BlockUp,
+        BlockUnder
+    };
 }
 
 

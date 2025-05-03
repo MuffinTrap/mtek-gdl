@@ -3,14 +3,16 @@
 
 // Macros to unify ccVector and cglm
 
-#ifdef __cplusplus
 extern "C"
 {
-#endif
+
 
 // Macros to abstract the Vector library
 // On the wii the gu library is used
 #ifdef MGDL_PLATFORM_WII
+
+#define V2f_X(Va) Va.x
+#define V2f_Y(Va) Va.y
 
 #define V3f_Create(x,y,z) {x, y, z};
 #define V3f_X(Va) Va.x
@@ -53,6 +55,9 @@ vec3 V3f_BezierFuncV3(float s, vec3 P0, vec3 C0, vec3 C1, vec3 P1);
 
 #ifdef MGDL_USE_CCVECTOR
 
+#define V2f_X(Va) Va.x
+#define V2f_Y(Va) Va.y
+
 #define V3f_Create(x,y,z) vec3New(x,y,z);
 #define V3f_X(Va) Va.x
 #define V3f_Y(Va) Va.y
@@ -94,8 +99,14 @@ vec3 V3f_BezierFuncV3(float s, vec3 P0, vec3 C0, vec3 C1, vec3 P1);
 #ifdef MGDL_USE_CGLM
 // Use cgml
 
+#define V2f_X(Va) Va[0]
+#define V2f_Y(Va) Va[1]
 
 #define V3f_Create(x, y, z) {x, y, z};
+#define V3f_X(Va) Va[0]
+#define V3f_Y(Va) Va[1]
+#define V3f_Z(Va) Va[2]
+
 #define V3f_Copy(source, dest) glm_vec3_copy(source, dest);
 #define V3f_FromFloatArray(array, index, dest) glm_vec3_make(&array[index], dest);
 #define V3f_ToFloatArray(source, array, index) array[index*3] = source[0]; array[index*3+1] = source[1]; array[index*3+2] = source[2];
@@ -109,9 +120,6 @@ vec3 V3f_BezierFuncV3(float s, vec3 P0, vec3 C0, vec3 C1, vec3 P1);
 #define V3f_Cross(Va, Vb, dest) glm_vec3_cross(Va, Vb, dest);
 #define V3f_Dot(Va, Vb) glm_vec3_dot(Va, Vb);
 
-#define V3f_X(Va) Va[0]
-#define V3f_Y(Va) Va[1]
-#define V3f_Z(Va) Va[2]
 
 void V3f_RotateYFunc(vec3 p, float angle, vec3 out);
 #define V3f_RotateY(source, angle, dest) V3f_RotateYFunc(source, angle, dest);
@@ -132,6 +140,4 @@ void V3f_BezierFuncV3(float s, vec3 P0, vec3 C0, vec3 C1, vec3 P1, vec3 out_poin
 
 #endif // PC platform
 
-#ifdef __cplusplus
 }
-#endif

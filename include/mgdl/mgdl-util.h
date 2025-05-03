@@ -50,17 +50,17 @@ namespace gdl
 /**
  * @return Buffer containging the text, max size 255 chars.
  */
-char* MGDL_GetPrintfBuffer();
+char* mgdl_GetPrintfBuffer();
 
 /**
  * @brief Writes the formatted text to a buffer.
  * @param format Format string.
  */
 #define MGDL_PRINTF_TO_BUFFER(format) \
-	memset(MGDL_GetPrintfBuffer(), '\0', 256);\
+	memset(mgdl_GetPrintfBuffer(), '\0', 256);\
 	va_list args;\
 	va_start(args, format); \
-	vsprintf(MGDL_GetPrintfBuffer(), format, args); \
+	vsprintf(mgdl_GetPrintfBuffer(), format, args); \
 	va_end(args);\
 
 

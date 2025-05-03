@@ -51,6 +51,9 @@ struct WiiController
 	u8 _channel;
 };
 
+extern "C"
+{
+
 /**
  * @brief Initialize a controller and set a channel for it.
  * @param channel Channel of the controller. Valid values [0,3]
@@ -112,3 +115,5 @@ float WiiController_GetRoll(WiiController* controller);
 
 void _WiiController_SetButtonDown(WiiController* controller, int buttonEnum);
 void _WiiController_SetButtonUp(WiiController* controller, int buttonEnum);
+
+}

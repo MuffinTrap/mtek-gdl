@@ -4,135 +4,155 @@
 #include <mgdl/mgdl-draw2d.h>
 #include <mgdl/mgdl-util.h>
 
-gdl::MenuCreator::MenuCreator()
-{
-    font = GetDebugFont();
-    textHeight = 1.0f;
-    rowHeightEm = 1.1f;
 
-    this->bg = gdl::Colors::Black;
-    this->border = gdl::Colors::Blue;
-    this->text = gdl::Colors::White;
-    this->highlight = gdl::Colors::LightBlue;
+static Menu* menu = nullptr; /**< The active menu used. */
+
+void Menu_SetActive(Menu* active)
+{
+    menu = active;
 }
 
-gdl::MenuCreator::MenuCreator(Font* font, float textHeight, float rowHeightEm)
+Menu* Menu_CreateDefault()
 {
-    this->font = font;
-    this->textHeight = textHeight;
-    this->rowHeightEm = rowHeightEm;
-
-    // Default colors    
-    this->bg = gdl::Colors::Black;
-    this->border = gdl::Colors::Blue;
-    this->text = gdl::Colors::White;
-    this->highlight = gdl::Colors::LightBlue;
+    return Menu_Create(Font_GetDebugFont(), 1.0f, 1.1f);
 }
 
-void gdl::MenuCreator::StartMenu(int x, int y, int w, float cursorX, float cursorY, bool buttonPress)
+Menu* Menu_Create(Font* font, float textHeight, float rowHeightEm)
 {
-    this->x = x;
-    this->y = y;
-    this->w = w;
-    this->cursorX = cursorX;
-    this->cursorY = cursorY;
-    this->buttonPress = buttonPress;
+    Menu* menu = new Menu();
+
+    menu->_font = font;
+    menu->_textHeight = textHeight;
+    menu->_rowHeightEm = rowHeightEm;
+
+    // Default colors    //TODO Change to palette colors
+    menu->_bg = gdl::Colors::Black;
+    menu->_text = gdl::Colors::White;
+    menu->_highlight = gdl::Colors::LightBlue;
+
+    return menu;
 }
 
-void gdl::MenuCreator::SetColors(u32 bg, u32 border, u32 text, u32 highlight)
+void Menu_Start(int x, int y, int width, vec2 cursorPosition, bool buttonPress)
 {
-    this->bg = bg;
-    this->border = border;
-    this->text = text; 
-    this->highlight = highlight;
+    if (menu != nullptr)
+    {
+        menu->_drawx = x;
+        menu->_drawy = y;
+        menu->_menuWidth = width;
+        menu->_cursorPosition = cursorPosition;
+        menu->_buttonPress = buttonPress;
+    }
 }
 
-void gdl::MenuCreator::Panel(int h, u32 color)
+void Menu_SetColors(u32 bg, u32 text, u32 highlight)
 {
-    DrawBoxF(x, y, x + w, y - h, color);
-    y -= h;
+    if (menu != nullptr)
+    {
+        menu->_bg = bg;
+        menu->_text = text;
+        menu->_highlight = highlight;
+    }
 }
-void gdl::MenuCreator::TextF(const char* text, ...)
+
+void Menu_Panel(int h, u32 color)
+{
+    const short x = menu->_drawx;
+    const short y = menu->_drawy;
+    const short w = menu->_menuWidth;
+    DrawRectangle(x, y, x + w, y - h, color);
+    menu->_drawy -= h;
+}
+void Menu_TextF(const char* text, ...)
 {
     MGDL_PRINTF_TO_BUFFER(text);
-    Text(MGDL_GetPrintfBuffer());
+    Menu_Text(mgdl_GetPrintfBuffer());
 }
 
-void gdl::MenuCreator::Text(const char* text)
+void Menu_Text(const char* text)
 {
-    int h = font->ch * textHeight * rowHeightEm;
-    Font_PrintAligned(font, this->text, x, y, h/rowHeightEm, LJustify, LJustify, text);
-    y -= h;
+    const short x = menu->_drawx;
+    const short y = menu->_drawy;
+    const short w = menu->_menuWidth;
+    const short h = menu->_font->characterHeight * menu->_textHeight * menu->_rowHeightEm;
+    Font_PrintAligned(menu->_font, menu->_text, x, y, h/menu->_rowHeightEm, LJustify, LJustify, text);
+    menu->_drawy -= h;
 }
 
-bool gdl::MenuCreator::Button(const char* text)
+bool Menu_Button(const char* text)
 {
-    int h = font->ch * textHeight * rowHeightEm;
+    const short x = menu->_drawx;
+    const short y = menu->_drawy;
+    const short w = menu->_menuWidth;
+    const short h = menu->_font->characterHeight * menu->_textHeight * menu->_rowHeightEm;
 
-    bool inside = ((cursorX >= x) &&
-                (cursorX <= x + w) &&
-                (cursorY <= y) &&
-                (cursorY >= y - h));
+    const short cx = V2f_X(menu->_cursorPosition);
+    const short cy = V2f_Y(menu->_cursorPosition);
 
+    bool inside = ((cx >= x) &&
+                (cx <= x + w) &&
+                (cy <= y) &&
+                (cy >= y - h));
+
+    rgba8 c = menu->_bg;
     if (inside)
     {
-        DrawBoxF(x, y, x + w, y - h, highlight);
+        c = menu->_highlight;
     }
-    else
-    {
-        DrawBoxF(x, y, x + w, y - h, bg);
-        DrawBox(x, y, x + w, y - h, border);
-    }
+    DrawRectangle(x, y, x + w, y - h, c);
 
     // TODO Center text
 
-    float textH = h/rowHeightEm;
-    Font_PrintAligned(font, this->text, x, y, textH, LJustify, LJustify, text);
+    float textH = h/menu->_rowHeightEm;
+    Font_PrintAligned(menu->_font, menu->_text, x, y, textH, LJustify, LJustify, text);
             
-    y -= h ;
+    menu->_drawy -= h ;
 
-    return (inside && buttonPress);
+    return (inside && menu->_buttonPress);
 }
 
-bool gdl::MenuCreator::Toggle ( const char* text, bool& valueRef )
+bool Menu_Toggle ( const char* text, bool* valueRef )
 {
-    int h = font->ch * textHeight * rowHeightEm;
+    const short x = menu->_drawx;
+    const short y = menu->_drawy;
+    const short w = menu->_menuWidth;
+    const short h = menu->_font->characterHeight * menu->_textHeight * menu->_rowHeightEm;
+    const short cx = V2f_X(menu->_cursorPosition);
+    const short cy = V2f_Y(menu->_cursorPosition);
 
-    bool inside = ((cursorX >= x) &&
-                (cursorX <= x + w) &&
-                (cursorY <= y) &&
-                (cursorY >= y - h));
+    bool inside = ((cx >= x) &&
+                (cx <= x + w) &&
+                (cy <= y) &&
+                (cy >= y - h));
 
     short padding = 2;
+    rgba8 c = menu->_bg;
     if (inside)
     {
-        DrawBoxF(x, y, x + w, y - h, highlight);
+        c = menu->_highlight;
     }
-    else
-    {
-        DrawBoxF(x, y, x + w, y - h, bg);
-        DrawBox(x, y, x + w, y - h, border);
-    }
+    DrawRectangleLines(x, y, x + w, y - h, c);
 
     if (valueRef)
     {
-        DrawBoxF(x + padding, y - padding, x + h - padding, y - h + padding, this->text);
+        DrawRectangle(x + padding, y - padding, x + h - padding, y - h + padding, menu->_text);
     }
-    else
+
+    float textH = h/menu->_rowHeightEm;
+    Font_PrintAligned(menu->_font, menu->_text, x + h + padding * 2, y, textH, LJustify, LJustify, text);
+
+    menu->_drawy -= h ;
+
+    if (inside && menu->_buttonPress)
     {
-        DrawBox(x + padding, y - padding, x + h - padding, y - h + padding, this->text);
+        *valueRef = !valueRef;
     }
 
-    float textH = h/rowHeightEm;
-    Font_PrintAligned(font, this->text, x + h + padding, y, textH, LJustify, LJustify, text);
-
-    y -= h ;
-
-    if (inside && buttonPress)
-    {
-        valueRef = !valueRef;
-    }
-
-    return (inside && buttonPress);
+    return (inside && menu->_buttonPress);
 }
 
+
+void Menu_Separator()
+{
+
+}

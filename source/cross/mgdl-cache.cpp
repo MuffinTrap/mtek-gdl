@@ -3,7 +3,7 @@
 #ifdef GEKKO
 #include <mgdl/wii/mgdl-wii.h>
 
-void gdl::CacheFlushRange ( void* rangeStart, size_t size )
+void mgdl_CacheFlushRange ( void* rangeStart, size_t size )
 {
 	DCFlushRange(rangeStart, size);
 }
@@ -14,7 +14,7 @@ void gdl::CacheFlushRange ( void* rangeStart, size_t size )
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-void gdl::CacheFlushRange ( void* rangeStart, size_t size )
+void mgdl_CacheFlushRange ( void* rangeStart, size_t size )
 {
 	// nop
 }

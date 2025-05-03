@@ -7,9 +7,14 @@
 
 #include <mgdl/mgdl-font.h>
 
+extern "C"
+{
+
 /**
-	* @brief Returns pointer to the Debug Font which is always loaded.
-	*
-	* @return Pointer to the Debug Font.
-	*/
-Font* GetDebugFont();
+ * @brief Returns pointer to the Debug Font which is always loaded.
+ *
+ * @return Pointer to the Debug Font.
+ */
+Font* Font_GetDebugFont();
+
+}

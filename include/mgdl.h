@@ -18,7 +18,7 @@
 #include "mgdl/mgdl-assetmanager.h"
 #include "mgdl/mgdl-debugfont.h"
 #include "mgdl/mgdl-gui.h"
-#include "mgdl/mgdl-spriteset.h"
+#include "mgdl/mgdl-sprite.h"
 #include "mgdl/mgdl-sound.h"
 #include "mgdl/mgdl-music.h"
 #include "mgdl/mgdl-controller.h"

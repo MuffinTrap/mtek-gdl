@@ -9,17 +9,22 @@
 
 using namespace gdl;
 
-	struct Node
-	{
-		Transform transform;
-		Mesh* mesh = nullptr;
-		Material* material = nullptr;
-		Light* light = nullptr;
-		const char* name;
-		std::vector<Node*> children;
-	};
+struct Node
+{
+	Transform* transform;
+	Mesh* mesh = nullptr;
+	Material* material = nullptr;
+	Light* light = nullptr;
+	const char* name;
+	std::vector<Node*> children;
+};
+
+extern "C"
+{
 
 	void Node_SetTransform(Node* node, const char* name, vec3 position, vec3 rotationAngles);
 	void Node_SetContent(Node* node, const char* name, Mesh* meshParam, Material* materialParam);
 
 	void Node_Draw(Node* node);
+
+}

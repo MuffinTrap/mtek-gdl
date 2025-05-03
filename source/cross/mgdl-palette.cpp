@@ -1,6 +1,7 @@
 #include <mgdl/mgdl-palette.h>
+#include <mgdl/mgdl-alloc.h>
 
-static gdl::Palette* defaultPalette = nullptr;
+static Palette* defaultPalette_ = nullptr;
 static u32 blessing[] =
 {
 	0x484848FF, // 0: Neutral almost black
@@ -15,29 +16,41 @@ static u32 blessing[] =
 	0x7d7a76FF, // 7: Dark orange gray
 };
 
-gdl::Palette* gdl::Palette::GetDefaultPalette()
+Palette* Palette_GetDefault()
 {
-	if (defaultPalette == nullptr)
+	if (defaultPalette_ == nullptr)
 	{
-		defaultPalette = new gdl::Palette(blessing, 8);
+		defaultPalette_ = Palette_Create(blessing, 8);
 	}
-	return defaultPalette;
+	return defaultPalette_;
 }
 
-gdl::Palette::Palette(u32* colorsArray, u8 size)
+Palette* Palette_Create(u32* colorsArray, u8 size)
 {
-	this->colors = colorsArray;
-	this->size = size;
+	Palette* palette = new Palette();
+	palette->_colors = colorsArray;
+	palette->size = size;
+	return palette;
 }
 
 
-u32 gdl::Palette::GetColor(u8 index)
+Palette* Palette_CreateEmpty(u8 size)
 {
-	index = index % size;
-	return colors[index];
+	Palette* palette = new Palette();
+	palette->_colors = (u32*)malloc(sizeof(u32)*size);
+	palette->size = size;
+	return palette;
+
 }
 
-u8 gdl::Palette::GetSize()
+u32 Palette_GetColor(Palette* palette, u8 index)
 {
-	return size;
+	index = index % palette->size;
+	return palette->_colors[index];
+}
+
+void Palette_SetColor(Palette* palette, u8 index, u32 color)
+{
+	index = index % palette->size;
+	palette->_colors[index] = color;
 }

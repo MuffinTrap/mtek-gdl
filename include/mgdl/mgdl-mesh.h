@@ -21,27 +21,42 @@ struct Mesh
 	uint32_t uniqueId;
 };
 
-vec3 Mesh_GetPosition(Mesh* mesh,GLushort index);
-vec3 Mesh_GetNormal(Mesh* mesh,GLushort index);
-vec3 Mesh_GetPositionFromArray(Mesh* mesh,sizetype index);
-vec3 Mesh_GetNormalFromArray(Mesh* mesh,sizetype index);
-void Mesh_SetDrawingIndex(Mesh* mesh,sizetype index, GLushort drawIndex);
-void Mesh_SetPositionToArray(Mesh* mesh,sizetype index, const vec3& position);
-void Mesh_SetNormalToArray(Mesh* mesh,sizetype index, const vec3& normal);
-void Mesh_SetUVToArray(Mesh* mesh,sizetype index, const vec2& uv);
-bool Mesh_GetTriangleIndices(Mesh* mesh,GLsizei triangleIndex, GLushort& outA, GLushort& outB, GLushort& outC);
-void Mesh_DebugPrint(Mesh* mesh);
+extern "C"
+{
+	/**
+	 * @brief Reserves space for a mesh and sets mesh variables.
+	 * @details Use this function to reserve memory for a mesh.
+	 * @param mesh The mesh to initialize.
+	 * @param vertexCount How many vertices the mesh will have.
+	 * @param indexCount How many indices the mesh will have.
+	 * @param createNormals Will the vertices have normals or not.
+	 * @param createUVs Will the vertices have texture coordinates or not.
+	 * @return Amount of bytes allocated.
+	 */
+	sizetype Mesh_Init(Mesh* mesh, sizetype vertexCount, sizetype indexCount, bool createNormals, bool createUVs);
 
-// Returns the amount of bytes reserved
-sizetype Mesh_Init(Mesh* mesh, sizetype vertexCount, sizetype indexCount, bool createNormals, bool createUVs);
+	vec3 Mesh_GetPosition(Mesh* mesh, GLushort index);
+	vec3 Mesh_GetNormal(Mesh* mesh, GLushort index);
+	vec3 Mesh_GetPositionFromArray(Mesh* mesh, sizetype index);
+	vec3 Mesh_GetNormalFromArray(Mesh* mesh, sizetype index);
 
-void Mesh_SetupVertexArrays(Mesh* mesh);
-void Mesh_DrawElements(Mesh* mesh);
-void Mesh_DrawPoints(Mesh* mesh);
-void Mesh_DrawLines(Mesh* mesh);
-void Mesh_DrawNormals(Mesh* mesh);
-void Mesh_CalculateMatcapUVs(Mesh* mesh,const mat4x4& modelViewMatrix, const mat4x4& normalMatrix);
+	void Mesh_SetDrawingIndex(Mesh* mesh,sizetype index, GLushort drawIndex);
+	void Mesh_SetPositionToArray(Mesh* mesh,sizetype index, const vec3& position);
+	void Mesh_SetNormalToArray(Mesh* mesh,sizetype index, const vec3& normal);
+	void Mesh_SetUVToArray(Mesh* mesh,sizetype index, const vec2& uv);
+	bool Mesh_GetTriangleIndices(Mesh* mesh,GLsizei triangleIndex, GLushort& outA, GLushort& outB, GLushort& outC);
 
-Mesh* Mesh_CreateIcosahedron(bool normals, bool uvs);
-Mesh* Mesh_CreateQuad(bool normals, bool uvs);
+	void Mesh_DebugPrint(Mesh* mesh);
 
+
+	void Mesh_SetupVertexArrays(Mesh* mesh);
+	void Mesh_DrawElements(Mesh* mesh);
+	void Mesh_DrawPoints(Mesh* mesh);
+	void Mesh_DrawLines(Mesh* mesh);
+	void Mesh_DrawNormals(Mesh* mesh);
+	void Mesh_CalculateMatcapUVs(Mesh* mesh,const mat4x4& modelViewMatrix, const mat4x4& normalMatrix);
+
+	Mesh* Mesh_CreateIcosahedron(bool normals, bool uvs);
+	Mesh* Mesh_CreateQuad(bool normals, bool uvs);
+
+}

@@ -7,7 +7,7 @@
 #include <mgdl/mgdl-config.h>
 #include <mgdl/mgdl-platform.h>
 
-void DrawBox(short x, short y, short x2, short y2, u32 color)
+void DrawRectangleLines(short x, short y, short x2, short y2, u32 color)
 {
 	glBegin(GL_LINE_LOOP);
 		gdl::RGBA8Floats f= gdl::ColorToFloats(color);
@@ -28,7 +28,7 @@ void DrawBox(short x, short y, short x2, short y2, u32 color)
 	glEnd();
 }
 
-void DrawBoxF(short x, short y, short x2, short y2, u32 color)
+void DrawRectangle(short x, short y, short x2, short y2, u32 color)
 {
 	gdl::RGBA8Floats f= gdl::ColorToFloats(color);
 	glColor3f(f.red, f.green, f.blue);
@@ -79,4 +79,10 @@ void DrawLine ( short x, short y, short x2, short y2, u32 color )
 
 		// LOW LEFT!
 	glEnd();
+}
+
+void DrawText(short x, short y, const char* text, rgba8 color)
+{
+	Font* db = Font_GetDebugFont();
+	Font_Print(db, color, x, y, db->characterHeight, text);
 }

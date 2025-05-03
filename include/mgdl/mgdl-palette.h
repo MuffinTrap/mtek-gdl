@@ -2,19 +2,20 @@
 
 #include "mgdl-types.h"
 
-namespace gdl
-{
-	// A palette that can be filled with custom colors
+// A palette that can be filled with custom colors
 
-	class Palette
-	{
-	public:
-		static Palette* GetDefaultPalette();
-		Palette(u32* colorsArray, u8 size);
-		u32 GetColor(u8 index);
-		u8 GetSize();
-	private:
-		u32* colors;
-		u8 size;
-	};
+struct Palette
+{
+	u32* _colors; // TODO save as vec3
+	u8 size;
+};
+
+extern "C"
+{
+	Palette* Palette_GetDefault();
+	Palette* Palette_Create(u32* colorsArray, u8 size);
+	Palette* Palette_CreateEmpty(u8 size);
+	void Palette_SetColor(Palette* palette, u8 index, u32 color);
+
+	u32 Palette_GetColor(Palette* palette, u8 index);
 }

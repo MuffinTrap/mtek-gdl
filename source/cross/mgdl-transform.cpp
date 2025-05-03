@@ -1,45 +1,48 @@
 #include <mgdl/mgdl-transform.h>
 
-gdl::Transform::Transform()
+Transform* Transform_CreateZero()
 {
-	position = vec3New(0.0f, 0.0f, 0.0f);
-	rotationDegrees = vec3New(0.0f, 0.0f, 0.0f);
-	scale = vec3New(1.0f, 1.0f, 1.0f);
+	vec3 position = vec3New(0.0f, 0.0f, 0.0f);
+	vec3 rotationDegrees = vec3New(0.0f, 0.0f, 0.0f);
+	vec3 scale = vec3New(1.0f, 1.0f, 1.0f);
+	return Transform_Create(position, rotationDegrees, scale);
 }
 
-gdl::Transform::Transform(vec3 position, vec3 rotationDegrees, vec3 scale)
+Transform* Transform_Create(vec3 position, vec3 rotationDegrees, vec3 scale)
 {
-	this->position = position;
-	this->rotationDegrees = rotationDegrees;
-	this->scale = scale;
+	Transform* transform = new Transform();
+	transform->position = position;
+	transform->rotationDegrees = rotationDegrees;
+	transform->scale = scale;
+	return transform;
 }
 
 
-void gdl::Transform::Rotate ( short axis, float angle )
+void Transform_Rotate (Transform* transform, short axis, float angle )
 {
 	switch(axis)
 	{
-		case 0: rotationDegrees.x += angle; break;
-		case 1: rotationDegrees.y += angle; break;
-		case 2: rotationDegrees.z += angle; break;
+		case 0: V3f_X(transform->rotationDegrees) += angle; break;
+		case 1: V3f_Y(transform->rotationDegrees) += angle; break;
+		case 2: V3f_Z(transform->rotationDegrees) += angle; break;
 	};
 }
 
-void gdl::Transform::Translate ( const vec3& t )
+void Transform_Translate (Transform* transform, const vec3& t )
 {
-	position.x += t.x;
-	position.y += t.y;
-	position.z += t.z;
+	V3f_X(transform->position) += V3f_X(t);
+	V3f_Y(transform->position) += V3f_Y(t);
+	V3f_Z(transform->position) += V3f_Z(t);
 }
 
-void gdl::Transform::SetScale3f ( const vec3& scale )
+void Transform_SetScale3f (Transform* transform, const vec3& scale )
 {
-	this->scale = scale;
+	transform->scale = scale;
 }
 
-void gdl::Transform::SetScalef ( float scale )
+void Transform_SetScalef (Transform* transform, float scale )
 {
-	this->scale = vec3New(scale, scale, scale);
+	transform->scale = vec3New(scale, scale, scale);
 }
 
 

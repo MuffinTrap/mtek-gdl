@@ -8,9 +8,13 @@
 #include <mgdl/mgdl-sound.h>
 #include <mgdl/mgdl-music.h>
 #include <mgdl/mgdl-scene.h>
+#include <mgdl/mgdl-sprite.h>
 
 #include <functional>
 #include <string>
+
+extern "C"
+{
 
 void InitSystem(const char* name,
 				gdl::ScreenAspect screenAspect,
@@ -28,13 +32,11 @@ Sound* LoadSound(const char* filename);
 Music* LoadOgg(const char* filename);
 
 Scene* LoadFBX(const char* filename);
-
+Sprite* LoadSprite(const char* filename, short spriteWidth, short spriteHeight);
 
 Font* LoadFont(const char* filename, short characterWidth, short characterHeight, char firstCharacter);
 Font* LoadFontCustom(const char* filename, short characterWidth, short characterHeight, char firstCharacter, short charactersPerRow);
 Font* LoadFontSelective(const char* filename, short characterWidth, short characterHeight, short charactersPerRow, const char* characters);
-
-void DoProgramExit();
 
 WiiController* GetController(int controllerNumber);
 
@@ -43,3 +45,7 @@ u16 GetScreenHeight();
 float GetAspectRatio();
 float GetElapsedSeconds();
 float GetDeltaTime();
+
+void DoProgramExit();
+
+}

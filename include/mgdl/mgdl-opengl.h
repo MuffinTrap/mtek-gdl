@@ -21,16 +21,27 @@
 #endif
 
 
-namespace gdl
+extern "C"
 {
-    // NOTE: The reason for this might just be a bug in OpenGX
-    // implementation, but it is pretty important
-    void cross_glClear(GLbitfield flags);
+    /**
+     * @brief Clears the rendering buffer.
+     * @details Clears the rendering buffer. Use this instead of glClear directly because of bug in OpenGX
+     * @param flags Flags for clearing: GL_DEPTH_BUFFER_BIT and/or GL_COLOR_BUFFER_BIT
+     */
+    void mgdl_glClear(GLbitfield flags);
 
     // NOTE: This exists just to make it easier
     // to init correctly, because Wii needs more setup than PC
     // platforms to get the same result
-    void InitPerspectiveProjection(float fovy, float nearZ, float farZ);
-    void InitOrthoProjection();
-    void InitCamera(vec3 cameraPos, vec3 cameraTarget, vec3 cameraUp);
+    void mgdl_InitPerspectiveProjection(float fovy, float nearZ, float farZ);
+    void mgdl_InitOrthoProjection();
+
+
+/** NOTE!!!!
+* @brief Sets up the camera.
+* @details Without this setup the Dolphin is all messed up with the rendering.
+* @note Must have gluLookAt for anything to be visible on Wii when using OpenGX.
+*/
+void mgdl_InitCamera(vec3 cameraPos, vec3 cameraTarget, vec3 cameraUp);
+
 }

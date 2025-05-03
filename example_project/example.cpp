@@ -13,10 +13,10 @@ void Example::Init()
 {
     short spriteHeight = 64;
     barb = LoadImage("assets/barb.png", gdl::TextureFilterModes::Linear);
-    mel_sprites.LoadFromImage("assets/mel_tiles.png", spriteHeight, spriteHeight);
+    mel_sprites = LoadSprite("assets/mel_tiles.png", spriteHeight, spriteHeight);
     pointerImage = LoadImage("assets/pointer.png", gdl::TextureFilterModes::Nearest);
     ibmFont = LoadFont("assets/font8x16.png", 8, 16, ' ');
-    debugFont = GetDebugFont();
+    debugFont = Font_GetDebugFont();
 
     blip = LoadSound("assets/blipSelect.wav");
     sampleMusic = LoadOgg("assets/sample3.ogg");
@@ -51,8 +51,8 @@ void Example::Init()
     */
 
 
-    menu = gdl::MenuCreator(ibmFont, 1.0f, 1.0f);
-    cameraMenu = gdl::MenuCreator(debugFont, 1.0f, 1.0f);
+    menu = Menu_Create(ibmFont, 1.0f, 1.0f);
+    cameraMenu = Menu_Create(debugFont, 1.0f, 1.0f);
 
     musicLooping = Music_GetLooping(sampleMusic);
     sceneRotation = vec3New(0.0f, 0.0f,0.0f);
@@ -92,7 +92,7 @@ void DrawTextDouble(const char* text, short x, short y, float textHeight, gdl::F
 
 void Example::Draw()
 {
-    gdl::InitOrthoProjection();
+    mgdl_InitOrthoProjection();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     DrawImage();

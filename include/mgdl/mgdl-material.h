@@ -6,9 +6,9 @@
 #include <mgdl/mgdl-image.h>
 
 
-/* Material used by a node. Contains a
- * pointer to Image and material properties
- * used in rendering
+/**
+ * @brief Material used by a node.
+ * @details Contains a pointer to Image and material properties used in rendering.
  */
 struct Material
 {
@@ -19,6 +19,21 @@ struct Material
 	gdl::MaterialType type;
 };
 
-Material* Material_Load(const char* name, Image* texture, gdl::MaterialType type);
+extern "C"
+{
+	/**
+	 * @brief Creates a material from an image.
+	 * @param name Name for the material.
+	 * @param texture Image to use for the material.
+	 * @param type What kind of material this is.
+	 * @returns Created material.
+	 */
+	Material* Material_Load(const char* name, Image* texture, gdl::MaterialType type);
 
-void Material_Apply(Material* material);
+	/**
+	 * @brief Applies the material properties for the next mesh drawing operation
+	 * @param material The material properties to use.
+	 */
+	void Material_Apply(Material* material);
+
+}

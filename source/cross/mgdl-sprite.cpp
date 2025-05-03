@@ -1,20 +1,23 @@
 
-#include <mgdl/mgdl-spriteset.h>
+#include <mgdl/mgdl-sprite.h>
 #include <mgdl/mgdl-util.h>
+#include <mgdl/mgdl-main.h>
 
-void gdl::SpriteSet::LoadFromImage(const char* filename, short spriteWidth, short spriteHeight)
+
+Sprite* Sprite_Load(Font* font)
 {
-	Image* fontImage = Image_LoadFile(filename, gdl::TextureFilterModes::Linear);
-	font = Font_Load(fontImage, spriteWidth, spriteHeight, 0);
+	Sprite* sprite = new Sprite();
+	sprite->_font = font;
+	return sprite;
 }
 
-vec3 gdl::SpriteSet::AdjustDrawingPosition(short x, short y, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY)
+vec3 Sprite_AdjustDrawingPosition(Sprite* sprite, short x, short y, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY)
 {
 	float dx = x;
 	float dy = y;
 	float dz = 0.0f;
 
-	float width = font->_aspect * scale;
+	float width = sprite->_font->_aspect * scale;
 	float height = scale;
 	if (alignX == RJustify)
 	{
@@ -35,24 +38,24 @@ vec3 gdl::SpriteSet::AdjustDrawingPosition(short x, short y, float scale, gdl::A
 	return vec3New(dx, dy, dz);
 }
 
-void gdl::SpriteSet::Draw2D(u16 spriteIndex, short x, short y, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY, u32 tintColor)
+void Sprite_Draw2D(Sprite* sprite, u16 spriteIndex, short x, short y, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY, u32 tintColor)
 {
-	vec3 drawPos = AdjustDrawingPosition(x, y, scale, alignX, alignY);
-	float width = font->_aspect * scale;
+	vec3 drawPos = Sprite_AdjustDrawingPosition(sprite, x, y, scale, alignX, alignY);
+	float width = sprite->_font->_aspect * scale;
 	float height = scale;
-	const float uvW = font->_uvWidth;
-	const float uvH = font->_uvHeight;
+	const float uvW = sprite->_font->_uvWidth;
+	const float uvH = sprite->_font->_uvHeight;
 
 	gdl::RGBA8Floats f = gdl::ColorToFloats(tintColor);
 	glColor3f(f.red, f.green, f.blue);
 
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, font->_fontImage->textureId);
+	glBindTexture(GL_TEXTURE_2D, sprite->_font->_fontImage->textureId);
 
 	glBegin(GL_QUADS);
 
 
-	vec2 tx = _Font_GetTextureCoordinate(font, spriteIndex); //LOW LEFT!
+	vec2 tx = _Font_GetTextureCoordinate(sprite->_font, spriteIndex); //LOW LEFT!
 
 	// LOW LEFT!
 	glTexCoord2f(tx.x, tx.y);
@@ -76,23 +79,23 @@ void gdl::SpriteSet::Draw2D(u16 spriteIndex, short x, short y, float scale, gdl:
 }
 
 
-void gdl::SpriteSet::Draw3D(u16 spriteIndex, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY, u32 tintColor)
+void Sprite_Draw3D(Sprite* sprite, u16 spriteIndex, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY, u32 tintColor)
 {
-	vec3 drawPos = AdjustDrawingPosition(0, 0, scale, alignX, alignY);
-	float width = font->_aspect * scale;
+	vec3 drawPos = Sprite_AdjustDrawingPosition(sprite, 0, 0, scale, alignX, alignY);
+	float width = sprite->_font->_aspect * scale;
 	float height = scale;
-	const float uvW = font->_uvWidth;
-	const float uvH = font->_uvHeight;
+	const float uvW = sprite->_font->_uvWidth;
+	const float uvH = sprite->_font->_uvHeight;
 
 	gdl::RGBA8Floats f = gdl::ColorToFloats(tintColor);
 	glColor3f(f.red, f.green, f.blue);
 
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, font->_fontImage->textureId);
+	glBindTexture(GL_TEXTURE_2D, sprite->_font->_fontImage->textureId);
 
 	glBegin(GL_QUADS);
 
-	vec2 tx= _Font_GetTextureCoordinate(font, spriteIndex); //LOW LEFT!
+	vec2 tx= _Font_GetTextureCoordinate(sprite->_font, spriteIndex); //LOW LEFT!
 
 	// LOW LEFT!
 	glTexCoord2f(tx.x, tx.y);
@@ -115,13 +118,13 @@ void gdl::SpriteSet::Draw3D(u16 spriteIndex, float scale, gdl::AlignmentModes al
 	glDisable(GL_TEXTURE_2D);
 }
 
-short gdl::SpriteSet::GetSpriteWidth()
+short Sprite_GetWidth(Sprite* sprite)
 {
-	return font->cw;
+	return sprite->_font->characterWidth;
 }
 
-short gdl::SpriteSet::GetSpriteHeight()
+short Sprite_GetHeight(Sprite* sprite)
 {
-	return font->ch;
+	return sprite->_font->characterHeight;
 }
 

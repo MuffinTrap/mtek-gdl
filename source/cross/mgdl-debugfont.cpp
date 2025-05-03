@@ -531,7 +531,7 @@ static unsigned char header_data[] = {
 	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 	};
 
-Font* GetDebugFont()
+Font* Font_GetDebugFont()
 {
 	// NOTE In OpenGL
 	// the origo 0,0 is in lower left coordinate

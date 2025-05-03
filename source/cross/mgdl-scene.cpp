@@ -18,28 +18,29 @@ void Scene_AddChildNode (Scene* scene, Node* parent, Node* child )
 	}
 }
 
-void Scene_DebugDraw(Scene* scene,  gdl::MenuCreator* menu, u32 debugFlags )
+void Scene_DebugDraw(Scene* scene,  Menu* menu, u32 debugFlags )
 {
 	if (scene->rootNode != nullptr)
 	{
 		short index = 0;
-		Scene_DebugDrawNode(scene->rootNode, menu, 0, index, debugFlags);
+		Menu_SetActive(menu);
+		_Scene_DebugDrawNode(scene->rootNode, 0, &index, debugFlags);
 	}
 }
 
-void Scene_DebugDrawNode ( Node* node, gdl::MenuCreator* menu, short depth, short& index, u32 debugFlags)
+void _Scene_DebugDrawNode ( Node* node, short depth, short* index, u32 debugFlags)
 {
-	menu->TextF("%d: %s", index, node->name);
-	index++;
+	Menu_TextF("%d: %s", index, node->name);
+	*index = *index + 1;
 	if ((debugFlags & Scene_DebugFlag::Position) > 0)
 	{
-		vec3 &p = node->transform.position;
-		menu->TextF("P(%.1f,%.1f,%.1f)", index, p.x, p.y, p.z);
+		vec3 &p = node->transform->position;
+		Menu_TextF("P(%.1f,%.1f,%.1f)", index, p.x, p.y, p.z);
 	}
 
 	for(size_t i = 0; i < node->children.size(); i++)
 	{
-		Scene_DebugDrawNode(node->children[i], menu, depth+1, index, debugFlags);
+		_Scene_DebugDrawNode(node->children[i], depth+1, index, debugFlags);
 	}
 }
 
@@ -140,11 +141,11 @@ bool Scene_GetNodeModelMatrix ( Scene* scene, Node* node, mat4x4 modelOut )
 
 bool Scene_CalculateNodeModelMatrix (Node* parent, Node* target, mat4x4 model )
 {
-	vec3 p = parent->transform.position;
+	vec3 p = parent->transform->position;
 	mat4x4Translate(model, vec3New(p.x, p.y, p.z));
-	mat4x4RotateX(model, glm::radians(parent->transform.rotationDegrees.x));
-	mat4x4RotateY(model, glm::radians(parent->transform.rotationDegrees.y));
-	mat4x4RotateZ(model, glm::radians(parent->transform.rotationDegrees.z));
+	mat4x4RotateX(model, glm::radians(parent->transform->rotationDegrees.x));
+	mat4x4RotateY(model, glm::radians(parent->transform->rotationDegrees.y));
+	mat4x4RotateZ(model, glm::radians(parent->transform->rotationDegrees.z));
 	if (parent == target)
 	{
 		return true;
@@ -168,11 +169,11 @@ bool Scene_CalculateNodeModelMatrix (Node* parent, Node* target, mat4x4 model )
 bool Scene_CalculateNodePosition ( Node* parent, Node* target, mat4x4 world, vec3& posOut )
 {
 
-	vec3 p = parent->transform.position;
+	vec3 p = parent->transform->position;
 	mat4x4Translate(world, vec3New(p.x, p.y, p.z));
-	mat4x4RotateX(world, glm::radians(parent->transform.rotationDegrees.x));
-	mat4x4RotateY(world, glm::radians(parent->transform.rotationDegrees.y));
-	mat4x4RotateZ(world, glm::radians(parent->transform.rotationDegrees.z));
+	mat4x4RotateX(world, glm::radians(parent->transform->rotationDegrees.x));
+	mat4x4RotateY(world, glm::radians(parent->transform->rotationDegrees.y));
+	mat4x4RotateZ(world, glm::radians(parent->transform->rotationDegrees.z));
 	if (parent == target)
 	{
 		vec4 origo = vec4New(0.0f, 0.0f, 0.0f, 1.0f);

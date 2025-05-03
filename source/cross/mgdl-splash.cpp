@@ -154,17 +154,17 @@ static float DrawLetters(float x, float lean, u32 color, bool useBars, float bar
 // Returns the animation progress
 float gdl::DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer)
 {
-	gdl::cross_glClear(GL_COLOR_BUFFER_BIT);
+	mgdl_glClear(GL_COLOR_BUFFER_BIT);
 	// Draws mgdl
 	// in stylized letters
-	gdl::InitOrthoProjection();
+	mgdl_InitOrthoProjection();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-	gdl::Palette* blessing = gdl::Palette::GetDefaultPalette();
-	Font* debf = GetDebugFont();
-	u32 yellow = blessing->GetColor(3);
-	u32 grey = blessing->GetColor(6);
+	Palette* blessing = Palette_GetDefault();
+	Font* debf = Font_GetDebugFont();
+	u32 yellow = Palette_GetColor(blessing, 3);
+	u32 grey = Palette_GetColor(blessing, 6);
 
 
 	const u16 sw = GetScreenWidth();
@@ -242,7 +242,7 @@ float gdl::DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldT
 		int messageY = areaBottom - 8;
 		Font_Print(debf, yellow, messageLeft, messageY, 8, holdMessage.c_str());
 
-		DrawBoxF(messageLeft, messageY - 16, messageLeft + messageWidth * aHoldTimer, messageY - 16 - 4, yellow);
+		DrawRectangle(messageLeft, messageY - 16, messageLeft + messageWidth * aHoldTimer, messageY - 16 - 4, yellow);
 	}
 	return (animationProgress / 2.0f);
 }

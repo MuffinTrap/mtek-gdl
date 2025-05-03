@@ -3,13 +3,13 @@
 void Node_SetTransform(Node* node, const char* name, vec3 position, vec3 rotationAngles)
 {
 	node->name = name;
-	node->transform = gdl::Transform(position, rotationAngles, vec3New(1,1,1));
+	node->transform = Transform_Create(position, rotationAngles, vec3New(1,1,1));
 }
 
 
 void Node_SetContent (Node* node, const char* name, Mesh* meshParam, Material* materialParam )
 {
-	node->transform = gdl::Transform();
+	node->transform = Transform_CreateZero();
 	node->name = name;
 	node->mesh = meshParam;
 	node->material = materialParam;
@@ -18,15 +18,15 @@ void Node_SetContent (Node* node, const char* name, Mesh* meshParam, Material* m
 void Node_Draw(Node* node)
 {
 
-	const vec3& t = node->transform.position;
+	const vec3 t = node->transform->position;
 	glTranslatef(t.x, t.y, t.z);
 
-	const vec3& r = node->transform.rotationDegrees;
+	const vec3 r = node->transform->rotationDegrees;
 	glRotatef(r.x, 1.0f, 0.0f, 0.0f);
 	glRotatef(r.y, 0.0f, 1.0f, 0.0f);
 	glRotatef(r.z, 0.0f, 0.0f, 1.0f);
 
-	const vec3& s = node->transform.scale;
+	const vec3& s = node->transform->scale;
 	glScalef(s.x, s.y, s.z);
 
 	Mesh* m = node->mesh;

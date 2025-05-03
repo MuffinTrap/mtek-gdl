@@ -56,7 +56,7 @@ void init()
     glLoadIdentity();
 
 
-    u32 black = gdl::Palette::GetDefaultPalette()->GetColor(0);
+    u32 black = Palette_GetColor(Palette_GetDefault(), 0);
     gdl::RGBA8Floats bf = gdl::ColorToFloats(black);
     glClearColor(bf.red, bf.green, bf.blue, bf.alpha);
     example.Init();
@@ -108,7 +108,7 @@ void update()
 void render()
 {
     // NOTE Use this instead of glClear() for Wii quirk.
-    gdl::cross_glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    mgdl_glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     example.Draw();
 }
 

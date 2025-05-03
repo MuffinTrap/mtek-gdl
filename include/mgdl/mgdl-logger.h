@@ -4,26 +4,25 @@
  * @file mgdl-logger.h Functions for printing log messages.
  */
 
-namespace gdl
+enum LogLevel
 {
-	enum LogLevel
-	{
-		All = 0,
-		Info = 0,
-		Warning = 1,
-		Error = 2,
-		None = 3
-	};
-	// TODO
-	class Logger
-	{
-	public:
-	// LogInfo
-	// LogWarning
-	// LogError
-	// SetLogLevel
-	private:
-
-
-	};
+	None = 0,
+	All = 1,
+	Info = 1,
+	Warning = 2,
+	Error = 3
 };
+
+extern "C"
+{
+	void Log_SetLevel(LogLevel lvl);
+
+	void Log_Info(const char* text);
+	void Log_InfoF(const char* fmt, ...);
+	void Log_Warning(const char* text);
+	void Log_WarningF(const char* fmt, ...);
+	void Log_Error(const char* text);
+	void Log_ErrorF(const char* fmt, ...);
+
+	void _Log_Print(const char* text);
+}

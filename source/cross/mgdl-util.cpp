@@ -122,7 +122,7 @@ GLint gdl::TextureFilterToGLFilter(gdl::TextureFilterModes filterMode)
 
 static char printfBuffer[256];
 
-char* MGDL_GetPrintfBuffer()
+char* mgdl_GetPrintfBuffer()
 {
 	return printfBuffer;
 }

@@ -45,8 +45,8 @@ void _Font_BindPadded(Font* font,short charw, short charh, char firstCharacter, 
 	short rows = th / charh;
 	// Calculate the vertex and texture coordinates (vertices are not used)
 	font->_firstIndex = firstCharacter;
-	font->cw = charw;
-	font->ch = charh;
+	font->characterWidth = charw;
+	font->characterHeight = charh;
 	font->_uvWidth = (float)charw/(float)tw;
 	font->_uvHeight = (float)charh/(float)th;
 	font->_aspect = (float)charw/(float)charh;
@@ -72,8 +72,8 @@ void _Font_BindSelective (Font* font, short charw, short charh, std::string char
 
 	font->_firstIndex = characters[0];
 
-	font->cw = charw;
-	font->ch = charh;
+	font->characterWidth = charw;
+	font->characterHeight = charh;
 	font->_uvWidth = (float)charw/(float)tw;
 	font->_uvHeight = (float)charh/(float)th;
 	font->_aspect = (float)charw/(float)charh;
@@ -246,14 +246,14 @@ void Font_Printf(Font* font, u32 color, float x, float y, float textHeight, cons
 {
 	MGDL_PRINTF_TO_BUFFER(format)
 
-	Font_PrintAligned(font, color, x, y, textHeight, gdl::AlignmentModes::LJustify, gdl::AlignmentModes::LJustify, MGDL_GetPrintfBuffer());
+	Font_PrintAligned(font, color, x, y, textHeight, gdl::AlignmentModes::LJustify, gdl::AlignmentModes::LJustify, mgdl_GetPrintfBuffer());
 }
 
 void Font_PrintfOrigo(Font* font, u32 color, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* format, ... )
 {
 	MGDL_PRINTF_TO_BUFFER(format)
 
-	Font_PrintAligned(font, color, 0, 0, textHeight, alignmentX, alignmentY, MGDL_GetPrintfBuffer());
+	Font_PrintAligned(font, color, 0, 0, textHeight, alignmentX, alignmentY, mgdl_GetPrintfBuffer());
 }
 
 void Font_PrintfAligned( Font* font, u32 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* format, ... )
@@ -262,7 +262,7 @@ void Font_PrintfAligned( Font* font, u32 color, float x, float y, float textHeig
 
 	MGDL_PRINTF_TO_BUFFER(format)
 
-	Font_PrintAligned(font, color, x, y, textHeight, alignmentX, alignmentY, MGDL_GetPrintfBuffer());
+	Font_PrintAligned(font, color, x, y, textHeight, alignmentX, alignmentY, mgdl_GetPrintfBuffer());
 }
 
 void Font_SetSpacingOnce (Font* font, float x, float y )
@@ -278,7 +278,7 @@ void Font_SetSpacingOnce (Font* font, float x, float y )
 // TODO add padding to UVs so that the corners are inside the pixels and not in between
 void _Font_CreateTextureCoordListSelective (Font* font, short rows, short charactersPerRow, short texW, short texH, std::string characters )
 {
-	gdl_assert_print(font->cw > 0 && font->ch > 0, "Character dimensions not set");
+	gdl_assert_print(font->characterWidth > 0 && font->characterHeight > 0, "Character dimensions not set");
 	gdl_assert_print(rows > 0 && charactersPerRow > 0, "Rows and cpr at zero");
 	gdl_assert_print(texW > 0 && texH > 0, "Texture size is 0");
 
@@ -294,7 +294,7 @@ void _Font_CreateTextureCoordListSelective (Font* font, short rows, short charac
 	size_t tListSize = sizeof(vec2)*textureArraySize;
 	if (font->_tList == NULL)
 	{
-		font->_tList = (vec2*)gdl::AllocateAlignedMemory(tListSize);
+		font->_tList = (vec2*)mgdl_AllocateAlignedMemory(tListSize);
 		gdl_assert_print(font->_tList != nullptr, "Out of memory when allocation font txcord list");
 	}
 
@@ -349,7 +349,7 @@ void _Font_CreateTextureCoordListSelective (Font* font, short rows, short charac
 			break;
 		}
 	}
-	gdl::CacheFlushRange(font->_tList, tListSize);
+	mgdl_CacheFlushRange(font->_tList, tListSize);
 }
 
 void _Font_CreateCoordinatesForGlyph (Font* font, u32 textureIndex, short cx, short cy, short texW, short texH )
@@ -363,8 +363,8 @@ void _Font_CreateCoordinatesForGlyph (Font* font, u32 textureIndex, short cx, sh
 	// image
 
 	// tx and ty are lower left corner of glyph's area
-	float tx = font->cw * cx;
-	float ty = texH - font->ch - font->ch * cy;
+	float tx = font->characterWidth * cx;
+	float ty = texH - font->characterHeight * (cy+1);
 
 	// NOTE: Stored in the quad drawing order
 	// Lower-left
@@ -375,7 +375,7 @@ void _Font_CreateCoordinatesForGlyph (Font* font, u32 textureIndex, short cx, sh
 
 void _Font_CreateTextureCoordList(Font* font, short rows, short charactersPerRow, short texW, short texH)
 {
-	gdl_assert_print(font->cw > 0 && font->ch > 0, "Character dimensions not set");
+	gdl_assert_print(font->characterWidth > 0 && font->characterHeight > 0, "Character dimensions not set");
 	gdl_assert_print(rows > 0 && charactersPerRow > 0, "Rows and cpr at zero");
 	gdl_assert_print(texW > 0 && texH > 0, "Texture size is 0");
 
@@ -384,7 +384,7 @@ void _Font_CreateTextureCoordList(Font* font, short rows, short charactersPerRow
 	size_t tListSize = sizeof(vec2)*characterAmount;
 	if (font->_tList == NULL)
 	{
-		font->_tList = (vec2*)gdl::AllocateAlignedMemory(tListSize);
+		font->_tList = (vec2*)mgdl_AllocateAlignedMemory(tListSize);
 		gdl_assert_print(font->_tList != nullptr, "Out of memory when allocation font txcord list");
 	}
 
@@ -396,7 +396,7 @@ void _Font_CreateTextureCoordList(Font* font, short rows, short charactersPerRow
 			_Font_CreateCoordinatesForGlyph(font, tc, cx, cy, texW, texH);
 		}
 	}
-	gdl::CacheFlushRange(font->_tList, tListSize);
+	mgdl_CacheFlushRange(font->_tList, tListSize);
 }
 
 vec2 _Font_GetTextureCoordinate(Font* font, char character)

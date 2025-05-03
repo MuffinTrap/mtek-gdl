@@ -11,6 +11,9 @@
 #include "mgdl-types.h"
 using namespace gdl;
 
+extern "C"
+{
+
 /**
  * @brief Translates the origo to given point.
  *
@@ -31,7 +34,7 @@ void TranslateTo(short x, short y);
  * @param y2 Lower right corner y in screen units.
  * @param color Color of the border
  */
-void DrawBox(short x, short y, short x2, short y2, rgba8 color);
+void DrawRectangleLines(short x, short y, short x2, short y2, rgba8 color);
 
 /**
  * @brief Draws a filled box.
@@ -42,7 +45,7 @@ void DrawBox(short x, short y, short x2, short y2, rgba8 color);
  * @param y2 Lower right corner y in screen units.
  * @param color Color of the box.
  */
-void DrawBoxF(short x, short y, short x2, short y2, rgba8 color);
+void DrawRectangle(short x, short y, short x2, short y2, rgba8 color);
 
 /**
  * @brief Draws a filled quad with freely positioned corners.
@@ -81,4 +84,6 @@ void DrawLine ( short int x, short int y, short int x2, short int y2, rgba8 colo
  * @param color Color of the text.
  * @param text Text to be drawn.
  */
-void Print2D(short x, short y, rgba8 color, const char* text);
+void DrawText(short x, short y, const char* text, rgba8 color);
+
+}

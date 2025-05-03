@@ -286,7 +286,7 @@ PNGFile* PNG_ReadFilePointer(FILE* fp)
 
 	// Danger. Wii only has 20 megabytes of texture memoy
 	printf("\tAllocating %zu bytes\n", imageDataSize);
-	texelPtr = (GLubyte*)gdl::AllocateAlignedMemory(imageDataSize);
+	texelPtr = (GLubyte*)mgdl_AllocateAlignedMemory(imageDataSize);
 
 	if (texelPtr == nullptr)
 	{
@@ -305,7 +305,7 @@ PNGFile* PNG_ReadFilePointer(FILE* fp)
 
 	// Set up array for rows to read
 	size_t rowPointersSize = sizeof(png_bytep) * h;
-	row_pointers = (png_bytep*)gdl::AllocateAlignedMemory(rowPointersSize);
+	row_pointers = (png_bytep*)mgdl_AllocateAlignedMemory(rowPointersSize);
 
 	// Read all rows
 	size_t rowSize = w * png->bytesPerPixel;
@@ -322,7 +322,7 @@ PNGFile* PNG_ReadFilePointer(FILE* fp)
 #endif
 		row_pointers[i] = (png_bytep)(png->_texels + readStart);
 	}
-	gdl::CacheFlushRange(row_pointers, rowPointersSize);
+	mgdl_CacheFlushRange(row_pointers, rowPointersSize);
 
 	// Pointers to rows are set, read the pixels on the rows
 	png_read_image(png_ptr, row_pointers);
@@ -335,7 +335,7 @@ PNGFile* PNG_ReadFilePointer(FILE* fp)
 	printf("\tPNG read done\n");
 
 	// Flush read texels
-	gdl::CacheFlushRange(png->_texels, imageDataSize);
+	mgdl_CacheFlushRange(png->_texels, imageDataSize);
 	return png;
 }
 

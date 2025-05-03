@@ -2,20 +2,19 @@
 
 #include "mgdl-vector.h"
 
-namespace gdl
+struct Transform
 {
-	class Transform
-	{
-	public:
-		Transform();
-		Transform(vec3 position, vec3 rotationDegrees, vec3 scale);
-		void Translate(const vec3& t);
-		void Rotate(short axis, float angle);
-		void SetScalef(float scale);
-		void SetScale3f(const vec3& scale);
+	vec3 position;
+	vec3 rotationDegrees;
+	vec3 scale;
+};
 
-		vec3 position;
-		vec3 rotationDegrees;
-		vec3 scale;
-	};
+extern "C"
+{
+	Transform* Transform_CreateZero();
+	Transform* Transform_Create(vec3 position, vec3 rotationDegrees, vec3 scale);
+	void Transform_Translate(Transform*, const vec3& t);
+	void Transform_Rotate(Transform*, short axis, float angle);
+	void Transform_SetScalef(Transform*, float scale);
+	void Transform_SetScale3f(Transform*, const vec3& scale);
 }

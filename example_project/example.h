@@ -5,14 +5,14 @@
 class Example
 {
     Image* barb;
-    gdl::SpriteSet mel_sprites;
+    Sprite* mel_sprites;
     Image* pointerImage;
     Font* ibmFont;
     Font* debugFont;
     Music* sampleMusic;
     Sound* blip;
-    gdl::MenuCreator menu;
-    gdl::MenuCreator cameraMenu;
+    Menu* menu;
+    Menu* cameraMenu;
     Scene* wiiScene;
     Image* wiiTexture;
 

@@ -147,6 +147,12 @@ Scene* LoadFBX(const char* filename)
 	return s;
 }
 
+Sprite* LoadSprite(const char* filename, short spriteWidth, short spriteHeight)
+{
+	Font* spriteSheet = LoadFont(filename, spriteWidth, spriteHeight, 0);
+	return Sprite_Load(spriteSheet);
+}
+
 WiiController* GetController( int controllerNumber)
 {
 	return Platform_GetController(controllerNumber);

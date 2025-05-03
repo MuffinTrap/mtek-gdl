@@ -14,8 +14,8 @@
  */
 struct Font
 {
-	short cw; /**< Character width in pixels.*/
-	short ch; /**< Character height in pixels.*/
+	short characterWidth; /**< Character width in pixels.*/
+	short characterHeight; /**< Character height in pixels.*/
 
 
 	Image* _fontImage;
