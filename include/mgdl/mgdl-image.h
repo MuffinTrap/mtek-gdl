@@ -11,14 +11,14 @@
 	*/
 struct Image
 {
-	PNGFile* pngFile;
+	PNGFile* pngFile = nullptr;
 
-	float aspectRatio;
+	float aspectRatio = 1.0f;
 	gdl::RGBA8Floats tint;
-	GLsizei width;
-	GLsizei height;
+	GLsizei width = 0;
+	GLsizei height = 0;
 	gdl::ColorFormats colorFormat;
-	GLuint textureId;
+	GLuint textureId = 0;
 };
 
 extern "C"
@@ -94,5 +94,11 @@ extern "C"
 		* @return True if loading was succesfull.
 		*/
 	Image* Image_LoadPNG(PNGFile* pngFile, gdl::TextureFilterModes filterMode);
+
+	/**
+	 * @brief Generates a 8x8 checkerboard image
+	 * @return The generated image
+	 */
+	Image* Image_GenerateCheckerBoard();
 
 }

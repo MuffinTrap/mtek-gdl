@@ -14,9 +14,11 @@ class Example
     Menu* menu;
     Menu* cameraMenu;
     Scene* wiiScene;
+    Scene* shipScene;
     Image* wiiTexture;
 
     Image* matcapTexture;
+    Image* checkerTexture;
     Scene* icosaScene;
     Material* matcapMaterial;
 
@@ -41,7 +43,7 @@ class Example
         void DrawVersion();
         void DrawSprites();
         void DrawIcosa();
-        void DrawScene(Scene* scene, const vec3& scale);
+        void DrawScene(Scene* scene, vec3 scale);
 
         bool mouseClick;
         bool musicLooping;

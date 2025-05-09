@@ -32,6 +32,7 @@ using namespace gdl;
 		std::vector<Light*> lights;
 
 	};
+		Scene* Scene_CreateEmpty();
 		void Scene_Init(Scene* scene);
 
 		void Scene_Draw(Scene* scene);

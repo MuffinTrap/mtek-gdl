@@ -167,8 +167,8 @@ float gdl::DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldT
 	u32 grey = Palette_GetColor(blessing, 6);
 
 
-	const u16 sw = GetScreenWidth();
-	const u16 sh = GetScreenHeight();
+	const u16 sw = mgdl_GetScreenWidth();
+	const u16 sh = mgdl_GetScreenHeight();
 
 	// Logo takes up 6/4 of screen height
 	areaHeight = (sh/6.0f) * 4.0f;

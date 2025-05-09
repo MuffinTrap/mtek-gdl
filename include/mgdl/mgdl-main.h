@@ -38,14 +38,14 @@ Font* LoadFont(const char* filename, short characterWidth, short characterHeight
 Font* LoadFontCustom(const char* filename, short characterWidth, short characterHeight, char firstCharacter, short charactersPerRow);
 Font* LoadFontSelective(const char* filename, short characterWidth, short characterHeight, short charactersPerRow, const char* characters);
 
-WiiController* GetController(int controllerNumber);
+WiiController* mgdl_GetController(int controllerNumber);
 
-u16 GetScreenWidth();
-u16 GetScreenHeight();
-float GetAspectRatio();
-float GetElapsedSeconds();
-float GetDeltaTime();
+u16 mgdl_GetScreenWidth();
+u16 mgdl_GetScreenHeight();
+float mgdl_GetAspectRatio();
+float mgdl_GetElapsedSeconds();
+float mgdl_GetDeltaTime();
 
-void DoProgramExit();
+void mgdl_DoProgramExit();
 
 }

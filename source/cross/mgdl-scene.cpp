@@ -5,6 +5,13 @@ void Scene_Init(Scene* scene)
 	scene->rootNode = nullptr;
 }
 
+Scene* Scene_CreateEmpty()
+{
+	Scene* scene = new Scene();
+	Scene_Init(scene);
+	return scene;
+}
+
 
 void Scene_AddChildNode (Scene* scene, Node* parent, Node* child )
 {

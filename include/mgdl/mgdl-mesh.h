@@ -18,7 +18,6 @@ struct Mesh
 	GLfloat* normals;
 	GLfloat* uvs;
 	const char* name;
-	uint32_t uniqueId;
 };
 
 extern "C"
@@ -56,7 +55,22 @@ extern "C"
 	void Mesh_DrawNormals(Mesh* mesh);
 	void Mesh_CalculateMatcapUVs(Mesh* mesh,const mat4x4& modelViewMatrix, const mat4x4& normalMatrix);
 
+	void Mesh_SetVertexV3(vec3 vertex, u32 index);
+	void Mesh_SetVertexXYZ(float x, float y, float z, u32 index);
+
+
 	Mesh* Mesh_CreateIcosahedron(bool normals, bool uvs);
 	Mesh* Mesh_CreateQuad(bool normals, bool uvs);
+
+	// TODO
+	void Mesh_DrawElementsPartially(Mesh* mesh, float start, float amount);
+
+	Mesh* Mesh_CreateStar(float centerThickness, float pointRadius, float sharpness, int pointAmount);
+	Mesh* Mesh_CreateStarBorder(float thickness, float pointRadius, float sharpness, int pointAmount);
+	Mesh* Mesh_CreateRibbonPolygonCross(Mesh* bezierCurvePoints, int crossSectionPoints, float crossSectionRadius, int segmentsPerBezier);
+	Mesh* Mesh_CreateRibbonMeshCross(Mesh* bezierCurvePoints, Mesh* crossSectionPoints, float crossSectionScale, int segmentsPerBezier);
+
+	Mesh* Mesh_CreateCloud(float radius, int segments, float randomness);
+
 
 }

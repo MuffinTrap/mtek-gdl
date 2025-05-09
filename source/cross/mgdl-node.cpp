@@ -1,5 +1,12 @@
 #include <mgdl/mgdl-node.h>
 
+Node* Node_Create()
+{
+	Node* node = new Node();
+	node->transform = Transform_CreateZero();
+	return node;
+
+}
 void Node_SetTransform(Node* node, const char* name, vec3 position, vec3 rotationAngles)
 {
 	node->name = name;

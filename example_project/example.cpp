@@ -11,6 +11,7 @@ Example::Example()
 
 void Example::Init()
 {
+    // Sprites, images and fonts
     short spriteHeight = 64;
     barb = LoadImage("assets/barb.png", gdl::TextureFilterModes::Linear);
     mel_sprites = LoadSprite("assets/mel_tiles.png", spriteHeight, spriteHeight);
@@ -18,21 +19,22 @@ void Example::Init()
     ibmFont = LoadFont("assets/font8x16.png", 8, 16, ' ');
     debugFont = Font_GetDebugFont();
 
+    // Audio
     blip = LoadSound("assets/blipSelect.wav");
     sampleMusic = LoadOgg("assets/sample3.ogg");
 
-    wiiTexture = LoadImage("assets/wii_console_texture.png", gdl::TextureFilterModes::Nearest);
-    matcapTexture = LoadImage("assets/matcap.png", gdl::TextureFilterModes::Linear);
-
+    // Wii model scene
     wiiScene = LoadFBX("assets/wii_et_baby.fbx");
+    wiiTexture = LoadImage("assets/wii_console_texture.png", gdl::TextureFilterModes::Nearest);
     Scene_SetMaterialTexture(wiiScene, "wii_console_texture.png", wiiTexture);
 
+    // Ship with matcap texture
+    shipScene = LoadFBX("assets/ship_with_uvs.fbx");
+    matcapTexture = LoadImage("assets/matcap.png", gdl::TextureFilterModes::Linear);
     matcapMaterial = Material_Load("matcap", matcapTexture, gdl::MaterialType::Matcap);
-
-    icosaScene = LoadFBX("assets/ship_with_uvs.fbx");
-    Scene_SetAllMaterialTextures(icosaScene, matcapTexture);
-    Material* st = Scene_GetMaterial(icosaScene, "standardSurface1");
-    Material* mt2 = Scene_GetMaterial(icosaScene, "Material.002");
+    Scene_SetAllMaterialTextures(shipScene, matcapTexture);
+    Material* st = Scene_GetMaterial(shipScene, "standardSurface1");
+    Material* mt2 = Scene_GetMaterial(shipScene, "Material.002");
     if (st!=nullptr)
     {
         st->type = gdl::MaterialType::Matcap;
@@ -41,42 +43,49 @@ void Example::Init()
     {
         mt2->type = gdl::MaterialType::Matcap;
     }
-    /*
-    icosaScene = new gdl::Scene();
-    icosaScene->AddMaterial(matcapMaterial);
-  //  gdl::Mesh* quad = gdl::Mesh::CreateQuad(true, true);
-   gdl::Mesh* icosaMesh = gdl::Mesh::CreateIcosahedron(true, true);
-    gdl::Node* icosaNode = new gdl::Node("icosaNode", icosaMesh, matcapMaterial);
-    icosaScene->AddChildNode(nullptr, icosaNode);
-    */
+
+    // Generated icosahedron and checkerboard texture
+    icosaScene = Scene_CreateEmpty();
+    checkerTexture = Image_GenerateCheckerBoard();
+    Material* checkerMaterial = Material_Load("checker", checkerTexture, gdl::MaterialType::Diffuse);
+
+    Scene_AddMaterial(icosaScene, checkerMaterial );
+    Mesh* quad = Mesh_CreateQuad(true, true);
+    Mesh* icosaMesh = Mesh_CreateIcosahedron(true, true);
+    Node* icosaNode = Node_Create();
+    Node_SetContent(icosaNode, "icosaNode", quad, checkerMaterial);
+    Scene_AddChildNode(icosaScene, nullptr, icosaNode);
 
 
     menu = Menu_Create(ibmFont, 1.0f, 1.0f);
     cameraMenu = Menu_Create(debugFont, 1.0f, 1.0f);
 
     musicLooping = Music_GetLooping(sampleMusic);
-    sceneRotation = vec3New(0.0f, 0.0f,0.0f);
+    sceneRotation = vec3New(0.0f, 1.0f,0.0f);
     //quad->DebugPrint();
+
+    cameraDistance = 30.0f;
 }
 
-#if 0
 void Example::Update()
 {
 
     // These are available only during update
-    elapsedSeconds = gdl::GetElapsedSeconds();
-    deltaTime = gdl::GetDeltaTime();
+    elapsedSeconds = mgdl_GetElapsedSeconds();
+    deltaTime = mgdl_GetDeltaTime();
 
-    static std::string babyName = "cuboid";
-    gdl::Node* baby = wiiScene->GetNode(babyName);
+
+    static const char* babyName = "cuboid";
+    Node* baby = Scene_GetNode(wiiScene, babyName);
     if (baby != nullptr)
     {
-        baby->transform.rotationDegrees.x += deltaTime * 25.0f;
-        baby->transform.rotationDegrees.z += deltaTime * 40.0f;
+        baby->transform->rotationDegrees.x += deltaTime * 25.0f;
+        baby->transform->rotationDegrees.z += deltaTime * 40.0f;
     }
 
-    mouseClick = WiiController_ButtonPress(gdl::GetController(0), WiiButtons::ButtonA);
+    mouseClick = WiiController_ButtonPress(mgdl_GetController(0), WiiButtons::ButtonA);
 }
+#if 0
 
 void DrawTextDouble(const char* text, short x, short y, float textHeight, gdl::Font* font)
 {
@@ -96,6 +105,13 @@ void Example::Draw()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     DrawImage();
+
+
+    cameraDistance = 5.0f;
+    DrawScene(icosaScene, V3f_Create(1.0f, 1.0f, 1.0f));
+    cameraDistance = 15.0f;
+    DrawScene(wiiScene, V3f_Create(0.1f, 0.1f, 0.1f));
+
 }
 
 void Example::DrawImage()
@@ -103,14 +119,13 @@ void Example::DrawImage()
     // Draw Image
     Image_Draw2DAligned(barb,
             0,
-            GetScreenHeight()/2,
+            mgdl_GetScreenHeight()/2,
             1.0f,
             gdl::LJustify, gdl::Centered);
+
 }
 
 #if 0
-    vec3 s = vec3New(1, 1, 1);
-    DrawScene(icosaScene, s);
 
     gdl::InitOrthoProjection();
     glMatrixMode(GL_MODELVIEW);
@@ -140,14 +155,14 @@ void Example::DrawVersion()
     DrawTextDouble(GDL_VERSION, CenterX, sh - textHeight * 2, textHeight, debugFont);
 }
 
+#endif
 
 
-
-void Example::DrawScene ( gdl::Scene* scene, const vec3& scale)
+void Example::DrawScene ( Scene* scene, vec3 scale)
 {
     // Try to draw Wii 3D model
-    gdl::InitPerspectiveProjection(75.0f, 0.1f, 100.0f);
-    gdl::InitCamera(vec3New(0.0f, 0.0f, cameraDistance), vec3New(0.0f, 0.0f, 0.0f), vec3New(0.0f, 1.0f, 0.0f));
+    mgdl_InitPerspectiveProjection(75.0f, 0.1f, 100.0f);
+    mgdl_InitCamera(vec3New(0.0f, 0.0f, cameraDistance), vec3New(0.0f, 0.0f, 0.0f), vec3New(0.0f, 1.0f, 0.0f));
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -164,18 +179,20 @@ void Example::DrawScene ( gdl::Scene* scene, const vec3& scale)
     glPushMatrix();
 
     glTranslatef(0.0f, 0.0f, 0.0f);
-    float elp = gdl::GetElapsedSeconds();
+    float elp = mgdl_GetElapsedSeconds();
     glRotatef(elp * sceneRotation.x * 10.0f, 1.0f, 0.0f, 0.0f);
     glRotatef(elp * sceneRotation.y * 10.0f, 0.0f, 1.0f, 0.0f);
     glRotatef(elp * sceneRotation.z * 10.0f, 0.0f, 0.0f, 1.0f);
     glScalef(scale.x, scale.y, scale.z);
 
-    scene->Draw();
+    Scene_Draw(scene);
 
     glPopMatrix();
     glDisable(GL_DEPTH_TEST);
 
 }
+
+#if 0
 
 static void DrawButtons(short x, short y, short size, gdl::Font* font)
 {

@@ -191,5 +191,41 @@ void Image_SetTint (Image* img, float red, float green, float blue )
 	img->tint.blue = blue;
 }
 
+Image* Image_GenerateCheckerBoard()
+{
+	const u32 width = 8;
+	const u32 height = 8;
+	u32 index = 0;
+	GLubyte checkerImage[height][width][4];
+
+	for(u32 y = 0; y < height; y++)
+	{
+		for(u32 x = 0; x < width; x++)
+		{
+			index = (x+y)%2;
+
+			checkerImage[y][x][0] = index == 0? 255 :0;
+			checkerImage[y][x][1] = index == 0? 255 :0;
+			checkerImage[y][x][2] = index == 0? 255 :0;
+			checkerImage[y][x][3] = 255;
+		}
+	}
+
+	GLint alignment;
+	glGetIntegerv(GL_UNPACK_ALIGNMENT, &alignment);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	GLuint texName;
+	glGenTextures(1, &texName);
+	glBindTexture(GL_TEXTURE_2D, texName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, checkerImage);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
+
+	Image* img = new Image();
+	Image_SetGLName(img, texName, width, height, gdl::ColorFormats::RGBA);
+	return img;
+}
+
 
 

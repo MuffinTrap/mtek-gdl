@@ -153,18 +153,18 @@ Sprite* LoadSprite(const char* filename, short spriteWidth, short spriteHeight)
 	return Sprite_Load(spriteSheet);
 }
 
-WiiController* GetController( int controllerNumber)
+WiiController* mgdl_GetController( int controllerNumber)
 {
 	return Platform_GetController(controllerNumber);
 }
 
-void DoProgramExit()
+void mgdl_DoProgramExit()
 {
 	Platform_DoProgramExit();
 }
 
-u16 GetScreenWidth() { return Platform_GetSingleton()->screenWidth; }
-u16 GetScreenHeight(){ return Platform_GetSingleton()->screenHeight; }
-float GetAspectRatio(){ return Platform_GetSingleton()->aspectRatio; }
-float GetElapsedSeconds(){ return Platform_GetElapsedSeconds(); };
-float GetDeltaTime(){ return Platform_GetDeltaTime(); };
+u16 mgdl_GetScreenWidth() { return Platform_GetSingleton()->screenWidth; }
+u16 mgdl_GetScreenHeight(){ return Platform_GetSingleton()->screenHeight; }
+float mgdl_GetAspectRatio(){ return Platform_GetSingleton()->aspectRatio; }
+float mgdl_GetElapsedSeconds(){ return Platform_GetElapsedSeconds(); };
+float mgdl_GetDeltaTime(){ return Platform_GetDeltaTime(); };

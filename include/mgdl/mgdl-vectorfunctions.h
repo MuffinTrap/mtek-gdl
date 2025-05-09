@@ -14,7 +14,7 @@ extern "C"
 #define V2f_X(Va) Va.x
 #define V2f_Y(Va) Va.y
 
-#define V3f_Create(x,y,z) {x, y, z};
+#define V3f_Create(x,y,z) {x, y, z}
 #define V3f_X(Va) Va.x
 #define V3f_Y(Va) Va.y
 #define V3f_Z(Va) Va.z
@@ -58,7 +58,7 @@ vec3 V3f_BezierFuncV3(float s, vec3 P0, vec3 C0, vec3 C1, vec3 P1);
 #define V2f_X(Va) Va.x
 #define V2f_Y(Va) Va.y
 
-#define V3f_Create(x,y,z) vec3New(x,y,z);
+#define V3f_Create(x,y,z) vec3New(x,y,z)
 #define V3f_X(Va) Va.x
 #define V3f_Y(Va) Va.y
 #define V3f_Z(Va) Va.z
@@ -102,7 +102,7 @@ vec3 V3f_BezierFuncV3(float s, vec3 P0, vec3 C0, vec3 C1, vec3 P1);
 #define V2f_X(Va) Va[0]
 #define V2f_Y(Va) Va[1]
 
-#define V3f_Create(x, y, z) {x, y, z};
+#define V3f_Create(x, y, z) {x, y, z}
 #define V3f_X(Va) Va[0]
 #define V3f_Y(Va) Va[1]
 #define V3f_Z(Va) Va[2]

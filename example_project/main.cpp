@@ -17,37 +17,11 @@
 
 static Example example;
 
-void Cross3D()
-{
-    glBegin(GL_LINES);
-        glColor3f(0.0f, 0.0f, 0.0f);
-
-        glVertex3f(-1.0f, -1.0f, -1.0f);
-        glVertex3f(1.0f, 1.0f, -1.0f);
-
-        glVertex3f(-1.0f, 1.0f, -1.0f);
-        glVertex3f(1.0f, -1.0f, -1.0f);
-    glEnd();
-}
-
-void Cross2D()
-{
-    glColor3f(0.0f, 0.0f, 0.0f);
-    glBegin(GL_LINES);
-    glVertex2f(0.0f, 0.0f);
-    glVertex2f((float)GetScreenWidth(), (float)GetScreenHeight());
-
-    glVertex2f(0.0f, (float)GetScreenHeight());
-    glVertex2f((float)GetScreenWidth(), 0.0f);
-    glEnd();
-}
-
-
 //---------------------------------------------------------------------
 
 void init()
 {
-    glViewport(0, 0, GetScreenWidth(), GetScreenHeight());
+    glViewport(0, 0, mgdl_GetScreenWidth(), mgdl_GetScreenHeight());
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -77,9 +51,9 @@ void init()
 // Called before render()
 void update()
 {
-    if (WiiController_ButtonPress(GetController(0), WiiButtons::ButtonHome))
+    if (WiiController_ButtonPress(mgdl_GetController(0), WiiButtons::ButtonHome))
     {
-        DoProgramExit();
+        mgdl_DoProgramExit();
     }
     //example.Update();
 
@@ -89,7 +63,7 @@ void update()
     r = gdl::RocketSync::GetFloat(clear_r);
 #ifndef SYNC_PLAYER
 
-    if (WiiController_ButtonPress(GetController(0), WiiButtons::Button2))
+    if (WiiController_ButtonPress(mgdl_GetController(0), WiiButtons::Button2))
     {
        gdl::RocketSync::StartSaveToHeader();
        gdl::RocketSync::SaveTrack(clear_r);
