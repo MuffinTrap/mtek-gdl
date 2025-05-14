@@ -1,4 +1,5 @@
 #include <mgdl/mgdl-scene.h>
+#include <mgdl/mgdl-logger.h>
 
 
 
@@ -122,24 +123,8 @@ void Mesh_CalculateMatcapUVs(Mesh* mesh,const mat4x4& modelViewMatrix, const mat
 	{
 		position = Mesh_GetPositionFromArray(mesh, i);
 		normal = Mesh_GetNormalFromArray(mesh, i);
-
-	if (once)
-	{
-			printf("Before matrices:\n");
-	}
-		if (once)
-		{
-			printf("%zu: Pos %.2f, %.2f, %.2f\tN %.2f, %.2f, %.2f ->\tUV %.2f, %.2f\n", i,
-				   position.x, position.y, position.z,
-		  normal.x, normal.y, normal.z,
-		  matcapUV.x, matcapUV.y);
-		}
 	}
 
-	if (once)
-	{
-		printf("After matrices:\n");
-	}
 	const vec2 half = vec2New(0.5f, 0.5f);
 	for (sizetype i = 0; i < mesh->vertexCount; i++)
 	{
@@ -165,13 +150,6 @@ void Mesh_CalculateMatcapUVs(Mesh* mesh,const mat4x4& modelViewMatrix, const mat
 			const float sqrtR2 = sqrt(rx2 + ry2 + rz12) * 2.0f;
 			R2 = reflection.xy;
 			matcapUV = vec2Add(vec2New(R2.x/sqrtR2, R2.y/sqrtR2), half);
-			if (once)
-			{
-				printf("%zu: Pos %.2f, %.2f, %.2f\tN %.2f, %.2f, %.2f ->\tUV %.2f, %.2f\n", i,
-					eye.x, eye.y, eye.z,
-			normal.x, normal.y, normal.z,
-			matcapUV.x, matcapUV.y);
-			}
 		}
 		Mesh_SetUVToArray(mesh, i, matcapUV);
 	}
@@ -199,10 +177,10 @@ vec3 Mesh_GetPosition ( Mesh* mesh,GLushort index )
 		GLushort position = mesh->indices[index];
 		// Get the index to float array
 		sizetype i = position * 3;
-		return vec3New(mesh->positions[i+0], mesh->positions[i+1], mesh->positions[i+2]);
+		return V3f_Create(mesh->positions[i+0], mesh->positions[i+1], mesh->positions[i+2]);
 	}
-	printf("No such index! %d > %d\n", index, mesh->indexCount);
-	return vec3New(0.0f, 0.0f, 0.0f);
+	Log_ErrorF("No such index! %d > %d\n", index, mesh->indexCount);
+	return V3f_Create(0.0f, 0.0f, 0.0f);
 }
 
 vec3 Mesh_GetNormal (Mesh* mesh, GLushort index )
@@ -213,10 +191,10 @@ vec3 Mesh_GetNormal (Mesh* mesh, GLushort index )
 		GLushort position = mesh->indices[index];
 		// Get the index to float array
 		sizetype i = position * 3;
-		return vec3New(mesh->normals[i+0], mesh->normals[i+1], mesh->normals[i+2]);
+		return V3f_Create(mesh->normals[i+0], mesh->normals[i+1], mesh->normals[i+2]);
 	}
-	printf("No such index! %d > %d\n", index, mesh->indexCount);
-	return vec3New(0.0f, 0.0f, 0.0f);
+	Log_ErrorF("No such index! %d > %d\n", index, mesh->indexCount);
+	return V3f_Create(0.0f, 0.0f, 0.0f);
 }
 
 
@@ -265,20 +243,20 @@ vec3 Mesh_GetPositionFromArray(Mesh* mesh,sizetype index)
 	if (index < mesh->vertexCount)
 	{
 		sizetype vi = index * 3;
-		return vec3New(mesh->positions[vi+0], mesh->positions[vi+1], mesh->positions[vi+2]);
+		return V3f_Create(mesh->positions[vi+0], mesh->positions[vi+1], mesh->positions[vi+2]);
 	}
-	printf("index %zu > %u vertexCount!\n", index, mesh->vertexCount);
-	return vec3New(0.0f, 0.0f, 0.0f);
+	Log_ErrorF("index %zu > %u vertexCount!\n", index, mesh->vertexCount);
+	return V3f_Create(0.0f, 0.0f, 0.0f);
 }
 vec3 Mesh_GetNormalFromArray(Mesh* mesh,sizetype index)
 {
 	if (index < mesh->vertexCount)
 	{
 		sizetype vi = index * 3;
-		return vec3New(mesh->normals[vi+0], mesh->normals[vi+1], mesh->normals[vi+2]);
+		return V3f_Create(mesh->normals[vi+0], mesh->normals[vi+1], mesh->normals[vi+2]);
 	}
-	printf("index %zu > %u vertexCount!\n", index, mesh->vertexCount);
-	return vec3New(0.0f, 1.0f, 0.0f);
+	Log_ErrorF("index %zu > %u vertexCount!\n", index, mesh->vertexCount);
+	return V3f_Create(0.0f, 1.0f, 0.0f);
 }
 
 // Mesh creation functions

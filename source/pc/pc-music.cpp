@@ -1,17 +1,16 @@
 #ifndef GEKKO
+#include <mgdl/mgdl-music.h>
 
 #include <mgdl/pc/mgdl-pc-sound.h>
 #include <mgdl/mgdl-music.h>
 #include <mgdl/mgdl-assert.h>
+#include <mgdl/mgdl-logger.h>
+
 #include <stdio.h>
 #include <ostream>
 #include <iostream>
 #include <cstring>
 #include <limits>
-
-#include <mgdl/mgdl-music.h>
-
-
 
 static char* pcmBuffer; // Used to transfer data from Ogg file to OpenAL
 
@@ -271,6 +270,8 @@ bool VerifyALSource()
 
 Music* Music_Load(const char* filename)
 {
+    Log_InfoF("Loading music from %s\n", filename);
+
     Music* music = new Music();
     Music_Init(music);
     if (LoadFileNonStreaming(filename, music))
@@ -296,7 +297,7 @@ bool LoadAudioDataFilePtr ( const char* filename )
     audioData.filePointer = fopen(filename, "rb");
     if (audioData.filePointer == nullptr)
     {
-		std::cerr << "OGG Error: could not open file" << filename << std::endl;
+		mgdl_assert_printf(false, "Music_Load did not find %s\n", filename);
         return false;
     }
     return true;
@@ -311,14 +312,17 @@ bool LoadFileNonStreaming ( const char* filename, Music* music )
     alGetError();
     if (LoadAudioDataFilePtr(filename) == false)
     {
+        Log_Error("Music_Load failed to open file\n");
         return false;
     }
     if (OpenOggNoCallbacks() == false)
     {
+        Log_Error("Music_Load failed to open ogg callbacks\n");
         return false;
     }
     if (ReadOggProperties() == false)
     {
+        Log_Error("Music_Load failed to read ogg properties\n");
         return false;
     }
 
@@ -331,13 +335,13 @@ bool LoadFileNonStreaming ( const char* filename, Music* music )
         &audioData.oggVorbisFile, -1) * audioData.channels * 2;
 
     pcmBuffer = new char[pcmSize];
-    gdl_assert_print(pcmBuffer != nullptr, "Out of memory");
+    mgdl_assert_print(pcmBuffer != nullptr, "Out of memory");
 
     bool result = true;
     std::int32_t readSize = ReadOggToPCMBuffer(pcmBuffer, pcmSize);
     if (readSize > 0)
     {
-        printf("PCM data buffered\n");
+        Log_Info("PCM data buffered\n");
         alCall(alBufferData, audioData.buffers[0], audioData.format, pcmBuffer, readSize, audioData.sampleRate);
         alCall(alSourcei, audioData.source, AL_BUFFER, audioData.buffers[0]);
         // alCall(alSourceQueueBuffers, audioData.source, 1, &buffer);

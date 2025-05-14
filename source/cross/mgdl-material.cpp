@@ -6,7 +6,7 @@ Material* Material_Load (const char* name, Image* texture, gdl::MaterialType typ
 	material->name = name;
 	material->texture = texture;
 	material->shininess = 1.0f;
-	material->emissiveColor = vec3New(0.0f, 0.0f, 0.0f);
+	material->emissiveColor = V3f_Create(0.0f, 0.0f, 0.0f);
 	material->type = type;
 	return material;
 }

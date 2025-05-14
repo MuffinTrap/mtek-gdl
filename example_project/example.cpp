@@ -15,6 +15,7 @@ void Example::Init()
     short spriteHeight = 64;
     barb = LoadImage("assets/barb.png", gdl::TextureFilterModes::Linear);
     mel_sprites = LoadSprite("assets/mel_tiles.png", spriteHeight, spriteHeight);
+    fruitSprites = LoadSprite("assets/fruits.png", 16, 16);
     pointerImage = LoadImage("assets/pointer.png", gdl::TextureFilterModes::Nearest);
     ibmFont = LoadFont("assets/font8x16.png", 8, 16, ' ');
     debugFont = Font_GetDebugFont();
@@ -106,6 +107,13 @@ void Example::Draw()
     glLoadIdentity();
     DrawImage();
 
+    mgdl_glSetAlphaTest(true);
+    mgdl_glSetTransparency(true);
+    for (int i = 0; i < 16; i++)
+    {
+        int size = 64;
+    Sprite_Draw2D(fruitSprites, i, size * (i%4), size + (i/4) * size, size, gdl::LJustify, gdl::RJustify, Colors::White);
+    }
 
     cameraDistance = 5.0f;
     DrawScene(icosaScene, V3f_Create(1.0f, 1.0f, 1.0f));

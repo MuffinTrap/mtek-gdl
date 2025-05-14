@@ -4,6 +4,7 @@
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-file.h>
 #include <mgdl/mgdl-util.h>
+#include <mgdl/mgdl-logger.h>
 
 #include <png.h>
 #include <stdio.h>
@@ -43,7 +44,7 @@ GLint PNG_ColorTypeToBPP(int color_type)
 			bytesPerPixel = 4;
 		break;
 		default:
-			printf("\tUnsupported PNG COLOR TYPE!\n");
+			Log_Warning("Unsupported PNG color type\n");
 		break;
 	};
 	return bytesPerPixel;
@@ -75,7 +76,7 @@ GLenum PNG_PNGtoGLFormat(int pngFormat)
 			return GL_RGBA;
 		break;
 		default:
-			printf("\tUnsupported PNG COLOR TYPE!\n");
+			Log_Warning("Unsupported PNG color type\n");
 			return 0;
 		break;
 	};
@@ -99,7 +100,7 @@ GLenum PNG_PNGtoGLInternalFormat(int pngFormat)
 			return GL_UNSIGNED_BYTE;
 		break;
 		default:
-			printf("\tUnsupported PNG COLOR TYPE!\n");
+			Log_Warning("Unsupported PNG color type\n");
 			return 0;
 		break;
 	};
@@ -108,7 +109,7 @@ GLenum PNG_PNGtoGLInternalFormat(int pngFormat)
 }
 
 
-PNGFile* PNG_ReadFilePointer(FILE* fp)
+PNGFile* _PNG_ReadFilePointer(FILE* fp)
 {
 	// Read from file pointer
 	png_byte magic[8];
@@ -125,7 +126,7 @@ PNGFile* PNG_ReadFilePointer(FILE* fp)
 	fread(magic, 1, sizeof(magic), fp);
 	if (png_check_sig(magic, sizeof(magic)) == false)
 	{
-		printf("\t[INVALID PNG]\n");
+		Log_Error("Invalid PNG data\n");
 		fclose(fp);
 		return nullptr;
 	}
@@ -134,7 +135,7 @@ PNGFile* PNG_ReadFilePointer(FILE* fp)
 	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (png_ptr == nullptr)
 	{
-		printf("\t[FAILED TO READ]\n");
+		Log_Error("Failed to create PNG read struct\n");
 		png_destroy_read_struct(&png_ptr, NULL, NULL);
 		fclose(fp);
 		return nullptr;
@@ -144,7 +145,7 @@ PNGFile* PNG_ReadFilePointer(FILE* fp)
 	info_ptr = png_create_info_struct(png_ptr);
 	if (info_ptr == nullptr)
 	{
-		printf("\t[FAILED TO GET INFO]\n");
+		Log_Error("Failed to create PNG info struct\n");
 		png_destroy_read_struct(&png_ptr, NULL, NULL);
 		fclose(fp);
 		return nullptr;
@@ -177,19 +178,19 @@ PNGFile* PNG_ReadFilePointer(FILE* fp)
 	color_type = png_get_color_type(png_ptr, info_ptr);
 
 	// React to info we got
-	printf("\tColor: ");
+	Log_Info("\tColor: ");
 	switch(color_type)
 	{
 		case PNG_COLOR_TYPE_PALETTE:
 		{
 			// Read this as RGB image
-			printf("palette ");
+			Log_Info("palette ");
 			png_set_palette_to_rgb(png_ptr);
 		}
 		break;
 		case PNG_COLOR_TYPE_GRAY:
 		{
-			printf("grayscale ");
+			Log_Info("grayscale ");
 			// Small precision grayscale to 8 bit format
 			if (bit_depth < 8)
 			{
@@ -199,7 +200,7 @@ PNGFile* PNG_ReadFilePointer(FILE* fp)
 		break;
 		case PNG_COLOR_TYPE_GRAY_ALPHA:
 		{
-			printf("grayscale with alpha ");
+			Log_Info("grayscale with alpha ");
 			// Small precision grayscale to 8 bit format
 			if (bit_depth < 8)
 			{
@@ -209,46 +210,46 @@ PNGFile* PNG_ReadFilePointer(FILE* fp)
 		break;
 		case PNG_COLOR_TYPE_RGB:
 		{
-			printf("RGB ");
+			Log_Info("RGB ");
 		}
 		break;
 		case PNG_COLOR_TYPE_RGB_ALPHA:
 		{
-			printf("RGBA ");
+			Log_Info("RGBA ");
 		}
 		break;
 	};
-	printf("Alpha: ");
+	Log_Info("Alpha: ");
 	// Is transparency info read ok?
 	png_uint_32 getResult = png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS);
 	if (getResult == 0)
 	{
-		printf("YES ");
+		Log_Info("YES ");
 		// Direct it to alpha channel
 		png_set_tRNS_to_alpha(png_ptr);
 	}
 	else
 	{
-		printf("NO ");
+		Log_Info("NO ");
 	}
 
-	printf("Bit depth: ");
+	Log_Info("Bit depth: ");
 	if (bit_depth == 16)
 	{
-		printf("16 ");
+		Log_Info("16 ");
 		png_set_strip_16(png_ptr);
 	}
 	else if (bit_depth < 8)
 	{
 		// ???
-		printf("<8 ");
+		Log_Info("<8 ");
 		png_set_packing(png_ptr);
 	}
 	else
 	{
-		printf("%d ", bit_depth);
+		Log_InfoF("%d ", bit_depth);
 	}
-	printf("\n");
+	Log_Info("\n");
 
 	// Update our changes and read again
 	png_read_update_info(png_ptr, info_ptr);
@@ -260,14 +261,14 @@ PNGFile* PNG_ReadFilePointer(FILE* fp)
 	// Wii cannot handle very big textures
 	//
 	if ((w > 1024) || (h > 1024)) {
-		printf("\t[TOO LARGE: MAX 1024]\n");
+		Log_Error("PNG image too large, max size 1024\n");
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 		fclose(fp);
 		return nullptr;
 	}
 	else
 	{
-		printf("\tSize: %u x %u\n", w, h);
+		Log_InfoF("\tSize: %u x %u\n", w, h);
 		width = w;
 		height = h;
 	}
@@ -275,7 +276,7 @@ PNGFile* PNG_ReadFilePointer(FILE* fp)
 	short bpp = PNG_ColorTypeToBPP(color_type);
 	if (bpp == 0)
 	{
-		printf("\t[STRANGE PNG COLOR TYPE]\n");
+		Log_Warning("Strange PNG color type\n");
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 		fclose(fp);
 		return nullptr;
@@ -285,12 +286,12 @@ PNGFile* PNG_ReadFilePointer(FILE* fp)
 	size_t imageDataSize = sizeof(GLubyte) * w * h * bpp;
 
 	// Danger. Wii only has 20 megabytes of texture memoy
-	printf("\tAllocating %zu bytes\n", imageDataSize);
+	Log_InfoF("\tAllocating %zu bytes\n", imageDataSize);
 	texelPtr = (GLubyte*)mgdl_AllocateAlignedMemory(imageDataSize);
 
 	if (texelPtr == nullptr)
 	{
-		printf("\t[OUT OF MEMORY]\n");
+		Log_Error("Out of memory\n");
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 		fclose(fp);
 		return nullptr;
@@ -332,7 +333,7 @@ PNGFile* PNG_ReadFilePointer(FILE* fp)
 	// Reading is over, rows no longer needed
 	free(row_pointers);
 
-	printf("\tPNG read done\n");
+	Log_Info("PNG read done\n");
 
 	// Flush read texels
 	mgdl_CacheFlushRange(png->_texels, imageDataSize);
@@ -344,11 +345,11 @@ PNGFile* PNG_ReadFile(const char* filename)
 	FILE *fp = fopen(filename, "rb");
 	if (fp == nullptr)
 	{
-		printf("[NOT FOUND!]\n");
+		mgdl_assert_printf(false, "PNG_ReadFile did not find %s\n", filename);
 		return nullptr;
 	}
 
-	PNGFile* png = PNG_ReadFilePointer(fp);
+	PNGFile* png = _PNG_ReadFilePointer(fp);
 	fclose(fp);
 	return png;
 }

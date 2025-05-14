@@ -110,8 +110,7 @@ bool gdl::SpriteSet::LoadSprites(short spritesPerRow, short spriteHeight, ImageW
 	DCFlushRange(spriteList, numSprites * sizeof(Sprite));
 	DCFlushRange(sheetList, sizeof(ImageWii*));
 
-	if (gdl::ConsoleActive)
-		printf("gdl: Sprite sheets loaded successfully.\n");
+	Log_Info("gdl: Sprite sheets loaded successfully.\n");
 
 	// Clear sheetList since the Image is freed somewhere else
 	sheetList = NULL;
@@ -124,7 +123,7 @@ bool gdl::SpriteSet::LoadSprites(const char *fileName, const char *sheetsdir, u_
 	// Open up the file
 	FILE *fp;
 
-	if (gdl::ConsoleActive) printf("gdl: Loading sprites in file %s...", fileName);
+	Log_InfoF("Loading sprites in file %s...", fileName);
 
 	if (!(fp = fopen(fileName, "r"))) {
 		gdl::CallErrorCallback("Sprite map file %s not found.", fileName);
@@ -156,8 +155,7 @@ bool gdl::SpriteSet::LoadSprites(const char *fileName, const char *sheetsdir, u_
 		return(false);
 	}
 
-	if (gdl::ConsoleActive)
-		printf("Ok!\n");
+	Log_Info("Ok!\n");
 
 
 	// Set important private variables and then allocate sprite and sheet lists
@@ -168,7 +166,7 @@ bool gdl::SpriteSet::LoadSprites(const char *fileName, const char *sheetsdir, u_
 
 
 	// Load the sprite sheet images
-	if (gdl::ConsoleActive) printf("gdl: Now attempting to load %d sprite sheet(s).\n", TSM_header.numSheets);
+	Log_InfoF("Now attempting to load %d sprite sheet(s).\n", TSM_header.numSheets);
 
 	short	i;
 	char	namelen,namebuff[64];
@@ -227,8 +225,7 @@ bool gdl::SpriteSet::LoadSprites(const char *fileName, const char *sheetsdir, u_
 	// Finish off the rest
 	fclose(fp);
 
-	if (gdl::ConsoleActive)
-		printf("gdl: Sprite sheets loaded successfully.\n");
+	Log_Info("gdl: Sprite sheets loaded successfully.\n");
 
 	return(true);
 

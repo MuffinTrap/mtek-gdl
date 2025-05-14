@@ -11,6 +11,7 @@ extern "C"
 // On the wii the gu library is used
 #ifdef MGDL_PLATFORM_WII
 
+#define V2f_Create(x, y) {x, y}
 #define V2f_X(Va) Va.x
 #define V2f_Y(Va) Va.y
 
@@ -55,6 +56,7 @@ vec3 V3f_BezierFuncV3(float s, vec3 P0, vec3 C0, vec3 C1, vec3 P1);
 
 #ifdef MGDL_USE_CCVECTOR
 
+#define V2f_Create(x,y) vec2New(x,y)
 #define V2f_X(Va) Va.x
 #define V2f_Y(Va) Va.y
 
@@ -99,6 +101,7 @@ vec3 V3f_BezierFuncV3(float s, vec3 P0, vec3 C0, vec3 C1, vec3 P1);
 #ifdef MGDL_USE_CGLM
 // Use cgml
 
+#define V2f_Create(x,y) {x, y}
 #define V2f_X(Va) Va[0]
 #define V2f_Y(Va) Va[1]
 

@@ -88,7 +88,7 @@ void render()
 
 int main()
 {
-    InitSystem(MGDL_PLATFORM,
+    mgdl_InitSystem(MGDL_PLATFORM,
         gdl::ScreenAspect::Screen4x3,
         init,
         update,  // std::function callbacks

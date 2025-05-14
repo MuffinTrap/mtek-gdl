@@ -36,6 +36,10 @@ extern "C"
     void mgdl_InitPerspectiveProjection(float fovy, float nearZ, float farZ);
     void mgdl_InitOrthoProjection();
 
+    // Helper functions to do common OpenGL things
+    void mgdl_glSetTransparency(bool enabled);
+    void mgdl_glSetAlphaTest(bool enabled);
+
 
 /** NOTE!!!!
 * @brief Sets up the camera.

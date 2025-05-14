@@ -1,16 +1,18 @@
 #include <mgdl/pc/mgdl-pc-sound.h>
 #include <mgdl/mgdl-assert.h>
+#include <mgdl/mgdl-logger.h>
 
 #ifndef GEKKO
 
-Sound* Sound_Load(const char* filename) {
+Sound* Sound_Load(const char* filename)
+{
+    Log_InfoF("Loading sound from %s\n", filename);
 
 	// Open the WAV file
     SF_INFO sfinfo;
-    printf("Loading sound file: %s\n", filename);
     SNDFILE* sndfile = sf_open(filename, SFM_READ, &sfinfo);
     if (!sndfile) {
-        printf("Error opening the file '%s'\n", filename);
+        mgdl_assert_printf(false, "Sound_Load did not find %s\n", filename);
         return nullptr;
     }
 
@@ -27,7 +29,7 @@ Sound* Sound_Load(const char* filename) {
         format = AL_FORMAT_MONO16;
     }
     ALvoid* data = (ALvoid*)malloc(dataSize);
-    gdl_assert_print(data != nullptr, "Out of memory!");
+    mgdl_assert_print(data != nullptr, "Out of memory!");
     if (data == nullptr)
     {
         return nullptr;
@@ -49,7 +51,7 @@ Sound* Sound_Load(const char* filename) {
 
     free(data);
     sf_close(sndfile);
-    printf("Sound loaded\n");
+    Log_Info("Sound loaded\n");
 
 
     return sound;

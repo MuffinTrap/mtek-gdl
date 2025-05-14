@@ -30,7 +30,7 @@ Music* Music_Load(const char *filename)
 	music->filenameChar = new char[strlen(filename)];
 	strcpy(music->filenameChar, filename);
 
-	printf("Loading Ogg %s\n", filename);
+	Log_InfoF("Loading Ogg %s\n", filename);
 	music->oggFile = fopen(filename, "r");
 	if (music->oggFile != NULL)
 	{
@@ -55,7 +55,7 @@ void Music_Play(Music* music, float pitchOffset, float volumePercent)
 	int po = PlayOggFilePtr(music->oggFile, 0, playMode);
 	if (po != 0)
 	{
-		printf("Failed to play ogg file %s\n", music->filenameChar);
+		Log_ErrorF("Failed to play ogg file %s\n", music->filenameChar);
 	}
 }
 

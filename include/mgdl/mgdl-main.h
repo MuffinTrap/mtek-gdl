@@ -16,7 +16,7 @@
 extern "C"
 {
 
-void InitSystem(const char* name,
+void mgdl_InitSystem(const char* name,
 				gdl::ScreenAspect screenAspect,
 				std::function<void()> initCallback,
 				std::function<void()> updateCallback,

@@ -35,7 +35,7 @@ vec3 Sprite_AdjustDrawingPosition(Sprite* sprite, short x, short y, float scale,
 	{
 		dy += height/2.0f;
 	}
-	return vec3New(dx, dy, dz);
+	return V3f_Create(dx, dy, dz);
 }
 
 void Sprite_Draw2D(Sprite* sprite, u16 spriteIndex, short x, short y, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY, u32 tintColor)

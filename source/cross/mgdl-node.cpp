@@ -10,7 +10,7 @@ Node* Node_Create()
 void Node_SetTransform(Node* node, const char* name, vec3 position, vec3 rotationAngles)
 {
 	node->name = name;
-	node->transform = Transform_Create(position, rotationAngles, vec3New(1,1,1));
+	node->transform = Transform_Create(position, rotationAngles, V3f_Create(1,1,1));
 }
 
 

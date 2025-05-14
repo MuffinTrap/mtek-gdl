@@ -2,6 +2,7 @@
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-scene.h>
+#include <mgdl/mgdl-logger.h>
 #include <stdio.h>
 
 using namespace gdl;
@@ -14,9 +15,9 @@ Scene* FBX_Load(const char* fbxFile)
 	opts.target_axes = ufbx_axes_right_handed_y_up;
 	opts.target_unit_meters = 1.0f;
 	ufbx_error error;
-	printf("Reading fbx file %s\n", fbxFile);
+	Log_InfoF("Reading fbx file %s\n", fbxFile);
 	ufbx_scene* scene = ufbx_load_file(fbxFile, &opts, &error);
-	gdl_assert_printf(scene != nullptr, "Cannot load fbx: %s\n", error.description.data);
+	mgdl_assert_printf(scene != nullptr, "Cannot load fbx: %s\n", error.description.data);
 	if (scene == nullptr)
 	{
 		return nullptr;
@@ -38,53 +39,51 @@ void Indent(short depth)
 {
 	for (short i = 0; i < depth; i++)
 	{
-		printf("\t");
+		Log_Info("\t");
 	}
 }
 
 bool _FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short depth )
 {
-	gdl_assert_print(node != nullptr, "Tried to load null node");
-	gdl_assert_print(gdlScene != nullptr, "No scene to load nodes to");
+	mgdl_assert_print(node != nullptr, "Tried to load null node");
+	mgdl_assert_print(gdlScene != nullptr, "No scene to load nodes to");
 	ufbx_vec3 t = node->local_transform.translation;
 	ufbx_vec3 r = node->euler_rotation;
 
 	if (false)
 	{
 		Indent(depth);
-		printf("Node: %s\n", node->name.data);
+		Log_InfoF("Node: %s\n", node->name.data);
 
 		Indent(depth);
-		printf("Transform:");
-		printf("position: (%.2f, %.2f, %.2f)", t.x, t.y, t.z);
-		printf("rotation: (%.2f, %.2f, %.2f)", r.x, r.y, r.z);
-		printf("\n");
+		Log_Info("Transform:");
+		Log_InfoF("position: (%.2f, %.2f, %.2f)", t.x, t.y, t.z);
+		Log_InfoF("rotation: (%.2f, %.2f, %.2f)", r.x, r.y, r.z);
+		Log_Info("\n");
 	}
 
 	Node* n = new Node();
-	gdl_assert_print(n != nullptr, "Could not create new Node");
+	mgdl_assert_print(n != nullptr, "Could not create new Node");
 
 	Node_SetTransform(n, node->name.data,
-								 vec3New(t.x, t.y, t.z),
-								 vec3New(r.x, r.y, r.z));
+								 V3f_Create(t.x, t.y, t.z),
+								 V3f_Create(r.x, r.y, r.z));
 
 	Indent(depth);
 	if (node->mesh != nullptr)
 	{
 		ufbx_mesh* mesh = node->mesh;
-		if (false)
+
+		Log_InfoF("Mesh %s (%u) with %zu faces", mesh->name.data, mesh->element_id, mesh->faces.count);
+		if (mesh->vertex_normal.exists)
 		{
-			printf("Mesh %s (%u) with %zu faces", mesh->name.data, mesh->element_id, mesh->faces.count);
-			if (mesh->vertex_normal.exists)
-			{
-				printf(", %zu normals", mesh->vertex_normal.values.count);
-			}
-			if (mesh->vertex_uv.exists)
-			{
-				printf(",%zu uvs", mesh->vertex_uv.values.count);
-			}
-			printf("\n");
+			Log_InfoF(", %zu normals", mesh->vertex_normal.values.count);
 		}
+		if (mesh->vertex_uv.exists)
+		{
+			Log_InfoF(",%zu uvs", mesh->vertex_uv.values.count);
+		}
+		Log_Info("\n");
 
 		// Is this mesh loaded already?
 		// Cannot use name: if multiple meshes have the same name
@@ -103,7 +102,7 @@ bool _FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short d
 			if (false)
 			{
 				Indent(depth);
-				printf("Material: %s\n", material->name.data);
+				Log_InfoF("Material: %s\n", material->name.data);
 			}
 
 			// Has this material been loaded already?
@@ -120,43 +119,43 @@ bool _FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short d
 	else if (node->light != nullptr)
 	{
 		ufbx_light* light = node->light;
-		printf("\tLight %s, color: (%.2f, %.2f, %.2f) intensity: %.2f type: ", light->name.data, light->color.x, light->color.y, light->color.z, light->intensity);
+		Log_InfoF("\tLight %s, color: (%.2f, %.2f, %.2f) intensity: %.2f type: ", light->name.data, light->color.x, light->color.y, light->color.z, light->intensity);
 		if (light->type == UFBX_LIGHT_POINT)
 		{
-			printf("point");
+			Log_Info("point");
 		}
 		else if (light->type == UFBX_LIGHT_SPOT)
 		{
-			printf("spot");
+			Log_Info("spot");
 		}
 		else if (light->type == UFBX_LIGHT_DIRECTIONAL)
 		{
-			printf("directional");
+			Log_Info("directional");
 		}
 		else if (light->type == UFBX_LIGHT_AREA)
 		{
-			printf("area");
+			Log_Info("area");
 		}
 		else if (light->type == UFBX_LIGHT_VOLUME)
 		{
-			printf("volumetric");
+			Log_Info("volumetric");
 		}
 
 		Light* gdlLight = _FBX_LoadLight(light);
 		n->light = gdlLight;
 
-		printf("\n");
+		Log_Info("\n");
 
 	}
 	else if (node->camera != nullptr)
 	{
 		ufbx_camera* camera = node->camera;
-		printf("\tCamera %s\n", camera->name.data);
+		Log_InfoF("\tCamera %s\n", camera->name.data);
 	}
 	else if (node->bone != nullptr)
 	{
 		ufbx_bone* bone = node->bone;
-		printf("\tBone %s, radius: %.2f relative length: %.2f\n", bone->name.data, bone->radius, bone->relative_length);
+		Log_InfoF("\tBone %s, radius: %.2f relative length: %.2f\n", bone->name.data, bone->radius, bone->relative_length);
 	}
 
 	Scene_AddChildNode(gdlScene, parentNode, n);
@@ -164,11 +163,6 @@ bool _FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short d
 	size_t childAmount = node->children.count;
 	if (childAmount > 0)
 	{
-		if (false)
-		{
-			Indent(depth);
-			printf("%zu children\n", childAmount);
-		}
 		for(size_t i = 0; i < node->children.count; i++)
 		{
 			_FBX_LoadNode(gdlScene, n, node->children[i], depth+1);
@@ -189,7 +183,7 @@ void PushPosition(Mesh* mesh, size_t index, ufbx_vec3 pos)
 
 void PushNormal(Mesh* mesh, size_t index, ufbx_vec3 n)
 {
-	gdl_assert_print(mesh->normals != nullptr, "Cannot push normal to nullptr");
+	mgdl_assert_print(mesh->normals != nullptr, "Cannot push normal to nullptr");
 	// Where the vec3 begins in array
 	// every vertex has 3 floats
 	size_t vni = index * 3;
@@ -310,7 +304,7 @@ Light* _FBX_LoadLight(ufbx_light* fbxLight)
 {
 	Light* light = new Light();
 
-	light->color = vec3New(fbxLight->color.x, fbxLight->color.y, fbxLight->color.z);
+	light->color = V3f_Create(fbxLight->color.x, fbxLight->color.y, fbxLight->color.z);
 	light->intensity = fbxLight->intensity;
 	light->name = fbxLight->name.data;
 
@@ -334,12 +328,12 @@ Light* _FBX_LoadLight(ufbx_light* fbxLight)
 	}
 	else if (fbxLight->type == UFBX_LIGHT_AREA)
 	{
-		printf("Area lights not supported\n");
+		Log_Warning("Area lights not supported\n");
 		light->type = LightType::Point;
 	}
 	else if (fbxLight->type == UFBX_LIGHT_VOLUME)
 	{
-		printf("Volumetric lights not supported\n");
+		Log_Warning("Volumetric lights not supported\n");
 		light->type = LightType::Point;
 	}
 

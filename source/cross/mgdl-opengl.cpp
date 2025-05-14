@@ -50,3 +50,29 @@ void mgdl_InitCamera(vec3 cameraPos, vec3 cameraTarget, vec3 cameraUp)
 				 cameraUp.x, cameraUp.y, cameraUp.z);
 }
 
+void mgdl_glSetTransparency(bool enabled)
+{
+	if (enabled)
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+	else
+	{
+		glDisable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+}
+
+void mgdl_glSetAlphaTest(bool enabled)
+{
+	if (enabled)
+	{
+		glAlphaFunc(GL_GEQUAL, 0.5f);
+	}
+	else
+	{
+		glAlphaFunc(GL_ALWAYS, 0.5f);
+	}
+}
+

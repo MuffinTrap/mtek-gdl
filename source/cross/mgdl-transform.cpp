@@ -2,9 +2,9 @@
 
 Transform* Transform_CreateZero()
 {
-	vec3 position = vec3New(0.0f, 0.0f, 0.0f);
-	vec3 rotationDegrees = vec3New(0.0f, 0.0f, 0.0f);
-	vec3 scale = vec3New(1.0f, 1.0f, 1.0f);
+	vec3 position = V3f_Create(0.0f, 0.0f, 0.0f);
+	vec3 rotationDegrees = V3f_Create(0.0f, 0.0f, 0.0f);
+	vec3 scale = V3f_Create(1.0f, 1.0f, 1.0f);
 	return Transform_Create(position, rotationDegrees, scale);
 }
 
@@ -42,7 +42,7 @@ void Transform_SetScale3f (Transform* transform, const vec3& scale )
 
 void Transform_SetScalef (Transform* transform, float scale )
 {
-	transform->scale = vec3New(scale, scale, scale);
+	transform->scale = V3f_Create(scale, scale, scale);
 }
 
 

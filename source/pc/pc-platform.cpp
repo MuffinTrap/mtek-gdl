@@ -3,6 +3,7 @@
 #include <mgdl/mgdl-openal.h>
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-splash.h>
+#include <mgdl/mgdl-logger.h>
 
 #include <mgdl/pc/mgdl-pc-input.h>
 
@@ -214,36 +215,36 @@ void onWindowSizeChange(int newWidth, int newHeight)
 
 void Platform_InitAudio()
 {
-    printf("Setting up OpenAL Audio Device.\n");
+    Log_Info("Setting up OpenAL Audio Device.\n");
     // Initialize OpenAL
     device = alcOpenDevice(NULL);
     if (!device) {
-        printf("Failed to open OpenAL device\n");
+        Log_Error("Failed to open OpenAL device\n");
         return;
     }
-    printf("Setting up OpenAL Audio Contex.\n");
+    Log_Info("Setting up OpenAL Audio Contex.\n");
     context = alcCreateContext(device, NULL);
     if (alcGetError(device) != ALC_NO_ERROR || !context) {
-        printf("Failed to create OpenAL context\n");
+        Log_Error("Failed to create OpenAL context\n");
         alcCloseDevice(device);
         return;
     }
     ALboolean contextMadeOK = alcMakeContextCurrent(context);
     if (contextMadeOK != AL_TRUE)
     {
-        printf("Failed to make OpenAL context current\n");
+        Log_Error("Failed to make OpenAL context current\n");
         alcCloseDevice(device);
         return;
     }
 
-    printf("OpenAL context created\n");
+    Log_Info("OpenAL context created\n");
 }
 
 void Platform_Init(const char* name, gdl::ScreenAspect screenAspect, std::function<void ()> initCallback, std::function<void ()> updateCallback, std::function<void ()> drawCallback, u32 initFlags)
 {
-	gdl_assert_print(initCallback != nullptr, "Need to provide init callback before system init on PC");
-	gdl_assert_print(drawCallback != nullptr, "Need to provide update callback before system init on PC");
-	gdl_assert_print(updateCallback != nullptr, "Need to provide draw callback before system init on PC");
+	mgdl_assert_print(initCallback != nullptr, "Need to provide init callback before system init on PC");
+	mgdl_assert_print(drawCallback != nullptr, "Need to provide update callback before system init on PC");
+	mgdl_assert_print(updateCallback != nullptr, "Need to provide draw callback before system init on PC");
     initCall = initCallback;
 	drawCall = drawCallback;
 	updateCall = updateCallback;
@@ -280,9 +281,9 @@ void Platform_Init(const char* name, gdl::ScreenAspect screenAspect, std::functi
     int argumentCount = 0;
     char* argumentVector = nullptr;
 
-    printf("GlutInit\n");
+    Log_Info("GlutInit\n");
     glutInit(&argumentCount, &argumentVector);
-    printf("glutInitDisplayMode\n");
+    Log_Info("glutInitDisplayMode\n");
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(windowWidth, windowHeight);
     glutCreateWindow("Press 2 to write Rocket tracks");
@@ -361,7 +362,7 @@ WiiController* Platform_GetController(int controllerNumber)
 
 void Platform_DoProgramExit()
 {
-    printf("DoProgramExit\n");
+    Log_Info("DoProgramExit\n");
 	// Close sound
 	alcMakeContextCurrent(NULL);
 	alcDestroyContext(context);

@@ -44,7 +44,7 @@ extern "C"
 	// the variadic parameters are optional. Otherwise the comma
 	// after message causes compile error.
 	// See: https://gcc.gnu.org/onlinedocs/cpp/Variadic-Macros.html
-	#define gdl_assert_printf(test, message, ...) \
+	#define mgdl_assert_printf(test, message, ...) \
 	if ((test) == false) \
 	{ \
 		static bool ignoreThis = false; \
@@ -60,7 +60,7 @@ extern "C"
 	#pragma clang diagnostic ignored "-Wvariadic-macros"
 #endif
 
-	#define gdl_assert_printf(test, message, ...) \
+	#define mgdl_assert_printf(test, message, ...) \
 	if ((test) == false) \
 	{ \
 		static bool ignoreThis = false; \
@@ -77,7 +77,7 @@ extern "C"
 
 // These are same for PC and Wii
 
-#define gdl_assert_print(test, message) \
+#define mgdl_assert_print(test, message) \
 if ((test) == false) \
 { \
     static bool ignoreThis = false; \
@@ -86,7 +86,7 @@ if ((test) == false) \
 	} \
 }
 
-#define gdl_assert_test(test) \
+#define mgdl_assert_test(test) \
 if ((test) == false) \
 { \
     static bool ignoreThis = false; \

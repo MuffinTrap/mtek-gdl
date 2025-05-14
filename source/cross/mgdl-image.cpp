@@ -3,6 +3,7 @@
 #include <mgdl/mgdl-alloc.h>
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-png.h>
+#include <mgdl/mgdl-logger.h>
 #include <stdio.h>
 #include <cstdlib>
 #include <cstring>
@@ -12,14 +13,14 @@ using namespace gdl;
 Image* Image_LoadFile ( const char* filename, gdl::TextureFilterModes filterMode)
 {
 	// Load using png
-	printf("Loading image %s\n", filename);
+	Log_InfoF("Loading image %s\n", filename);
 
 	PNGFile* pngFile = PNG_ReadFile(filename);
 	if (pngFile == nullptr)
 	{
-		return nullptr;
+		return Image_GenerateCheckerBoard();
 	}
-	Image* image =  Image_LoadPNG(pngFile, filterMode);
+	Image* image = Image_LoadPNG(pngFile, filterMode);
 
 	// Data is loaded to OpenGX, release the buffers
 	PNG_DeleteData(pngFile);
@@ -29,6 +30,8 @@ Image* Image_LoadFile ( const char* filename, gdl::TextureFilterModes filterMode
 // The png might belong to someone else, do not free it in this function
 Image* Image_LoadPNG(PNGFile* png, gdl::TextureFilterModes filterMode)
 {
+	mgdl_assert_print(png != nullptr, "Image_LoadPNG got nullptr for png\n");
+
 	Image* image = new Image();
 	GLint glFilter = gdl::TextureFilterToGLFilter(filterMode);
 
@@ -37,6 +40,8 @@ Image* Image_LoadPNG(PNGFile* png, gdl::TextureFilterModes filterMode)
 	glBindTexture(GL_TEXTURE_2D, image->textureId);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glFilter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glFilter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
 	// Load to OpenGL
 
@@ -58,6 +63,9 @@ Image* Image_LoadPNG(PNGFile* png, gdl::TextureFilterModes filterMode)
 	image->width = png->width;
 	image->height = png->height;
 	Image_SetTint(image, 1.0f, 1.0f, 1.0f);
+	//image->thirdOfPixel = V2f_Create( (1.0f/(float)png->width) * 0.375f,
+									  //(1.0f/(float)png->height) * 0.375f);
+	image->thirdOfPixel = V2f_Create( 0.0f, 0.0f);
 
 	return image;
 }
@@ -85,16 +93,16 @@ void Image_Draw2DAbsolute(Image* img, short x, short y, short x2, short y2)
 		glColor3f(img->tint.red, img->tint.green, img->tint.blue);
 
 		// Lower left
-		glTexCoord2f(0.0f, 0.0f);
+		glTexCoord2f(V2f_X(img->thirdOfPixel), V2f_Y(img->thirdOfPixel));
 		glVertex2f(dx, dy);
 		// Lower right
-		glTexCoord2f(1.0f, 0.0f);
+		glTexCoord2f(1.0f - V2f_X(img->thirdOfPixel), V2f_Y(img->thirdOfPixel));
 		glVertex2f(dx2, dy);
 		// Upper right
-		glTexCoord2f(1.0f, 1.0f);
+		glTexCoord2f(1.0f - V2f_X(img->thirdOfPixel), 1.0f - V2f_Y(img->thirdOfPixel));
 		glVertex2f(dx2, dy2);
 		// Upper left
-		glTexCoord2f(0.0f, 1.0f);
+		glTexCoord2f(V2f_X(img->thirdOfPixel), 1.0f - V2f_Y(img->thirdOfPixel));
 		glVertex2f(dx, dy2);
 
 	glEnd();
@@ -161,19 +169,19 @@ void Image_Draw3D(Image* img, float scale, gdl::AlignmentModes alignX, gdl::Alig
 
 		// TODO calculate uv to be inside border pixels to avoid repeating
 		// Lower left
-		glTexCoord2f(0.0f, 0.0f);
+		glTexCoord2f(V2f_X(img->thirdOfPixel), V2f_Y(img->thirdOfPixel));
 		glVertex3f(x-aspect*hs, y-hs, z);
 
 		// Lower right
-		glTexCoord2f(1.0f, 0.0f);
+		glTexCoord2f(1.0f - V2f_X(img->thirdOfPixel), V2f_Y(img->thirdOfPixel));
 		glVertex3f(x+aspect*hs, y-hs, z);
 
 		// Upper right
-		glTexCoord2f(1.0f, 1.0f);
+		glTexCoord2f(1.0f - V2f_X(img->thirdOfPixel), 1.0f - V2f_Y(img->thirdOfPixel));
 		glVertex3f(x+aspect*hs, y+hs, z);
 
 		// Upper left
-		glTexCoord2f(0.0f, 1.0f);
+		glTexCoord2f(V2f_X(img->thirdOfPixel), 1.0f - V2f_Y(img->thirdOfPixel));
 		glVertex3f(x-aspect*hs, y+hs, z);
 
 
@@ -219,6 +227,8 @@ Image* Image_GenerateCheckerBoard()
 	glBindTexture(GL_TEXTURE_2D, texName);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, checkerImage);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
 

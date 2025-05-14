@@ -6,6 +6,7 @@ class Example
 {
     Image* barb;
     Sprite* mel_sprites;
+    Sprite* fruitSprites;
     Image* pointerImage;
     Font* ibmFont;
     Font* debugFont;

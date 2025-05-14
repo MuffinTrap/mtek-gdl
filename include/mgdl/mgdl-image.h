@@ -19,6 +19,8 @@ struct Image
 	GLsizei height = 0;
 	gdl::ColorFormats colorFormat;
 	GLuint textureId = 0;
+
+	vec2 thirdOfPixel; /**< How much is one third of a pixel on u and v */
 };
 
 extern "C"

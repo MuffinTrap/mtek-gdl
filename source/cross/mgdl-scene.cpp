@@ -1,5 +1,8 @@
 #include <mgdl/mgdl-scene.h>
+#include <mgdl/mgdl-logger.h>
+
 #include <glm/gtc/matrix_transform.hpp>
+
 void Scene_Init(Scene* scene)
 {
 	scene->rootNode = nullptr;
@@ -81,7 +84,7 @@ void Scene_SetMaterialTexture (Scene* scene, const char* materialName, Image* te
 	}
 	else
 	{
-		printf("No material found with name %s\n", materialName);
+		Log_ErrorF("No material found with name %s\n", materialName);
 		return;
 	}
 }
@@ -149,7 +152,7 @@ bool Scene_GetNodeModelMatrix ( Scene* scene, Node* node, mat4x4 modelOut )
 bool Scene_CalculateNodeModelMatrix (Node* parent, Node* target, mat4x4 model )
 {
 	vec3 p = parent->transform->position;
-	mat4x4Translate(model, vec3New(p.x, p.y, p.z));
+	mat4x4Translate(model, V3f_Create(p.x, p.y, p.z));
 	mat4x4RotateX(model, glm::radians(parent->transform->rotationDegrees.x));
 	mat4x4RotateY(model, glm::radians(parent->transform->rotationDegrees.y));
 	mat4x4RotateZ(model, glm::radians(parent->transform->rotationDegrees.z));
@@ -177,7 +180,7 @@ bool Scene_CalculateNodePosition ( Node* parent, Node* target, mat4x4 world, vec
 {
 
 	vec3 p = parent->transform->position;
-	mat4x4Translate(world, vec3New(p.x, p.y, p.z));
+	mat4x4Translate(world, V3f_Create(p.x, p.y, p.z));
 	mat4x4RotateX(world, glm::radians(parent->transform->rotationDegrees.x));
 	mat4x4RotateY(world, glm::radians(parent->transform->rotationDegrees.y));
 	mat4x4RotateZ(world, glm::radians(parent->transform->rotationDegrees.z));
@@ -185,7 +188,7 @@ bool Scene_CalculateNodePosition ( Node* parent, Node* target, mat4x4 world, vec
 	{
 		vec4 origo = vec4New(0.0f, 0.0f, 0.0f, 1.0f);
 		vec4 pos = mat4x4MultiplyVector(world, origo);
-		posOut = vec3New(pos.x, pos.y, pos.z);
+		posOut = V3f_Create(pos.x, pos.y, pos.z);
 		return true;
 	}
 

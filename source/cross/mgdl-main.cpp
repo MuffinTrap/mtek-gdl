@@ -11,7 +11,7 @@
 
 static AssetManager assetManager;
 
-void InitSystem(const char* name,
+void mgdl_InitSystem(const char* name,
 	gdl::ScreenAspect screenAspect,
 								std::function<void()> initCallback,
 								std::function<void()> updateCallback,
@@ -95,7 +95,7 @@ Music* LoadOgg(const char* filename)
 
 Font* LoadFont(const char* filename, short characterWidth, short characterHeight, char firstCharacter)
 {
-	Image* fontImage = LoadImage(filename, gdl::TextureFilterModes::Linear);
+	Image* fontImage = LoadImage(filename, gdl::TextureFilterModes::Nearest);
 	Font* font = Font_Load(fontImage, characterWidth, characterHeight, firstCharacter);
 	if (font != nullptr)
 	{

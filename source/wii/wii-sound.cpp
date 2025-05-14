@@ -21,8 +21,7 @@
 Sound* Sound_Load(const char* fileName) {
 
 	// Open up the wave file
-	if (gdl::ConsoleActive)
-		printf("Opening sound file %s\n", fileName);
+	Log_InfoF("Opening sound file %s\n", fileName);
 
 
 	FILE *fp = fopen(fileName, "r");
@@ -165,9 +164,7 @@ Sound* Sound_Load(const char* fileName) {
 
 	DCFlushRange(sound->sData, sound->sSize);
 
-
-	if (gdl::ConsoleActive)
-		printf("\tSound loaded Ok!\n");
+	Log_Info("\tSound loaded Ok!\n");
 
 	return sound;
 }

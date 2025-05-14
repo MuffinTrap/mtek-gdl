@@ -5,6 +5,8 @@
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-alloc.h>
 #include <mgdl/mgdl-util.h>
+#include <mgdl/mgdl-logger.h>
+
 #include <string.h>
 #include <stdarg.h>
 
@@ -12,6 +14,8 @@ using namespace gdl;
 
 Font* Font_Load(Image* fontImage, short charw, short charh, char firstCharacter )
 {
+	mgdl_assert_print(fontImage != nullptr, "Font_Load got nullptr for fontImage\n");
+
 	Font* font = new Font();
 	font->_fontImage = fontImage;
 	// TODO Log info printf("\tCreating font/sprite coordinates\n");
@@ -21,6 +25,8 @@ Font* Font_Load(Image* fontImage, short charw, short charh, char firstCharacter 
 
 Font* Font_LoadPadded(Image* fontImage, short charw, short charh, char firstCharacter, short charactersPerRow )
 {
+	mgdl_assert_print(fontImage != nullptr, "Font_Load got nullptr for fontImage\n");
+
 	Font* font = new Font();
 	font->_fontImage = fontImage;
 	// TODO Log info printf("\tCreating font/sprite coordinates\n");
@@ -30,6 +36,8 @@ Font* Font_LoadPadded(Image* fontImage, short charw, short charh, char firstChar
 
 Font* Font_LoadSelective(Image* fontImage, short charw, short charh, short charactersPerRow, std::string characters )
 {
+	mgdl_assert_print(fontImage != nullptr, "Font_Load got nullptr for fontImage\n");
+
 	Font* font = new Font();
 	font->_fontImage = fontImage;
 	// TODO Log info printf("\tCreating font/sprite coordinates\n");
@@ -47,8 +55,8 @@ void _Font_BindPadded(Font* font,short charw, short charh, char firstCharacter, 
 	font->_firstIndex = firstCharacter;
 	font->characterWidth = charw;
 	font->characterHeight = charh;
-	font->_uvWidth = (float)charw/(float)tw;
-	font->_uvHeight = (float)charh/(float)th;
+	font->_uvWidth = (float)charw/(float)tw - V2f_X(font->_fontImage->thirdOfPixel);
+	font->_uvHeight = (float)charh/(float)th - V2f_Y(font->_fontImage->thirdOfPixel);;
 	font->_aspect = (float)charw/(float)charh;
 
 	_Font_CreateTextureCoordList(font, rows, charactersPerRow, tw, th);
@@ -74,8 +82,8 @@ void _Font_BindSelective (Font* font, short charw, short charh, std::string char
 
 	font->characterWidth = charw;
 	font->characterHeight = charh;
-	font->_uvWidth = (float)charw/(float)tw;
-	font->_uvHeight = (float)charh/(float)th;
+	font->_uvWidth = (float)charw/(float)tw - V2f_X(font->_fontImage->thirdOfPixel);
+	font->_uvHeight = (float)charh/(float)th - V2f_Y(font->_fontImage->thirdOfPixel);;
 	font->_aspect = (float)charw/(float)charh;
 
 	_Font_CreateTextureCoordListSelective(font, rows, charactersPerRow, tw, th, characters);
@@ -278,16 +286,16 @@ void Font_SetSpacingOnce (Font* font, float x, float y )
 // TODO add padding to UVs so that the corners are inside the pixels and not in between
 void _Font_CreateTextureCoordListSelective (Font* font, short rows, short charactersPerRow, short texW, short texH, std::string characters )
 {
-	gdl_assert_print(font->characterWidth > 0 && font->characterHeight > 0, "Character dimensions not set");
-	gdl_assert_print(rows > 0 && charactersPerRow > 0, "Rows and cpr at zero");
-	gdl_assert_print(texW > 0 && texH > 0, "Texture size is 0");
+	mgdl_assert_print(font->characterWidth > 0 && font->characterHeight > 0, "Character dimensions not set");
+	mgdl_assert_print(rows > 0 && charactersPerRow > 0, "Rows and cpr at zero");
+	mgdl_assert_print(texW > 0 && texH > 0, "Texture size is 0");
 
 	// Need to also create texture coordinates for characters that are not included
 	char first = characters[0];
 	char last = characters[characters.length()-1];
 	short textureArraySize =  (last - first) + 1;
 	short toBeFoundAmount = static_cast<short>(characters.length());
-	printf("find between %d and %d: %d characters\n", first, last, toBeFoundAmount);
+	Log_InfoF("find between %d and %d: %d characters\n", first, last, toBeFoundAmount);
 
 
 	font->_characterCount = textureArraySize;
@@ -295,13 +303,13 @@ void _Font_CreateTextureCoordListSelective (Font* font, short rows, short charac
 	if (font->_tList == NULL)
 	{
 		font->_tList = (vec2*)mgdl_AllocateAlignedMemory(tListSize);
-		gdl_assert_print(font->_tList != nullptr, "Out of memory when allocation font txcord list");
+		mgdl_assert_print(font->_tList != nullptr, "Out of memory when allocation font txcord list");
 	}
 
-	printf("Creating coordinates: rows %d, cperRow %d, textureW %d, textrureH %d\n", rows, charactersPerRow, texW, texH);
+	Log_InfoF("Creating coordinates: rows %d, cperRow %d, textureW %d, textrureH %d\n", rows, charactersPerRow, texW, texH);
 
 	char currentCharacter = font->_firstIndex;
-	gdl_assert_print(currentCharacter >= ' ', "First character must be space or bigger");
+	mgdl_assert_print(currentCharacter >= ' ', "First character must be space or bigger");
 
 	// If the last character in image is not included this crashes unless we keep track of how many should be found
 	short textureIndex = 0;
@@ -339,7 +347,7 @@ void _Font_CreateTextureCoordListSelective (Font* font, short rows, short charac
 			currentCharacter++;
 			if (found == toBeFoundAmount)
 			{
-				printf("All %d characters found\n", toBeFoundAmount);
+				Log_InfoF("All %d characters found\n", toBeFoundAmount);
 				break;
 			}
 
@@ -366,18 +374,18 @@ void _Font_CreateCoordinatesForGlyph (Font* font, u32 textureIndex, short cx, sh
 	float tx = font->characterWidth * cx;
 	float ty = texH - font->characterHeight * (cy+1);
 
-	// NOTE: Stored in the quad drawing order
 	// Lower-left
-	font->_tList[tc+0].x	= tx/texW;
-	font->_tList[tc+0].y	= ty/texH;
+	font->_tList[tc+0].x	= tx/texW + V2f_X(font->_fontImage->thirdOfPixel);
+	font->_tList[tc+0].y	= ty/texH + V2f_Y(font->_fontImage->thirdOfPixel);
 }
+
 
 
 void _Font_CreateTextureCoordList(Font* font, short rows, short charactersPerRow, short texW, short texH)
 {
-	gdl_assert_print(font->characterWidth > 0 && font->characterHeight > 0, "Character dimensions not set");
-	gdl_assert_print(rows > 0 && charactersPerRow > 0, "Rows and cpr at zero");
-	gdl_assert_print(texW > 0 && texH > 0, "Texture size is 0");
+	mgdl_assert_print(font->characterWidth > 0 && font->characterHeight > 0, "Character dimensions not set");
+	mgdl_assert_print(rows > 0 && charactersPerRow > 0, "Rows and cpr at zero");
+	mgdl_assert_print(texW > 0 && texH > 0, "Texture size is 0");
 
 	short characterAmount = rows * charactersPerRow;
 	font->_characterCount = characterAmount;
@@ -385,7 +393,7 @@ void _Font_CreateTextureCoordList(Font* font, short rows, short charactersPerRow
 	if (font->_tList == NULL)
 	{
 		font->_tList = (vec2*)mgdl_AllocateAlignedMemory(tListSize);
-		gdl_assert_print(font->_tList != nullptr, "Out of memory when allocation font txcord list");
+		mgdl_assert_print(font->_tList != nullptr, "Out of memory when allocation font txcord list");
 	}
 
 	for(short cy=0; cy<rows; cy++) {

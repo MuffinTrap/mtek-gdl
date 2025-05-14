@@ -873,19 +873,15 @@ bool gdl::Texture::CreateMipmapped(short xSize, short ySize, u_int minFilt, u_in
 
 bool gdl::Texture::LoadTexture(const char* fileName) {
 
-	if (gdl::ConsoleActive)
-		printf("gdl: Loading image %s... ", fileName);
-
+	Log_InfoF("Loading image %s... ", fileName);
 
 	// Open file
 	FILE *fp = fopen(fileName, "rb");
 	if (!fp) {
-		gdl::CallErrorCallback("Could not find image file %s", fileName);
+		Log_ErrorF("Could not find image file %s", fileName);
 		fclose(fp);
 		return(false);
-
 	}
-
 
 	// Internal structs
 	struct {
@@ -1021,8 +1017,7 @@ bool gdl::Texture::LoadTexture(const char* fileName) {
 
 
 	// Finish
-	if (gdl::ConsoleActive)
-		printf("Ok.\n");
+	Log_Info("Ok.\n");
 
 	return(true);
 

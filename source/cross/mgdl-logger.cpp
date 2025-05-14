@@ -66,5 +66,5 @@ void Log_ErrorF(const char* fmt, ...)
 
 void _Log_Print(const char* text)
 {
-	printf("%s\n", text);
+	printf("%s", text);
 }
