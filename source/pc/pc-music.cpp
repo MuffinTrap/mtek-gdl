@@ -354,7 +354,7 @@ bool LoadFileNonStreaming ( const char* filename, Music* music )
     result = VerifyALSource();
 
     // All data is sent to OpenAL, free memory
-    delete pcmBuffer;
+    delete[] pcmBuffer;
     pcmBuffer = nullptr;
 
     fclose(audioData.filePointer);

@@ -125,6 +125,13 @@ extern "C"
     bool Menu_Toggle(const char* text, bool* valueRef);
 
     /**
+     * @brief Draws a text label with can be highlighted.
+     * @param text Text on the label.
+     * @param enabled When true, the label uses highlight color
+     */
+    void Menu_Flag(const char* text, bool enabled);
+
+    /**
      * @brief Draws a slider that can be adjusted with mouse or by pressing buttons.
      * @param text Text on the slider.
      * @param minValue The minimum value of the slider.

@@ -1,5 +1,6 @@
 #pragma once
 #include <mgdl/mgdl-vector.h>
+#include <mgdl/mgdl-types.h>
 
 // includes the OpenGL needed by platform
 #ifdef GEKKO

@@ -561,12 +561,15 @@ Font* Font_GetDebugFont()
 		glBindTexture(GL_TEXTURE_2D, texName);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, fontImage);
 		glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
 
-		Image img;
-		Image_SetGLName(&img, texName, width, height, gdl::ColorFormats::RGBA);
-		debugFont = Font_Load(&img, 8, 8, ' ');
+		Image* img = new Image();
+		Image_SetGLName(img, texName, width, height, gdl::ColorFormats::RGBA);
+		Image_SetTint(img, 1.0f, 1.0f, 1.0f);
+		debugFont = Font_Load(img, 8, 8, ' ');
 	}
 	return debugFont;
 }

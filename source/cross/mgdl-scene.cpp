@@ -91,7 +91,7 @@ void Scene_SetMaterialTexture (Scene* scene, const char* materialName, Image* te
 
 void Scene_SetAllMaterialTextures (Scene* scene, Image* texture )
 {
-	for(unsigned long i = 0; i < scene->materials.size(); i++)
+	for(sizetype i = 0; i < scene->materials.size(); i++)
 	{
 		scene->materials[i]->texture = texture;
 	}

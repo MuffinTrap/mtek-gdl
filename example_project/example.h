@@ -14,6 +14,7 @@ class Example
     Sound* blip;
     Menu* menu;
     Menu* cameraMenu;
+    Menu* controllerMenu;
     Scene* wiiScene;
     Scene* shipScene;
     Image* wiiTexture;

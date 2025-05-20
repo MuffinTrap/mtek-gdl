@@ -12,7 +12,7 @@
  */
 struct Material
 {
-	const char* name;
+	char* name;
 	GLfloat shininess = 1.0f;
 	vec3 emissiveColor;
 	Image* texture;

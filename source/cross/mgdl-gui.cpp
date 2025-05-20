@@ -33,7 +33,7 @@ Menu* Menu_Create(Font* font, float textHeight, float rowHeightEm)
     return menu;
 }
 
-void Menu_Start(int x, int y, int width, vec2 cursorPosition, bool buttonPress)
+void Menu_Start(short x, short y, short width, vec2 cursorPosition, bool buttonPress)
 {
     if (menu != nullptr)
     {
@@ -63,6 +63,7 @@ void Menu_Panel(int h, u32 color)
     DrawRectangle(x, y, x + w, y - h, color);
     menu->_drawy -= h;
 }
+
 void Menu_TextF(const char* text, ...)
 {
     MGDL_PRINTF_TO_BUFFER(text);
@@ -151,8 +152,30 @@ bool Menu_Toggle ( const char* text, bool* valueRef )
     return (inside && menu->_buttonPress);
 }
 
+void Menu_Flag(const char* text, bool enabled)
+{
+    const short x = menu->_drawx;
+    const short y = menu->_drawy;
+    const short w = menu->_menuWidth;
+    const short h = menu->_font->characterHeight * menu->_textHeight * menu->_rowHeightEm;
+
+    rgba8 c = menu->_bg;
+    if (enabled)
+    {
+        c = menu->_highlight;
+    }
+    DrawRectangle(x, y, x + w, y - h, c);
+
+    // TODO Center text
+
+    float textH = h/menu->_rowHeightEm;
+    Font_PrintAligned(menu->_font, menu->_text, x+w/2, y, textH, Centered, LJustify, text);
+
+    menu->_drawy -= h ;
+}
+
 
 void Menu_Separator()
 {
-
+    // TODO
 }

@@ -60,6 +60,7 @@ void Example::Init()
 
     menu = Menu_Create(ibmFont, 1.0f, 1.0f);
     cameraMenu = Menu_Create(debugFont, 1.0f, 1.0f);
+    controllerMenu = Menu_Create(ibmFont, 1.0f, 1.0f);
 
     musicLooping = Music_GetLooping(sampleMusic);
     sceneRotation = vec3New(0.0f, 1.0f,0.0f);
@@ -105,8 +106,14 @@ void Example::Draw()
     mgdl_InitOrthoProjection();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    DrawImage();
 
+    DrawImage();
+    Font_Print(ibmFont, Colors::White, 10, 100, 32, "TEST");
+    Font_Print(debugFont, Colors::White, 10, 132, 32, "TEST");
+    DrawInputInfo(10, mgdl_GetScreenHeight() - 10);
+
+
+    /*
     mgdl_glSetAlphaTest(true);
     mgdl_glSetTransparency(true);
     for (int i = 0; i < 16; i++)
@@ -115,10 +122,12 @@ void Example::Draw()
     Sprite_Draw2D(fruitSprites, i, size * (i%4), size + (i/4) * size, size, gdl::LJustify, gdl::RJustify, Colors::White);
     }
 
+
     cameraDistance = 5.0f;
     DrawScene(icosaScene, V3f_Create(1.0f, 1.0f, 1.0f));
     cameraDistance = 15.0f;
     DrawScene(wiiScene, V3f_Create(0.1f, 0.1f, 0.1f));
+    */
 
 }
 
@@ -131,6 +140,11 @@ void Example::DrawImage()
             1.0f,
             gdl::LJustify, gdl::Centered);
 
+    Image_Draw2DAligned(debugFont->_fontImage,
+            0,
+            mgdl_GetScreenHeight()/2,
+            1.0f,
+            gdl::LJustify, gdl::Centered);
 }
 
 #if 0
@@ -200,13 +214,10 @@ void Example::DrawScene ( Scene* scene, vec3 scale)
 
 }
 
-#if 0
 
-static void DrawButtons(short x, short y, short size, gdl::Font* font)
+static void DrawButtons()
 {
     // Draw button states
-    gdl::Colors active = gdl::Colors::Blue;
-    gdl::Colors inactive = gdl::Colors::LightBlue;
     int buttons[] = {
         WiiButtons::ButtonA,
         WiiButtons::ButtonB,
@@ -219,18 +230,11 @@ static void DrawButtons(short x, short y, short size, gdl::Font* font)
 
     for(int i = 0; i < 6;i++ )
     {
-        gdl::Colors c = inactive;
-        if (WiiController_ButtonHeld(gdl::GetController(0), buttons[i]))
-        {
-            c = active;
-        }
-        DrawBoxF(x + i * size,
-                      y,
-                      x+size+i*size,
-                      y-size,c);
-        font->Print(gdl::Colors::White, x + i * size, y, 16.0f, gdl::LJustify, gdl::LJustify, names[i].c_str());
+        bool held = WiiController_ButtonHeld(mgdl_GetController(0), buttons[i]);
+        Menu_Flag(names[i].c_str(), held);
     }
 }
+#if 0
 
 void DrawDPad(short x, short y, short size)
 {
@@ -280,21 +284,24 @@ void DrawJoystick(short x, short y, short size)
     }
     DrawBoxF(jleft, jtop, jleft+box, jtop+box,jc);
 }
+#endif
 
 void Example::DrawInputInfo(int x, int y)
 {
+    Menu_SetActive(controllerMenu);
     // Draw cursor
-    vec2 cp = WiiController_GetCursorPosition(gdl::GetController(0));
+    vec2 cp = WiiController_GetCursorPosition(mgdl_GetController(0));
+    Menu_Start(x, y, 100, cp, false);
+    Menu_Text("Input");
 
-    pointerImage->Draw2DAligned(cp.x, cp.y, gdl::Colors::White, gdl::LJustify, gdl::LJustify);
+    Image_Draw2DAligned(pointerImage, cp.x, cp.y, gdl::Colors::White, gdl::LJustify, gdl::LJustify);
 
-    DrawButtons(x, y, 20, ibmFont);
-    y += 20;
-    DrawDPad(x, y, 60);
-    x += 80;
-    DrawJoystick(x, y, 60);
+    DrawButtons();
+    // DrawDPad();
+    // DrawJoystick();
 }
 
+#if 0
 void Example::DrawSprites()
 {
     const short h = mel_sprites.GetSpriteHeight();
