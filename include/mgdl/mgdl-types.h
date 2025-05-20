@@ -174,5 +174,23 @@ namespace gdl
     };
 }
 
+struct Color4f
+{
+    float red;
+    float green;
+    float blue;
+    float alpha;
+};
+
+struct Color4b
+{
+    u8 red;
+    u8 green;
+    u8 blue;
+    u8 alpha;
+};
+
+typedef u32 ColorHex;
+
 
 

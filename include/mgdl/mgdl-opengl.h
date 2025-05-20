@@ -40,6 +40,8 @@ extern "C"
     void mgdl_glSetTransparency(bool enabled);
     void mgdl_glSetAlphaTest(bool enabled);
 
+    void mgdl_glColor4f(Color4f color);
+    void mgdl_glColor4fa(Color4f color, float alpha);
 
 /** NOTE!!!!
 * @brief Sets up the camera.

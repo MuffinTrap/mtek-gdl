@@ -6,6 +6,7 @@
 #include "mgdl/mgdl-cache.h"
 #include "mgdl/mgdl-opengl.h"
 #include "mgdl/mgdl-palette.h"
+#include "mgdl/mgdl-camera.h"
 #include "mgdl/mgdl-png.h"
 #include "mgdl/mgdl-image.h"
 #include "mgdl/mgdl-node.h"
