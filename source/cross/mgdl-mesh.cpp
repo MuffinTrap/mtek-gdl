@@ -1,14 +1,15 @@
 #include <mgdl/mgdl-scene.h>
 #include <mgdl/mgdl-logger.h>
+#include <mgdl/mgdl-util.h>
 
 
-
-sizetype Mesh_Init (Mesh* mesh, sizetype vertexCount, sizetype indexCount, bool createNormals, bool createUVs )
+sizetype Mesh_Init (Mesh* mesh, sizetype vertexCount, sizetype indexCount, u32 creationFlags)
 {
 	mesh->positions = nullptr;
 	mesh->indices = nullptr;
 	mesh->normals = nullptr;
 	mesh->uvs=nullptr;
+	mesh->colors = nullptr;
 	mesh->vertexCount = vertexCount;
 	mesh->indexCount = indexCount;
 
@@ -24,37 +25,67 @@ sizetype Mesh_Init (Mesh* mesh, sizetype vertexCount, sizetype indexCount, bool 
 		byteCount += positionFloats * sizeof(float);
 	}
 
-	if (createNormals)
+	if (mgdl_IsFlagSet(creationFlags, FlagNormals))
 	{
 		// 3 floats per normal
 		sizetype normalFloats = vertexCount * 3;
 		mesh->normals = new GLfloat[normalFloats];
 		byteCount += normalFloats * sizeof(float);
 	}
-	if (createUVs)
+
+	if (mgdl_IsFlagSet(creationFlags, FlagUVs))
 	{
 		// 2 floats per uv
 		sizetype uvFloats = vertexCount * 2;
 		mesh->uvs = new GLfloat[uvFloats];
 		byteCount += uvFloats * sizeof(float);
 	}
+
+	if (mgdl_IsFlagSet(creationFlags, FlagColors))
+	{
+		// 3 floats per color
+		sizetype colorFloats = vertexCount * 3;
+		mesh->colors = new GLfloat[colorFloats];
+		byteCount += colorFloats * sizeof(float);
+	}
+
 	return byteCount;
 }
-
 
 void Mesh_SetupVertexArrays(Mesh* mesh)
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glVertexPointer(3, GL_FLOAT, 0, mesh->positions);
+
+	// TODO Only enable this if lights are used
 	if (mesh->normals != nullptr)
 	{
 		glEnableClientState(GL_NORMAL_ARRAY);
 		glNormalPointer(GL_FLOAT, 0, mesh->normals);
 	}
+	else
+	{
+		glDisableClientState(GL_NORMAL_ARRAY);
+	}
+
 	if (mesh->uvs != nullptr)
 	{
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glTexCoordPointer(2, GL_FLOAT, 0, mesh->uvs);
+	}
+	else
+	{
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	}
+
+	if (mesh->colors != nullptr)
+	{
+		glEnableClientState(GL_COLOR_ARRAY);
+		glColorPointer(2, GL_FLOAT, 0, mesh->uvs);
+	}
+	else
+	{
+		glDisableClientState(GL_COLOR_ARRAY);
 	}
 }
 
@@ -116,8 +147,6 @@ void Mesh_CalculateMatcapUVs(Mesh* mesh,const mat4x4& modelViewMatrix, const mat
 	vec4 position4;
 	vec2 matcapUV;
 
-	// Debug print
-	static bool once = false;
 	// Overwrite UVs
 	for (sizetype i = 0; i < mesh->vertexCount; i++)
 	{
@@ -153,23 +182,69 @@ void Mesh_CalculateMatcapUVs(Mesh* mesh,const mat4x4& modelViewMatrix, const mat
 		}
 		Mesh_SetUVToArray(mesh, i, matcapUV);
 	}
-	once = false;
 }
 
-void Mesh_SetPositionToArray(Mesh* mesh, sizetype index, const vec3& position )
+GLushort Mesh_AddPosition(Mesh* mesh, vec3 position)
 {
+	if (mesh->indexCounter < mesh->vertexCount)
+	{
+		GLushort i = mesh->indexCounter * 3;
+		mesh->positions[i+0] = V3f_X(position);
+		mesh->positions[i+1] = V3f_Y(position);
+		mesh->positions[i+2] = V3f_Z(position);
+	}
+	GLushort last = mesh->indexCounter;
+	mesh->indexCounter += 1;
+	return last;
+}
+
+void Mesh_AddNormal(Mesh* mesh, vec3 normal)
+{
+	GLushort index = mesh->indexCounter - 1;
 	if (index < mesh->vertexCount)
 	{
-		sizetype i = index * 3;
-		mesh->positions[i+0] = position.x;
-		mesh->positions[i+1] = position.y;
-		mesh->positions[i+2] = position.z;
+		GLushort i = index * 3;
+		mesh->normals[i+0] = V3f_X(normal);
+		mesh->normals[i+1] = V3f_Y(normal);
+		mesh->normals[i+2] = V3f_Z(normal);
+	}
+}
+
+void Mesh_AddUV(Mesh* mesh, vec2 uv)
+{
+
+	GLushort index = mesh->indexCounter - 1;
+	if (index < mesh->vertexCount)
+	{
+		GLushort i = index * 2;
+		mesh->uvs[i+0] = V3f_X(uv);
+		mesh->uvs[i+1] = V3f_Y(uv);
+	}
+}
+
+void Mesh_AddColor(Mesh* mesh, vec3 color)
+{
+	GLushort index = mesh->indexCounter - 1;
+	if (index < mesh->vertexCount)
+	{
+		GLushort i = index * 3;
+		mesh->colors[i+0] = V3f_X(color);
+		mesh->colors[i+1] = V3f_Y(color);
+		mesh->colors[i+2] = V3f_Z(color);
 	}
 }
 
 
+u32 Mesh_AddTriangle(Mesh* mesh, GLushort indexA, GLushort indexB, GLushort indexC, u32 index)
+{
+	mesh->indices[index*3+0] = indexA;
+	mesh->indices[index*3+1] = indexB;
+	mesh->indices[index*3+2] = indexC;
+	return index + 1;
+}
+
 // This is a drawing index, not an array index
-vec3 Mesh_GetPosition ( Mesh* mesh,GLushort index )
+vec3 Mesh_GetPosition ( Mesh* mesh, GLushort index )
 {
 	if (index < mesh->indexCount)
 	{
@@ -232,7 +307,7 @@ void Mesh_SetUVToArray (Mesh* mesh, sizetype index, const vec2& uv )
 	}
 }
 
-void Mesh_SetDrawingIndex ( Mesh* mesh,sizetype index, GLushort drawIndex )
+void Mesh_SetDrawingIndex ( Mesh* mesh, sizetype index, GLushort drawIndex )
 {
 	mesh->indices[index] = drawIndex;
 }
@@ -261,14 +336,14 @@ vec3 Mesh_GetNormalFromArray(Mesh* mesh,sizetype index)
 
 // Mesh creation functions
 
-Mesh* Mesh_CreateIcosahedron(bool normals, bool uvs)
+Mesh* Mesh_CreateIcosahedron(u32 creationFlags)
 {
     const float X = 0.525731112119133606;
     const float Z = 0.850650808352039932;
     const float N = 0.0f;
 
 	Mesh* icosa = new Mesh();
-	Mesh_Init(icosa, 12, 60, normals, uvs);
+	Mesh_Init(icosa, 12, 60, creationFlags);
 
 	delete[] icosa->positions;
     icosa->positions = new GLfloat[12*3] {
@@ -285,22 +360,10 @@ Mesh* Mesh_CreateIcosahedron(bool normals, bool uvs)
 		 Z, -X,  N,
 		-Z, -X,  N};
 
-    if (normals)
+    if (mgdl_IsFlagSet(creationFlags, FlagNormals))
 	{
 		delete[] icosa->normals;
-		icosa->normals = new GLfloat[12*3] {
-			-X, N, Z,
-			X,  N,  Z,
-			-X,  N, -Z,
-			X,  N, -Z,
-			N,  Z,  X,
-			N,  Z, -X,
-			N, -Z,  X,
-			N, -Z, -X,
-			Z,  X,  N,
-			-Z,  X,  N,
-			Z, -X,  N,
-			-Z, -X,  N};
+		icosa->normals = icosa->positions;
 	}
 
     // OpenGL books the indices in CC winding
@@ -316,7 +379,6 @@ Mesh* Mesh_CreateIcosahedron(bool normals, bool uvs)
 	icosa->indexCount = 60;
 
 	icosa->name = "Icosahedron";
-
 
     return icosa;
 }
@@ -339,10 +401,10 @@ void Mesh_DebugPrint(Mesh* mesh)
 }
 
 
-Mesh * Mesh_CreateQuad ( bool normals, bool uvs )
+Mesh * Mesh_CreateQuad (u32 creationFlags)
 {
 	Mesh* quad = new Mesh();
-	Mesh_Init(quad, 4, 6, normals, uvs);
+	Mesh_Init(quad, 4, 6, creationFlags);
 	delete[] quad->positions;
 
 	float sz = 0.5f;
@@ -352,17 +414,23 @@ Mesh * Mesh_CreateQuad ( bool normals, bool uvs )
 		sz, sz, 0.0f,
 		-sz, sz, 0.0f};
 
-	for (int i = 0; i < 4*3; i+=3)
+	if (mgdl_IsFlagSet(creationFlags, FlagNormals))
 	{
-		quad->normals[i+0] = 0.0f;
-		quad->normals[i+1] = 0.0f;
-		quad->normals[i+2] = 1.0f;
+		for (int i = 0; i < 4*3; i+=3)
+		{
+			quad->normals[i+0] = 0.0f;
+			quad->normals[i+1] = 0.0f;
+			quad->normals[i+2] = 1.0f;
+		}
 	}
 
-	Mesh_SetUVToArray(quad, 0, vec2New(0.0f, 0.0f));
-	Mesh_SetUVToArray(quad, 1, vec2New(1.0f, 0.0f));
-	Mesh_SetUVToArray(quad, 2, vec2New(1.0f, 1.0f));
-	Mesh_SetUVToArray(quad, 3, vec2New(0.0f, 1.0f));
+	if (mgdl_IsFlagSet(creationFlags, FlagUVs))
+	{
+		Mesh_SetUVToArray(quad, 0, vec2New(0.0f, 0.0f));
+		Mesh_SetUVToArray(quad, 1, vec2New(1.0f, 0.0f));
+		Mesh_SetUVToArray(quad, 2, vec2New(1.0f, 1.0f));
+		Mesh_SetUVToArray(quad, 3, vec2New(0.0f, 1.0f));
+	}
 
 	quad->indices[0] = 0;
 	quad->indices[1] = 1;
@@ -374,6 +442,57 @@ Mesh * Mesh_CreateQuad ( bool normals, bool uvs )
 	quad->name = "Quad";
 
 	return quad;
+}
+
+Mesh* CreateStar(float centerThickness, float pointRadius, float sharpness, int pointAmount, bool bothSides, u32 creationFlags)
+{
+	Mesh* star = new Mesh();
+	Mesh_Init(star, 1 + pointAmount * 3, pointAmount * 6, creationFlags);
+	vec3 point = V3f_Create(1.0f, 0.0f, 0.0f);
+	float pointAngle = M_PI*2/(float)pointAmount;
+	float halfAngle = pointAngle/2.0f;
+	float baseRadius = pointRadius * (1.0f-sharpness);
+	u32 triangleCount = 0;
+
+	int sides = 1;
+	if (bothSides)
+	{
+		sides = 2;
+	}
+	else
+	{
+		centerThickness = 0.0f;
+	}
+
+	for (int side = 0; side < sides; side++)
+	{
+		vec3 topCenter = V3f_Create(0, centerThickness * -1.0f * side, 0);
+		GLushort top_center = Mesh_AddPosition(star, topCenter);
+        for (int p = 0; p < pointAmount; p++)
+        {
+			// Wind triangles the other way on the other side
+			// Front side : side == 0
+			// Back side  : side == 1
+            // Front side is facing Z axis
+            vec3 baseRot1 ; V3f_RotateZ(point, pointAngle * (p + side), baseRot1);
+            vec3 baseRot2 ; V3f_RotateZ(point, pointAngle * (p + 1 - side), baseRot2);
+            vec3 pointRot ; V3f_RotateZ(point, pointAngle * p + halfAngle, pointRot);
+
+            vec3 rimPoint   ; V3f_Scale(pointRot, pointRadius, rimPoint);
+            vec3 basePoint1 ; V3f_Scale(baseRot1 , baseRadius, basePoint1);
+            vec3 basePoint2 ; V3f_Scale(baseRot2 , baseRadius, basePoint2);
+
+            // vec3 normal1 = CalculateTriangleNormal(basePoint1, topCenter, rimPoint);
+            GLushort rim =   Mesh_AddPosition(star, rimPoint);
+            GLushort base1 = Mesh_AddPosition(star, basePoint1);
+            GLushort base2 = Mesh_AddPosition(star, basePoint2);
+
+            triangleCount = Mesh_AddTriangle(star, top_center, rim, base1, triangleCount);
+            triangleCount = Mesh_AddTriangle(star, top_center, base2, rim, triangleCount);
+        }
+	}
+
+	return star;
 }
 
 

@@ -14,10 +14,19 @@ struct Mesh
 	GLushort* indices;
 	GLsizei indexCount;
 	u32 vertexCount;
+	GLushort indexCounter; /**< Used when creating a mesh */
 	GLfloat* positions;
 	GLfloat* normals;
 	GLfloat* uvs;
+	GLfloat* colors;
 	const char* name;
+};
+
+enum MeshAttributeFlags
+{
+	FlagNormals = 1,
+	FlagUVs = 2,
+	FlagColors = 4
 };
 
 extern "C"
@@ -28,11 +37,10 @@ extern "C"
 	 * @param mesh The mesh to initialize.
 	 * @param vertexCount How many vertices the mesh will have.
 	 * @param indexCount How many indices the mesh will have.
-	 * @param createNormals Will the vertices have normals or not.
-	 * @param createUVs Will the vertices have texture coordinates or not.
+	 * @param createFlags Collection of flags specifying what vertex attributes to create
 	 * @return Amount of bytes allocated.
 	 */
-	sizetype Mesh_Init(Mesh* mesh, sizetype vertexCount, sizetype indexCount, bool createNormals, bool createUVs);
+	sizetype Mesh_Init(Mesh* mesh, sizetype vertexCount, sizetype indexCount, u32 creationFlags);
 
 	vec3 Mesh_GetPosition(Mesh* mesh, GLushort index);
 	vec3 Mesh_GetNormal(Mesh* mesh, GLushort index);
@@ -50,27 +58,33 @@ extern "C"
 
 	void Mesh_SetupVertexArrays(Mesh* mesh);
 	void Mesh_DrawElements(Mesh* mesh);
+	// TODO void Mesh_DrawElementsPartially(Mesh* mesh, float start, float amount);
 	void Mesh_DrawPoints(Mesh* mesh);
 	void Mesh_DrawLines(Mesh* mesh);
 	void Mesh_DrawNormals(Mesh* mesh);
 	void Mesh_CalculateMatcapUVs(Mesh* mesh,const mat4x4& modelViewMatrix, const mat4x4& normalMatrix);
 
-	void Mesh_SetVertexV3(vec3 vertex, u32 index);
-	void Mesh_SetVertexXYZ(float x, float y, float z, u32 index);
+	// Setting vertices into arrays : returns the index of vertex in GLushort
+
+	// SetPosition must be called first, just like in drawing
+	GLushort Mesh_AddPosition(Mesh* mesh, vec3 vertex);
+	void Mesh_AddNormal(Mesh* mesh, vec3 normal);
+	void Mesh_AddUV(Mesh* mesh, vec2 normal);
+	void Mesh_AddColor(Mesh* mesh, vec3 color);
+	u32 Mesh_AddTriangle(Mesh* mesh, GLushort indexA, GLushort indexB, GLushort indexC, u32 index);
 
 
-	Mesh* Mesh_CreateIcosahedron(bool normals, bool uvs);
-	Mesh* Mesh_CreateQuad(bool normals, bool uvs);
+	Mesh* Mesh_CreateIcosahedron(u32 creationFlags);
+	Mesh* Mesh_CreateQuad(u32 creationFlags);
+	Mesh* Mesh_CreateStar(float centerThickness, float pointRadius, float sharpness, int pointAmount, bool bothSides, u32 creationFlags);
 
-	// TODO
-	void Mesh_DrawElementsPartially(Mesh* mesh, float start, float amount);
+	// TODO Mesh* Mesh_CreateStarBorder(float thickness, float pointRadius, float sharpness, int pointAmount);
 
-	Mesh* Mesh_CreateStar(float centerThickness, float pointRadius, float sharpness, int pointAmount);
-	Mesh* Mesh_CreateStarBorder(float thickness, float pointRadius, float sharpness, int pointAmount);
-	Mesh* Mesh_CreateRibbonPolygonCross(Mesh* bezierCurvePoints, int crossSectionPoints, float crossSectionRadius, int segmentsPerBezier);
-	Mesh* Mesh_CreateRibbonMeshCross(Mesh* bezierCurvePoints, Mesh* crossSectionPoints, float crossSectionScale, int segmentsPerBezier);
+	// TODO Mesh* Mesh_CreateRibbonPolygonCross(Mesh* bezierCurvePoints, int crossSectionPoints, float crossSectionRadius, int segmentsPerBezier);
 
-	Mesh* Mesh_CreateCloud(float radius, int segments, float randomness);
+	// TODO Mesh* Mesh_CreateRibbonMeshCross(Mesh* bezierCurvePoints, Mesh* crossSectionPoints, float crossSectionScale, int segmentsPerBezier);
+
+	// TODO Mesh* Mesh_CreateCloud(float radius, int segments, float randomness);
 
 
 }

@@ -48,6 +48,17 @@ namespace gdl
 };
 
 /**
+ * @brief Tells if a flag is set.
+ * @param bitfield The bitfield containing flags
+ * @param flag The flag to inspect
+ * @return True if the flag is set.
+ */
+bool mgdl_IsFlagSet(u32 bitfield, u32 flag)
+{
+	return (bitfield & flag) != 0;
+}
+
+/**
  * @return Buffer containging the text, max size 255 chars.
  */
 char* mgdl_GetPrintfBuffer();

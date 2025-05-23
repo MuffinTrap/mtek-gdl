@@ -70,12 +70,12 @@ vec3 V3f_BezierFuncV3(float s, vec3 P0, vec3 C0, vec3 C1, vec3 P1);
 #define V3f_ToFloatArray(source, array, index) array[index*3] = source.x; array[index*3+1] = source.y; array[index*3+2] = source.z;
 #define V3f_FromVec3Array(array, index, dest) dest = array[index];
 
-#define V3f_Scale(Va, scalar, dest) dest = Vec3Scale(Va, scalar);
-#define V3f_Add(Va, Vb, dest) dest = Vec3Add(Va, Vb);
-#define V3f_Sub(Va, Vb, dest) dest = Vec3Sub(Va, Vb);
-#define V3f_Normalize(Va) Va = Vec3Normalize(Va);
-#define V3f_Cross(Va, Vb, dest) dest = Vec3Cross(Va, Vb);
-#define V3f_Dot(Va, Vb) Vec3Dot(Va, Vb);
+#define V3f_Scale(Va, scalar, dest) dest = vec3Multiply(Va, scalar);
+#define V3f_Add(Va, Vb, dest) dest = vec3Add(Va, Vb);
+#define V3f_Sub(Va, Vb, dest) dest = vec3Sub(Va, Vb);
+#define V3f_Normalize(Va) Va = vec3Normalize(Va);
+#define V3f_Cross(Va, Vb, dest) dest = vec3Cross(Va, Vb);
+#define V3f_Dot(Va, Vb) vec3Dot(Va, Vb);
 
 	// Rotations
 vec3 V3f_RotateYFunc(vec3 source, float angle);
