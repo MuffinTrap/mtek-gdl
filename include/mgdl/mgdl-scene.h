@@ -10,7 +10,7 @@
 #include <mgdl/mgdl-material.h>
 #include <mgdl/mgdl-node.h>
 #include <mgdl/mgdl-gui.h>
-#include <glm/glm.hpp>
+#include <mgdl/mgdl-vectorfunctions.h>
 
 using namespace gdl;
 

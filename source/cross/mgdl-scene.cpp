@@ -1,8 +1,6 @@
 #include <mgdl/mgdl-scene.h>
 #include <mgdl/mgdl-logger.h>
 
-#include <glm/gtc/matrix_transform.hpp>
-
 void Scene_Init(Scene* scene)
 {
 	scene->rootNode = nullptr;
@@ -153,9 +151,9 @@ bool Scene_CalculateNodeModelMatrix (Node* parent, Node* target, mat4x4 model )
 {
 	vec3 p = parent->transform->position;
 	mat4x4Translate(model, V3f_Create(p.x, p.y, p.z));
-	mat4x4RotateX(model, glm::radians(parent->transform->rotationDegrees.x));
-	mat4x4RotateY(model, glm::radians(parent->transform->rotationDegrees.y));
-	mat4x4RotateZ(model, glm::radians(parent->transform->rotationDegrees.z));
+	mat4x4RotateX(model, Deg2Rad(parent->transform->rotationDegrees.x));
+	mat4x4RotateY(model, Deg2Rad(parent->transform->rotationDegrees.y));
+	mat4x4RotateZ(model, Deg2Rad(parent->transform->rotationDegrees.z));
 	if (parent == target)
 	{
 		return true;
@@ -181,12 +179,12 @@ bool Scene_CalculateNodePosition ( Node* parent, Node* target, mat4x4 world, vec
 
 	vec3 p = parent->transform->position;
 	mat4x4Translate(world, V3f_Create(p.x, p.y, p.z));
-	mat4x4RotateX(world, glm::radians(parent->transform->rotationDegrees.x));
-	mat4x4RotateY(world, glm::radians(parent->transform->rotationDegrees.y));
-	mat4x4RotateZ(world, glm::radians(parent->transform->rotationDegrees.z));
+	mat4x4RotateX(world, Deg2Rad(parent->transform->rotationDegrees.x));
+	mat4x4RotateY(world, Deg2Rad(parent->transform->rotationDegrees.y));
+	mat4x4RotateZ(world, Deg2Rad(parent->transform->rotationDegrees.z));
 	if (parent == target)
 	{
-		vec4 origo = vec4New(0.0f, 0.0f, 0.0f, 1.0f);
+		vec4 origo = V4f_Create(0.0f, 0.0f, 0.0f, 1.0f);
 		vec4 pos = mat4x4MultiplyVector(world, origo);
 		posOut = V3f_Create(pos.x, pos.y, pos.z);
 		return true;

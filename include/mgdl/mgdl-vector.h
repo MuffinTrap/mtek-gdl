@@ -23,7 +23,7 @@ typedef struct _vecf2 {
 	#ifdef GEKKO
 
 		// Wii gcc does not complain about ccVector's tricks
-		#include "ccVector/ccVector.h"
+		#include <mgdl/ccVector/ccVector.h>
 
 	#else
 		// ccVector is written in C and uses anonymous structs
@@ -40,7 +40,7 @@ typedef struct _vecf2 {
 			#pragma GCC diagnostic ignored "-Wgnu-anonymous-struct"
 		#endif
 
-		#include "ccVector/ccVector.h"
+		#include <mgdl/ccVector/ccVector.h>
 
 		#pragma GCC diagnostic pop
 
@@ -54,5 +54,3 @@ typedef struct _vecf2 {
 #endif
 
 #endif // PC platform
-
-#include "mgdl-vectorfunctions.h"

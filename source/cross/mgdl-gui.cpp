@@ -74,7 +74,6 @@ void Menu_Text(const char* text)
 {
     const short x = menu->_drawx;
     const short y = menu->_drawy;
-    const short w = menu->_menuWidth;
     const short h = menu->_font->characterHeight * menu->_textHeight * menu->_rowHeightEm;
     Font_PrintAligned(menu->_font, menu->_text, x, y, h/menu->_rowHeightEm, LJustify, LJustify, text);
     menu->_drawy -= h;

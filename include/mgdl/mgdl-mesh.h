@@ -22,12 +22,6 @@ struct Mesh
 	const char* name;
 };
 
-enum MeshAttributeFlags
-{
-	FlagNormals = 1,
-	FlagUVs = 2,
-	FlagColors = 4
-};
 
 extern "C"
 {

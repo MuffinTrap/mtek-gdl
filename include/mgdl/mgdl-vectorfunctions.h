@@ -7,6 +7,7 @@ extern "C"
 {
 
 
+
 // Macros to abstract the Vector library
 // On the wii the gu library is used
 #ifdef MGDL_PLATFORM_WII
@@ -56,9 +57,12 @@ vec3 V3f_BezierFuncV3(float s, vec3 P0, vec3 C0, vec3 C1, vec3 P1);
 
 #ifdef MGDL_USE_CCVECTOR
 
+// Vector 2
 #define V2f_Create(x,y) vec2New(x,y)
 #define V2f_X(Va) Va.x
 #define V2f_Y(Va) Va.y
+
+// Vector3
 
 #define V3f_Create(x,y,z) vec3New(x,y,z)
 #define V3f_X(Va) Va.x
@@ -84,7 +88,6 @@ vec3 V3f_RotateYFunc(vec3 source, float angle);
 vec3 V3f_RotateZFunc(vec3 source, float angle);
 #define V3f_RotateZ(source, angle, dest) dest = V3f_RotateZFunc(source, angle);
 
-
 vec3 V3f_HexToColorFunc(int red, int green, int blue);
 #define V3f_HexToColor(red, green, blue, dest); dest = V3f_HexToColorFunc(red, green, blue);
 
@@ -94,6 +97,10 @@ vec3 V3f_BezierFuncV3(float s, vec3 P0, vec3 C0, vec3 C1, vec3 P1);
 #define V3f_BezierV3(s, P0, C0, C1, P1, dest) dest = V3f_BezierFuncV3(s, P0, C0, C1, P1);
 
 #define V3f_Print(Va) printf("%.2f, %.2f, %.2f\n", Va.x, Va.y, Va.z);
+
+// Vector4
+
+#define V4f_Create(x, y, z, w) vec4New(x, y, z, w)
 
 #endif
 
@@ -142,5 +149,10 @@ void V3f_BezierFuncV3(float s, vec3 P0, vec3 C0, vec3 C1, vec3 P1, vec3 out_poin
 #endif
 
 #endif // PC platform
+
+/** Macro declarations for IDE support */
+vec2 V2f_Create(float x, float y);
+
+vec3 V3f_Create(float x, float y, float z);
 
 }

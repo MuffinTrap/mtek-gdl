@@ -51,8 +51,8 @@ void Example::Init()
     Material* checkerMaterial = Material_Load("checker", checkerTexture, gdl::MaterialType::Diffuse);
 
     Scene_AddMaterial(icosaScene, checkerMaterial );
-    Mesh* quad = Mesh_CreateQuad(true, true);
-    Mesh* icosaMesh = Mesh_CreateIcosahedron(true, true);
+    Mesh* quad = Mesh_CreateQuad(FlagNormals | FlagUVs);
+    Mesh* icosaMesh = Mesh_CreateIcosahedron(FlagNormals | FlagUVs);
     Node* icosaNode = Node_Create();
     Node_SetContent(icosaNode, "icosaNode", quad, checkerMaterial);
     Scene_AddChildNode(icosaScene, nullptr, icosaNode);
@@ -63,7 +63,7 @@ void Example::Init()
     controllerMenu = Menu_Create(ibmFont, 1.0f, 1.0f);
 
     musicLooping = Music_GetLooping(sampleMusic);
-    sceneRotation = vec3New(0.0f, 1.0f,0.0f);
+    sceneRotation = V3f_Create(0.0f, 1.0f,0.0f);
     //quad->DebugPrint();
 
     cameraDistance = 30.0f;

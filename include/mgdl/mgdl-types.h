@@ -1,6 +1,7 @@
 #pragma once
 
 // Vector types
+#include <mgdl/mgdl-vectorfunctions.h>
 
 // For MacOS
 #include <stddef.h>
@@ -191,6 +192,13 @@ struct Color4b
 };
 
 typedef u32 ColorHex;
+
+enum MeshAttributeFlags
+{
+	FlagNormals = 1,
+	FlagUVs = 2,
+	FlagColors = 4
+};
 
 
 

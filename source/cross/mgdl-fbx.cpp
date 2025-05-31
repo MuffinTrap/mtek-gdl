@@ -3,6 +3,7 @@
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-scene.h>
 #include <mgdl/mgdl-logger.h>
+#include <mgdl/mgdl-types.h>
 #include <stdio.h>
 
 using namespace gdl;
@@ -211,7 +212,16 @@ Mesh * _FBX_AllocateMesh ( ufbx_mesh* fbxMesh )
 	bool normals = fbxMesh->vertex_normal.exists;
 	bool uvs = fbxMesh->vertex_uv.exists;
 	Mesh *mesh = new Mesh();
-	Mesh_Init(mesh, vertices, vertices, normals, uvs);
+	u32 creationFlags = 0;
+	if (normals)
+	{
+		creationFlags += FlagNormals;
+	}
+	if (uvs)
+	{
+		creationFlags += FlagUVs;
+	}
+	Mesh_Init(mesh, vertices, vertices, creationFlags);
 	return mesh;
 }
 

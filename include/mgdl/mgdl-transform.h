@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mgdl-vector.h"
+#include <mgdl/mgdl-types.h>
 
 struct Transform
 {

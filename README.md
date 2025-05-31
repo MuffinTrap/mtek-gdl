@@ -86,10 +86,20 @@ You need to include these files when you release your executable.
 
 Windows makefile is Makefile_win.mk
 
-## Libraries needed for Linux port:
+## How to compile and install on Ubuntu/Debian Linux:
+### List of needed packages:
+
+These packages are needed for C/C++ Development in general:
+- build-essentials
+
+Mtek-GDL makefiles for linux use clang:
+- clang
+
+Mtek-gdl uses these libraries:
 - libsndfile1-dev
 - libopenal-dev
 - freeglut3-dev
+- libpng-dev
 
 Linux makefile is Makefile_linux.mk
 
