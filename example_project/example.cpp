@@ -52,15 +52,17 @@ void Example::Init()
 
     Scene_AddMaterial(icosaScene, checkerMaterial );
     Mesh* quad = Mesh_CreateQuad(FlagNormals | FlagUVs);
-    Mesh* icosaMesh = Mesh_CreateIcosahedron(FlagNormals | FlagUVs);
+    // Mesh* icosaMesh = Mesh_CreateIcosahedron(FlagNormals | FlagUVs);
     Node* icosaNode = Node_Create();
     Node_SetContent(icosaNode, "icosaNode", quad, checkerMaterial);
     Scene_AddChildNode(icosaScene, nullptr, icosaNode);
 
 
-    menu = Menu_Create(ibmFont, 1.0f, 1.0f);
+    menu = Menu_CreateWindowed(ibmFont, 1.0f, 1.0f, 128, 256, "MTEK GDL");
     cameraMenu = Menu_Create(debugFont, 1.0f, 1.0f);
     controllerMenu = Menu_Create(ibmFont, 1.0f, 1.0f);
+    performanceMenu = Menu_Create(debugFont, 1.0f, 1.0f);
+    audioMenu = Menu_Create(debugFont, 1.0f, 1.0f);
 
     musicLooping = Music_GetLooping(sampleMusic);
     sceneRotation = V3f_Create(0.0f, 1.0f,0.0f);
@@ -76,7 +78,12 @@ void Example::Update()
     elapsedSeconds = mgdl_GetElapsedSeconds();
     deltaTime = mgdl_GetDeltaTime();
 
+    Menu_ReadDefaultInputs();
 
+    cursorPos = WiiController_GetCursorPosition(Platform_GetController(0));
+    mouseClick = WiiController_ButtonPress(Platform_GetController(0), ButtonA);
+    mouseDown = WiiController_ButtonHeld(Platform_GetController(0), ButtonA);
+    /*
     static const char* babyName = "cuboid";
     Node* baby = Scene_GetNode(wiiScene, babyName);
     if (baby != nullptr)
@@ -84,8 +91,7 @@ void Example::Update()
         baby->transform->rotationDegrees.x += deltaTime * 25.0f;
         baby->transform->rotationDegrees.z += deltaTime * 40.0f;
     }
-
-    mouseClick = WiiController_ButtonPress(mgdl_GetController(0), WiiButtons::ButtonA);
+    */
 }
 #if 0
 
@@ -107,28 +113,55 @@ void Example::Draw()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    DrawImage();
-    Font_Print(ibmFont, Colors::White, 10, 100, 32, "TEST");
-    Font_Print(debugFont, Colors::White, 10, 132, 32, "TEST");
-    DrawInputInfo(10, mgdl_GetScreenHeight() - 10);
+
+    if ( toggleSprites) {DrawSprites();}
+    if ( toggle3D) {DrawIcosa();}
+    if ( toggleImage) {DrawImage();}
+    if ( toggleCamera) {DrawCameraControls();}
+    if ( toggleInputs) {DrawInputInfo();}
+    if ( togglePerformance) {DrawTimingInfo();}
+    if ( toggleAudio) {DrawAudio();}
 
 
-    /*
+    mgdl_InitOrthoProjection();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    DrawMenu();
+
+    Image_Draw2DAligned(pointerImage, cursorPos.x, cursorPos.y, gdl::Colors::White, gdl::LJustify, gdl::LJustify);
+    Font_Printf(debugFont, Colors::White, 10, 16, 16, "Mouse down: %d, click %d", mouseDown, mouseClick);
+}
+
+void Example::DrawSprites()
+{
     mgdl_glSetAlphaTest(true);
     mgdl_glSetTransparency(true);
     for (int i = 0; i < 16; i++)
     {
         int size = 64;
-    Sprite_Draw2D(fruitSprites, i, size * (i%4), size + (i/4) * size, size, gdl::LJustify, gdl::RJustify, Colors::White);
+        Sprite_Draw2D(fruitSprites, i, size * (i%4), size + (i/4) * size, size, gdl::LJustify, gdl::RJustify, Colors::White);
     }
 
+    const short h = Sprite_GetHeight(mel_sprites);
+    const short w = Sprite_GetHeight(mel_sprites);
+    float scale = 2.0f;
+    short spriteW = w * scale;
+    short spriteH = h * scale;
+    short placeX = mgdl_GetScreenWidth() - spriteW;
+    short placeY = mgdl_GetScreenHeight();
+    for (short i = 0; i < 4; i++)
+    {
+        Sprite_Draw2D(mel_sprites, i, placeX, placeY, spriteH, gdl::LJustify, gdl::LJustify, gdl::Colors::White);
+        placeY -= spriteH;
+    }
+}
 
+void Example::DrawIcosa()
+{
     cameraDistance = 5.0f;
     DrawScene(icosaScene, V3f_Create(1.0f, 1.0f, 1.0f));
     cameraDistance = 15.0f;
     DrawScene(wiiScene, V3f_Create(0.1f, 0.1f, 0.1f));
-    */
-
 }
 
 void Example::DrawImage()
@@ -215,25 +248,6 @@ void Example::DrawScene ( Scene* scene, vec3 scale)
 }
 
 
-static void DrawButtons()
-{
-    // Draw button states
-    int buttons[] = {
-        WiiButtons::ButtonA,
-        WiiButtons::ButtonB,
-        WiiButtons::ButtonPlus,
-        WiiButtons::ButtonMinus,
-        WiiButtons::Button1,
-        WiiButtons::Button2
-        };
-    static std::string names[] ={ "A", "B", "+", "-", "1", "2" };
-
-    for(int i = 0; i < 6;i++ )
-    {
-        bool held = WiiController_ButtonHeld(mgdl_GetController(0), buttons[i]);
-        Menu_Flag(names[i].c_str(), held);
-    }
-}
 #if 0
 
 void DrawDPad(short x, short y, short size)
@@ -284,184 +298,197 @@ void DrawJoystick(short x, short y, short size)
     }
     DrawBoxF(jleft, jtop, jleft+box, jtop+box,jc);
 }
-#endif
 
-void Example::DrawInputInfo(int x, int y)
+
+#endif
+static const char* names[] ={ "A", "B", "+", "-", "1", "2" };
+void Example::DrawInputInfo()
 {
+    int x = 10;
+    int y = mgdl_GetScreenHeight() - 10;
+
+
     Menu_SetActive(controllerMenu);
-    // Draw cursor
-    vec2 cp = WiiController_GetCursorPosition(mgdl_GetController(0));
-    Menu_Start(x, y, 100, cp, false);
+    Menu_StartInput(x, y, 100, cursorPos, false, false);
+
     Menu_Text("Input");
 
-    Image_Draw2DAligned(pointerImage, cp.x, cp.y, gdl::Colors::White, gdl::LJustify, gdl::LJustify);
 
-    DrawButtons();
+
+    // Draw button states
+    int buttons[] = {
+        WiiButtons::ButtonA,
+        WiiButtons::ButtonB,
+        WiiButtons::ButtonPlus,
+        WiiButtons::ButtonMinus,
+        WiiButtons::Button1,
+        WiiButtons::Button2
+        };
+
+    for(int i = 0; i < 6;i++ )
+    {
+        bool held = WiiController_ButtonHeld(mgdl_GetController(0), buttons[i]);
+        Menu_Flag(names[i], held);
+    }
+
     // DrawDPad();
     // DrawJoystick();
 }
 
-#if 0
-void Example::DrawSprites()
+void Example::DrawTimingInfo()
 {
-    const short h = mel_sprites.GetSpriteHeight();
-    const short w = mel_sprites.GetSpriteWidth();
-    float scale = 2.0f;
-    short spriteW = w * scale;
-    short spriteH = h * scale;
-    short placeX = gdl::GetScreenWidth() - spriteW;
-    short placeY = gdl::GetScreenHeight();
-    for (short i = 0; i < 4; i++)
-    {
-        mel_sprites.Draw2D(i, placeX, placeY, spriteH, gdl::LJustify, gdl::LJustify, gdl::Colors::White);
-        placeY -= spriteH;
-    }
-}
+    int x = 10;
+    int y= mgdl_GetScreenHeight()-10;
 
-void Example::DrawTimingInfo(int x, int y, float scale)
-{
-    float ystep = ibmFont->GetCharacterHeight();
+    Menu_SetActive(performanceMenu);
+    Menu_Start(x, y, 128);
 
-    DrawBoxF(x, y, x+200, y - ystep* 4, gdl::Colors::Black);
-
-    ibmFont->Printf(gdl::Colors::LightRed, x, y - ystep * 0, scale,  "Deltatime %.4f", deltaTime);
-    ibmFont->Printf(gdl::Colors::LightRed, x, y - ystep * 1, scale, "Elapsed seconds: %.2f", elapsedSeconds);
+    Menu_TextF("Deltatime %.4f", deltaTime);
+    Menu_TextF("Elapsed seconds: %.2f", elapsedSeconds);
 
     if (sampleMusic != nullptr)
     {
-        ibmFont->Printf(gdl::Colors::LightRed, x, y - ystep * 2, scale, "Music elapsed: %.2f", sampleMusic->GetElapsedSeconds());
-        gdl::SoundStatus musicStatus = sampleMusic->GetStatus();
+        Menu_TextF("Music elapsed: %.2f", Music_GetElapsedSeconds(sampleMusic));
+        SoundStatus musicStatus = Music_GetStatus(sampleMusic);
         gdl::rgba8 musicColor = gdl::Colors::Red;
         gdl::IconSymbol icon = gdl::IconSymbol::Dot;
 
         switch(musicStatus)
         {
-            case gdl::SoundStatus::Playing:
+            case SoundStatus::Playing:
                 musicColor = gdl::Colors::Green;
                 icon = gdl::IconSymbol::TriangleRight;
                 break;
-            case gdl::SoundStatus::Paused:
+            case SoundStatus::Paused:
                 musicColor = gdl::Colors::Yellow;
                 icon = gdl::IconSymbol::TriangleVertical;
                 break;
-            case gdl::SoundStatus::Stopped: musicColor = gdl::Colors::Red;
+            case SoundStatus::Stopped: musicColor = gdl::Colors::Red;
                 icon = gdl::IconSymbol::BlockUnder;
                 break;
-            case gdl::SoundStatus::Initial: musicColor = gdl::Colors::Black; break;
+            case SoundStatus::Initial: musicColor = gdl::Colors::Black; break;
         };
-        DrawBoxF(x-20, y-ystep*2, x, y-ystep*3, musicColor);
-        debugFont->Icon(gdl::Colors::White, x-20, y-ystep*2, ystep, gdl::LJustify, gdl::LJustify, icon);
+        Menu_Icon(icon, musicColor);
     }
 
-    float blipElapsed = blip->GetElapsedSeconds();
-    ibmFont->Printf(gdl::Colors::LightRed, x, y - ystep * 3, scale, "Sound elapsed: %.2f", blipElapsed);
-    gdl::SoundStatus musicStatus = blip->GetStatus();
+    float blipElapsed = Sound_GetElapsedSeconds(blip);
+    Menu_TextF("Sound elapsed: %.2f", blipElapsed);
+    SoundStatus musicStatus = Sound_GetStatus(blip);
     gdl::rgba8 musicColor = gdl::Colors::Red;
     gdl::IconSymbol icon = gdl::IconSymbol::Dot;
     switch(musicStatus)
     {
-        case gdl::SoundStatus::Playing:
+        case SoundStatus::Playing:
             musicColor = gdl::Colors::Green;
             icon = gdl::IconSymbol::TriangleRight;
             break;
-        case gdl::SoundStatus::Paused:
+        case SoundStatus::Paused:
             musicColor = gdl::Colors::Yellow;
             icon = gdl::IconSymbol::TriangleVertical;
             break;
-        case gdl::SoundStatus::Stopped: musicColor = gdl::Colors::Red;
+        case SoundStatus::Stopped: musicColor = gdl::Colors::Red;
             icon = gdl::IconSymbol::BlockUnder;
             break;
-        case gdl::SoundStatus::Initial: musicColor = gdl::Colors::Black; break;
+        case SoundStatus::Initial: musicColor = gdl::Colors::Black; break;
     };
-    DrawBoxF(x-20, y-ystep*3, x, y-ystep*4, musicColor);
-    debugFont->Icon(gdl::Colors::White, x-20, y-ystep*3, ystep, gdl::LJustify, gdl::LJustify, icon);
+    Menu_Icon(icon, musicColor);
 }
 
-void Example::DrawMenu(int x, int y, int w)
+void Example::DrawMenu()
 {
-    vec2 cp = WiiController_GetCursorPosition(gdl::GetController(0));
+    int w = 164;
+    int x = mgdl_GetScreenWidth() - w;
+    int y = mgdl_GetScreenHeight() - 8;
 
-    // flip
-    int h = gdl::GetScreenHeight();
-    int flip_y = h-cp.y;
+    Menu_SetActive(menu);
+    Menu_Start(x, y, w);
 
-    menu.StartMenu(x, y, w, cp.x, flip_y, mouseClick);
-
-    menu.Text("Hi! I am menu.");
-
-    menu.Panel(2, gdl::Colors::Yellow);
-    if (menu.Button("Play Ogg"))
-    {
-        sampleMusic->Play();
-    }
-    if (menu.Button("Pause Ogg"))
-    {
-        bool ispaused = sampleMusic->GetStatus() == gdl::SoundStatus::Paused;
-        sampleMusic->SetPaused(!ispaused);
-    }
-    if (menu.Button("Stop Ogg"))
-    {
-        sampleMusic->Stop();
-    }
-    if (menu.Toggle("Loop Ogg", musicLooping ))
-    {
-        sampleMusic->SetLooping(musicLooping);
-    }
-    if (menu.Button("Play Sound"))
-    {
-        blip->Play(1.0f, 100.0f);
-    }
-    if (menu.Button("Fire Assert"))
-    {
-        gdl_assert_print(false, "Assert button pressed!");
-    }
+    Menu_Text("Toggle features");
+    Menu_Toggle("Sprites", &toggleSprites);
+    Menu_Toggle("3D", &toggle3D);
+    Menu_Toggle("Image", &toggleImage);
+    Menu_Toggle("Camera", &toggleCamera);
+    Menu_Toggle("Inputs", &toggleInputs);
+    Menu_Toggle("Performance", &togglePerformance);
+    Menu_Toggle("Audio", &toggleAudio);
 }
 
-void Example::DrawCameraControls(int x, int y, int w)
+void Example::DrawAudio()
 {
-    vec2 cp = WiiController_GetCursorPosition(gdl::GetController(0));
-    int h = gdl::GetScreenHeight();
-    int flip_y = h-cp.y;
+    Menu_SetActive(audioMenu);
+    Menu_Start(10, mgdl_GetScreenHeight()-10, 64);
 
-    cameraMenu.StartMenu(x, y, w, cp.x, flip_y, mouseClick);
+    if (Menu_Button("Play Ogg"))
+    {
+        Music_Play(sampleMusic, false);
+    }
+    if (Menu_Button("Pause Ogg"))
+    {
+        bool ispaused = Music_GetStatus(sampleMusic) == SoundStatus::Paused;
+        Music_SetPaused(sampleMusic, !ispaused);
+    }
+    if (Menu_Button("Stop Ogg"))
+    {
+        Music_Stop(sampleMusic);
+    }
+    if (Menu_Toggle("Loop Ogg", &musicLooping ))
+    {
+        Music_SetLooping(sampleMusic, musicLooping);
+    }
+    if (Menu_Button("Play Sound"))
+    {
+        Sound_Play(blip);
+    }
+}
+#if 0
+#endif
 
-    cameraMenu.Text("Control camera");
-    if (cameraMenu.Button("Closer!"))
+void Example::DrawCameraControls()
+{
+    int x = 10;
+    int y = mgdl_GetScreenHeight() - 10;
+    int w = 64;
+    int h = mgdl_GetScreenHeight();
+
+    Menu_SetActive(cameraMenu);
+    Menu_Start(x, y, w);
+
+    Menu_Text("Control camera");
+    if (Menu_Button("Closer!"))
     {
         cameraDistance -= 1.0f;
     }
-    if (cameraMenu.Button("Away!"))
+    if (Menu_Button("Away!"))
     {
         cameraDistance += 1.0f;
     }
-    if (cameraMenu.Button("Rotate Left"))
+    if (Menu_Button("Rotate Left"))
     {
         sceneRotation.y -= 1.0f;
     }
-    if (cameraMenu.Button("Rotate right!"))
+    if (Menu_Button("Rotate right!"))
     {
         sceneRotation.y += 1.0f;
     }
-    if (cameraMenu.Button("Rotate Up"))
+    if (Menu_Button("Rotate Up"))
     {
         sceneRotation.x -= 1.0f;
     }
-    if (cameraMenu.Button("Rotate Down!"))
+    if (Menu_Button("Rotate Down!"))
     {
         sceneRotation.x += 1.0f;
     }
-    if (cameraMenu.Button("Rotate CW"))
+    if (Menu_Button("Rotate CW"))
     {
         sceneRotation.z -= 1.0f;
     }
-    if (cameraMenu.Button("Rotate CCW!"))
+    if (Menu_Button("Rotate CCW!"))
     {
         sceneRotation.z += 1.0f;
     }
-    if (cameraMenu.Button("Reset "))
+    if (Menu_Button("Reset "))
     {
-        sceneRotation = vec3Zero();
+        sceneRotation = V3f_Zero();
     }
 }
 
-#endif

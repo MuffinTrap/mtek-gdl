@@ -15,6 +15,8 @@ class Example
     Menu* menu;
     Menu* cameraMenu;
     Menu* controllerMenu;
+    Menu* performanceMenu;
+    Menu* audioMenu;
     Scene* wiiScene;
     Scene* shipScene;
     Image* wiiTexture;
@@ -30,6 +32,9 @@ class Example
     float deltaTime;
     float elapsedSeconds;
 
+    // Toggles
+    bool toggleSprites, toggle3D, toggleImage, toggleCamera, toggleInputs, togglePerformance, toggleAudio = false;
+
     public:
         Example();
         void Init();
@@ -37,17 +42,23 @@ class Example
         void Draw();
 
     private:
-        void DrawMenu(int x, int y, int width);
-        void DrawCameraControls(int x, int y, int w);
-        void DrawInputInfo(int x, int y);
-        void DrawTimingInfo(int x, int y, float scale);
-        void DrawImage();
-        void DrawVersion();
+        void DrawMenu();
+
+        // Togglable
         void DrawSprites();
         void DrawIcosa();
+        void DrawImage();
+        void DrawCameraControls();
+        void DrawInputInfo();
+        void DrawTimingInfo();
+        void DrawAudio();
+
+        void DrawVersion();
         void DrawScene(Scene* scene, vec3 scale);
 
+        vec2 cursorPos;
         bool mouseClick;
+        bool mouseDown;
         bool musicLooping;
 
 };

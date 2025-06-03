@@ -150,6 +150,8 @@ void V3f_BezierFuncV3(float s, vec3 P0, vec3 C0, vec3 C1, vec3 P1, vec3 out_poin
 
 #endif // PC platform
 
+vec3 V3f_Zero() { return V3f_Create(0,0,0); }
+
 /** Macro declarations for IDE support */
 vec2 V2f_Create(float x, float y);
 

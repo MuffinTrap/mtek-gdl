@@ -55,7 +55,7 @@ void update()
     {
         mgdl_DoProgramExit();
     }
-    //example.Update();
+    example.Update();
 
 #ifdef MGDL_ROCKET
     float r = 1.0f;

@@ -17,6 +17,7 @@ struct Platform
 	gdl::ScreenAspect aspect;
 	float _deltaTimeS;
 	float _elapsedTimeS;
+	u32 _elapsedUpdates;
 };
 
 // These functions are implemented in pc-platform.cpp or wii-platform.cpp
@@ -34,4 +35,5 @@ void Platform_DoProgramExit();
 Platform* Platform_GetSingleton();
 float Platform_GetDeltaTime();
 float Platform_GetElapsedSeconds();
+u32 Platform_GetElapsedUpdates();
 

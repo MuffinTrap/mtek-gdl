@@ -268,7 +268,7 @@ bool VerifyALSource()
 	return true;
 }
 
-Music* Music_Load(const char* filename)
+Music* Music_LoadOgg(const char* filename)
 {
     Log_InfoF("Loading music from %s\n", filename);
 
@@ -276,6 +276,26 @@ Music* Music_Load(const char* filename)
     Music_Init(music);
     if (LoadFileNonStreaming(filename, music))
     {
+        music->type = MusicOgg;
+        return music;
+    }
+    else
+    {
+        delete music;
+        return nullptr;
+    }
+}
+Music* Music_LoadWav(const char* filename)
+{
+    Log_InfoF("Loading music from %s\n", filename);
+
+    Music* music = new Music();
+    Music_Init(music);
+    if (LoadFileNonStreaming(filename, music))
+    {
+        music->type = MusicWav;
+        music->wav = Sound_Load(filename);
+        music->source = music->wav->source;
         return music;
     }
     else
@@ -436,9 +456,10 @@ void Music_DeleteData(Music* music)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-void Music_Play(Music* music, float pitchOffset, float volumePercent)
+bool Music_Play(Music* music, bool looping)
 {
 	alCall(alSourcePlay, music->source);
+    return true;
 }
 #pragma GCC diagnostic pop
 
@@ -485,22 +506,22 @@ void Music_SetElapsedSeconds(Music* music, float elapsed) {
 	alCall(alSourcef, music->source, AL_SEC_OFFSET,elapsed);
 }
 
-Sound_Status Music_GetStatus(Music* music) {
+SoundStatus Music_GetStatus(Music* music) {
 	    // Get the play state of the audio source
     ALint sourceState;
     alGetSourcei(music->source, AL_SOURCE_STATE, &sourceState);
 
     if (sourceState == AL_PLAYING) {
-        return Sound_Status::Playing;
+        return SoundStatus::Playing;
     } else if (sourceState == AL_PAUSED) {
-        return Sound_Status::Paused;
+        return SoundStatus::Paused;
     } else if (sourceState == AL_STOPPED) {
-        return Sound_Status::Stopped;
+        return SoundStatus::Stopped;
     } else if (sourceState == AL_INITIAL) {
-        return Sound_Status::Initial;
+        return SoundStatus::Initial;
     }
 
-    return Sound_Status::Initial;
+    return SoundStatus::Initial;
 }
 
 // Returns how many bytes read

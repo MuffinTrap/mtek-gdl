@@ -82,15 +82,31 @@ Sound* LoadSound(const char* filename)
 
 Music* LoadOgg(const char* filename)
 {
-	Music* music = Music_Load(filename);
+	Music* music = Music_LoadOgg(filename);
 	if(music != nullptr)
 	{
+		AssetManager_LoadOgg(&assetManager, music);
 		return music;
 	}
 	else
 	{
 		return nullptr;
 	}
+}
+
+Music* LoadWav(const char* filename)
+{
+	Music* music = Music_LoadWav(filename);
+	if(music != nullptr)
+	{
+		AssetManager_LoadWav(&assetManager, music);
+		return music;
+	}
+	else
+	{
+		return nullptr;
+	}
+
 }
 
 Font* LoadFont(const char* filename, short characterWidth, short characterHeight, char firstCharacter)

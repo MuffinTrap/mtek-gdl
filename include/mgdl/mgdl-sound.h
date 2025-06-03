@@ -8,7 +8,7 @@
 #include <sndfile.h>
 #endif
 
-enum Sound_Status
+enum SoundStatus
 {
 	Stopped,
 	Playing,
@@ -90,9 +90,9 @@ void Sound_Stop(Sound* sound ) ;
 /*!
  *	\details This function pauses the sound if it is playing
  */
-void SetPaused(Sound* sound, bool pause) ;
-void SetLooping(Sound* sound, bool looping) ;
-bool GetLooping(Sound* sound );
+void Sound_SetPaused(Sound* sound, bool pause) ;
+void Sound_SetLooping(Sound* sound, bool looping) ;
+bool Sound_GetLooping(Sound* sound );
 
 //! Get elapsed playback time in seconds
 /*!
@@ -100,8 +100,8 @@ bool GetLooping(Sound* sound );
  *
  *	\returns Elapsed playback time in seconds
  */
-float GetElapsedSeconds(Sound* sound ) ;
-void SetElapsedSeconds(Sound* sound, float elapsed) ;
+float Sound_GetElapsedSeconds(Sound* sound ) ;
+void Sound_SetElapsedSeconds(Sound* sound, float elapsed) ;
 
 
 //! Get if the voice is playing or not
@@ -110,4 +110,4 @@ void SetElapsedSeconds(Sound* sound, float elapsed) ;
  *
  * \returns True if voice is playing, false if not playing
  */
-Sound_Status GetStatus(Sound* sound ) ;
+SoundStatus Sound_GetStatus(Sound* sound ) ;

@@ -30,6 +30,7 @@ Image* LoadImagePNG(PNGFile* png, gdl::TextureFilterModes filterMode);
 
 Sound* LoadSound(const char* filename);
 Music* LoadOgg(const char* filename);
+Music* LoadWav(const char* filename);
 
 Scene* LoadFBX(const char* filename);
 Sprite* LoadSprite(const char* filename, short spriteWidth, short spriteHeight);

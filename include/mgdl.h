@@ -1,8 +1,11 @@
+#pragma once
+
 #include "mgdl/mgdl-config.h"
 #include "mgdl/mgdl-types.h"
 #include "mgdl/mgdl-util.h"
 #include "mgdl/mgdl-alloc.h"
 #include "mgdl/mgdl-assert.h"
+#include "mgdl/mgdl-logger.h"
 #include "mgdl/mgdl-cache.h"
 #include "mgdl/mgdl-opengl.h"
 #include "mgdl/mgdl-palette.h"

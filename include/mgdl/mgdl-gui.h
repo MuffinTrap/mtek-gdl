@@ -20,18 +20,26 @@ struct Menu
     float _drawx;
     float _drawy;
     float _menuWidth;
-    float _windowHeight;
     float _textHeight;
     float _rowHeightEm;
 
     // Input state
     bool _buttonPress;
+    bool _buttonHeld;
     vec2 _cursorPosition;
 
     // Colors
     rgba8 _bg; /**< Background color of elements. */
     rgba8 _text; /**< Color of the text, toggles and slider bars. */
     rgba8 _highlight; /**< Used instead of _text when the item is hovered. */
+
+    // Window
+    bool _drawWindow;
+    const char* _windowName = nullptr;
+    float _windowx;
+    float _windowy;
+    float _windowHeight;
+    float _windowWidth;
 
     Font* _font;
 };
@@ -50,6 +58,11 @@ extern "C"
     void Menu_SetActive(Menu* menu);
 
     /**
+     * @brief reads the default cursor and mouse status into the gui system
+     */
+    void Menu_ReadDefaultInputs();
+
+    /**
      * @brief Creates a MenuCreator using font and parameters.
      * @param font Font to use on the menu elements.
      * @param textHeight Height of the text.
@@ -57,6 +70,18 @@ extern "C"
      * @return Menu struct that can be used to draw menus.
      */
     Menu* Menu_Create(Font* font, float textHeigh, float rowHeightEm);
+
+    /**
+     * @brief Creates a windowed menu.
+     * @param font Font to use on the menu elements.
+     * @param textHeight Height of the text.
+     * @param rowHeightEm Height of the row relative to the text height. 1 Em is same as text height, 2 is twice etc. Controls the amount of padding above and below text on elements.
+     * @return Menu struct that can be used to draw menus.
+     * @param width Width of the window in pixels.
+     * @param height Height of the window in pixels.
+     * @param text Title of the window.
+     */
+    Menu* Menu_CreateWindowed(Font* font, float textHeight, float rowHeightEm, short width, short height, const char* title);
 
     /**
      * @brief Creates a MenuCreator using default font and settings.
@@ -75,7 +100,19 @@ extern "C"
      * @param cursorX cursorPosition Position of the cursor on the screen in pixels.
      * @param buttonPress Is the button pressed on this frame.
      */
-    void Menu_Start(short x, short y, short width, vec2 cursorPosition, bool buttonPress);
+    void Menu_StartInput(short x, short y, short width, vec2 cursorPosition, bool buttonPress, bool buttonHeld);
+
+    /**
+     * @brief Starts the menu from given position and uses default inputs
+     *
+     * @details This function sets up the menu state but does not draw anything yet. It uses the input status that was read when Menu_ReadDefaultInputs was last called.
+     * If the menu is windowed, the x and y only set the starting position
+     *
+     * @param x Upper left corner x of the first element.
+     * @param y Upper left corner y of the first element.
+     * @param width Width of the elements in the menu.
+     */
+    void Menu_Start(short x, short y, short width);
 
     /**
      * @brief Sets the colors used in the menu.
@@ -86,12 +123,14 @@ extern "C"
     void Menu_SetColors(rgba8 bg, rgba8 text, rgba8 highlight);
 
     /**
-     * @brief Confines the menu to inside a window that can be moved with a mouse.
-     * @param width Width of the window in pixels.
-     * @param height Height of the window in pixels.
-     * @param text Title of the window.
+     * @brief Draws the window title bar
      */
-    void Menu_Window(short width, short height, const char* text);
+    void _Menu_TitleBar();
+
+    /**
+     * @brief Draws the window borders
+     */
+    void _Menu_Borders();
 
     /**
      * @brief Draws a line separating elements.
@@ -109,6 +148,12 @@ extern "C"
      * @param __VA_ARGS__ Format parameters.
      */
     void Menu_TextF(const char* format, ...);
+
+    /**
+     * @brief Draws a colored icon
+     * @param icon The icon to draw
+     */
+    void Menu_Icon(IconSymbol icon, rgba8 color);
 
     /**
      * @brief Draws a button that can be clicked.

@@ -47,8 +47,7 @@ void sync_set_io_cb(struct sync_device *d, struct sync_io_cb *cb);
 
 const struct sync_track *sync_get_track(struct sync_device *, const char *);
 
-double sync_get_val_ref(const struct sync_track &t, double row);
-double sync_get_val_ptr(const struct sync_track *t, double row);
+double sync_get_val(const struct sync_track *t, double row);
 
 #ifdef __cplusplus
 }

@@ -116,21 +116,21 @@ float Sound_GetElapsedSeconds(Sound* sound) {
 	return secOffset;
 }
 
-Sound_Status Sound_GetStatus(Sound* sound) {
+SoundStatus Sound_GetStatus(Sound* sound) {
 	// Get the play state of the audio source
     ALint sourceState;
     alGetSourcei(sound->source, AL_SOURCE_STATE, &sourceState);
 
     if (sourceState == AL_PLAYING) {
-        return Sound_Status::Playing;
+        return SoundStatus::Playing;
     } else if (sourceState == AL_PAUSED) {
-        return Sound_Status::Paused;
+        return SoundStatus::Paused;
     } else if (sourceState == AL_STOPPED) {
-        return Sound_Status::Stopped;
+        return SoundStatus::Stopped;
     } else if (sourceState == AL_INITIAL) {
-        return Sound_Status::Initial;
+        return SoundStatus::Initial;
     }
-    return Sound_Status::Initial;
+    return SoundStatus::Initial;
 }
 
 #endif

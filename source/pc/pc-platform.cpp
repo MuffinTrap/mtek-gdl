@@ -164,6 +164,7 @@ static void UpdateEnd()
     WiiController_StartFrame(&glutController);
 
     glutElapsedStartMS = glutElapsedMS;
+    platformPC._elapsedUpdates += 1;
     // Tell glut that the window needs to be
     // redrawn.
     glutPostRedisplay();
@@ -330,10 +331,13 @@ void Platform_Init(const char* name, gdl::ScreenAspect screenAspect, std::functi
         glutDisplayFunc(RenderLoop);
     }
 
+    WiiController_Init(&glutController, 0);
+
     WiiController_ZeroAllInputs(&glutController);
     WiiController_StartFrame(&glutController);
     initCall();
     glutElapsedStartMS = 0;
+    platformPC._elapsedUpdates = 0;
 
     // Select update function
     if (SplashFlag)
@@ -376,13 +380,19 @@ Platform* Platform_GetSingleton() { return &platformPC; }
 float Platform_GetDeltaTime()
 {
     int deltaMS = glutElapsedMS - glutElapsedStartMS;
-    float deltaTimeS = float(deltaMS) / 1000.0f;
-    return deltaTimeS;
+    platformPC._deltaTimeS = float(deltaMS) / 1000.0f;
+    return platformPC._deltaTimeS;
 }
 
 float Platform_GetElapsedSeconds()
 {
-    return float(glutElapsedMS)/1000.0f;
+    platformPC._elapsedTimeS = float(glutElapsedMS)/1000.0f;
+    return platformPC._elapsedTimeS;
+}
+
+u32 Platform_GetElapsedUpdates()
+{
+    return platformPC._elapsedUpdates;
 }
 
 

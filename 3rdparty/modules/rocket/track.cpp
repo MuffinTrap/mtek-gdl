@@ -25,38 +25,7 @@ double key_ramp(const struct track_key k[2], double row) {
     return k[0].value + (k[1].value - k[0].value) * t;
 }
 
-double sync_get_val_ref(const struct sync_track &t, double row) {
-    int idx, irow;
-
-    /* If we have no keys at all, return a constant 0 */
-    if (!t.num_keys)
-        return 0.0f;
-
-    irow = (int)floor(row);
-    idx = key_idx_floor(&t, irow);
-
-    /* at the edges, return the first/last value */
-    if (idx < 0)
-        return t.keys[0].value;
-    if (idx > (int)t.num_keys - 2)
-        return t.keys[t.num_keys - 1].value;
-
-    /* interpolate according to key-type */
-    switch (t.keys[idx].type) {
-    case KEY_STEP:
-        return t.keys[idx].value;
-    case KEY_LINEAR:
-        return key_linear(t.keys + idx, row);
-    case KEY_SMOOTH:
-        return key_smooth(t.keys + idx, row);
-    case KEY_RAMP:
-        return key_ramp(t.keys + idx, row);
-    default:
-        assert(0);
-        return 0.0f;
-    }
-}
-double sync_get_val_ptr(const struct sync_track *t, double row) {
+double sync_get_val(const struct sync_track *t, double row) {
     int idx, irow;
 
     /* If we have no keys at all, return a constant 0 */
