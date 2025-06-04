@@ -49,8 +49,8 @@ void gdl::FFont::BindSheet(ImageWii& image, short charw, short charh,  char firs
 	ch = charh;
 	firstIndex = firstCharacter;
 
-	gdl_assert_printf(image.Texture.TXsize()%charw == 0, "BindSheet error: %u mod %d not zero");
-	gdl_assert_printf(image.Texture.TYsize()%charh == 0, "BindSheet error: %u mod %d not zero");
+	mgdl_assert_printf(image.Texture.TXsize()%charw == 0, "BindSheet error: %u mod %d not zero");
+	mgdl_assert_printf(image.Texture.TYsize()%charh == 0, "BindSheet error: %u mod %d not zero");
 
 	short charactersPerRow = image.Texture.TXsize()/ charw;
 	short rows = image.Texture.TYsize() / charh;
@@ -66,7 +66,7 @@ void gdl::FFont::BindSheet(ImageWii& image, short charw, short charh,  char firs
 	if (vList == NULL)
 	{
 		vList = aligned_alloc(32, sizeof(gdl::wii::VERT2s16)*4);
-		gdl_assert_printf(vList != nullptr, "Out of memory when allocating font vertex list");
+		mgdl_assert_printf(vList != nullptr, "Out of memory when allocating font vertex list");
 
 	}
 
@@ -107,16 +107,16 @@ void gdl::FFont::SetCharacterDimensions(short characterWidth, short characterHei
 
 void gdl::FFont::CreateTextureCoordList(short rows, short charactersPerRow, short texW, short texH)
 {
-	gdl_assert_print(cw > 0 && ch > 0, "Character dimensions not set");
-	gdl_assert_print(rows > 0 && charactersPerRow > 0, "Rows and cpr at zero");
-	gdl_assert_print(texW > 0 && texH > 0, "Texture size is 0");
+	mgdl_assert_print(cw > 0 && ch > 0, "Character dimensions not set");
+	mgdl_assert_print(rows > 0 && charactersPerRow > 0, "Rows and cpr at zero");
+	mgdl_assert_print(texW > 0 && texH > 0, "Texture size is 0");
 
 	short characterAmount = rows * charactersPerRow;
 	size_t tListSize = (sizeof(gdl::wii::TEX2f32)*4)*(characterAmount);
 	if (tList == NULL)
 	{
 		tList = aligned_alloc(32, tListSize);
-		gdl_assert_print(tList != nullptr, "Out of memory when allocation font txcord list");
+		mgdl_assert_print(tList != nullptr, "Out of memory when allocation font txcord list");
 	}
 
 	for(short cy=0; cy<rows; cy++) {

@@ -126,3 +126,8 @@ char* mgdl_GetPrintfBuffer()
 {
 	return printfBuffer;
 }
+
+bool mgdl_IsFlagSet(u32 bitfield, u32 flag)
+{
+	return (bitfield & flag) != 0;
+}

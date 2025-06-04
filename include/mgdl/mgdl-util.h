@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mgdl-types.h"
+#include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-opengl.h>
 #include <stdarg.h>
 // helper functions
@@ -53,10 +53,7 @@ namespace gdl
  * @param flag The flag to inspect
  * @return True if the flag is set.
  */
-bool mgdl_IsFlagSet(u32 bitfield, u32 flag)
-{
-	return (bitfield & flag) != 0;
-}
+bool mgdl_IsFlagSet(u32 bitfield, u32 flag);
 
 /**
  * @return Buffer containging the text, max size 255 chars.

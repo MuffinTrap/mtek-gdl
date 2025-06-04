@@ -858,7 +858,7 @@ bool gdl::ImageWii::LoadImageBuffer(const void *buffer, size_t size, u_int filte
 	// fmemopen cannot read from const buffer :U
 	// Copy data to temporary buffer before reading
 	void *tempBuffer = aligned_alloc(32, size);
-	gdl_assert_print((tempBuffer != nullptr), "Cannot allocate enough memory for image buffer.");
+	mgdl_assert_print((tempBuffer != nullptr), "Cannot allocate enough memory for image buffer.");
 
 	// Copy
 	memcpy(tempBuffer, buffer, size);

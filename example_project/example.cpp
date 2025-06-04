@@ -217,7 +217,7 @@ void Example::DrawScene ( Scene* scene, vec3 scale)
 {
     // Try to draw Wii 3D model
     mgdl_InitPerspectiveProjection(75.0f, 0.1f, 100.0f);
-    mgdl_InitCamera(vec3New(0.0f, 0.0f, cameraDistance), vec3New(0.0f, 0.0f, 0.0f), vec3New(0.0f, 1.0f, 0.0f));
+    mgdl_InitCamera(V3f_Create(0.0f, 0.0f, cameraDistance), V3f_Create(0.0f, 0.0f, 0.0f), V3f_Create(0.0f, 1.0f, 0.0f));
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -448,7 +448,6 @@ void Example::DrawCameraControls()
     int x = 10;
     int y = mgdl_GetScreenHeight() - 10;
     int w = 64;
-    int h = mgdl_GetScreenHeight();
 
     Menu_SetActive(cameraMenu);
     Menu_Start(x, y, w);
@@ -488,7 +487,7 @@ void Example::DrawCameraControls()
     }
     if (Menu_Button("Reset "))
     {
-        sceneRotation = V3f_Zero();
+        sceneRotation = V3f_Create(0,0,0);
     }
 }
 

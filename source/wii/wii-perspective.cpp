@@ -1,5 +1,8 @@
 #include <ogc/gx.h>
 
+// NOTE yaris: Disabled for now since OpenGX is used
+#if 0
+
 #include "mgdl/wii/mgdl-wii-perspective.h"
 
 gdl::Camera gdl::Perspective::defaultCamera = gdl::Camera();
@@ -58,3 +61,4 @@ void gdl::Perspective::ApplyDefaultCamera()
 }
 
 
+#endif

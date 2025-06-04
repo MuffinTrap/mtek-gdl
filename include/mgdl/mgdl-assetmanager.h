@@ -27,7 +27,6 @@ void AssetManager_LoadFont(AssetManager* manager, Font* font);
 void AssetManager_LoadImage(AssetManager* manager, Image* image);
 void AssetManager_LoadPNG(AssetManager* manager, PNGFile* png);
 void AssetManager_LoadSound(AssetManager* manager, Sound* snd);
-void AssetManager_LoadOgg(AssetManager* manager, Music* ogg) {}; // TODO
-void AssetManager_LoadWav(AssetManager* manager, Music* wav) {}; // TODO
+void AssetManager_LoadMusic(AssetManager* manager, Music* music);
 
 }

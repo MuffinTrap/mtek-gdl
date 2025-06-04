@@ -27,9 +27,9 @@ void Platform_Init(const char* name,
 								  std::function<void ()> drawCallback,
 								  u32 initFlags)
 {
-	gdl_assert_print(initCallback != nullptr, "Need to provide init callback before system init on PC");
-	gdl_assert_print(updateCallback != nullptr, "Need to provide update callback before system init on PC");
-	gdl_assert_print(drawCallback != nullptr, "Need to provide draw callback before system init on PC");
+	mgdl_assert_print(initCallback != nullptr, "Need to provide init callback before system init on PC");
+	mgdl_assert_print(updateCallback != nullptr, "Need to provide update callback before system init on PC");
+	mgdl_assert_print(drawCallback != nullptr, "Need to provide draw callback before system init on PC");
 
 	initCall = initCallback;
 	drawCall = drawCallback;

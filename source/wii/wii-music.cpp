@@ -8,6 +8,8 @@
 #include <oggplayer.h>
 
 #include <mgdl/mgdl-music.h>
+#include <mgdl/mgdl-logger.h>
+#include <mgdl/mgdl-assert.h>
 
 #include "mgdl/wii/mgdl-wii-config.h"
 #include "mgdl/wii/mgdl-wii-globals.h"
@@ -23,7 +25,7 @@ void Music_Init(Music* music)
 }
 
 
-Music* Music_Load(const char *filename)
+Music* Music_LoadOgg(const char *filename)
 {
 	Music* music = new Music();
 
@@ -45,10 +47,17 @@ Music* Music_Load(const char *filename)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-void Music_Play(Music* music, float pitchOffset, float volumePercent)
+Music* Music_LoadWav(const char* filename)
 {
+	mgdl_assert_print(false, "Dont load wav music on Wii. It eats all the memory!");
+	return nullptr;
+}
+
+bool Music_Play(Music* music, bool loop)
+{
+	music->isLooping = loop;
 	int playMode = OGG_ONE_TIME;
-	if (music->isLooping) {
+	if (loop) {
 		playMode = OGG_INFINITE_TIME;
 	}
 
@@ -56,7 +65,9 @@ void Music_Play(Music* music, float pitchOffset, float volumePercent)
 	if (po != 0)
 	{
 		Log_ErrorF("Failed to play ogg file %s\n", music->filenameChar);
+		return false;
 	}
+	return true;
 }
 
 void Music_DeleteData(Music* music)
@@ -91,15 +102,15 @@ void Music_Stop(Music* music)
 	StopOgg();
 }
 
-Sound_Status Music_GetStatus(Music* music)
+SoundStatus Music_GetStatus(Music* music)
 {
 	if (StatusOgg() == OGG_STATUS_RUNNING)
 	{
-		return Sound_Status::Playing;
+		return SoundStatus::Playing;
 	}
 	else
 	{
-		return Sound_Status::Paused;
+		return SoundStatus::Paused;
 	}
 }
 
@@ -109,6 +120,13 @@ void Music_SetLooping(Music* music, bool looping)
 {
 	music->isLooping = looping;
 }
+
+bool Music_GetLooping(Music* music)
+{
+	return music->isLooping;
+}
+
+
 
 
 #endif // GEKKO

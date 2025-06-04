@@ -26,3 +26,16 @@ void AssetManager_LoadSound(AssetManager* manager, Sound* snd)
 {
 	manager->_memoryInUse += snd->sSize;
 }
+
+void AssetManager_LoadMusic(AssetManager* manager, Music* music)
+{
+	switch(music->type)
+	{
+		case MusicOgg:
+			manager->_memoryInUse += 1024; // TODO What is the buffer size?
+			break;
+		case MusicWav:
+			manager->_memoryInUse += music->wav->sSize;
+			break;
+	}
+}

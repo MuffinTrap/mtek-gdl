@@ -85,7 +85,7 @@ Music* LoadOgg(const char* filename)
 	Music* music = Music_LoadOgg(filename);
 	if(music != nullptr)
 	{
-		AssetManager_LoadOgg(&assetManager, music);
+		AssetManager_LoadMusic(&assetManager, music);
 		return music;
 	}
 	else
@@ -99,7 +99,7 @@ Music* LoadWav(const char* filename)
 	Music* music = Music_LoadWav(filename);
 	if(music != nullptr)
 	{
-		AssetManager_LoadWav(&assetManager, music);
+		AssetManager_LoadMusic(&assetManager, music);
 		return music;
 	}
 	else

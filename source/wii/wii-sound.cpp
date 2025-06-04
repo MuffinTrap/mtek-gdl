@@ -9,12 +9,14 @@
 #include <asndlib.h>
 #include <oggplayer.h>
 
-#include "mgdl/wii/mgdl-wii-config.h"
-#include "mgdl/wii/mgdl-wii-globals.h"
-#include "mgdl/wii/mgdl-wii-globals-internal.h"
-#include "mgdl/wii/mgdl-wii-main.h"
-#include "mgdl/wii/mgdl-wii-sound.h"
-#include "mgdl/wii/mgdl-wii-assert.h"
+#include <mgdl/mgdl-logger.h>
+
+#include <mgdl/wii/mgdl-wii-config.h>
+#include <mgdl/wii/mgdl-wii-globals.h>
+#include <mgdl/wii/mgdl-wii-globals-internal.h>
+#include <mgdl/wii/mgdl-wii-main.h>
+#include <mgdl/wii/mgdl-wii-sound.h>
+#include <mgdl/wii/mgdl-wii-assert.h>
 
 
 
@@ -294,27 +296,27 @@ void Sound_SetElapsedSeconds(Sound* sound, float elapsed)
 	sound->secondsOffset = elapsed;
 }
 
-Sound_Status Sound_GetStatus(Sound* sound)
+SoundStatus Sound_GetStatus(Sound* sound)
 {
 	s32 status = ASND_StatusVoice(sound->voiceNumber);
 	if (status == SND_WORKING)
 	{
-		return Sound_Status::Playing;
+		return SoundStatus::Playing;
 	}
 	else if (status == SND_UNUSED)
 	{
 		if (sound->sData == nullptr)
 		{
-			return Sound_Status::Initial;
+			return SoundStatus::Initial;
 		}
 		else
 		{
-			return Sound_Status::Stopped;
+			return SoundStatus::Stopped;
 		}
 	}
 	else
 	{
-		return Sound_Status::Paused;
+		return SoundStatus::Paused;
 	}
 }
 

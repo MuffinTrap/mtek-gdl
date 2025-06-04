@@ -120,14 +120,13 @@ void _Menu_Borders()
 {
     const short x = menu->_drawx;
     const short y = menu->_drawy;
-    const short h = menu->_font->characterHeight * menu->_textHeight;
     DrawRectangle(x, y,
                   x + menu->_windowWidth,
                   y - menu->_windowHeight,
                   menu->_bg);
-    DrawRectangleLines(x, y,
-                  x + menu->_windowWidth,
-                  y - menu->_windowHeight,
+    DrawRectangleLines(x - 1, y + 1,
+                  x + menu->_windowWidth + 1,
+                  y - menu->_windowHeight - 1,
                   menu->_highlight);
 
     DrawLine(0, 0, V2f_X(menu->_cursorPosition), V2f_Y(menu->_cursorPosition), Colors::White);

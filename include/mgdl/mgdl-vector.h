@@ -11,6 +11,7 @@
 #include <ogc/gu.h>
 
 typedef Mtx44 mat4x4;
+typedef Mtx33 mat3x3;
 typedef guVector vec3;
 
 typedef struct _vecf2 {

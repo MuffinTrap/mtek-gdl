@@ -10,13 +10,15 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "mgdl/wii/mgdl-wii-types.h"
-#include "mgdl/wii/mgdl-wii-globals.h"
-#include "mgdl/wii/mgdl-wii-globals-internal.h"
-#include "mgdl/wii/mgdl-wii-main.h"
-#include "mgdl/wii/mgdl-wii-image.h"
-#include "mgdl/wii/mgdl-wii-sprites.h"
-#include "mgdl/wii/mgdl-wii-assert.h"
+#include <mgdl/mgdl-logger.h>
+
+#include <mgdl/wii/mgdl-wii-types.h>
+#include <mgdl/wii/mgdl-wii-globals.h>
+#include <mgdl/wii/mgdl-wii-globals-internal.h>
+#include <mgdl/wii/mgdl-wii-main.h>
+#include <mgdl/wii/mgdl-wii-image.h>
+#include <mgdl/wii/mgdl-wii-sprites.h>
+#include <mgdl/wii/mgdl-wii-assert.h>
 
 
 // External declarations to be able to access the image module's put routines
@@ -73,10 +75,10 @@ gdl::SpriteSet::~SpriteSet() {
 */
 bool gdl::SpriteSet::LoadSprites(short spritesPerRow, short spriteHeight, ImageWii *spriteSheet)
 {
-	gdl_assert_print(spriteSheet != NULL, "Null pointer to sprite sheet\n");
-	gdl_assert_printf(spritesPerRow > 0 && spriteHeight > 0,"Invalid dimensions given, per row: %d height:%d\n", spritesPerRow, spriteHeight);
-	gdl_assert_printf(spriteSheet->Xsize() % spritesPerRow == 0, "Sprite sheet width does not align with given spritesPerRow. Modulo was: %d", spriteSheet->Xsize()%spritesPerRow);
-	gdl_assert_printf(spriteSheet->Ysize() % spriteHeight == 0, "Sprite sheet height does not align with given spriteHeight. Modulo was: %d", spriteSheet->Ysize()%spriteHeight);
+	mgdl_assert_print(spriteSheet != NULL, "Null pointer to sprite sheet\n");
+	mgdl_assert_printf(spritesPerRow > 0 && spriteHeight > 0,"Invalid dimensions given, per row: %d height:%d\n", spritesPerRow, spriteHeight);
+	mgdl_assert_printf(spriteSheet->Xsize() % spritesPerRow == 0, "Sprite sheet width does not align with given spritesPerRow. Modulo was: %d", spriteSheet->Xsize()%spritesPerRow);
+	mgdl_assert_printf(spriteSheet->Ysize() % spriteHeight == 0, "Sprite sheet height does not align with given spriteHeight. Modulo was: %d", spriteSheet->Ysize()%spriteHeight);
 
 	short spriteWidth = spriteSheet->Xsize() / spritesPerRow;
 	int rows = spriteSheet->Ysize() / spriteHeight;
