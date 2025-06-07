@@ -502,16 +502,13 @@ void Mesh_DrawStarBorder(float borderThickness, float pointRadius, float sharpne
 	//////////////////////////////////////////
 
 	vec3 point = V3f_Create(1.0f, 0.0f, 0.0f);
-	float fifth = M_PI*2.0f/(float)pointAmount;
+	float fifth = (M_PI*2.0f)/(float)pointAmount;
 	float tenth = fifth/2.0f;
 
 	// This is a magic number to make the borders of even thickness
-	float fixRatio = 0.50f;
+	float fixRatio = 1.0f - sharpness;
 
 	glBegin(GL_TRIANGLES);
-
-	mgdl_glVertexV3F_xy(point);
-
 	for (int p = 0; p < pointAmount; p++)
 	{
 		// star is facing Z axis
@@ -541,8 +538,8 @@ void Mesh_DrawStarBorder(float borderThickness, float pointRadius, float sharpne
 
 		mgdl_glTriangleV3F_xy(rimPointI, basePoint1I, basePoint1O);
 		mgdl_glTriangleV3F_xy(basePoint1O, rimPointO, rimPointI);
-		mgdl_glTriangleV3F_xy(rimPointI, basePoint2I, basePoint2O);
-		mgdl_glTriangleV3F_xy(basePoint2O, rimPointO, rimPointI);
+		mgdl_glTriangleV3F_xy(rimPointI, basePoint2O, basePoint2I);
+		mgdl_glTriangleV3F_xy(basePoint2O, rimPointI, rimPointO);
 
 		/*
 		triangleCount = Mesh_AddTriangle(mesh, rim_in, base1_in, base1_out, triangleCount); //3
@@ -598,8 +595,8 @@ Mesh* Mesh_CreateStarBorder(float borderThickness, float pointRadius, float shar
 
 		triangleCount = Mesh_AddTriangle(mesh, rim_in, base1_in, base1_out, triangleCount); //3
 		triangleCount = Mesh_AddTriangle(mesh, base1_out, rim_out, rim_in, triangleCount); //6
-		triangleCount = Mesh_AddTriangle(mesh, rim_in, base2_in, base2_out, triangleCount); //9
-		triangleCount = Mesh_AddTriangle(mesh, base2_out, rim_out, rim_in, triangleCount); //12
+		triangleCount = Mesh_AddTriangle(mesh, rim_in, base2_out, base2_in, triangleCount); //9
+		triangleCount = Mesh_AddTriangle(mesh, base2_out, rim_in, rim_out, triangleCount); //12
 	}
 
 
