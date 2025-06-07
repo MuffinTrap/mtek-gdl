@@ -495,7 +495,117 @@ Mesh* CreateStar(float centerThickness, float pointRadius, float sharpness, int 
 	return star;
 }
 
+void Mesh_DrawStarBorder(float borderThickness, float pointRadius, float sharpness, int pointAmount)
+{
+	float ratio = (1.0f - sharpness);
+	float baseRadius = pointRadius * ratio;
+	//////////////////////////////////////////
 
+	vec3 point = V3f_Create(1.0f, 0.0f, 0.0f);
+	float fifth = M_PI*2.0f/(float)pointAmount;
+	float tenth = fifth/2.0f;
+
+	// This is a magic number to make the borders of even thickness
+	float fixRatio = 0.50f;
+
+	glBegin(GL_TRIANGLES);
+
+	mgdl_glVertexV3F_xy(point);
+
+	for (int p = 0; p < pointAmount; p++)
+	{
+		// star is facing Z axis
+		vec3 baseRot1;  V3f_RotateZ(point, fifth * p, baseRot1);
+		vec3 baseRot2;  V3f_RotateZ(point, fifth * (p+1), baseRot2);
+		vec3 pointRot;  V3f_RotateZ(point, fifth * p + tenth, pointRot);
+
+		// Inner points
+		vec3 rimPointI ;   V3f_Scale(pointRot, pointRadius - borderThickness, rimPointI);
+		vec3 basePoint1I ; V3f_Scale(baseRot1 , baseRadius - borderThickness * fixRatio, basePoint1I);
+		vec3 basePoint2I ; V3f_Scale(baseRot2 , baseRadius - borderThickness * fixRatio, basePoint2I);
+
+		// Outer points
+		vec3 rimPointO ;   V3f_Scale(pointRot, pointRadius, rimPointO);
+		vec3 basePoint1O ; V3f_Scale(baseRot1 , baseRadius, basePoint1O);
+		vec3 basePoint2O ; V3f_Scale(baseRot2 , baseRadius, basePoint2O);
+
+		/*
+		GLushort rim_in =    Mesh_AddPosition(mesh, rimPointI);
+		GLushort base1_in =  Mesh_AddPosition(mesh, basePoint1I);
+		GLushort base1_out = Mesh_AddPosition(mesh, basePoint1O);
+
+		GLushort rim_out =   Mesh_AddPosition(mesh, rimPointO);
+		GLushort base2_in =  Mesh_AddPosition(mesh, basePoint2I);
+		GLushort base2_out = Mesh_AddPosition(mesh, basePoint2O);
+		*/
+
+		mgdl_glTriangleV3F_xy(rimPointI, basePoint1I, basePoint1O);
+		mgdl_glTriangleV3F_xy(basePoint1O, rimPointO, rimPointI);
+		mgdl_glTriangleV3F_xy(rimPointI, basePoint2I, basePoint2O);
+		mgdl_glTriangleV3F_xy(basePoint2O, rimPointO, rimPointI);
+
+		/*
+		triangleCount = Mesh_AddTriangle(mesh, rim_in, base1_in, base1_out, triangleCount); //3
+		triangleCount = Mesh_AddTriangle(mesh, base1_out, rim_out, rim_in, triangleCount); //6
+		triangleCount = Mesh_AddTriangle(mesh, rim_in, base2_in, base2_out, triangleCount); //9
+		triangleCount = Mesh_AddTriangle(mesh, base2_out, rim_out, rim_in, triangleCount); //12
+		*/
+	}
+	glEnd();
+}
+
+Mesh* Mesh_CreateStarBorder(float borderThickness, float pointRadius, float sharpness, int pointAmount, u32 creationFlags)
+{
+	Mesh* mesh = new Mesh();
+	float ratio = (1.0f - sharpness);
+	float baseRadius = pointRadius * ratio;
+	u32 triangleCount = 0;
+	//////////////////////////////////////////
+
+	Mesh_Init(mesh, pointAmount * 6, 12 * pointAmount, creationFlags);
+
+	vec3 point = V3f_Create(1.0f, 0.0f, 0.0f);
+	float fifth = M_PI*2.0f/(float)pointAmount;
+	float tenth = fifth/2.0f;
+
+	// This is a magic number to make the borders of even thickness
+	float fixRatio = 0.50f;
+
+	for (int p = 0; p < pointAmount; p++)
+	{
+		// star is facing Z axis
+		vec3 baseRot1;  V3f_RotateZ(point, fifth * p, baseRot1);
+		vec3 baseRot2;  V3f_RotateZ(point, fifth * (p+1), baseRot2);
+		vec3 pointRot;  V3f_RotateZ(point, fifth * p + tenth, pointRot);
+
+		// Inner points
+		vec3 rimPointI ;   V3f_Scale(pointRot, pointRadius - borderThickness, rimPointI);
+		vec3 basePoint1I ; V3f_Scale(baseRot1 , baseRadius - borderThickness * fixRatio, basePoint1I);
+		vec3 basePoint2I ; V3f_Scale(baseRot2 , baseRadius - borderThickness * fixRatio, basePoint2I);
+
+		// Outer points
+		vec3 rimPointO ;   V3f_Scale(pointRot, pointRadius, rimPointO);
+		vec3 basePoint1O ; V3f_Scale(baseRot1 , baseRadius, basePoint1O);
+		vec3 basePoint2O ; V3f_Scale(baseRot2 , baseRadius, basePoint2O);
+
+		GLushort rim_in =    Mesh_AddPosition(mesh, rimPointI);
+		GLushort base1_in =  Mesh_AddPosition(mesh, basePoint1I);
+		GLushort base1_out = Mesh_AddPosition(mesh, basePoint1O);
+
+		GLushort rim_out =   Mesh_AddPosition(mesh, rimPointO);
+		GLushort base2_in =  Mesh_AddPosition(mesh, basePoint2I);
+		GLushort base2_out = Mesh_AddPosition(mesh, basePoint2O);
+
+		triangleCount = Mesh_AddTriangle(mesh, rim_in, base1_in, base1_out, triangleCount); //3
+		triangleCount = Mesh_AddTriangle(mesh, base1_out, rim_out, rim_in, triangleCount); //6
+		triangleCount = Mesh_AddTriangle(mesh, rim_in, base2_in, base2_out, triangleCount); //9
+		triangleCount = Mesh_AddTriangle(mesh, base2_out, rim_out, rim_in, triangleCount); //12
+	}
+
+
+	return mesh;
+
+}
 
 
 

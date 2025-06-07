@@ -143,17 +143,20 @@ void save_sync(const struct sync_track *t, const char *filename_h, const char *f
     }
     fprintf(file_cpp, "};\n");
 
-    // Track names as extern in .h file
-    fprintf(file_h, "extern const sync_track %s;\n",  underscoreName.c_str());
+    // Track pointers as extern in .h file
+    fprintf(file_h, "extern sync_track* %s;\n",  underscoreName.c_str());
 
     // Tracks in .cpp file
     // define the variable
     //fprintf(file_cpp, "const sync_track %s;\n", t->name);
 
     // assign to it
-    fprintf(file_cpp, "const sync_track %s = { \"%s\", ", underscoreName.c_str(), t->name);
+    fprintf(file_cpp, "static sync_track %s_array = { \"%s\", ", underscoreName.c_str(), t->name);
     fprintf(file_cpp, "%s_keys", underscoreName.c_str());
     fprintf(file_cpp, ",%d};\n", t->num_keys);
+
+    // Connect pointer
+    fprintf(file_cpp, "sync_track* %s = &%s_array;\n", underscoreName.c_str(), underscoreName.c_str());
 
     fclose(file_h);
     fclose(file_cpp);

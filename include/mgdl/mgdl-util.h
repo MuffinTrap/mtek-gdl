@@ -5,25 +5,14 @@
 #include <stdarg.h>
 // helper functions
 
+
+
+Color4f ColorToFloats(u32 color);
+Color4b ColorToComponents(u32 color);
+u32 ComponentsToColor(Color4f components);
+
 namespace gdl
 {
-    struct RGBA8Components {
-        u8 red;
-        u8 green;
-        u8 blue;
-        u8 alpha;
-    };
-
-	struct RGBA8Floats {
-		float red;
-		float green;
-		float blue;
-		float alpha;
-	};
-
-    RGBA8Floats ColorToFloats(u32 color);
-    RGBA8Components ColorToComponents(u32 color);
-    u32 ComponentsToColor(RGBA8Components components);
 
     float GetRandomFloat(float min = 0.0f, float max = 1.0f);
     int GetRandomInt(int min, int max);

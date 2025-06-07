@@ -72,7 +72,9 @@ extern "C"
 	Mesh* Mesh_CreateQuad(u32 creationFlags);
 	Mesh* Mesh_CreateStar(float centerThickness, float pointRadius, float sharpness, int pointAmount, bool bothSides, u32 creationFlags);
 
-	// TODO Mesh* Mesh_CreateStarBorder(float thickness, float pointRadius, float sharpness, int pointAmount);
+	// Instant drawing
+	void Mesh_DrawStarBorder(float thickness, float pointRadius, float sharpness, int pointAmount);
+	Mesh* Mesh_CreateStarBorder(float borderThickness, float pointRadius, float sharpness, int pointAmount, u32 creationFlags);
 
 	// TODO Mesh* Mesh_CreateRibbonPolygonCross(Mesh* bezierCurvePoints, int crossSectionPoints, float crossSectionRadius, int segmentsPerBezier);
 

@@ -14,7 +14,7 @@ struct Image
 	PNGFile* pngFile = nullptr;
 
 	float aspectRatio = 1.0f;
-	gdl::RGBA8Floats tint;
+	Color4f tint;
 	GLsizei width = 0;
 	GLsizei height = 0;
 	gdl::ColorFormats colorFormat;

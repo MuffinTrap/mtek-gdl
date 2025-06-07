@@ -1,5 +1,6 @@
 #include <mgdl/mgdl-opengl.h>
 #include <mgdl/mgdl-main.h>
+#include <mgdl/mgdl-types.h>
 
 void mgdl_glClear(GLbitfield flags)
 {
@@ -74,5 +75,38 @@ void mgdl_glSetAlphaTest(bool enabled)
 	{
 		glAlphaFunc(GL_ALWAYS, 0.5f);
 	}
+}
+
+void mgdl_glColor4f(Color4f color)
+{
+	glColor4f(color.red, color.green, color.blue, color.alpha);
+}
+void mgdl_glColor4fa(Color4f color, float alpha)
+{
+	glColor4f(color.red, color.green, color.blue, alpha);
+}
+
+void mgdl_glVertexV3F(vec3 position)
+{
+	glVertex3f(V3f_X(position), V3f_Y(position), V3f_Z(position));
+}
+
+void mgdl_glVertexV3F_xy(vec3 position)
+{
+	glVertex2f(V3f_X(position), V3f_Y(position));
+}
+
+void mgdl_glTriangleV3F_xy(vec3 a, vec3 b, vec3 c)
+{
+	mgdl_glVertexV3F_xy(a);
+	mgdl_glVertexV3F_xy(b);
+	mgdl_glVertexV3F_xy(c);
+}
+
+void mgdl_glTriangleV3F(vec3 a, vec3 b, vec3 c)
+{
+	mgdl_glVertexV3F(a);
+	mgdl_glVertexV3F(b);
+	mgdl_glVertexV3F(c);
 }
 

@@ -10,7 +10,7 @@
 void DrawRectangleLines(short x, short y, short x2, short y2, u32 color)
 {
 	glBegin(GL_LINE_LOOP);
-		gdl::RGBA8Floats f= gdl::ColorToFloats(color);
+		Color4f f= ColorToFloats(color);
 		glColor3f(f.red, f.green, f.blue);
 		// TOP LEFT
 		glVertex2f(x, y);
@@ -30,7 +30,7 @@ void DrawRectangleLines(short x, short y, short x2, short y2, u32 color)
 
 void DrawRectangle(short x, short y, short x2, short y2, u32 color)
 {
-	gdl::RGBA8Floats f= gdl::ColorToFloats(color);
+	Color4f f= ColorToFloats(color);
 	glColor3f(f.red, f.green, f.blue);
 	glBegin(GL_QUADS);
 		// TOP LEFT
@@ -51,7 +51,7 @@ void DrawRectangle(short x, short y, short x2, short y2, u32 color)
 
 void DrawQuad ( short xtl, short ytl, short xbl, short ybl, short xbr, short ybr, short xtr, short ytr, u32 color )
 {
-	gdl::RGBA8Floats f= gdl::ColorToFloats(color);
+	Color4f f= ColorToFloats(color);
 	glColor3f(f.red, f.green, f.blue);
 	glBegin(GL_QUADS);
 		// TOP LEFT
@@ -70,7 +70,7 @@ void DrawQuad ( short xtl, short ytl, short xbl, short ybl, short xbr, short ybr
 
 void DrawLine ( short x, short y, short x2, short y2, u32 color )
 {
-	gdl::RGBA8Floats f= gdl::ColorToFloats(color);
+	Color4f f= ColorToFloats(color);
 	glColor3f(f.red, f.green, f.blue);
 	glBegin(GL_LINES);
 		// TOP LEFT

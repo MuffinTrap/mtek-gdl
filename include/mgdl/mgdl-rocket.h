@@ -54,7 +54,7 @@ extern "C" {
 
 	// Supply the rocket connection you created and the music
 	Rocket* _Rocket_GetSingleton();
-	bool Rocket_Init(Music music, float bpm, int beatsPerRow);
+	bool Rocket_Init(Music* music, float bpm, int beatsPerRow);
 	void Rocket_SetBeatsPerMinute(float bpm);
 	void Rocket_SetRowsPerBeat(int rowsPerBeat);
 	void Rocket_UpdateRow();

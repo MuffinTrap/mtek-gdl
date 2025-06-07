@@ -44,6 +44,12 @@ extern "C"
     void mgdl_glColor4f(Color4f color);
     void mgdl_glColor4fa(Color4f color, float alpha);
 
+    void mgdl_glVertexV3F(vec3);
+    void mgdl_glVertexV3F_xy(vec3);
+
+    void mgdl_glTriangleV3F(vec3 a, vec3 b, vec3 c);
+    void mgdl_glTriangleV3F_xy(vec3 a, vec3 b, vec3 c);
+
 /** NOTE!!!!
 * @brief Sets up the camera.
 * @details Without this setup the Dolphin is all messed up with the rendering.

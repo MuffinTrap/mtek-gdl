@@ -129,7 +129,7 @@ void Font_Icon (Font* font, u32 color, float x, float y, float textHeight, gdl::
 	glBindTexture(GL_TEXTURE_2D, textureName);
     // Discard pixels with low alpha
 
-	gdl::RGBA8Floats f = gdl::ColorToFloats(color);
+	Color4f f = ColorToFloats(color);
 	glBegin(GL_QUADS);
 	glColor3f(f.red, f.green, f.blue);
 
@@ -197,7 +197,7 @@ void Font_PrintAligned(Font* font, u32 color, float x, float y, float textHeight
 	glBindTexture(GL_TEXTURE_2D, textureName);
     // Discard pixels with low alpha
 
-	gdl::RGBA8Floats f = gdl::ColorToFloats(color);
+	Color4f f = ColorToFloats(color);
 	glBegin(GL_QUADS);
 	glColor3f(f.red, f.green, f.blue);
 	for (short c = 0; text[c] != '\0'; c++)

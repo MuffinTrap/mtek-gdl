@@ -1,5 +1,6 @@
 #include <mgdl/mgdl-palette.h>
 #include <mgdl/mgdl-alloc.h>
+#include <mgdl/mgdl-util.h>
 
 static Palette* defaultPalette_ = nullptr;
 static u32 blessing[] =
@@ -47,6 +48,12 @@ u32 Palette_GetColor(Palette* palette, u8 index)
 {
 	index = index % palette->size;
 	return palette->_colors[index];
+}
+
+Color4f Palette_GetColor4f(Palette* palette, u8 index)
+{
+	index = index % palette->size;
+	return ColorToFloats(palette->_colors[index]);
 }
 
 void Palette_SetColor(Palette* palette, u8 index, u32 color)
