@@ -530,7 +530,7 @@ void gdl::SetClearColor(u_char red, u_char grn, u_char blu, u_char alp) {
 
 void gdl::SetClearColor(u_int color)
 {
-	gdl::RGBA8Components comp = gdl::ColorToComponents(color);
+	Color4b comp = ColorToComponents(color);
 	SetClearColor(comp.red, comp.green, comp.blue, comp.alpha);
 
 }
