@@ -18,4 +18,5 @@ extern "C"
 	void Palette_SetColor(Palette* palette, u8 index, u32 color);
 
 	u32 Palette_GetColor(Palette* palette, u8 index);
+	Color4f Palette_GetColor4f(Palette* palette, u8 index);
 }

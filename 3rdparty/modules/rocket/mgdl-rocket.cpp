@@ -187,7 +187,7 @@ void Rocket_Disconnect()
 
 // For internal use
 
-Rocket* Rocket_GetSingleton()
+Rocket* _Rocket_GetSingleton()
 {
     if (instance == nullptr)
     {
@@ -284,6 +284,7 @@ void Rocket_Play()
     // Functions for saving tracks
     void Rocket_SaveTrack(ROCKET_TRACK track)
     {
+        mgdl_assert_print(track != nullptr, "Rocket track was null");
         save_sync(track, MGDL_ROCKET_FILE_H, MGDL_ROCKET_FILE_CPP);
     }
 

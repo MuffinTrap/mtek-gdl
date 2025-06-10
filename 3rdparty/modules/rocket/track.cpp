@@ -60,6 +60,7 @@ double sync_get_val(const struct sync_track *t, double row) {
 }
 
 void start_save_sync(const char *filename_h, const char *filename_cpp) {
+    { // Header
     FILE *file_h = fopen(filename_h, "w");
     if (file_h == NULL)
     {
@@ -71,26 +72,34 @@ void start_save_sync(const char *filename_h, const char *filename_cpp) {
     fprintf(file_h, "#pragma once\n");
     fprintf(file_h, "#include \"rocket/track.h\"\n");
     fclose(file_h);
+    }
 
+    { // CPP
     FILE *file_cpp = fopen(filename_cpp, "w");
     if (file_cpp == NULL) {
         perror("Error opening file");
         return;
     }
+
     fprintf(file_cpp, "// sync data implementation\n");
-    fprintf(file_h, "#ifdef SYNC_PLAYER\n");
+    fprintf(file_cpp, "#ifdef SYNC_PLAYER\n");
     fprintf(file_cpp, "#include \"rocket/track.h\"\n");
     fclose(file_cpp);
+    }
 }
 
 void end_save_sync(const char *filename_h, const char *filename_cpp) {
+    { // Header
     FILE *file_h = fopen(filename_h, "a");
     fprintf(file_h, "#endif\n // SYNC_PLAYER");
     fclose(file_h);
+    }
 
+    { // CPP
     FILE *file_cpp = fopen(filename_cpp, "a");
-    fprintf(file_h, "#endif\n // SYNC_PLAYER");
+    fprintf(file_cpp, "#endif\n // SYNC_PLAYER");
     fclose(file_cpp);
+    }
 }
 
 const char* key_type_to_string(enum key_type tp) {
@@ -143,17 +152,20 @@ void save_sync(const struct sync_track *t, const char *filename_h, const char *f
     }
     fprintf(file_cpp, "};\n");
 
-    // Track names as extern in .h file
-    fprintf(file_h, "extern const sync_track %s;\n",  underscoreName.c_str());
+    // Track pointers as extern in .h file
+    fprintf(file_h, "extern sync_track* %s;\n",  underscoreName.c_str());
 
     // Tracks in .cpp file
     // define the variable
     //fprintf(file_cpp, "const sync_track %s;\n", t->name);
 
     // assign to it
-    fprintf(file_cpp, "const sync_track %s = { \"%s\", ", underscoreName.c_str(), t->name);
+    fprintf(file_cpp, "static sync_track %s_array = { \"%s\", ", underscoreName.c_str(), t->name);
     fprintf(file_cpp, "%s_keys", underscoreName.c_str());
     fprintf(file_cpp, ",%d};\n", t->num_keys);
+
+    // Connect pointer
+    fprintf(file_cpp, "sync_track* %s = &%s_array;\n", underscoreName.c_str(), underscoreName.c_str());
 
     fclose(file_h);
     fclose(file_cpp);

@@ -29,7 +29,7 @@ void Draw2D_OrigoToV2f(vec2 origo)
 void Draw2D_RectangleLines(short x, short y, short x2, short y2, u32 color)
 {
 	glBegin(GL_LINE_LOOP);
-		gdl::RGBA8Floats f= gdl::ColorToFloats(color);
+		Color4f f= ColorToFloats(color);
 		glColor3f(f.red, f.green, f.blue);
 		// TOP LEFT
 		glVertex2f(x, y);
@@ -54,7 +54,7 @@ void Draw2D_RectangleLinesRec(Rectangle rect, rgba8 color)
 
 void Draw2D_Rectangle(short x, short y, short x2, short y2, u32 color)
 {
-	gdl::RGBA8Floats f= gdl::ColorToFloats(color);
+	Color4f f= ColorToFloats(color);
 	glColor3f(f.red, f.green, f.blue);
 	glBegin(GL_QUADS);
 		// TOP LEFT
@@ -80,7 +80,7 @@ void Draw2D_RectangleRec(Rectangle rect, rgba8 color)
 
 void Draw2D_Quad ( short xtl, short ytl, short xbl, short ybl, short xbr, short ybr, short xtr, short ytr, u32 color )
 {
-	gdl::RGBA8Floats f= gdl::ColorToFloats(color);
+	Color4f f= ColorToFloats(color);
 	glColor3f(f.red, f.green, f.blue);
 	glBegin(GL_QUADS);
 		// TOP LEFT
@@ -109,7 +109,7 @@ void Draw2D_QuadV2f(vec2 tl, vec2 bl, vec2 br, vec2 tr, rgba8 color)
 
 void Draw2D_Line ( short x, short y, short x2, short y2, u32 color )
 {
-	gdl::RGBA8Floats f= gdl::ColorToFloats(color);
+	Color4f f= ColorToFloats(color);
 	glColor3f(f.red, f.green, f.blue);
 	glBegin(GL_LINES);
 		// TOP LEFT

@@ -10,16 +10,16 @@
     #endif
 #endif
 
-gdl::RGBA8Components gdl::ColorToComponents(u32 color)
+Color4b ColorToComponents(u32 color)
 {
-    RGBA8Components components = {0,0,0,0};
+    Color4b components = {0,0,0,0};
     components.red = RED(color);
     components.green = GREEN(color);
     components.blue = BLUE(color);
     components.alpha = ALPHA(color);
     return components;
 }
-u32 gdl::ComponentsToColor(gdl::RGBA8Components components)
+u32 ComponentsToColor(Color4f components)
 {
     u32 color = TO_RGBA(
     components.red,
@@ -29,9 +29,9 @@ u32 gdl::ComponentsToColor(gdl::RGBA8Components components)
     return color;
 }
 
-gdl::RGBA8Floats gdl::ColorToFloats(u32 color)
+Color4f ColorToFloats(u32 color)
 {
-    RGBA8Floats components = {0,0,0,0};
+    Color4f components = {0,0,0,0};
     components.red = (float)RED(color)/255.0f;
     components.green = (float)GREEN(color)/255.0f;
     components.blue = (float)BLUE(color)/255.0f;

@@ -7,6 +7,7 @@
  * by providing macro definitions.
  */
 
+/*
 #ifdef MGDL_PLATFORM_WII
 #include <ogc/gu.h>
 
@@ -17,8 +18,8 @@ typedef guVector vec3;
 typedef struct _vecf2 {
 	f32 x, y;
 } vec2;
+*/
 
-#else // PC platform
 
 #ifdef MGDL_USE_CCVECTOR
 	#ifdef GEKKO
@@ -54,4 +55,4 @@ typedef struct _vecf2 {
 
 #endif
 
-#endif // PC platform
+// #endif // PC platform

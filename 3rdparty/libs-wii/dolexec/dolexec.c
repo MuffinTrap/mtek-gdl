@@ -74,7 +74,7 @@ bool loadDolFromFile(const char *fileName, const char *args) {
 	
 	
 	// Execute!
-	_execProgram(args);
+	_execProgram();
 	
 	
 	// Just to get rid of compiler warnings
@@ -99,7 +99,7 @@ bool loadDolFromMemory(void *dolProgram, int dolSize, const char* args) {
 	
 	
 	// Execute!
-	_execProgram(args);
+	_execProgram();
 	
 	
 	// Just to get rid of compiler warnings

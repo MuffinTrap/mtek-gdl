@@ -46,7 +46,7 @@ void Sprite_Draw2D(Sprite* sprite, u16 spriteIndex, short x, short y, float scal
 	const float uvW = sprite->_font->_uvWidth;
 	const float uvH = sprite->_font->_uvHeight;
 
-	gdl::RGBA8Floats f = gdl::ColorToFloats(tintColor);
+	Color4f f = ColorToFloats(tintColor);
 	glColor3f(f.red, f.green, f.blue);
 
 	glEnable(GL_TEXTURE_2D);
@@ -87,7 +87,7 @@ void Sprite_Draw3D(Sprite* sprite, u16 spriteIndex, float scale, gdl::AlignmentM
 	const float uvW = sprite->_font->_uvWidth;
 	const float uvH = sprite->_font->_uvHeight;
 
-	gdl::RGBA8Floats f = gdl::ColorToFloats(tintColor);
+	Color4f f = ColorToFloats(tintColor);
 	glColor3f(f.red, f.green, f.blue);
 
 	glEnable(GL_TEXTURE_2D);
