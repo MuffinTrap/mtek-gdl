@@ -13,25 +13,25 @@ void Example::Init()
 {
     // Sprites, images and fonts
     short spriteHeight = 64;
-    barb = LoadImage("assets/barb.png", gdl::TextureFilterModes::Linear);
-    mel_sprites = LoadSprite("assets/mel_tiles.png", spriteHeight, spriteHeight);
-    fruitSprites = LoadSprite("assets/fruits.png", 16, 16);
-    pointerImage = LoadImage("assets/pointer.png", gdl::TextureFilterModes::Nearest);
-    ibmFont = LoadFont("assets/font8x16.png", 8, 16, ' ');
+    barb = mgdl_LoadImage("assets/barb.png", gdl::TextureFilterModes::Linear);
+    mel_sprites = mgdl_LoadSprite("assets/mel_tiles.png", spriteHeight, spriteHeight);
+    fruitSprites = mgdl_LoadSprite("assets/fruits.png", 16, 16);
+    pointerImage = mgdl_LoadImage("assets/pointer.png", gdl::TextureFilterModes::Nearest);
+    ibmFont = mgdl_LoadFont("assets/font8x16.png", 8, 16, ' ');
     debugFont = Font_GetDebugFont();
 
     // Audio
-    blip = LoadSound("assets/blipSelect.wav");
-    sampleMusic = LoadOgg("assets/sample3.ogg");
+    blip = mgdl_LoadSound("assets/blipSelect.wav");
+    sampleMusic = mgdl_LoadOgg("assets/sample3.ogg");
 
     // Wii model scene
-    wiiScene = LoadFBX("assets/wii_et_baby.fbx");
-    wiiTexture = LoadImage("assets/wii_console_texture.png", gdl::TextureFilterModes::Nearest);
+    wiiScene = mgdl_LoadFBX("assets/wii_et_baby.fbx");
+    wiiTexture = mgdl_LoadImage("assets/wii_console_texture.png", gdl::TextureFilterModes::Nearest);
     Scene_SetMaterialTexture(wiiScene, "wii_console_texture.png", wiiTexture);
 
     // Ship with matcap texture
-    shipScene = LoadFBX("assets/ship_with_uvs.fbx");
-    matcapTexture = LoadImage("assets/matcap.png", gdl::TextureFilterModes::Linear);
+    shipScene = mgdl_LoadFBX("assets/ship_with_uvs.fbx");
+    matcapTexture = mgdl_LoadImage("assets/matcap.png", gdl::TextureFilterModes::Linear);
     matcapMaterial = Material_Load("matcap", matcapTexture, gdl::MaterialType::Matcap);
     Scene_SetAllMaterialTextures(shipScene, matcapTexture);
     Material* st = Scene_GetMaterial(shipScene, "standardSurface1");

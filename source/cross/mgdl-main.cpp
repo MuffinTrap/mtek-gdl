@@ -22,7 +22,7 @@ void mgdl_InitSystem(const char* name,
 	AssetManager_Init(&assetManager);
 }
 
-PNGFile* LoadPNG(const char* filename)
+PNGFile* mgdl_LoadPNG(const char* filename)
 {
 	PNGFile* png = PNG_ReadFile(filename);
 	if (png != nullptr)
@@ -37,7 +37,7 @@ PNGFile* LoadPNG(const char* filename)
 	}
 }
 
-Image* LoadImage(const char* filename, gdl::TextureFilterModes filterMode)
+Image* mgdl_LoadImage(const char* filename, gdl::TextureFilterModes filterMode)
 {
 	Image* img = Image_LoadFile(filename, filterMode);
 	if (img != nullptr)
@@ -51,7 +51,7 @@ Image* LoadImage(const char* filename, gdl::TextureFilterModes filterMode)
 	}
 }
 
-Image* LoadImagePNG(PNGFile* png, gdl::TextureFilterModes filterMode)
+Image* mgdl_LoadImagePNG(PNGFile* png, gdl::TextureFilterModes filterMode)
 {
 	Image* img = Image_LoadPNG(png, filterMode);
 	if (img != nullptr)
@@ -65,7 +65,7 @@ Image* LoadImagePNG(PNGFile* png, gdl::TextureFilterModes filterMode)
 	}
 }
 
-Sound* LoadSound(const char* filename)
+Sound* mgdl_LoadSound(const char* filename)
 {
 	Sound* snd = Sound_Load(filename);
 	if(snd != nullptr)
@@ -80,7 +80,7 @@ Sound* LoadSound(const char* filename)
 }
 
 
-Music* LoadOgg(const char* filename)
+Music* mgdl_LoadOgg(const char* filename)
 {
 	Music* music = Music_LoadOgg(filename);
 	if(music != nullptr)
@@ -94,7 +94,7 @@ Music* LoadOgg(const char* filename)
 	}
 }
 
-Music* LoadWav(const char* filename)
+Music* mgdl_LoadWav(const char* filename)
 {
 	Music* music = Music_LoadWav(filename);
 	if(music != nullptr)
@@ -109,9 +109,9 @@ Music* LoadWav(const char* filename)
 
 }
 
-Font* LoadFont(const char* filename, short characterWidth, short characterHeight, char firstCharacter)
+Font* mgdl_LoadFont(const char* filename, short characterWidth, short characterHeight, char firstCharacter)
 {
-	Image* fontImage = LoadImage(filename, gdl::TextureFilterModes::Nearest);
+	Image* fontImage = mgdl_LoadImage(filename, gdl::TextureFilterModes::Nearest);
 	Font* font = Font_Load(fontImage, characterWidth, characterHeight, firstCharacter);
 	if (font != nullptr)
 	{
@@ -124,9 +124,9 @@ Font* LoadFont(const char* filename, short characterWidth, short characterHeight
 	}
 }
 
-Font* LoadFontCustom(const char* filename, short characterWidth, short characterHeight, char firstCharacter, short charactersPerRow)
+Font* mgdl_LoadFontCustom(const char* filename, short characterWidth, short characterHeight, char firstCharacter, short charactersPerRow)
 {
-	Image* fontImage = LoadImage(filename, gdl::TextureFilterModes::Linear);
+	Image* fontImage = mgdl_LoadImage(filename, gdl::TextureFilterModes::Linear);
 	Font* font = Font_LoadPadded(fontImage, characterWidth, characterHeight, firstCharacter, charactersPerRow);
 
 	if (font != nullptr)
@@ -140,9 +140,9 @@ Font* LoadFontCustom(const char* filename, short characterWidth, short character
 	}
 }
 
-Font* LoadFontCustom(const char* filename, short characterWidth, short characterHeight, short charactersPerRow, const char* characters)
+Font* mgdl_LoadFontCustom(const char* filename, short characterWidth, short characterHeight, short charactersPerRow, const char* characters)
 {
-	Image* fontImage = LoadImage(filename, gdl::TextureFilterModes::Linear);
+	Image* fontImage = mgdl_LoadImage(filename, gdl::TextureFilterModes::Linear);
 	Font* font = Font_LoadSelective(fontImage, characterWidth, characterHeight, charactersPerRow, characters);
 	if (font != nullptr)
 	{
@@ -155,7 +155,7 @@ Font* LoadFontCustom(const char* filename, short characterWidth, short character
 	}
 }
 
-Scene* LoadFBX(const char* filename)
+Scene* mgdl_LoadFBX(const char* filename)
 {
 	Scene* s = FBX_Load(filename);
 
@@ -163,9 +163,9 @@ Scene* LoadFBX(const char* filename)
 	return s;
 }
 
-Sprite* LoadSprite(const char* filename, short spriteWidth, short spriteHeight)
+Sprite* mgdl_LoadSprite(const char* filename, short spriteWidth, short spriteHeight)
 {
-	Font* spriteSheet = LoadFont(filename, spriteWidth, spriteHeight, 0);
+	Font* spriteSheet = mgdl_LoadFont(filename, spriteWidth, spriteHeight, 0);
 	return Sprite_Load(spriteSheet);
 }
 

@@ -68,7 +68,7 @@ static float DrawLetter(float x, u8* sl, u8 bars, u32 color, float lean, bool us
 		{
 			GetCorners(x, sl[line+0], sl[line+1], corners, lean, barsColored);
 
-			DrawQuad(corners[0], corners[1], corners[2], corners[3],
+			Draw2D_Quad(corners[0], corners[1], corners[2], corners[3],
 						corners[4], corners[5], corners[6], corners[7],
 						color);
 			barsColored -= 1.0f;
@@ -242,7 +242,7 @@ float gdl::DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldT
 		int messageY = areaBottom - 8;
 		Font_Print(debf, yellow, messageLeft, messageY, 8, holdMessage.c_str());
 
-		DrawRectangle(messageLeft, messageY - 16, messageLeft + messageWidth * aHoldTimer, messageY - 16 - 4, yellow);
+		Draw2D_Rectangle(messageLeft, messageY - 16, messageLeft + messageWidth * aHoldTimer, messageY - 16 - 4, yellow);
 	}
 	return (animationProgress / 2.0f);
 }

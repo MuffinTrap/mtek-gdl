@@ -11,8 +11,20 @@
 #include "mgdl-types.h"
 using namespace gdl;
 
+struct Rectangle
+{
+    short x;
+    short y;
+    short w;
+    short h;
+};
+
 extern "C"
 {
+
+Rectangle Rectangle_Create(short x, short y, short w, short h);
+Rectangle Rectangle_CreateV2f(vec2 position, vec2 size);
+
 
 /**
  * @brief Translates the origo to given point.
@@ -20,7 +32,8 @@ extern "C"
  * @param x Origo x in screen units.
  * @param x Origo y in screen units.
  */
-void TranslateTo(short x, short y);
+void Draw2D_OrigoTo(short x, short y);
+void Draw2D_OrigoToV2f(vec2 origo);
 
 
 /**
@@ -34,7 +47,8 @@ void TranslateTo(short x, short y);
  * @param y2 Lower right corner y in screen units.
  * @param color Color of the border
  */
-void DrawRectangleLines(short x, short y, short x2, short y2, rgba8 color);
+void Draw2D_RectangleLines(short x, short y, short x2, short y2, rgba8 color);
+void Draw2D_RectangleLinesRec(Rectangle rect, rgba8 color);
 
 /**
  * @brief Draws a filled box.
@@ -45,7 +59,8 @@ void DrawRectangleLines(short x, short y, short x2, short y2, rgba8 color);
  * @param y2 Lower right corner y in screen units.
  * @param color Color of the box.
  */
-void DrawRectangle(short x, short y, short x2, short y2, rgba8 color);
+void Draw2D_Rectangle(short x, short y, short x2, short y2, rgba8 color);
+void Draw2D_RectangleRec(Rectangle rect, rgba8 color);
 
 /**
  * @brief Draws a filled quad with freely positioned corners.
@@ -62,7 +77,8 @@ void DrawRectangle(short x, short y, short x2, short y2, rgba8 color);
  * @param ytr Upper right corner y in screen units.
  * @param color Color of the quad.
  */
-void DrawQuad(short xtl, short ytl, short xbl, short ybl, short xbr, short ybr, short xtr, short ytr, rgba8 color);
+void Draw2D_Quad(short xtl, short ytl, short xbl, short ybl, short xbr, short ybr, short xtr, short ytr, rgba8 color);
+void Draw2D_QuadV2f(vec2 tl, vec2 bl, vec2 br, vec2 tr, rgba8 color);
 
 /**
  * @brief Draws a line.
@@ -73,9 +89,9 @@ void DrawQuad(short xtl, short ytl, short xbl, short ybl, short xbr, short ybr, 
  * @param y2 End point y
  * @param color Color of the line.
  */
-void DrawLine ( short int x, short int y, short int x2, short int y2, rgba8 color );
+void Draw2D_Line( short int x, short int y, short int x2, short int y2, rgba8 color );
+void Draw2D_LineV2f(vec2 start, vec2 end, rgba8 color );
 
-// TODO
 /**
  * @brief Draws text using the default font.
  *
@@ -84,6 +100,7 @@ void DrawLine ( short int x, short int y, short int x2, short int y2, rgba8 colo
  * @param color Color of the text.
  * @param text Text to be drawn.
  */
-void DrawText(short x, short y, const char* text, rgba8 color);
+void Draw2D_Text(short x, short y, const char* text, rgba8 color);
+void Draw2D_TextV2f(vec2 position, const char* text, rgba8 color);
 
 }

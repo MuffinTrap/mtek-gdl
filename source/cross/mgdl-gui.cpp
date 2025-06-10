@@ -106,7 +106,7 @@ void _Menu_TitleBar()
     const short x = menu->_drawx;
     const short y = menu->_drawy;
     const short h = menu->_font->characterHeight * menu->_textHeight;
-    DrawRectangle(x, y,
+    Draw2D_Rectangle(x, y,
                   x + menu->_windowWidth,
                   y - h,
                   menu->_text);
@@ -120,16 +120,16 @@ void _Menu_Borders()
 {
     const short x = menu->_drawx;
     const short y = menu->_drawy;
-    DrawRectangle(x, y,
+    Draw2D_Rectangle(x, y,
                   x + menu->_windowWidth,
                   y - menu->_windowHeight,
                   menu->_bg);
-    DrawRectangleLines(x - 1, y + 1,
+    Draw2D_RectangleLines(x - 1, y + 1,
                   x + menu->_windowWidth + 1,
                   y - menu->_windowHeight - 1,
                   menu->_highlight);
 
-    DrawLine(0, 0, V2f_X(menu->_cursorPosition), V2f_Y(menu->_cursorPosition), Colors::White);
+    Draw2D_Line(0, 0, V2f_X(menu->_cursorPosition), V2f_Y(menu->_cursorPosition), Colors::White);
 }
 
 void Menu_SetColors(u32 bg, u32 text, u32 highlight)
@@ -147,7 +147,7 @@ void Menu_Panel(int h, u32 color)
         const short x = menu->_drawx;
         const short y = menu->_drawy;
         const short w = menu->_menuWidth;
-        DrawRectangle(x, y, x + w, y - h, color);
+        Draw2D_Rectangle(x, y, x + w, y - h, color);
         menu->_drawy -= h;
 }
 
@@ -201,7 +201,7 @@ bool Menu_Button(const char* text)
     {
         c = menu->_highlight;
     }
-    DrawRectangle(x, y, x + w, y - h, c);
+    Draw2D_Rectangle(x, y, x + w, y - h, c);
 
     // TODO Center text
 
@@ -237,16 +237,16 @@ bool Menu_Toggle ( const char* text, bool* valuePtr )
     {
         c = menu->_highlight;
     }
-    DrawRectangleLines(x, y, x + w, y - h, c);
+    Draw2D_RectangleLines(x, y, x + w, y - h, c);
 
     if (isOn)
     {
-        DrawRectangle(x + padding, y - padding,
+        Draw2D_Rectangle(x + padding, y - padding,
                       x + h - padding, y - h + padding, menu->_text);
     }
     else
     {
-        DrawRectangleLines(x + padding, y - padding,
+        Draw2D_RectangleLines(x + padding, y - padding,
                       x + h - padding, y - h + padding, menu->_text);
     }
 
@@ -275,7 +275,7 @@ void Menu_Flag(const char* text, bool enabled)
     {
         c = menu->_highlight;
     }
-    DrawRectangle(x, y, x + w, y - h, c);
+    Draw2D_Rectangle(x, y, x + w, y - h, c);
 
     // TODO Center text
 

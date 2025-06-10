@@ -24,20 +24,20 @@ void mgdl_InitSystem(const char* name,
 				u32 initFlags);
 
 // TODO Move all loading to AssetManager to get memory status and other stats
-PNGFile* LoadPNG(const char* filename);
-Image* LoadImage(const char* filename, gdl::TextureFilterModes filterMode);
-Image* LoadImagePNG(PNGFile* png, gdl::TextureFilterModes filterMode);
+PNGFile* mgdl_LoadPNG(const char* filename);
+Image* mgdl_LoadImage(const char* filename, gdl::TextureFilterModes filterMode);
+Image* mgdl_LoadImagePNG(PNGFile* png, gdl::TextureFilterModes filterMode);
 
-Sound* LoadSound(const char* filename);
-Music* LoadOgg(const char* filename);
-Music* LoadWav(const char* filename);
+Sound* mgdl_LoadSound(const char* filename);
+Music* mgdl_LoadOgg(const char* filename);
+Music* mgdl_LoadWav(const char* filename);
 
-Scene* LoadFBX(const char* filename);
-Sprite* LoadSprite(const char* filename, short spriteWidth, short spriteHeight);
+Scene* mgdl_LoadFBX(const char* filename);
+Sprite* mgdl_LoadSprite(const char* filename, short spriteWidth, short spriteHeight);
 
-Font* LoadFont(const char* filename, short characterWidth, short characterHeight, char firstCharacter);
-Font* LoadFontCustom(const char* filename, short characterWidth, short characterHeight, char firstCharacter, short charactersPerRow);
-Font* LoadFontSelective(const char* filename, short characterWidth, short characterHeight, short charactersPerRow, const char* characters);
+Font* mgdl_LoadFont(const char* filename, short characterWidth, short characterHeight, char firstCharacter);
+Font* mgdl_LoadFontCustom(const char* filename, short characterWidth, short characterHeight, char firstCharacter, short charactersPerRow);
+Font* mgdl_LoadFontSelective(const char* filename, short characterWidth, short characterHeight, short charactersPerRow, const char* characters);
 
 WiiController* mgdl_GetController(int controllerNumber);
 
