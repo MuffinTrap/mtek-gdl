@@ -5,6 +5,7 @@
 
 extern "C"
 {
+	/*
 #ifdef MGDL_PLATFORM_WII
 	// On the wii the gu library is used
 
@@ -51,6 +52,7 @@ extern "C"
 //////////////////////////////////////////////////////////////////////
 
 #else // PC platform
+*/
 
 	#ifdef MGDL_USE_CCVECTOR
 
@@ -147,7 +149,7 @@ extern "C"
 	#define V3f_Print(Va) printf("%.2f, %.2f, %.2f\n", Va[0], Va[1], Va[2]);
 	#endif
 
-#endif // PC platform
+//#endif // PC platform
 
 
 }

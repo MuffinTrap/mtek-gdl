@@ -31,7 +31,7 @@ void init()
 
 
     u32 black = Palette_GetColor(Palette_GetDefault(), 0);
-    gdl::RGBA8Floats bf = gdl::ColorToFloats(black);
+    Color4f bf = ColorToFloats(black);
     glClearColor(bf.red, bf.green, bf.blue, bf.alpha);
     example.Init();
 
