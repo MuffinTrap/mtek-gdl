@@ -5,6 +5,9 @@ include Makefile_pc.mk
 CXXFLAGS += -DMGDL_PLATFORM=\"Linux\"
 CXXFLAGS += -DMGDL_PLATFORM_LINUX
 
+# Address sanitizer reports leaks and crash reasons
+CXXFLAGS += -fsanitize=address
+
 # Set Compiler
 CXX = clang++
 EXE_SUFFIX = .elf

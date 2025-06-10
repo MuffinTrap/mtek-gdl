@@ -2,7 +2,7 @@
 include Makefile_pc.mk
 
 # Windows specific settings
-CXX = g++
+CXX = clang++
 LIBDIR	:= lib/win
 CXXFLAGS += -DMGDL_PLATFORM_WINDOWS
 

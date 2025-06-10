@@ -1,6 +1,7 @@
-#include <mgdl/mgdl-scene.h>
+#include <mgdl/mgdl-mesh.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-util.h>
+#include <mgdl/mgdl-types.h>
 
 
 sizetype Mesh_Init (Mesh* mesh, sizetype vertexCount, sizetype indexCount, u32 creationFlags)

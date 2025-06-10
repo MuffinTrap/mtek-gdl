@@ -7,11 +7,11 @@
 #include <mgdl/mgdl-config.h>
 #include <mgdl/mgdl-platform.h>
 
-Rectangle Rectangle_Create(short x, short y, short w, short h)
+Rect Rect_Create(short x, short y, short w, short h)
 {
 	return {x, y, w, h};
 }
-Rectangle Rectangle_CreateV2f(vec2 position, vec2 size)
+Rect Rect_CreateV2f(vec2 position, vec2 size)
 {
 	return {(short)V2f_X(position), (short)V2f_Y(position), (short)V2f_X(size), (short)V2f_Y(size)};
 }
@@ -26,7 +26,7 @@ void Draw2D_OrigoToV2f(vec2 origo)
 	glTranslatef((short)V2f_X(origo), (short)V2f_Y(origo), 0.0f);
 }
 
-void Draw2D_RectangleLines(short x, short y, short x2, short y2, u32 color)
+void Draw2D_RectLines(short x, short y, short x2, short y2, u32 color)
 {
 	glBegin(GL_LINE_LOOP);
 		Color4f f= ColorToFloats(color);
@@ -47,12 +47,12 @@ void Draw2D_RectangleLines(short x, short y, short x2, short y2, u32 color)
 	glEnd();
 }
 
-void Draw2D_RectangleLinesRec(Rectangle rect, rgba8 color)
+void Draw2D_RectLinesRec(Rect rect, rgba8 color)
 {
-	Draw2D_RectangleLines(rect.x, rect.y, rect.x + rect.w, rect.y - rect.h, color);
+	Draw2D_RectLines(rect.x, rect.y, rect.x + rect.w, rect.y - rect.h, color);
 }
 
-void Draw2D_Rectangle(short x, short y, short x2, short y2, u32 color)
+void Draw2D_Rect(short x, short y, short x2, short y2, u32 color)
 {
 	Color4f f= ColorToFloats(color);
 	glColor3f(f.red, f.green, f.blue);
@@ -73,9 +73,9 @@ void Draw2D_Rectangle(short x, short y, short x2, short y2, u32 color)
 	glEnd();
 }
 
-void Draw2D_RectangleRec(Rectangle rect, rgba8 color)
+void Draw2D_RectR(Rect rect, rgba8 color)
 {
-	Draw2D_Rectangle(rect.x, rect.y, rect.x + rect.w, rect.y - rect.h, color);
+	Draw2D_Rect(rect.x, rect.y, rect.x + rect.w, rect.y - rect.h, color);
 }
 
 void Draw2D_Quad ( short xtl, short ytl, short xbl, short ybl, short xbr, short ybr, short xtr, short ytr, u32 color )

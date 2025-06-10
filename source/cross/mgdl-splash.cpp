@@ -242,7 +242,7 @@ float gdl::DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldT
 		int messageY = areaBottom - 8;
 		Font_Print(debf, yellow, messageLeft, messageY, 8, holdMessage.c_str());
 
-		Draw2D_Rectangle(messageLeft, messageY - 16, messageLeft + messageWidth * aHoldTimer, messageY - 16 - 4, yellow);
+		Draw2D_Rect(messageLeft, messageY - 16, messageLeft + messageWidth * aHoldTimer, messageY - 16 - 4, yellow);
 	}
 	return (animationProgress / 2.0f);
 }

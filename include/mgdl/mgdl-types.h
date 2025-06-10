@@ -1,5 +1,9 @@
 #pragma once
 
+// PI and other constants
+// Does not work on windows
+#include <cmath>
+
 // Vector types
 #include <mgdl/mgdl-vectorfunctions.h>
 
@@ -23,9 +27,12 @@ typedef uint32_t u32;
 
 #ifdef MGDL_PLATFORM_WINDOWS
 typedef ssize_t sizetype;
+const double M_PI = 3.14159265358979323846;
+const double M_PI_2 = 1.57079632679489661923;
 #else
 typedef size_t sizetype;
 #endif
+
 
 namespace gdl
 {
