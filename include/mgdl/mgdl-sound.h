@@ -1,8 +1,13 @@
 #pragma once
 
 #include "mgdl-types.h"
-#include <cstdlib>
 #include <mgdl/mgdl-openal.h>
+
+#ifdef __cplusplus
+#include <cstdlib>
+#else
+#include <stdlib.h>
+#endif
 
 #ifndef GEKKO
 #include <sndfile.h>
@@ -15,6 +20,8 @@ enum SoundStatus
 	Paused,
 	Initial
 };
+
+typedef enum SoundStatus SoundStatus;
 
 //! Sound handling struct
 /*!
@@ -38,9 +45,16 @@ struct Sound
 
 	sizetype		sSize; // Size in bytes
 
-	float secondsOffset = 0.0f; // This is mainly to allow chaning the play position on Ogg on Wii for debug purposes
-	bool isLooping = false;
+	float secondsOffset; // This is mainly to allow chaning the play position on Ogg on Wii for debug purposes
+	bool isLooping;
 };
+typedef struct Sound Sound;
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 
 //! Loads a sound file.
 /*!
@@ -69,14 +83,18 @@ void Sound_DeleteData(Sound* sound);
 
 //! Plays a sound.
 /*!
+ *  \details Plays a sound
+ */
+void Sound_Play(Sound* sound);
+
+//! Plays a sound with extended paramters.
+/*!
  *  \details Plays a sound with pitch control and its own volume level.
- *
- *  \note If no sound file is loaded, nothing will be played.
  *
  *	\param[in]	pitch	Pitch of sound (1.0 is normal pitch).
  *	\param[in]	volume	Volume of sound (100 is full volume).
  */
-void Sound_Play(Sound* sound, float pitchOffset = 1.0f, float volumePercent = 100.0f) ;
+void Sound_PlayEx(Sound* sound, float pitchOffset, float volumePercent) ;
 
 //! Stops the playback of the sound
 /*!
@@ -111,3 +129,7 @@ void Sound_SetElapsedSeconds(Sound* sound, float elapsed) ;
  * \returns True if voice is playing, false if not playing
  */
 SoundStatus Sound_GetStatus(Sound* sound ) ;
+
+#ifdef __cplusplus
+}
+#endif

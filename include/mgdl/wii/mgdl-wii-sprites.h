@@ -28,7 +28,7 @@ typedef struct {
 
 //! Sprite set handling class
 /*!
- *	Instead of using several gdl::Image objects for handling sprite images, it is recommended to use this gdl::SpriteSet
+ *	Instead of using several Image objects for handling sprite images, it is recommended to use this SpriteSet
  *	class as it allows you to store sprites as sprite sheets which is more efficient than having multiple texture
  *	objects for each individual sprite. It also allows you to reference each sprite by index making sprite
  *	animations flexible to do.
@@ -62,8 +62,8 @@ public:
      *
      *	\param[in]	*fileName	File name of TSM file to load.
      *	\param[in]	*sheetsDir	Path to where the associated sprite sheets are stored.
-     *	\param[in]	filterMode	Filtering mode (see gdl::TextureFilterModes).
-     *	\param[in]	format		Texture format to load sprite sheets as (see gdl::TextureFormatModes).
+     *	\param[in]	filterMode	Filtering mode (see TextureFilterModes).
+     *	\param[in]	format		Texture format to load sprite sheets as (see TextureFormatModes).
      *
      *	\return Non-zero if the sprite set and its associated sprite sheets were loaded successfully. Otherwise
      *		an error occurred (detailed error is printed in console mode).
@@ -83,8 +83,8 @@ public:
      *  \param[in]  spritesPerRow   How many sprites on a row.
      *  \param[in]  spriteHeight    Height of a sprite in pixels
      *	\param[in]	spriteSheet       Pointer to SpriteSheet
-     *	\param[in]	filterMode	Filtering mode (see gdl::TextureFilterModes).
-     *	\param[in]	format		Texture format to load sprite sheets as (see gdl::TextureFormatModes).
+     *	\param[in]	filterMode	Filtering mode (see TextureFilterModes).
+     *	\param[in]	format		Texture format to load sprite sheets as (see TextureFormatModes).
      *
      *	\return Non-zero if the sprite set and its associated sprite sheets were loaded successfully. Otherwise
      *		an error occurred (detailed error is printed in console mode).
@@ -110,26 +110,26 @@ public:
 	//! Draws a sprite onto the screen.
 	/*!
 	 *	\details Draws the image with color translation and optional rotation and scaling. This function
-	 *		must only be called between a gdl::PrepDisplay() and gdl::Display() pair. If no sprite set is
+	 *		must only be called between a PrepDisplay() and Display() pair. If no sprite set is
 	 *		loaded in this class, nothing is drawn.
 	 *
 	 *	\param[in]	x		X coordinate of image.
 	 *	\param[in]	y		Y coordinate of image.
 	 *	\param[in]	index	Index of sprite to draw.
-	 *	\param[in]	col		Color of image (use gdl::Color::White or full white or RGBA() for normal colors).
-	 *	\param[in]	cx		X offset of image pivot (you can also use one of the gdl::AlignmentModes).
-	 *	\param[in]	cy		Y offset of image pivot (you can also use one of the gdl::AlignmentModes).
+	 *	\param[in]	col		Color of image (use Color::White or full white or RGBA() for normal colors).
+	 *	\param[in]	cx		X offset of image pivot (you can also use one of the AlignmentModes).
+	 *	\param[in]	cy		Y offset of image pivot (you can also use one of the AlignmentModes).
 	 *	\param[in]	scale	Scale of image (1.0f is original size).
 	 *	\param[in]	angle	Rotation angle in degrees.
 	 */
-	void	Put(short x, short y, int index, u_int col = gdl::Colors::White, short cx = 0, short cy = 0, float scale = 1.f, float angle = 0.f);
+	void	Put(short x, short y, int index, u_int col = Colors::White, short cx = 0, short cy = 0, float scale = 1.f, float angle = 0.f);
 
 
 
     //! Draws a sprite as a stretchable rectangle.
     /*!
      *	\details Draws the image as a fully stretchable rectangle with optional color translation. This function
-	 *		must only be called between a gdl::PrepDisplay() and gdl::Display() pair and if no image is loaded in
+	 *		must only be called between a PrepDisplay() and Display() pair and if no image is loaded in
 	 *		this class, nothing is drawn.
 	 *
      *	\param[in]	x1		Upper-left X coordinate of image.
@@ -137,9 +137,9 @@ public:
      *	\param[in]	x2		Lower-right X coordinate of image.
      *	\param[in]	y2		Lower-right Y coordinate of image.
      *	\param[in]	index	Index of sprite to draw.
-     *	\param[in]	col		Color of sprite (use gdl::Colors::White for normal colors).
+     *	\param[in]	col		Color of sprite (use Colors::White for normal colors).
      */
-    void	PutS(short x1, short y1, short x2, short y2, short index, u_int col = gdl::Colors::White);
+    void	PutS(short x1, short y1, short x2, short y2, short index, u_int col = Colors::White);
 
     private:
 

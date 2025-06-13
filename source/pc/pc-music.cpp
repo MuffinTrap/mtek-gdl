@@ -289,20 +289,17 @@ Music* Music_LoadWav(const char* filename)
 {
     Log_InfoF("Loading music from %s\n", filename);
 
-    Music* music = new Music();
-    Music_Init(music);
-    if (LoadFileNonStreaming(filename, music))
+    Sound* snd = Sound_Load(filename);
+    if (snd)
     {
+        Music* music = new Music();
+        Music_Init(music);
         music->type = MusicWav;
-        music->wav = Sound_Load(filename);
+        music->wav = snd;
         music->source = music->wav->source;
         return music;
     }
-    else
-    {
-        delete music;
-        return nullptr;
-    }
+    return nullptr;
 }
 
 void Music_Init(Music* music)

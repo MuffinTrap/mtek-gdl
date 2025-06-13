@@ -12,9 +12,12 @@ enum LogLevel
 	Warning = 2,
 	Error = 3
 };
+typedef enum LogLevel LogLevel;
 
+#ifdef __cplusplus
 extern "C"
 {
+#endif
 	void Log_SetLevel(LogLevel lvl);
 
 	void Log_Info(const char* text);
@@ -25,4 +28,7 @@ extern "C"
 	void Log_ErrorF(const char* fmt, ...);
 
 	void _Log_Print(const char* text);
+
+#ifdef __cplusplus
 }
+#endif

@@ -3,8 +3,6 @@
 
 // Macros to unify ccVector and cglm
 
-extern "C"
-{
 	/*
 #ifdef MGDL_PLATFORM_WII
 	// On the wii the gu library is used
@@ -61,6 +59,8 @@ extern "C"
 	#define V2f_X(Va) Va.x
 	#define V2f_Y(Va) Va.y
 
+	#define V2f_Add(Va, Vb) vec2Add(Va, Vb)
+
 	// Vector3
 
 	#define V3f_Create(x,y,z) vec3New(x,y,z)
@@ -73,29 +73,30 @@ extern "C"
 	#define V3f_ToFloatArray(source, array, index) array[index*3] = source.x; array[index*3+1] = source.y; array[index*3+2] = source.z;
 	#define V3f_FromVec3Array(array, index, dest) dest = array[index];
 
-	#define V3f_Scale(Va, scalar, dest) dest = vec3Multiply(Va, scalar);
-	#define V3f_Add(Va, Vb, dest) dest = vec3Add(Va, Vb);
-	#define V3f_Sub(Va, Vb, dest) dest = vec3Sub(Va, Vb);
-	#define V3f_Normalize(Va) Va = vec3Normalize(Va);
-	#define V3f_Cross(Va, Vb, dest) dest = vec3Cross(Va, Vb);
-	#define V3f_Dot(Va, Vb) vec3Dot(Va, Vb);
+	#define V3f_Scale(Va, scalar, dest) dest = vec3Multiply(Va, scalar)
+	#define V3f_Add(Va, Vb, dest) dest = vec3Add(Va, Vb)
+	#define V3f_Sub(Va, Vb, dest) dest = vec3Sub(Va, Vb)
+	#define V3f_Normalize(Va) Va = vec3Normalize(Va)
+	#define V3f_Cross(Va, Vb, dest) dest = vec3Cross(Va, Vb)
+	#define V3f_Dot(Va, Vb) vec3Dot(Va, Vb)
+	#define V3f_Length(Va) vec3Length(Va)
 
 		// Rotations
 	vec3 V3f_RotateYFunc(vec3 source, float angle);
-	#define V3f_RotateY(source, angle, dest) dest = V3f_RotateYFunc(source, angle);
+	#define V3f_RotateY(source, angle, dest) dest = V3f_RotateYFunc(source, angle)
 
 	vec3 V3f_RotateZFunc(vec3 source, float angle);
-	#define V3f_RotateZ(source, angle, dest) dest = V3f_RotateZFunc(source, angle);
+	#define V3f_RotateZ(source, angle, dest) dest = V3f_RotateZFunc(source, angle)
 
 	vec3 V3f_HexToColorFunc(int red, int green, int blue);
-	#define V3f_HexToColor(red, green, blue, dest); dest = V3f_HexToColorFunc(red, green, blue);
+	#define V3f_HexToColor(red, green, blue, dest); dest = V3f_HexToColorFunc(red, green, blue)
 
 	float V3f_BezierFuncF(float s, float P0, float C0, float C1, float P1);
 	vec3 V3f_BezierFuncV3(float s, vec3 P0, vec3 C0, vec3 C1, vec3 P1);
 
-	#define V3f_BezierV3(s, P0, C0, C1, P1, dest) dest = V3f_BezierFuncV3(s, P0, C0, C1, P1);
+	#define V3f_BezierV3(s, P0, C0, C1, P1, dest) dest = V3f_BezierFuncV3(s, P0, C0, C1, P1)
 
-	#define V3f_Print(Va) printf("%.2f, %.2f, %.2f\n", Va.x, Va.y, Va.z);
+	#define V3f_Print(Va) printf("%.2f, %.2f, %.2f\n", Va.x, Va.y, Va.z)
 
 	// Vector4
 
@@ -151,5 +152,3 @@ extern "C"
 
 //#endif // PC platform
 
-
-}

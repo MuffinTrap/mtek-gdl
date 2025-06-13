@@ -354,7 +354,7 @@ PNGFile* PNG_ReadFile(const char* filename)
 	return png;
 }
 
-gdl::rgba8 PNG_GetRGBA(PNGFile* png, int x, int y)
+rgba8 PNG_GetRGBA(PNGFile* png, int x, int y)
 {
 	size_t index = x + y * png->width;
 	size_t byteIndex = index * png->bytesPerPixel;

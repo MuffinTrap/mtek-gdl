@@ -6,35 +6,37 @@
 // helper functions
 
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 Color4f ColorToFloats(u32 color);
 Color4b ColorToComponents(u32 color);
 u32 ComponentsToColor(Color4f components);
 
-namespace gdl
-{
 
-    float GetRandomFloat(float min = 0.0f, float max = 1.0f);
-    int GetRandomInt(int min, int max);
+float GetRandomFloat(float min, float max);
+float GetRandomFloatNormal(void);
+int GetRandomInt(int min, int max);
 
-	u32 clampU32(u32 val, u32 minVal, u32 maxVal);
-	float clampF(float val, float minVal, float maxVal);
-	float minF(float a, float b);
-	float maxF(float a, float b);
-	u32 minU32(u32 a, u32 b);
-	u32 maxU32(u32 a, u32 b);
+u32 clampU32(u32 val, u32 minVal, u32 maxVal);
+float clampF(float val, float minVal, float maxVal);
+float minF(float a, float b);
+float maxF(float a, float b);
+u32 minU32(u32 a, u32 b);
+u32 maxU32(u32 a, u32 b);
 
-	float Deg2Rad(float degrees);
-	float Rad2Deg(float radians);
+float Deg2Rad(float degrees);
+float Rad2Deg(float radians);
 
-	/**
-	 * @brief Converts texture filter enumeration to OpenGL enumeration.
-	 * @param filterMode Filtering mode to convert.
-	 * @return OpenGL enumeration for the given format.
-	 */
-	GLint TextureFilterToGLFilter(gdl::TextureFilterModes filterMode);
+/**
+	* @brief Converts texture filter enumeration to OpenGL enumeration.
+	* @param filterMode Filtering mode to convert.
+	* @return OpenGL enumeration for the given format.
+	*/
+GLint TextureFilterToGLFilter(TextureFilterModes filterMode);
 
-};
 
 /**
  * @brief Tells if a flag is set.
@@ -47,7 +49,11 @@ bool mgdl_IsFlagSet(u32 bitfield, u32 flag);
 /**
  * @return Buffer containging the text, max size 255 chars.
  */
-char* mgdl_GetPrintfBuffer();
+char* mgdl_GetPrintfBuffer(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * @brief Writes the formatted text to a buffer.

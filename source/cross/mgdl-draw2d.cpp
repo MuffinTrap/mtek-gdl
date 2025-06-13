@@ -47,6 +47,11 @@ void Draw2D_RectLines(short x, short y, short x2, short y2, u32 color)
 	glEnd();
 }
 
+void Draw2D_RectLinesWH(short x, short y, short w, short h, rgba8 color)
+{
+	Draw2D_RectLines(x, y, x + w, y-h, color);
+}
+
 void Draw2D_RectLinesRec(Rect rect, rgba8 color)
 {
 	Draw2D_RectLines(rect.x, rect.y, rect.x + rect.w, rect.y - rect.h, color);

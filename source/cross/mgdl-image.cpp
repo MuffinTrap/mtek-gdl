@@ -8,9 +8,22 @@
 #include <cstdlib>
 #include <cstring>
 
-using namespace gdl;
+Image* Image_Create()
+{
+	Image* img = new Image();
+	img->aspectRatio = 1.0f;
+	img->width = 0;
+	img->height = 0;
+	img->tint.red = 1.0f;
+	img->tint.green = 1.0f;
+	img->tint.blue = 1.0f;
+	img->tint.alpha = 1.0f;
+	img->textureId = 0;
+	img->pngFile = nullptr;
+	return img;
+}
 
-Image* Image_LoadFile ( const char* filename, gdl::TextureFilterModes filterMode)
+Image* Image_LoadFile ( const char* filename, TextureFilterModes filterMode)
 {
 	// Load using png
 	Log_InfoF("Loading image %s\n", filename);
@@ -28,12 +41,12 @@ Image* Image_LoadFile ( const char* filename, gdl::TextureFilterModes filterMode
 }
 
 // The png might belong to someone else, do not free it in this function
-Image* Image_LoadPNG(PNGFile* png, gdl::TextureFilterModes filterMode)
+Image* Image_LoadPNG(PNGFile* png, TextureFilterModes filterMode)
 {
 	mgdl_assert_print(png != nullptr, "Image_LoadPNG got nullptr for png\n");
 
-	Image* image = new Image();
-	GLint glFilter = gdl::TextureFilterToGLFilter(filterMode);
+	Image* image = Image_Create();
+	GLint glFilter = TextureFilterToGLFilter(filterMode);
 
 	GLint alignment;
 	glGenTextures(1, &image->textureId);
@@ -63,14 +76,12 @@ Image* Image_LoadPNG(PNGFile* png, gdl::TextureFilterModes filterMode)
 	image->width = png->width;
 	image->height = png->height;
 	Image_SetTint(image, 1.0f, 1.0f, 1.0f);
-	//image->thirdOfPixel = V2f_Create( (1.0f/(float)png->width) * 0.375f,
 									  //(1.0f/(float)png->height) * 0.375f);
-	image->thirdOfPixel = V2f_Create( 0.0f, 0.0f);
 
 	return image;
 }
 
-void Image_SetGLName(Image* img, GLuint textureName, GLsizei width, GLsizei height, gdl::ColorFormats format)
+void Image_SetGLName(Image* img, GLuint textureName, GLsizei width, GLsizei height, ColorFormats format)
 {
 	img->width = width;
 	img->height = height;
@@ -93,16 +104,16 @@ void Image_Draw2DAbsolute(Image* img, short x, short y, short x2, short y2)
 		glColor3f(img->tint.red, img->tint.green, img->tint.blue);
 
 		// Lower left
-		glTexCoord2f(V2f_X(img->thirdOfPixel), V2f_Y(img->thirdOfPixel));
+		glTexCoord2f(0.0f, 0.0f);
 		glVertex2f(dx, dy);
 		// Lower right
-		glTexCoord2f(1.0f - V2f_X(img->thirdOfPixel), V2f_Y(img->thirdOfPixel));
+		glTexCoord2f(1.0f, 0.0f);
 		glVertex2f(dx2, dy);
 		// Upper right
-		glTexCoord2f(1.0f - V2f_X(img->thirdOfPixel), 1.0f - V2f_Y(img->thirdOfPixel));
+		glTexCoord2f(1.0f, 1.0f);
 		glVertex2f(dx2, dy2);
 		// Upper left
-		glTexCoord2f(V2f_X(img->thirdOfPixel), 1.0f - V2f_Y(img->thirdOfPixel));
+		glTexCoord2f(0.0f, 1.0f);
 		glVertex2f(dx, dy2);
 
 	glEnd();
@@ -110,7 +121,7 @@ void Image_Draw2DAbsolute(Image* img, short x, short y, short x2, short y2)
 	glDisable(GL_TEXTURE_2D);
 }
 
-void Image_Draw2DAligned(Image* img, short x, short y, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY)
+void Image_Draw2DAligned(Image* img, short x, short y, float scale, AlignmentModes alignX, AlignmentModes alignY)
 {
 	short w = img->width * scale;
 	short h = img->height * scale;
@@ -136,7 +147,7 @@ void Image_Draw2DAligned(Image* img, short x, short y, float scale, gdl::Alignme
 	Image_Draw2DAbsolute(img, x, y, x+w, y+h);
 }
 
-void Image_Draw3D(Image* img, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY)
+void Image_Draw3D(Image* img, float scale, AlignmentModes alignX, AlignmentModes alignY)
 {
 	float aspect = img->aspectRatio;
 	float x = 0.0f;
@@ -169,19 +180,19 @@ void Image_Draw3D(Image* img, float scale, gdl::AlignmentModes alignX, gdl::Alig
 
 		// TODO calculate uv to be inside border pixels to avoid repeating
 		// Lower left
-		glTexCoord2f(V2f_X(img->thirdOfPixel), V2f_Y(img->thirdOfPixel));
+		glTexCoord2f(0.0f, 0.0f);
 		glVertex3f(x-aspect*hs, y-hs, z);
 
 		// Lower right
-		glTexCoord2f(1.0f - V2f_X(img->thirdOfPixel), V2f_Y(img->thirdOfPixel));
+		glTexCoord2f(1.0f, 0.0f);
 		glVertex3f(x+aspect*hs, y-hs, z);
 
 		// Upper right
-		glTexCoord2f(1.0f - V2f_X(img->thirdOfPixel), 1.0f - V2f_Y(img->thirdOfPixel));
+		glTexCoord2f(1.0f, 1.0f);
 		glVertex3f(x+aspect*hs, y+hs, z);
 
 		// Upper left
-		glTexCoord2f(V2f_X(img->thirdOfPixel), 1.0f - V2f_Y(img->thirdOfPixel));
+		glTexCoord2f(0.0f, 1.0f);
 		glVertex3f(x-aspect*hs, y+hs, z);
 
 
@@ -232,8 +243,8 @@ Image* Image_GenerateCheckerBoard()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, checkerImage);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
 
-	Image* img = new Image();
-	Image_SetGLName(img, texName, width, height, gdl::ColorFormats::RGBA);
+	Image* img = Image_Create();
+	Image_SetGLName(img, texName, width, height, ColorFormats::RGBA);
 	return img;
 }
 

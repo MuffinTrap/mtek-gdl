@@ -5,7 +5,7 @@
 #include <wiiuse/wpad.h>
 #include <mgdl/wii/mgdl-wii.h>
 
-void AssertFunctionPrintf(const char* filename, int lineNumber, bool& ignoreToggle, const char* message, ...)
+void AssertFunctionPrintf(const char* filename, int lineNumber, bool* ignoreToggle, const char* message, ...)
 {
     char	buff[256];
     va_list args;
@@ -23,7 +23,7 @@ void AssertFunctionPrintf(const char* filename, int lineNumber, bool& ignoreTogg
         if (WPAD_ButtonsDown(0) & WPAD_BUTTON_A)
         {
             // This will be ignored in the future
-            ignoreToggle = true;
+            *ignoreToggle = true;
             return;
         }
         if (WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME)
@@ -41,7 +41,7 @@ void AssertFunctionPrintf(const char* filename, int lineNumber, bool& ignoreTogg
     exit(0);
 }
 
-void AssertFunctionPrint(const char* filename, int lineNumber, bool& ignoreToggle, const char* message)
+void AssertFunctionPrint(const char* filename, int lineNumber, bool* ignoreToggle, const char* message)
 {
     AssertFunctionPrintf(filename, lineNumber, ignoreToggle, message);
 }

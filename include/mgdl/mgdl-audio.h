@@ -5,8 +5,10 @@
  * @brief Functions to control global audio parameters
  */
 
+#ifdef __cplusplus
 extern "C"
 {
+#endif
 	/**
 	 * @brief Set global maximum volume of sounds
 	 * @param normalizedVolume Volume from 0 to 1.0
@@ -22,4 +24,8 @@ void Audio_SetMusicMasterVolume(float normalizedVolume);
 	 * @param normalizedVolume Volume from 0 to 1.0
 	 */
 void Audio_SetMasterAudioVolume(float normalizedVolume);
+
+
+#ifdef __cplusplus
 }
+#endif

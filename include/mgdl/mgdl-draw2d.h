@@ -9,20 +9,11 @@
  */
 
 #include "mgdl-types.h"
-using namespace gdl;
-// Windows uses Rectangle
-struct Rect
-{
-    short x;
-    short y;
-    short w;
-    short h;
-};
 
-typedef struct Rect Rect;
-
+#ifdef __cplusplus
 extern "C"
 {
+#endif
 
 Rect Rect_Create(short x, short y, short w, short h);
 Rect Rect_CreateV2f(vec2 position, vec2 size);
@@ -50,6 +41,7 @@ void Draw2D_OrigoToV2f(vec2 origo);
  * @param color Color of the border
  */
 void Draw2D_RectLines(short x, short y, short x2, short y2, rgba8 color);
+void Draw2D_RectLinesWH(short x, short y, short w, short h, rgba8 color);
 void Draw2D_RectLinesRec(Rect rect, rgba8 color);
 
 /**
@@ -105,4 +97,7 @@ void Draw2D_LineV2f(vec2 start, vec2 end, rgba8 color );
 void Draw2D_Text(short x, short y, const char* text, rgba8 color);
 void Draw2D_TextV2f(vec2 position, const char* text, rgba8 color);
 
+
+#ifdef __cplusplus
 }
+#endif

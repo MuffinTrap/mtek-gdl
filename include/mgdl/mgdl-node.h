@@ -1,31 +1,34 @@
 
 #pragma once
-#include <vector>
-#include <string>
 #include <mgdl/mgdl-transform.h>
 #include <mgdl/mgdl-mesh.h>
 #include <mgdl/mgdl-material.h>
 #include <mgdl/mgdl-light.h>
 
-using namespace gdl;
+struct DynamicArray;
 
 struct Node
 {
 	Transform* transform;
-	Mesh* mesh = nullptr;
-	Material* material = nullptr;
-	Light* light = nullptr;
-	const char* name = nullptr;
-	std::vector<Node*> children;
+	Mesh* mesh;
+	Material* material;
+	Light* light;
+	const char* name;
+	struct DynamicArray* children;
 };
+typedef struct Node Node;
 
+#ifdef __cplusplus
 extern "C"
 {
+#endif
 
-	Node* Node_Create();
+	Node* Node_Create(u8 childCapacity);
 	void Node_SetTransform(Node* node, const char* name, vec3 position, vec3 rotationAngles);
 	void Node_SetContent(Node* node, const char* name, Mesh* meshParam, Material* materialParam);
-
 	void Node_Draw(Node* node);
 
+
+#ifdef __cplusplus
 }
+#endif

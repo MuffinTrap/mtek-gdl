@@ -6,8 +6,13 @@
 
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-music.h>
+#ifdef __cplusplus
 #include <cmath>
+#include <cstdio>
+#else
+#include <math.h>
 #include <stdio.h>
+#endif
 
 static Rocket* instance;
 
@@ -102,7 +107,7 @@ SyncState Rocket_GetState()
 
 // For use in the project
 
-bool Rocket_Init(Music* music, float bpm, int rowsPerBeat)
+bool Rocket_Init(struct Music* music, float bpm, int rowsPerBeat)
 {
     if (music == nullptr)
     {
@@ -171,10 +176,6 @@ void Rocket_UpdateRow()
     #endif
 }
 
-sync_device * Rocket_GetDevice()
-{
-    return instance->rocket_device;
-}
 
 // Call this when closing down
 void Rocket_Disconnect()

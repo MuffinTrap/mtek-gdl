@@ -33,29 +33,29 @@ namespace gdl {
 
 		float ppx,ppy;
 
-		if (cx == gdl::Centered) {
+		if (cx == Centered) {
 			ppx = (int)xSize/2;
-		} else if (cx == gdl::PCentered) {
+		} else if (cx == PCentered) {
 			ppx = (float)xSize/2;
-		} else if (cx == gdl::RJustify) {
+		} else if (cx == RJustify) {
 			ppx = xSize;
-		} else if (cx == gdl::Pivot) {
+		} else if (cx == Pivot) {
 			ppx = px;
-		} else if (cx == gdl::CPivot) {
+		} else if (cx == CPivot) {
 			ppx = px+0.5f;
 		} else {
 			ppx = cx;
 		}
 
-		if (cy == gdl::Centered) {
+		if (cy == Centered) {
 			ppy = (int)ySize/2;
-		} else if (cy == gdl::PCentered) {
+		} else if (cy == PCentered) {
 			ppy = (float)ySize/2;
-		} else if (cy == gdl::RJustify) {
+		} else if (cy == RJustify) {
 			ppy = ySize;
-		} else if (cy == gdl::Pivot) {
+		} else if (cy == Pivot) {
 			ppy = py;
-		} else if (cy == gdl::CPivot) {
+		} else if (cy == CPivot) {
 			ppy = py+0.5f;
 		} else {
 			ppy = cy;
@@ -598,7 +598,7 @@ bool gdl::ImageWii::_ProcessImage(png_structp png_ptr, u_int minFilt, u_int magF
 
 		png_read_rows(png_ptr, rows, NULL, height);
 
-		Texture.ConvertRawImage(width, height, tempBuff, gdl::Gray);
+		Texture.ConvertRawImage(width, height, tempBuff, Gray);
 
 		break;
 
@@ -611,7 +611,7 @@ bool gdl::ImageWii::_ProcessImage(png_structp png_ptr, u_int minFilt, u_int magF
 
 		png_read_rows(png_ptr, rows, NULL, height);
 
-		Texture.ConvertRawImage(width, height, tempBuff, gdl::GrayAlpha);
+		Texture.ConvertRawImage(width, height, tempBuff, GrayAlpha);
 
 		break;
 
@@ -638,7 +638,7 @@ bool gdl::ImageWii::_ProcessImage(png_structp png_ptr, u_int minFilt, u_int magF
 
 		free(tempRow);
 
-		Texture.ConvertRawImage(width, height, tempBuff, gdl::RGBA);
+		Texture.ConvertRawImage(width, height, tempBuff, RGBA);
 
 		break;
 
@@ -651,7 +651,7 @@ bool gdl::ImageWii::_ProcessImage(png_structp png_ptr, u_int minFilt, u_int magF
 
 		png_read_rows(png_ptr, rows, NULL, height);
 
-		Texture.ConvertRawImage(width, height, tempBuff, gdl::RGBA);
+		Texture.ConvertRawImage(width, height, tempBuff, RGBA);
 
 		break;
 

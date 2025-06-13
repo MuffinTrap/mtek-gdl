@@ -11,7 +11,7 @@ Sprite* Sprite_Load(Font* font)
 	return sprite;
 }
 
-vec3 Sprite_AdjustDrawingPosition(Sprite* sprite, short x, short y, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY)
+vec3 Sprite_AdjustDrawingPosition(Sprite* sprite, short x, short y, float scale, AlignmentModes alignX, AlignmentModes alignY)
 {
 	float dx = x;
 	float dy = y;
@@ -38,7 +38,7 @@ vec3 Sprite_AdjustDrawingPosition(Sprite* sprite, short x, short y, float scale,
 	return V3f_Create(dx, dy, dz);
 }
 
-void Sprite_Draw2D(Sprite* sprite, u16 spriteIndex, short x, short y, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY, u32 tintColor)
+void Sprite_Draw2D(Sprite* sprite, u16 spriteIndex, short x, short y, float scale, AlignmentModes alignX, AlignmentModes alignY, u32 tintColor)
 {
 	vec3 drawPos = Sprite_AdjustDrawingPosition(sprite, x, y, scale, alignX, alignY);
 	float width = sprite->_font->_aspect * scale;
@@ -79,7 +79,7 @@ void Sprite_Draw2D(Sprite* sprite, u16 spriteIndex, short x, short y, float scal
 }
 
 
-void Sprite_Draw3D(Sprite* sprite, u16 spriteIndex, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY, u32 tintColor)
+void Sprite_Draw3D(Sprite* sprite, u16 spriteIndex, float scale, AlignmentModes alignX, AlignmentModes alignY, u32 tintColor)
 {
 	vec3 drawPos = Sprite_AdjustDrawingPosition(sprite, 0, 0, scale, alignX, alignY);
 	float width = sprite->_font->_aspect * scale;

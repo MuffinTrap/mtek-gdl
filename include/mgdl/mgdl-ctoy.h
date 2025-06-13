@@ -8,8 +8,10 @@
 #define CTOY_CHAR_MAX 256 // maximum characters per update
 #define CTOY_PEN_DATA_MAX 256 // maximum pen tablet data per update
 
+#ifdef __cplusplus
 extern "C"
 {
+#endif
 
 /* Rocket */
 
@@ -26,6 +28,9 @@ int ctoy_argc(void); // return standard argc
 char **ctoy_argv(void); // return standard argv
 
 /* window managment */
+
+
+
 int ctoy_window_width(void); // return window's width
 int ctoy_window_height(void); // return windows's height
 void ctoy_window_size(int width, int height); // set window's size
@@ -33,6 +38,8 @@ void ctoy_window_title(const char *title); // set window's title
 void ctoy_window_fullscreen(int state); // set window's fullscreen mode
 
 /* frame buffer */
+/* Forward declare*/
+struct m_image;
 int ctoy_frame_buffer_width(void); // return frame buffer width (use that for glViewport)
 int ctoy_frame_buffer_height(void); // return frame buffer height (use that for glViewport)
 void ctoy_render_image(struct m_image *src); // render an image to the frame buffer
@@ -65,11 +72,14 @@ int ctoy_joystick_button_pressed(int joy, int button); // return 1 if joystick-b
 float ctoy_joystick_axis(int joy, int axis); // return joystick axis's value
 
 /* pen tablet events */
-struct ctoy_pen_data {float x, y, z, pressure, pitch, yaw, roll;};
-int ctoy_get_pen_data(struct ctoy_pen_data dest[CTOY_PEN_DATA_MAX]); // return number of pen data events and get a copy
+//struct ctoy_pen_data {float x, y, z, pressure, pitch, yaw, roll;};
+//int ctoy_get_pen_data(struct ctoy_pen_data dest[CTOY_PEN_DATA_MAX]); // return number of pen data events and get a copy
 
 /* persistent memory */
 void ctoy_register_memory(void *memory); // register global memory pointer
 void *ctoy_retrieve_memory(void); // return previously registered global memory pointer
 
+
+#ifdef __cplusplus
 }
+#endif

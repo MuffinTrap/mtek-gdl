@@ -36,15 +36,15 @@ void init()
     example.Init();
 
 #ifdef MGDL_ROCKET
-    bool rocketInit = gdl::RocketSync::InitRocket(numbers, 120, 4);
+    bool rocketInit = Rocket_Init(numbers, 120, 4);
     if (rocketInit == false)
     {
         DoProgramExit();
     }
 #ifndef SYNC_PLAYER
-    clear_r = gdl::RocketSync::GetTrack("clear_r");
+    clear_r = Rocket_AddTrack("clear_r");
 #endif
-    gdl::RocketSync::StartSync();
+    Rocket_StartSync();
 #endif
 }
 
@@ -89,7 +89,7 @@ void render()
 int main()
 {
     mgdl_InitSystem(MGDL_PLATFORM,
-        gdl::ScreenAspect::Screen4x3,
+        ScreenAspect::Screen4x3,
         init,
         update,  // std::function callbacks
         render,

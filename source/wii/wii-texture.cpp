@@ -1033,7 +1033,7 @@ bool gdl::Texture::ConvertRawImage(short rawXres, short rawYres, void *rawBuff, 
     void	*tempBuff=NULL;
 
 	switch(srcFormat) {
-	case gdl::Gray:
+	case Gray:
 
 		if (texMipmapped == false) {
 
@@ -1101,7 +1101,7 @@ bool gdl::Texture::ConvertRawImage(short rawXres, short rawYres, void *rawBuff, 
 
 		break;
 
-	case gdl::GrayAlpha:
+	case GrayAlpha:
 
 		if (texMipmapped == false) {
 
@@ -1168,7 +1168,7 @@ bool gdl::Texture::ConvertRawImage(short rawXres, short rawYres, void *rawBuff, 
 
 		break;
 
-	case gdl::RGB:		// 24-bit true-color image data
+	case RGB:		// 24-bit true-color image data
 
 		if (texMipmapped == false) {
 
@@ -1224,7 +1224,7 @@ bool gdl::Texture::ConvertRawImage(short rawXres, short rawYres, void *rawBuff, 
 
 		break;
 
-	case gdl::RGBA:		// 32-bit true-color image data with alpha
+	case RGBA:		// 32-bit true-color image data with alpha
 
 		if (texMipmapped == false) {
 

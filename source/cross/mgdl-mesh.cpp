@@ -135,7 +135,7 @@ void Mesh_DrawNormals(Mesh* mesh)
 	glEnd();
 }
 
-void Mesh_CalculateMatcapUVs(Mesh* mesh,const mat4x4& modelViewMatrix, const mat4x4& normalMatrix)
+void Mesh_CalculateMatcapUVs(Mesh* mesh, mat4x4 modelViewMatrix, mat4x4 normalMatrix)
 {
 	// This calculation happens in screen space
 
@@ -155,7 +155,7 @@ void Mesh_CalculateMatcapUVs(Mesh* mesh,const mat4x4& modelViewMatrix, const mat
 		normal = Mesh_GetNormalFromArray(mesh, i);
 	}
 
-	const vec2 half = vec2New(0.5f, 0.5f);
+	const vec2 half = V2f_Create(0.5f, 0.5f);
 	for (sizetype i = 0; i < mesh->vertexCount; i++)
 	{
 		position = Mesh_GetPositionFromArray(mesh, i);
@@ -165,7 +165,7 @@ void Mesh_CalculateMatcapUVs(Mesh* mesh,const mat4x4& modelViewMatrix, const mat
 		position4 = vec4New(position.x, position.y, position.z, 1.0f);
 		position4 = mat4x4MultiplyVector(modelViewMatrix, position4);
 		position = position4.xyz;
-		matcapUV = vec2New(0.5f, 0.5f);
+		matcapUV = V2f_Create(0.5f, 0.5f);
 		if (vec3Length(position) != 0.0f)
 		{
 			eye = vec3Normalize(position);
@@ -179,7 +179,7 @@ void Mesh_CalculateMatcapUVs(Mesh* mesh,const mat4x4& modelViewMatrix, const mat
 			const float rz12 = pow(reflection.z+1, 2.0f);
 			const float sqrtR2 = sqrt(rx2 + ry2 + rz12) * 2.0f;
 			R2 = reflection.xy;
-			matcapUV = vec2Add(vec2New(R2.x/sqrtR2, R2.y/sqrtR2), half);
+			matcapUV = V2f_Add(vec2New(R2.x/sqrtR2, R2.y/sqrtR2), half);
 		}
 		Mesh_SetUVToArray(mesh, i, matcapUV);
 	}
@@ -274,37 +274,37 @@ vec3 Mesh_GetNormal (Mesh* mesh, GLushort index )
 }
 
 
-void Mesh_SetNormalToArray ( Mesh* mesh,sizetype index, const vec3& normal )
+void Mesh_SetNormalToArray ( Mesh* mesh,sizetype index, vec3 normal )
 {
 	if (index < mesh->vertexCount)
 	{
 		sizetype vi = index * 3;
-		mesh->normals[vi+0] = normal.x;
-		mesh->normals[vi+1] = normal.y;
-		mesh->normals[vi+2] = normal.z;
+		mesh->normals[vi+0] = V3f_X(normal);
+		mesh->normals[vi+1] = V3f_Y(normal);
+		mesh->normals[vi+2] = V3f_Z(normal);
 	}
 }
 
-bool Mesh_GetTriangleIndices (Mesh* mesh, GLsizei triangleIndex, GLushort& outA, GLushort& outB, GLushort& outC )
+bool Mesh_GetTriangleIndices (Mesh* mesh, GLsizei triangleIndex, GLushort* outA, GLushort* outB, GLushort* outC )
 {
 	GLsizei indice = triangleIndex * 3;
 	if (indice + 2 < mesh->indexCount)
 	{
-		outA = mesh->indices[indice];
-		outB = mesh->indices[indice+1];
-		outC = mesh->indices[indice+2];
+		*outA = mesh->indices[indice];
+		*outB = mesh->indices[indice+1];
+		*outC = mesh->indices[indice+2];
 		return true;
 	}
 	return false;
 }
 
-void Mesh_SetUVToArray (Mesh* mesh, sizetype index, const vec2& uv )
+void Mesh_SetUVToArray (Mesh* mesh, sizetype index, vec2 uv )
 {
 	if (mesh->uvs != nullptr)
 	{
 		sizetype vi = index * 2;
-		mesh->uvs[vi + 0] = uv.x;
-		mesh->uvs[vi + 1] = uv.y;
+		mesh->uvs[vi + 0] = V2f_X(uv);
+		mesh->uvs[vi + 1] = V2f_Y(uv);
 	}
 }
 
@@ -386,18 +386,18 @@ Mesh* Mesh_CreateIcosahedron(u32 creationFlags)
 
 void Mesh_DebugPrint(Mesh* mesh)
 {
-	printf("%s mesh has %u vertices and %u indices\n", mesh->name, mesh->vertexCount, mesh->indexCount);
+	Log_InfoF("%s mesh has %u vertices and %u indices\n", mesh->name, mesh->vertexCount, mesh->indexCount);
 	for (sizetype i = 0; i < mesh->vertexCount; i++)
 	{
 		sizetype vi = i*3;
-		printf("%zu: Pos %.2f, %.2f, %.2f\n", i, mesh->positions[vi+0], mesh->positions[vi+1], mesh->positions[vi+2]);
+		Log_InfoF("%zu: Pos %.2f, %.2f, %.2f\n", i, mesh->positions[vi+0], mesh->positions[vi+1], mesh->positions[vi+2]);
 	}
-	printf("\n");
+	Log_Info("\n");
 	for (sizetype i = 0; i < mesh->vertexCount; i++)
 	{
 		vec3 pos = Mesh_GetPositionFromArray(mesh, i);
 		vec3 normal = Mesh_GetNormalFromArray(mesh, i);
-		printf("%zu: Pos %.2f, %.2f, %.2f\tN %.2f, %.2f, %.2f\n", i, pos.x, pos.y, pos.z, normal.x, normal.y, normal.z);
+		Log_InfoF("%zu: Pos %.2f, %.2f, %.2f\tN %.2f, %.2f, %.2f\n", i, pos.x, pos.y, pos.z, normal.x, normal.y, normal.z);
 	}
 }
 

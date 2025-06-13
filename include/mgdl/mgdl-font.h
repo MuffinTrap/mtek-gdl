@@ -7,7 +7,6 @@
 
 #include "mgdl-types.h"
 #include "mgdl-image.h"
-#include <string>
 
 /**
  * @brief Represents a font that can be used to draw text.
@@ -20,17 +19,25 @@ struct Font
 
 	Image* _fontImage;
 
-	vec2		*_tList;
+	vec2 *_tList;
 	float _uvWidth;
 	float _uvHeight;
 	char _firstIndex; /**< Needed to remember the first index to calculate offsets into vertex and uv arrays */
 	short _characterCount;
 
-	float _spacingX = 0.0f;
-	float _spacingY = 0.0f;
-	float _aspect = 1.0f;
+	float _spacingX;
+	float _spacingY;
+	float _aspect;
 
 };
+typedef struct Font Font;
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+
 /**
  * @brief Sets the spacing of the font for the next Print call.
  *
@@ -38,6 +45,13 @@ struct Font
  * @param y Spacing between rows vertically.
  */
 void Font_SetSpacingOnce(Font* font, float x, float y);
+
+/**
+ * @brief Sets the max amount of letters printed for the next Print* call.
+ *
+ * @param limit Maximum amount of letters drawn;
+ */
+void Font_SetLineLimitOnce(short limit);
 
 /**
  * @brief Loads a font from an image.
@@ -82,7 +96,7 @@ Font* Font_LoadPadded(Image* fontImage, short charw, short charh, char firstChar
  *
  * @return True if the loading succeeded.
  */
-Font* Font_LoadSelective(Image* fontImage, short charw, short charh, short charactersPerRow, std::string characters );
+Font* Font_LoadSelective(Image* fontImage, short charw, short charh, short charactersPerRow, const char* characters );
 
 /**
  * @brief Draws text either in 2D or 3D.
@@ -95,7 +109,7 @@ Font* Font_LoadSelective(Image* fontImage, short charw, short charh, short chara
  * @param format Text, has to containg formatting markers.
  * @param __VA_ARGS__ Values to the formatting markers.
  */
-void Font_Printf(Font* font, gdl::rgba8 color, float x, float y, float textHeight, const char* format, ... );
+void Font_Printf(Font* font, rgba8 color, float x, float y, float textHeight, const char* format, ... );
 
 /**
  * @brief Draws text either in 2D or 3D.
@@ -107,7 +121,7 @@ void Font_Printf(Font* font, gdl::rgba8 color, float x, float y, float textHeigh
  * @param textHeight Height of the text.
  * @param text Text to be drawn.
  */
-void Font_Print(Font* font, gdl::rgba8 color, float x, float y, float textHeight, const char* text);
+void Font_Print(Font* font, rgba8 color, float x, float y, float textHeight, const char* text);
 
 
 /**
@@ -123,7 +137,7 @@ void Font_Print(Font* font, gdl::rgba8 color, float x, float y, float textHeight
  * @param format Text, has to containg formatting markers.
  * @param __VA_ARGS__ Values to the formatting markers.
  */
-void Font_PrintfAligned(Font* font, gdl::rgba8 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* format, ... );
+void Font_PrintfAligned(Font* font, rgba8 color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* format, ... );
 
 /**
  * @brief Draws text either in 2D or 3D.
@@ -138,7 +152,7 @@ void Font_PrintfAligned(Font* font, gdl::rgba8 color, float x, float y, float te
  * @param alignmentY Alignment of text on the vertical axis.
  * @param text Text to be drawn.
  */
-void Font_PrintAligned(Font* font, gdl::rgba8 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* text);
+void Font_PrintAligned(Font* font, rgba8 color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* text);
 
 /**
  * @brief Draws text either in 2D or 3D.
@@ -153,7 +167,7 @@ void Font_PrintAligned(Font* font, gdl::rgba8 color, float x, float y, float tex
  * @param format Text, has to containg formatting markers.
  * @param __VA_ARGS__ Values to the formatting markers.
  */
-void Font_PrintfOrigo(Font* font, gdl::rgba8 color, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* format, ... );
+void Font_PrintfOrigo(Font* font, rgba8 color, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* format, ... );
 
 /**
  * @brief Draws text either in 2D or 3D.
@@ -167,7 +181,7 @@ void Font_PrintfOrigo(Font* font, gdl::rgba8 color, float textHeight, gdl::Align
  * @param alignmentY Alignment of text on the vertical axis.
  * @param text Text to be drawn.
  */
-void Font_PrintOrigo(Font* font, gdl::rgba8 color, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* text);
+void Font_PrintOrigo(Font* font, rgba8 color, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* text);
 
 /**
  * @brief Draws an icon, only compatible with the debug font.
@@ -181,14 +195,21 @@ void Font_PrintOrigo(Font* font, gdl::rgba8 color, float textHeight, gdl::Alignm
  * @param alignmentY Alignment of text on the vertical axis.
  * @param glybh The symbol/icon/glyph to be drawn.
  */
-void Font_Icon(Font* font, u32 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, gdl::IconSymbol glyph);
+void Font_Icon(Font* font, u32 color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, IconSymbol glyph);
+
+RectF Font_GetUVRect(Font* font, char letter);
+RectF Font_GetUVRectIcon(Font* font, IconSymbol glyph);
 
 void _Font_Bind(Font* font, short charw, short charh, char firstCharacter);
 void _Font_BindPadded(Font* font, short charw, short charh, char firstCharacter, short charactersPerRow);
-void _Font_BindSelective(Font* font, short charw, short charh, std::string characters, short charactersPerRow);
+void _Font_BindSelective(Font* font, short charw, short charh, const char* characters, short charactersPerRow);
 void _Font_CreateTextureCoordList(Font* font, short rows, short charactersPerRow, short texW, short texH);
-void _Font_CreateTextureCoordListSelective(Font* font, short rows, short charactersPerRow, short texW, short texH, std::string characters);
+void _Font_CreateTextureCoordListSelective(Font* font, short rows, short charactersPerRow, short texW, short texH, const char* characters);
 
 void _Font_CreateCoordinatesForGlyph(Font* font, u32 textureIndex, short cx, short cy, short texW, short texH);
 vec2 _Font_GetTextureCoordinate(Font* font, char character);
-vec2 _Font_GetTextureCoordinateGlyph(Font* font, gdl::IconSymbol glyph);
+vec2 _Font_GetTextureCoordinateGlyph(Font* font, IconSymbol glyph);
+
+#ifdef __cplusplus
+}
+#endif

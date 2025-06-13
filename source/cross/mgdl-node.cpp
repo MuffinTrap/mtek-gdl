@@ -1,9 +1,17 @@
 #include <mgdl/mgdl-node.h>
+#include <mgdl/mgdl-dynamic_array.h>
 
-Node* Node_Create()
+Node* Node_Create(u8 childCapacity)
 {
 	Node* node = new Node();
 	node->transform = Transform_CreateZero();
+	node->mesh = nullptr;
+	node->material = nullptr;
+	node->light = nullptr;
+	node->name = nullptr;
+
+	node->children = DynamicArray_CreateNode(childCapacity);
+
 	return node;
 
 }
@@ -43,7 +51,7 @@ void Node_Draw(Node* node)
 		{
 			// TODO do not reapply same material
 			Material_Apply(node->material);
-			if (node->material->type == gdl::MaterialType::Matcap)
+			if (node->material->type == MaterialType::Matcap)
 			{
 				// If material is matcap material
 				float modelViewMatrix[16];
@@ -78,4 +86,3 @@ void Node_Draw(Node* node)
 		Mesh_DrawElements(m);
 	}
 }
-

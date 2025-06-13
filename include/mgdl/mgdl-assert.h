@@ -5,8 +5,12 @@
  * @brief Different assert macros
  */
 
+#include <mgdl/mgdl-types.h>
+
+#ifdef __cplusplus
 extern "C"
 {
+#endif
 	/**
 	 * @brief If the assert fails, break into assert display loop and ask if assert should be ignored.
 	*	@details This function is called by the gdl_assert macro. It breaks
@@ -15,11 +19,11 @@ extern "C"
 	*
 	* @param filename    The filename of the code where assert happened. This is provided by __FILE__ macro.
 	* @param lineNumber  Line in code where assert happened. This is provided by __LINE__ macro.
-	* @param ignoreThis    Reference to a static bool controlling if the assert will be ignored when it happens again.
+	* @param ignoreThis    Pointer to a static bool controlling if the assert will be ignored when it happens again.
 	* @param message The message to show when assert fails. Has to contain format specifiers.
 	* @param __VA_ARGS__ Arguments for the format specifiers in message.
 	*/
-	void AssertFunctionPrintf(const char* filename, int lineNumber, bool &ignoreThis, const char* message, ...);
+	void AssertFunctionPrintf(const char* filename, int lineNumber, bool *ignoreThis, const char* message, ...);
 
 	/**
 	 * @brief If the assert fails, break into assert display loop and ask if assert should be ignored.
@@ -29,11 +33,15 @@ extern "C"
 	*
 	* @param filename    The filename of the code where assert happened. This is provided by __FILE__ macro.
 	* @param lineNumber  Line in code where assert happened. This is provided by __LINE__ macro.
-	* @param ignoreThis    Reference to a static bool controlling if the assert will be ignored when it happens again.
+	* @param ignoreThis    Pointer to a static bool controlling if the assert will be ignored when it happens again.
 	* @param message The message to show when assert fails.
 	*/
-	void AssertFunctionPrint(const char* filename, int lineNumber, bool &ignoreThis, const char* message);
+	void AssertFunctionPrint(const char* filename, int lineNumber, bool *ignoreThis, const char* message);
+
+
+#ifdef __cplusplus
 }
+#endif
 
 /* muffintrap:
 	This code is mostly from Game Programming Gems 1 article
@@ -49,7 +57,7 @@ extern "C"
 	{ \
 		static bool ignoreThis = false; \
 		if (ignoreThis == false) { \
-			AssertFunctionPrintf(__FILE__, __LINE__, ignoreThis, message, ##__VA_ARGS__); \
+			AssertFunctionPrintf(__FILE__, __LINE__, &ignoreThis, message, ##__VA_ARGS__); \
 		} \
 	}
 #else
@@ -65,7 +73,7 @@ extern "C"
 	{ \
 		static bool ignoreThis = false; \
 		if (ignoreThis == false) { \
-			AssertFunctionPrintf(__FILE__, __LINE__, ignoreThis, message, __VA_ARGS__); \
+			AssertFunctionPrintf(__FILE__, __LINE__, &ignoreThis, message, __VA_ARGS__); \
 		} \
 	}
 
@@ -82,7 +90,7 @@ if ((test) == false) \
 { \
     static bool ignoreThis = false; \
     if (ignoreThis == false) { \
-		AssertFunctionPrint(__FILE__, __LINE__, ignoreThis, message); \
+		AssertFunctionPrint(__FILE__, __LINE__, &ignoreThis, message); \
 	} \
 }
 
@@ -91,7 +99,7 @@ if ((test) == false) \
 { \
     static bool ignoreThis = false; \
     if (ignoreThis == false) { \
-		AssertFunctionPrint(__FILE__, __LINE__, ignoreThis, #test); \
+		AssertFunctionPrint(__FILE__, __LINE__, &ignoreThis, #test); \
 	} \
 }
 

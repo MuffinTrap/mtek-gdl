@@ -48,7 +48,7 @@ int ctoy_argc(void)
 
 char** ctoy_argv(void)
 {
-    return nullptr;
+    return NULL;
 }
 
 // Window management
@@ -242,9 +242,9 @@ int ctoy_joystick_button_pressed(int joy, int button)
 }
 float ctoy_joystick_axis(int joy, int axis)
 {
-    vec2 axis = WiiController_GetNunchukJoystickDirection(mgdl_GetController(joy));
+    vec2 ax = WiiController_GetNunchukJoystickDirection(mgdl_GetController(joy));
 
-    if (axis == 0) { return V2f_X(axis);}
-    if (axis == 1) { return V2f_Y(axis);}
+    if (axis == 0) { return V2f_X(ax);}
+    if (axis == 1) { return V2f_Y(ax);}
     return 0.0f;
 }

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include <mgdl/mgdl-opengl.h>
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-image.h>
@@ -13,14 +12,17 @@
 struct Material
 {
 	char* name;
-	GLfloat shininess = 1.0f;
+	GLfloat shininess;
 	vec3 emissiveColor;
 	Image* texture;
-	gdl::MaterialType type;
+	MaterialType type;
 };
+typedef struct Material Material;
 
+#ifdef __cplusplus
 extern "C"
 {
+#endif
 	/**
 	 * @brief Creates a material from an image.
 	 * @param name Name for the material.
@@ -28,7 +30,7 @@ extern "C"
 	 * @param type What kind of material this is.
 	 * @returns Created material.
 	 */
-	Material* Material_Load(const char* name, Image* texture, gdl::MaterialType type);
+	Material* Material_Load(const char* name, Image* texture, MaterialType type);
 
 	/**
 	 * @brief Applies the material properties for the next mesh drawing operation
@@ -36,4 +38,6 @@ extern "C"
 	 */
 	void Material_Apply(Material* material);
 
+#ifdef __cplusplus
 }
+#endif

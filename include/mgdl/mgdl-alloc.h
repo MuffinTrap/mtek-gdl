@@ -11,8 +11,11 @@
 #include <stdlib.h>
 #include <mgdl/mgdl-types.h>
 
+
+#ifdef __cplusplus
 extern "C"
 {
+#endif
 
 /**
  * @brief Use this function when memory needs to be aligned.
@@ -24,4 +27,6 @@ extern "C"
  */
 void* mgdl_AllocateAlignedMemory(sizetype size);
 
+#ifdef __cplusplus
 }
+#endif

@@ -1,9 +1,7 @@
 #pragma once
 
-#include <string>
 #include <mgdl/mgdl-opengl.h>
 #include <mgdl/mgdl-types.h>
-using namespace gdl;
 
 /* Contains vertex data that is needed for
  * rendering the mesh
@@ -21,10 +19,13 @@ struct Mesh
 	GLfloat* colors;
 	const char* name;
 };
+typedef struct Mesh Mesh;
 
 
+#ifdef __cplusplus
 extern "C"
 {
+#endif
 	/**
 	 * @brief Reserves space for a mesh and sets mesh variables.
 	 * @details Use this function to reserve memory for a mesh.
@@ -42,10 +43,10 @@ extern "C"
 	vec3 Mesh_GetNormalFromArray(Mesh* mesh, sizetype index);
 
 	void Mesh_SetDrawingIndex(Mesh* mesh,sizetype index, GLushort drawIndex);
-	void Mesh_SetPositionToArray(Mesh* mesh,sizetype index, const vec3& position);
-	void Mesh_SetNormalToArray(Mesh* mesh,sizetype index, const vec3& normal);
-	void Mesh_SetUVToArray(Mesh* mesh,sizetype index, const vec2& uv);
-	bool Mesh_GetTriangleIndices(Mesh* mesh,GLsizei triangleIndex, GLushort& outA, GLushort& outB, GLushort& outC);
+	void Mesh_SetPositionToArray(Mesh* mesh,sizetype index, vec3 position);
+	void Mesh_SetNormalToArray(Mesh* mesh,sizetype index, vec3 normal);
+	void Mesh_SetUVToArray(Mesh* mesh,sizetype index, vec2 uv);
+	bool Mesh_GetTriangleIndices(Mesh* mesh,GLsizei triangleIndex, GLushort* outA, GLushort* outB, GLushort* outC);
 
 	void Mesh_DebugPrint(Mesh* mesh);
 
@@ -56,7 +57,7 @@ extern "C"
 	void Mesh_DrawPoints(Mesh* mesh);
 	void Mesh_DrawLines(Mesh* mesh);
 	void Mesh_DrawNormals(Mesh* mesh);
-	void Mesh_CalculateMatcapUVs(Mesh* mesh,const mat4x4& modelViewMatrix, const mat4x4& normalMatrix);
+	void Mesh_CalculateMatcapUVs(Mesh* mesh, mat4x4 modelViewMatrix, mat4x4 normalMatrix);
 
 	// Setting vertices into arrays : returns the index of vertex in GLushort
 
@@ -83,4 +84,6 @@ extern "C"
 	// TODO Mesh* Mesh_CreateCloud(float radius, int segments, float randomness);
 
 
+#ifdef __cplusplus
 }
+#endif

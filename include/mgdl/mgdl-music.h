@@ -12,6 +12,8 @@ enum MusicType
 	MusicWav
 };
 
+typedef enum MusicType MusicType;
+
 struct Music
 {
 	// File information
@@ -30,9 +32,12 @@ struct Music
 	bool isLooping;
 	float secondsOffset;
 };
+typedef struct Music Music;
 
+#ifdef __cplusplus
 extern "C"
 {
+#endif
 
 void Music_Init(Music* music);
 Music* Music_LoadOgg(const char* fileName);
@@ -72,4 +77,6 @@ void Music_SetLooping(Music* music, bool looping);
 
 SoundStatus Music_GetStatus(Music* music);
 
+#ifdef __cplusplus
 }
+#endif

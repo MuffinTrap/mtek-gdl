@@ -1,7 +1,6 @@
 #pragma once
 
-#include <string>
-#include "mgdl-vector.h"
+#include "mgdl-types.h"
 
 enum LightType
 {
@@ -9,6 +8,7 @@ enum LightType
 	Spot,
 	Directional
 };
+typedef enum LightType LightType;
 
 /* Representes a light in a 3D scene.
  * Contains color and light properties
@@ -16,11 +16,25 @@ enum LightType
 struct Light
 {
 	vec3 color;
-	float intensity = 1.0f;
+	float intensity;
 	LightType type;
-	float spotHalfAngle = 180.0f;
-	float constantAttenuation = 1.0f;
-	float LinearAttenuation = 0.0f;
-	float QuadraticAttenuation = 0.0f;
+	float spotHalfAngle;
+	float constantAttenuation;
+	float LinearAttenuation;
+	float QuadraticAttenuation;
 	const char* name;
 };
+
+typedef struct Light Light;
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+	Light* Light_Create(void);
+
+
+#ifdef __cplusplus
+}
+#endif

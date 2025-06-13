@@ -7,8 +7,10 @@
 #include "mgdl-types.h"
 #include <stdio.h>
 
-namespace gdl
+#ifdef __cplusplus
+extern "C"
 {
+#endif
     /**
      * @brief Opens a memory buffer as a FILE pointer.
      *
@@ -18,4 +20,6 @@ namespace gdl
      * @return FILE pointer to the memory.
      */
     FILE* BufferOpen(u8* buffer, size_t size, const char* mode);
-};
+#ifdef __cplusplus
+}
+#endif

@@ -3,37 +3,40 @@
 #include "mgdl-types.h"
 #include "mgdl-controller.h"
 
-#include <cstring>
-#include <string.h>
-#include <string>
-#include <functional>
-
 struct Platform
 {
 	const char* name;
 	short screenWidth;
 	short screenHeight;
 	float aspectRatio;
-	gdl::ScreenAspect aspect;
+	ScreenAspect aspect;
 	float _deltaTimeS;
 	float _elapsedTimeS;
 	u32 _elapsedUpdates;
 };
+typedef struct Platform Platform;
 
 // These functions are implemented in pc-platform.cpp or wii-platform.cpp
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 void Platform_Init(const char* name,
-						gdl::ScreenAspect screenAspect,
-						std::function<void()> initCallback,
-						std::function<void()> updateCallback,
-						std::function<void()> drawCallback,
-						u32 initFlags = 0 );
+						ScreenAspect screenAspect,
+						CallbackFunction initCallback,
+						CallbackFunction updateCallback,
+						CallbackFunction drawCallback,
+						u32 initFlags);
 
-WiiController* Platform_GetController(int controllerNumber);
-void Platform_DoProgramExit();
+struct WiiController* Platform_GetController(int controllerNumber);
+void Platform_DoProgramExit(void);
 
-Platform* Platform_GetSingleton();
-float Platform_GetDeltaTime();
-float Platform_GetElapsedSeconds();
-u32 Platform_GetElapsedUpdates();
+struct Platform* Platform_GetSingleton(void);
+float Platform_GetDeltaTime(void);
+float Platform_GetElapsedSeconds(void);
+u32 Platform_GetElapsedUpdates(void);
 
+#ifdef __cplusplus
+}
+#endif

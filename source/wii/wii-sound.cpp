@@ -190,7 +190,11 @@ void Sound_DeleteData(Sound* sound)
 	sound->sData = nullptr;
 }
 
-void Sound_Play(Sound* sound, float pitch, float volume) {
+void Sound_Play(Sound* sound) {
+	Sound_PlayEx(sound, 1.0f, 100.0f);
+}
+
+void Sound_PlayEx(Sound* sound, float pitch, float volume) {
 
 	// Simple play function
 	if (sound->sData == nullptr)

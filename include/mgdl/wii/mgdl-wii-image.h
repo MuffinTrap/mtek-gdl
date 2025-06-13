@@ -87,7 +87,7 @@ public:
 	 *
 	 *	\returns Non-zero if the image had been allocated successfully otherwise there isn't enough memory to allocate it.
 	 */
-	bool Create(short xRes, short yRes, u_int filterMode, u_int format = gdl::RGBA8);
+	bool Create(short xRes, short yRes, u_int filterMode, u_int format = RGBA8);
 
 
 	//! Creates a mipmapped image.
@@ -136,7 +136,7 @@ public:
 	 *
 	 *	\returns Non-zero if the image was successfully loaded otherwise an error occurred.
 	 */
-	bool LoadImage(const char *fileName, u_int filterMode, u_int format = gdl::RGBA8);
+	bool LoadImage(const char *fileName, u_int filterMode, u_int format = RGBA8);
 
 
     //! Loads an image with mipmap generation.
@@ -227,7 +227,7 @@ public:
 	 *	\param[in]	scale	Scale of image (1.0f is original size).
 	 *	\param[in]	angle	Rotation angle in degrees.
 	 */
-	void Put(short x, short y, u_int col = gdl::Colors::White, short cx = 0, short cy = 0, float scale = 1.f, float angle = 0.f);
+	void Put(short x, short y, u_int col = Colors::White, short cx = 0, short cy = 0, float scale = 1.f, float angle = 0.f);
 
 
 	//! Draws an image as a stretchable rectangle.
@@ -242,7 +242,7 @@ public:
 	 *	\param[in]	y2	Lower-right Y coordinate of image.
 	 *	\param[in]	col	Color of image (use gdl::Color::White or full white with RGBA() for normal colors).
 	 */
-	void PutS(short x1, short y1, short x2, short y2, u_int col = gdl::Colors::White);
+	void PutS(short x1, short y1, short x2, short y2, u_int col = Colors::White);
 
 
 };

@@ -4,9 +4,8 @@
 #include <mgdl/mgdl-scene.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-types.h>
+#include <mgdl/mgdl-dynamic_array.h>
 #include <stdio.h>
-
-using namespace gdl;
 
 Scene* FBX_Load(const char* fbxFile)
 {
@@ -24,14 +23,15 @@ Scene* FBX_Load(const char* fbxFile)
 		return nullptr;
 	}
 
-	Scene* gdlScene = new Scene();
+	Scene* gdlScene = Scene_CreateEmpty();
 	// What is in this file?
 
 	// Start from the root
 	ufbx_node* root = scene->root_node;
 	_FBX_LoadNode(gdlScene, Scene_GetRootNode(gdlScene), root, 0);
 
-	ufbx_free_scene(scene);
+	// DANGER ZONE
+	//ufbx_free_scene(scene);
 
 	return gdlScene;
 }
@@ -63,7 +63,9 @@ bool _FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short d
 		Log_Info("\n");
 	}
 
-	Node* n = new Node();
+	size_t childAmount = node->children.count;
+	mgdl_assert_print(childAmount <= 255, "UFBX node has too many children > 255");
+	Node* n = Node_Create((u8)childAmount);
 	mgdl_assert_print(n != nullptr, "Could not create new Node");
 
 	Node_SetTransform(n, node->name.data,
@@ -107,6 +109,8 @@ bool _FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short d
 			}
 
 			// Has this material been loaded already?
+			mgdl_assert_print(gdlScene->materials != nullptr, "No materials array in scene");
+			mgdl_assert_print(gdlScene->materials->data != nullptr, "Scene materials array is nullptr");
 			Material* mat = Scene_GetMaterial(gdlScene, material->name.data);
 			if (mat == nullptr)
 			{
@@ -161,7 +165,6 @@ bool _FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short d
 
 	Scene_AddChildNode(gdlScene, parentNode, n);
 
-	size_t childAmount = node->children.count;
 	if (childAmount > 0)
 	{
 		for(size_t i = 0; i < node->children.count; i++)

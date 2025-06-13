@@ -14,6 +14,12 @@ struct PNGFile
 	int _pngFormat;
 	GLubyte* _texels;
 };
+typedef struct PNGFile PNGFile;
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 PNGFile* PNG_ReadFile(const char* filename);
 void PNG_DeleteData(PNGFile* png);
@@ -22,7 +28,7 @@ GLenum PNG_GetGLFormat(PNGFile* png);
 GLenum PNG_GetGLInternalFormat(PNGFile* png);
 
 GLubyte* PNG_GetTexels(PNGFile* png);
-gdl::rgba8 PNG_GetRGBA(PNGFile* png, int x, int y);
+rgba8 PNG_GetRGBA(PNGFile* png, int x, int y);
 float PNG_GetGrayscale(PNGFile* png, int x, int y);
 
 GLenum PNG_PNGtoGLFormat(int pngFormat);
@@ -30,3 +36,7 @@ GLenum PNG_PNGtoGLInternalFormat(int pngFormat);
 
 PNGFile* _PNG_ReadFilePointer(FILE* fp);
 bool _PNG_ReadTextureInfo(int color_type);
+
+#ifdef __cplusplus
+}
+#endif

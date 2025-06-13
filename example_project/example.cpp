@@ -13,10 +13,10 @@ void Example::Init()
 {
     // Sprites, images and fonts
     short spriteHeight = 64;
-    barb = mgdl_LoadImage("assets/barb.png", gdl::TextureFilterModes::Linear);
+    barb = mgdl_LoadImage("assets/barb.png", TextureFilterModes::Linear);
     mel_sprites = mgdl_LoadSprite("assets/mel_tiles.png", spriteHeight, spriteHeight);
     fruitSprites = mgdl_LoadSprite("assets/fruits.png", 16, 16);
-    pointerImage = mgdl_LoadImage("assets/pointer.png", gdl::TextureFilterModes::Nearest);
+    pointerImage = mgdl_LoadImage("assets/pointer.png", TextureFilterModes::Nearest);
     ibmFont = mgdl_LoadFont("assets/font8x16.png", 8, 16, ' ');
     debugFont = Font_GetDebugFont();
 
@@ -26,34 +26,34 @@ void Example::Init()
 
     // Wii model scene
     wiiScene = mgdl_LoadFBX("assets/wii_et_baby.fbx");
-    wiiTexture = mgdl_LoadImage("assets/wii_console_texture.png", gdl::TextureFilterModes::Nearest);
+    wiiTexture = mgdl_LoadImage("assets/wii_console_texture.png", TextureFilterModes::Nearest);
     Scene_SetMaterialTexture(wiiScene, "wii_console_texture.png", wiiTexture);
 
     // Ship with matcap texture
     shipScene = mgdl_LoadFBX("assets/ship_with_uvs.fbx");
-    matcapTexture = mgdl_LoadImage("assets/matcap.png", gdl::TextureFilterModes::Linear);
-    matcapMaterial = Material_Load("matcap", matcapTexture, gdl::MaterialType::Matcap);
+    matcapTexture = mgdl_LoadImage("assets/matcap.png", TextureFilterModes::Linear);
+    matcapMaterial = Material_Load("matcap", matcapTexture, MaterialType::Matcap);
     Scene_SetAllMaterialTextures(shipScene, matcapTexture);
     Material* st = Scene_GetMaterial(shipScene, "standardSurface1");
     Material* mt2 = Scene_GetMaterial(shipScene, "Material.002");
     if (st!=nullptr)
     {
-        st->type = gdl::MaterialType::Matcap;
+        st->type = MaterialType::Matcap;
     }
     if (mt2!=nullptr)
     {
-        mt2->type = gdl::MaterialType::Matcap;
+        mt2->type = MaterialType::Matcap;
     }
 
     // Generated icosahedron and checkerboard texture
     icosaScene = Scene_CreateEmpty();
     checkerTexture = Image_GenerateCheckerBoard();
-    Material* checkerMaterial = Material_Load("checker", checkerTexture, gdl::MaterialType::Diffuse);
+    Material* checkerMaterial = Material_Load("checker", checkerTexture, MaterialType::Diffuse);
 
     Scene_AddMaterial(icosaScene, checkerMaterial );
     Mesh* quad = Mesh_CreateQuad(FlagNormals | FlagUVs);
     // Mesh* icosaMesh = Mesh_CreateIcosahedron(FlagNormals | FlagUVs);
-    Node* icosaNode = Node_Create();
+    Node* icosaNode = Node_Create(1);
     Node_SetContent(icosaNode, "icosaNode", quad, checkerMaterial);
     Scene_AddChildNode(icosaScene, nullptr, icosaNode);
 
@@ -95,14 +95,14 @@ void Example::Update()
 }
 #if 0
 
-void DrawTextDouble(const char* text, short x, short y, float textHeight, gdl::Font* font)
+void DrawTextDouble(const char* text, short x, short y, float textHeight, Font* font)
 {
     glPushMatrix();
         glTranslatef(x, y, 0.0f);
-        font->Print(gdl::Colors::Black, textHeight, gdl::LJustify, gdl::LJustify, text);
+        font->Print(Colors::Black, textHeight, LJustify, LJustify, text);
 
         glTranslatef(-1, -1, 0.0f);
-        font->Print(gdl::Colors::LightGreen, textHeight, gdl::LJustify, gdl::LJustify, text);
+        font->Print(Colors::LightGreen, textHeight, LJustify, LJustify, text);
     glPopMatrix();
 }
 #endif
@@ -128,7 +128,7 @@ void Example::Draw()
     glLoadIdentity();
     DrawMenu();
 
-    Image_Draw2DAligned(pointerImage, cursorPos.x, cursorPos.y, gdl::Colors::White, gdl::LJustify, gdl::LJustify);
+    Image_Draw2DAligned(pointerImage, cursorPos.x, cursorPos.y, Colors::White, LJustify, LJustify);
     Font_Printf(debugFont, Colors::White, 10, 16, 16, "Mouse down: %d, click %d", mouseDown, mouseClick);
 }
 
@@ -139,7 +139,7 @@ void Example::DrawSprites()
     for (int i = 0; i < 16; i++)
     {
         int size = 64;
-        Sprite_Draw2D(fruitSprites, i, size * (i%4), size + (i/4) * size, size, gdl::LJustify, gdl::RJustify, Colors::White);
+        Sprite_Draw2D(fruitSprites, i, size * (i%4), size + (i/4) * size, size, LJustify, RJustify, Colors::White);
     }
 
     const short h = Sprite_GetHeight(mel_sprites);
@@ -151,7 +151,7 @@ void Example::DrawSprites()
     short placeY = mgdl_GetScreenHeight();
     for (short i = 0; i < 4; i++)
     {
-        Sprite_Draw2D(mel_sprites, i, placeX, placeY, spriteH, gdl::LJustify, gdl::LJustify, gdl::Colors::White);
+        Sprite_Draw2D(mel_sprites, i, placeX, placeY, spriteH, LJustify, LJustify, Colors::White);
         placeY -= spriteH;
     }
 }
@@ -171,41 +171,41 @@ void Example::DrawImage()
             0,
             mgdl_GetScreenHeight()/2,
             1.0f,
-            gdl::LJustify, gdl::Centered);
+            LJustify, Centered);
 
     Image_Draw2DAligned(debugFont->_fontImage,
             0,
             mgdl_GetScreenHeight()/2,
             1.0f,
-            gdl::LJustify, gdl::Centered);
+            LJustify, Centered);
 }
 
 #if 0
 
-    gdl::InitOrthoProjection();
+    InitOrthoProjection();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
     // Input
-    short sh = gdl::GetScreenHeight();
+    short sh = GetScreenHeight();
     short top = sh - 32;
     short left = 22;
     DrawMenu(left, top - 120, 120);
     DrawSprites();
     DrawTimingInfo(left,
-                   gdl::GetScreenHeight()/5,
+                   GetScreenHeight()/5,
                    ibmFont->GetCharacterHeight());
     DrawVersion();
     DrawInputInfo(left, top);
 
-    DrawCameraControls(gdl::GetScreenWidth()-80, top-120, 80);
+    DrawCameraControls(GetScreenWidth()-80, top-120, 80);
 }
 
 void Example::DrawVersion()
 {
     float textHeight = debugFont->GetCharacterHeight() * 2;
-    short sh = gdl::GetScreenHeight();
-    int CenterX = gdl::GetScreenWidth()/4;
+    short sh = GetScreenHeight();
+    int CenterX = GetScreenWidth()/4;
     DrawTextDouble("MTEK-GDL", CenterX, sh - textHeight, textHeight, debugFont);
     DrawTextDouble(GDL_VERSION, CenterX, sh - textHeight * 2, textHeight, debugFont);
 }
@@ -271,10 +271,10 @@ void DrawDPad(short x, short y, short size)
     };
     for (int i=0;i<4;i++)
     {
-        gdl::Colors c = gdl::Colors::LightRed;
-        if (WiiController_ButtonHeld(gdl::GetController(0), dpad_buttons[i]))
+        Colors c = Colors::LightRed;
+        if (WiiController_ButtonHeld(GetController(0), dpad_buttons[i]))
         {
-            c = gdl::Colors::Red;
+            c = Colors::Red;
         }
         vec2 d=directions[i];
         DrawBoxF(x+d.x*box-h, y+ d.y*box-h, x+box+d.x*box-h, y+box+d.y*box-h, c);
@@ -287,14 +287,14 @@ void DrawJoystick(short x, short y, short size)
     short jsize=size;
     short box = jsize/3;
     short h=box/2;
-    gdl::rgba8 jc = gdl::Colors::Green;
-    vec2 jdir = WiiController_GetNunchukJoystickDirection(gdl::GetController(0));
+    rgba8 jc = Colors::Green;
+    vec2 jdir = WiiController_GetNunchukJoystickDirection(GetController(0));
     short jleft= x + jsize/2 + jdir.x * box-h;
     short jtop = y + jsize/2 + jdir.y * box-h;
     DrawBox(x, y, x+jsize, y+jsize, jc);
     if (jdir.x != 0.0f && jdir.y != 0.0f)
     {
-        jc = gdl::Colors::LightGreen;
+        jc = Colors::LightGreen;
     }
     DrawBoxF(jleft, jtop, jleft+box, jtop+box,jc);
 }
@@ -350,23 +350,23 @@ void Example::DrawTimingInfo()
     {
         Menu_TextF("Music elapsed: %.2f", Music_GetElapsedSeconds(sampleMusic));
         SoundStatus musicStatus = Music_GetStatus(sampleMusic);
-        gdl::rgba8 musicColor = gdl::Colors::Red;
-        gdl::IconSymbol icon = gdl::IconSymbol::Dot;
+        rgba8 musicColor = Colors::Red;
+        IconSymbol icon = IconSymbol::Dot;
 
         switch(musicStatus)
         {
             case SoundStatus::Playing:
-                musicColor = gdl::Colors::Green;
-                icon = gdl::IconSymbol::TriangleRight;
+                musicColor = Colors::Green;
+                icon = IconSymbol::TriangleRight;
                 break;
             case SoundStatus::Paused:
-                musicColor = gdl::Colors::Yellow;
-                icon = gdl::IconSymbol::TriangleVertical;
+                musicColor = Colors::Yellow;
+                icon = IconSymbol::TriangleVertical;
                 break;
-            case SoundStatus::Stopped: musicColor = gdl::Colors::Red;
-                icon = gdl::IconSymbol::BlockUnder;
+            case SoundStatus::Stopped: musicColor = Colors::Red;
+                icon = IconSymbol::BlockUnder;
                 break;
-            case SoundStatus::Initial: musicColor = gdl::Colors::Black; break;
+            case SoundStatus::Initial: musicColor = Colors::Black; break;
         };
         Menu_Icon(icon, musicColor);
     }
@@ -374,22 +374,22 @@ void Example::DrawTimingInfo()
     float blipElapsed = Sound_GetElapsedSeconds(blip);
     Menu_TextF("Sound elapsed: %.2f", blipElapsed);
     SoundStatus musicStatus = Sound_GetStatus(blip);
-    gdl::rgba8 musicColor = gdl::Colors::Red;
-    gdl::IconSymbol icon = gdl::IconSymbol::Dot;
+    rgba8 musicColor = Colors::Red;
+    IconSymbol icon = IconSymbol::Dot;
     switch(musicStatus)
     {
         case SoundStatus::Playing:
-            musicColor = gdl::Colors::Green;
-            icon = gdl::IconSymbol::TriangleRight;
+            musicColor = Colors::Green;
+            icon = IconSymbol::TriangleRight;
             break;
         case SoundStatus::Paused:
-            musicColor = gdl::Colors::Yellow;
-            icon = gdl::IconSymbol::TriangleVertical;
+            musicColor = Colors::Yellow;
+            icon = IconSymbol::TriangleVertical;
             break;
-        case SoundStatus::Stopped: musicColor = gdl::Colors::Red;
-            icon = gdl::IconSymbol::BlockUnder;
+        case SoundStatus::Stopped: musicColor = Colors::Red;
+            icon = IconSymbol::BlockUnder;
             break;
-        case SoundStatus::Initial: musicColor = gdl::Colors::Black; break;
+        case SoundStatus::Initial: musicColor = Colors::Black; break;
     };
     Menu_Icon(icon, musicColor);
 }

@@ -5,11 +5,15 @@
  * @brief Class for loading FBX files.
  */
 
-#include <string>
 #include <mgdl/ufbx/ufbx.h>
 #include <mgdl/mgdl-light.h>
 #include <mgdl/mgdl-mesh.h>
 #include <mgdl/mgdl-scene.h>
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 
 /**
@@ -25,3 +29,6 @@ Mesh* _FBX_LoadMesh(ufbx_mesh* fbxMesh);
 Light* _FBX_LoadLight(ufbx_light* fbxLight);
 bool _FBX_LoadNode(Scene* gdlScene, Node* parentNode, ufbx_node* node, short int depth);
 
+#ifdef __cplusplus
+}
+#endif

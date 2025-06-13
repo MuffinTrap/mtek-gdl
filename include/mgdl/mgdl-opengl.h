@@ -21,9 +21,10 @@
     #endif
 #endif
 
-
+#ifdef __cplusplus
 extern "C"
 {
+#endif
     /**
      * @brief Clears the rendering buffer.
      * @details Clears the rendering buffer. Use this instead of glClear directly because of bug in OpenGX
@@ -35,7 +36,7 @@ extern "C"
     // to init correctly, because Wii needs more setup than PC
     // platforms to get the same result
     void mgdl_InitPerspectiveProjection(float fovy, float nearZ, float farZ);
-    void mgdl_InitOrthoProjection();
+    void mgdl_InitOrthoProjection(void);
 
     // Helper functions to do common OpenGL things
     void mgdl_glSetTransparency(bool enabled);
@@ -57,4 +58,6 @@ extern "C"
 */
 void mgdl_InitCamera(vec3 cameraPos, vec3 cameraTarget, vec3 cameraUp);
 
+#ifdef __cplusplus
 }
+#endif

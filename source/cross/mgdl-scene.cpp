@@ -1,9 +1,14 @@
 #include <mgdl/mgdl-scene.h>
 #include <mgdl/mgdl-logger.h>
+#include <mgdl/mgdl-dynamic_array.h>
+#include <mgdl/mgdl-assert.h>
 
 void Scene_Init(Scene* scene)
 {
 	scene->rootNode = nullptr;
+	scene->materials = DynamicArray_CreateMaterial(4);
+	scene->meshes = DynamicArray_CreateMesh(4);
+	scene->lights = nullptr;
 }
 
 Scene* Scene_CreateEmpty()
@@ -22,33 +27,40 @@ void Scene_AddChildNode (Scene* scene, Node* parent, Node* child )
 	}
 	else
 	{
-		parent->children.push_back(child);
+		DynamicArray_AddNode(parent->children, child);
 	}
 }
 
-void Scene_DebugDraw(Scene* scene,  Menu* menu, u32 debugFlags )
+void Scene_DebugDraw(Scene* scene,  Menu* menu, short x, short y, u32 debugFlags )
 {
 	if (scene->rootNode != nullptr)
 	{
 		short index = 0;
 		Menu_SetActive(menu);
+		Menu_Start(x, y, 100);
 		_Scene_DebugDrawNode(scene->rootNode, 0, &index, debugFlags);
 	}
 }
 
 void _Scene_DebugDrawNode ( Node* node, short depth, short* index, u32 debugFlags)
 {
-	Menu_TextF("%d: %s", index, node->name);
-	*index = *index + 1;
+	if (node == nullptr)
+	{
+		return;
+	}
+	short drawIndex = *index;
+	Menu_TextF("%d: %s", drawIndex, node->name);
 	if ((debugFlags & Scene_DebugFlag::Position) > 0)
 	{
 		vec3 &p = node->transform->position;
-		Menu_TextF("P(%.1f,%.1f,%.1f)", index, p.x, p.y, p.z);
+		Menu_TextF("P(%.1f,%.1f,%.1f)", drawIndex, p.x, p.y, p.z);
 	}
 
-	for(size_t i = 0; i < node->children.size(); i++)
+	for(sizetype i = 0; i < DynamicArray_CountNode(node->children); i++)
 	{
-		_Scene_DebugDrawNode(node->children[i], depth+1, index, debugFlags);
+		drawIndex += 1;
+		*index = drawIndex;
+		_Scene_DebugDrawNode(DynamicArray_GetNode(node->children, i), depth+1, index, debugFlags);
 	}
 }
 
@@ -66,9 +78,9 @@ void Scene_DrawNode ( Node* node )
 {
 	glPushMatrix();
 		Node_Draw(node);
-		for(size_t i = 0; i < node->children.size(); i++)
+		for(sizetype i = 0; i < DynamicArray_CountNode(node->children); i++)
 		{
-			Scene_DrawNode(node->children[i]);
+			Scene_DrawNode(DynamicArray_GetNode(node->children, i));
 		}
 	glPopMatrix();
 }
@@ -89,15 +101,16 @@ void Scene_SetMaterialTexture (Scene* scene, const char* materialName, Image* te
 
 void Scene_SetAllMaterialTextures (Scene* scene, Image* texture )
 {
-	for(sizetype i = 0; i < scene->materials.size(); i++)
+	for(sizetype i = 0; i < DynamicArray_CountMaterial(scene->materials); i++)
 	{
-		scene->materials[i]->texture = texture;
+		Material* m = DynamicArray_GetMaterial(scene->materials, i);
+		m->texture = texture;
 	}
 }
 
 void Scene_AddMaterial ( Scene* scene, Material* material )
 {
-	scene->materials.push_back(material);
+	DynamicArray_AddMaterial(scene->materials, material);
 }
 
 Node* Scene_GetRootNode(Scene* scene )
@@ -111,7 +124,7 @@ Node* Scene_GetNodeByIndex ( Scene* scene, short targetIndex )
 	return Scene_FindChildNodeByIndex(scene->rootNode, targetIndex, index);
 }
 
-Node* Scene_FindChildNodeByIndex (Node* parent, short targetIndex, short& index )
+Node* Scene_FindChildNodeByIndex (Node* parent, short targetIndex, short index )
 {
 	if (index == targetIndex)
 	{
@@ -119,9 +132,9 @@ Node* Scene_FindChildNodeByIndex (Node* parent, short targetIndex, short& index 
 	}
 	index++;
 	Node* childNode = nullptr;
-	for(size_t i = 0; i < parent->children.size(); i++)
+	for(sizetype i = 0; i < DynamicArray_CountNode(parent->children); i++)
 	{
-		childNode = Scene_FindChildNodeByIndex(parent->children[i], targetIndex, index);
+		childNode = Scene_FindChildNodeByIndex(DynamicArray_GetNode(parent->children, i), targetIndex, index);
 		if (childNode != nullptr)
 		{
 			break;
@@ -135,7 +148,7 @@ vec3 Scene_GetNodePosition ( Scene* scene, Node* node )
 	mat4x4 matrix;
 	mat4x4Identity(matrix);
 	vec3 posOut;
-	Scene_CalculateNodePosition(scene->rootNode, node, matrix, posOut);
+	Scene_CalculateNodePosition(scene->rootNode, node, matrix, &posOut);
 
 	return posOut;
 }
@@ -161,11 +174,12 @@ bool Scene_CalculateNodeModelMatrix (Node* parent, Node* target, mat4x4 model )
 
 	// Need to store the matrix at this state
 	// so that every child starts from the same matrix
-	for(size_t i = 0; i < parent->children.size(); i++)
+	for(sizetype i = 0; i < DynamicArray_CountNode(parent->children); i++)
 	{
 		mat4x4 accumulated;
 		mat4x4Copy(accumulated, model);
-		if(Scene_CalculateNodeModelMatrix(parent->children[i], target, accumulated))
+		if(Scene_CalculateNodeModelMatrix(DynamicArray_GetNode(parent->children, i),
+			target, accumulated))
 		{
 			return true;
 		}
@@ -174,7 +188,7 @@ bool Scene_CalculateNodeModelMatrix (Node* parent, Node* target, mat4x4 model )
 }
 
 
-bool Scene_CalculateNodePosition ( Node* parent, Node* target, mat4x4 world, vec3& posOut )
+bool Scene_CalculateNodePosition ( Node* parent, Node* target, mat4x4 world, vec3* posOut )
 {
 
 	vec3 p = parent->transform->position;
@@ -186,17 +200,17 @@ bool Scene_CalculateNodePosition ( Node* parent, Node* target, mat4x4 world, vec
 	{
 		vec4 origo = V4f_Create(0.0f, 0.0f, 0.0f, 1.0f);
 		vec4 pos = mat4x4MultiplyVector(world, origo);
-		posOut = V3f_Create(pos.x, pos.y, pos.z);
+		*posOut = V3f_Create(pos.x, pos.y, pos.z);
 		return true;
 	}
 
 	// Need to store the matrix at this state
 	// so that every child starts from the same matrix
-	for(size_t i = 0; i < parent->children.size(); i++)
+	for(sizetype i = 0; i < DynamicArray_CountNode(parent->children); i++)
 	{
 		mat4x4 accumulated;
 		mat4x4Copy(accumulated, world);
-		if(Scene_CalculateNodePosition(parent->children[i], target, accumulated, posOut))
+		if(Scene_CalculateNodePosition(DynamicArray_GetNode(parent->children, i), target, accumulated, posOut))
 		{
 			return true;
 		}
@@ -216,9 +230,9 @@ Node* Scene_FindChildNode (Node* node, const char* nodeName )
 		return node;
 	}
 	Node* childNode = nullptr;
-	for(size_t i = 0; i < node->children.size(); i++)
+	for(sizetype i = 0; i < DynamicArray_CountNode(node->children); i++)
 	{
-		childNode = Scene_FindChildNode(node->children[i], nodeName);
+		childNode = Scene_FindChildNode(DynamicArray_GetNode(node->children, i), nodeName);
 		if (childNode != nullptr)
 		{
 			break;
@@ -229,11 +243,16 @@ Node* Scene_FindChildNode (Node* node, const char* nodeName )
 
 Material* Scene_GetMaterial (Scene* scene, const char* materialName )
 {
-	for(size_t mi = 0; mi < scene->materials.size(); mi++)
+	mgdl_assert_print(materialName != nullptr, "Null material name");
+	mgdl_assert_print(scene->materials != nullptr, "No materials array in scene");
+	for(sizetype mi = 0; mi < DynamicArray_CountMaterial(scene->materials); mi++)
 	{
-		if (strcmp(scene->materials[mi]->name, materialName) == 0)
+		Material* m = DynamicArray_GetMaterial(scene->materials, mi);
+		mgdl_assert_print(m != nullptr, "No material");
+		mgdl_assert_print(m->name != nullptr, "No name on material");
+		if (strcmp(m->name, materialName) == 0)
 		{
-			return scene->materials[mi];
+			return m;
 		}
 	}
 	return nullptr;
@@ -249,9 +268,9 @@ Material* Scene_FindMaterial ( Scene* scene, Node* node, const char* materialNam
 		}
 	}
 	Material* childMat = nullptr;
-	for(size_t i = 0; i < node->children.size(); i++)
+	for(sizetype i = 0; i < DynamicArray_CountNode(node->children); i++)
 	{
-		childMat = Scene_FindMaterial(scene, node->children[i], materialName);
+		childMat = Scene_FindMaterial(scene, DynamicArray_GetNode(node->children, i), materialName);
 		if (childMat != nullptr)
 		{
 			break;

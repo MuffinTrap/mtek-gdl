@@ -2,7 +2,7 @@
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-FILE* gdl::BufferOpen(u8* buffer, size_t size, const char* mode)
+FILE* BufferOpen(u8* buffer, size_t size, const char* mode)
 {
     #ifdef MGDL_PLATFORM_WINDOWS
         FILE* fp = tmpfile();

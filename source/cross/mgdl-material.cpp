@@ -1,6 +1,6 @@
 #include <mgdl/mgdl-scene.h>
 
-Material* Material_Load (const char* name, Image* texture, gdl::MaterialType type)
+Material* Material_Load (const char* name, Image* texture, MaterialType type)
 {
 	Material* material = new Material();
 	sizetype nameSize = strlen(name);

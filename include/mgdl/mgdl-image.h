@@ -11,20 +11,23 @@
 	*/
 struct Image
 {
-	PNGFile* pngFile = nullptr;
+	PNGFile* pngFile;
 
-	float aspectRatio = 1.0f;
+	float aspectRatio;
 	Color4f tint;
-	GLsizei width = 0;
-	GLsizei height = 0;
-	gdl::ColorFormats colorFormat;
-	GLuint textureId = 0;
-
-	vec2 thirdOfPixel; /**< How much is one third of a pixel on u and v */
+	GLsizei width;
+	GLsizei height;
+	ColorFormats colorFormat;
+	GLuint textureId;
 };
+typedef struct Image Image;
 
+#ifdef __cplusplus
 extern "C"
 {
+#endif
+
+	Image* Image_Create(void);
 
 	/**
 		* @brief Sets the GL name and dimenions of the image.
@@ -36,7 +39,7 @@ extern "C"
 		* @param height Height of the image in pixels.
 		* @param format Color format of the image.
 		*/
-	void Image_SetGLName(Image* img, GLuint textureName, GLsizei width, GLsizei height, gdl::ColorFormats format);
+	void Image_SetGLName(Image* img, GLuint textureName, GLsizei width, GLsizei height, ColorFormats format);
 
 	/**
 		* @brief Draws the image using 2D vertices.
@@ -48,7 +51,7 @@ extern "C"
 		* @param alignX Alignment on the X axis.
 		* @param alignY Alignment on the Y axis.
 		*/
-	void Image_Draw2DAligned(Image* img, short x, short y, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY);
+	void Image_Draw2DAligned(Image* img, short x, short y, float scale, AlignmentModes alignX, AlignmentModes alignY);
 
 	/**
 		* @brief Draws the image using 2D vertices.
@@ -68,7 +71,7 @@ extern "C"
 		* @param alignX Alignment on the X axis.
 		* @param alignY Alignment on the Y axis.
 		*/
-	void Image_Draw3D(Image* img, float scale, gdl::AlignmentModes alignX, gdl::AlignmentModes alignY);
+	void Image_Draw3D(Image* img, float scale, AlignmentModes alignX, AlignmentModes alignY);
 
 	/**
 		* @brief Sets the tint of the image.
@@ -87,7 +90,7 @@ extern "C"
 		* @param filterMode Filtering mode to use.
 		* @return True if loading was succesfull.
 		*/
-	Image* Image_LoadFile(const char* filename, gdl::TextureFilterModes filterMode);
+	Image* Image_LoadFile(const char* filename, TextureFilterModes filterMode);
 
 	/**
 		* @brief Loads an image from a PNG file object.
@@ -95,12 +98,14 @@ extern "C"
 		* @param filterMode Filtering mode to use.
 		* @return True if loading was succesfull.
 		*/
-	Image* Image_LoadPNG(PNGFile* pngFile, gdl::TextureFilterModes filterMode);
+	Image* Image_LoadPNG(PNGFile* pngFile, TextureFilterModes filterMode);
 
 	/**
 	 * @brief Generates a 8x8 checkerboard image
 	 * @return The generated image
 	 */
-	Image* Image_GenerateCheckerBoard();
+	Image* Image_GenerateCheckerBoard(void);
 
+#ifdef __cplusplus
 }
+#endif

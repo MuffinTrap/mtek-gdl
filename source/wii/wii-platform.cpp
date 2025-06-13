@@ -9,9 +9,9 @@
 
 static Platform* platformWii;
 
-static std::function<void()> initCall = nullptr;
-static std::function<void()> updateCall = nullptr;
-static std::function<void()> drawCall = nullptr;
+static CallbackFunction initCall = nullptr;
+static CallbackFunction updateCall = nullptr;
+static CallbackFunction drawCall = nullptr;
 
 static WiiController controller;
 
@@ -21,10 +21,10 @@ static void SplashHoldLoop(bool SplashFlag, bool HoldAFlag);
 static u64 deltaTimeStart;
 
 void Platform_Init(const char* name,
-	gdl::ScreenAspect screenAspect,
-								  std::function<void ()> initCallback,
-								  std::function<void ()> updateCallback,
-								  std::function<void ()> drawCallback,
+	ScreenAspect screenAspect,
+								  CallbackFunction initCallback,
+								  CallbackFunction updateCallback,
+								  CallbackFunction drawCallback,
 								  u32 initFlags)
 {
 	mgdl_assert_print(initCallback != nullptr, "Need to provide init callback before system init on PC");
@@ -43,14 +43,14 @@ void Platform_Init(const char* name,
 	gdl::InitAspectMode mode = gdl::InitAspectMode::AspectAuto;
 	switch(screenAspect)
 	{
-		case gdl::ScreenAuto:
+		case ScreenAuto:
 			mode = gdl::InitAspectMode::AspectAuto;
 			break;
-		case gdl::Screen4x3:
+		case Screen4x3:
 			mode = gdl::InitAspectMode::Aspect4x3;
 			platformWii->aspectRatio = 4.0f/3.0f;
 			break;
-		case gdl::Screen16x9:
+		case Screen16x9:
 			mode = gdl::InitAspectMode::Aspect16x9;
 			platformWii->aspectRatio = 16.0f/9.0f;
 			break;
@@ -60,7 +60,7 @@ void Platform_Init(const char* name,
 
     platformWii->screenWidth = gdl::ScreenXres;
     platformWii->screenHeight = gdl::ScreenYres;
-	if (screenAspect == gdl::ScreenAuto)
+	if (screenAspect == ScreenAuto)
 	{
 		platformWii->aspectRatio = platformWii->screenWidth / platformWii->screenHeight;
 	}
@@ -81,8 +81,8 @@ void Platform_Init(const char* name,
 	u64 now = gettime();
 	deltaTimeStart = now;
 
-	const bool SplashFlag = (initFlags & gdl::PlatformInitFlag::FlagSplashScreen)!= 0;
-	const bool HoldAFlag = (initFlags & gdl::PlatformInitFlag::FlagPauseUntilA)!= 0;
+	const bool SplashFlag = (initFlags & PlatformInitFlag::FlagSplashScreen)!= 0;
+	const bool HoldAFlag = (initFlags & PlatformInitFlag::FlagPauseUntilA)!= 0;
     if (SplashFlag || HoldAFlag)
     {
 		if (!SplashFlag && HoldAFlag)
@@ -114,7 +114,7 @@ void SplashHoldLoop(bool SplashFlag, bool HoldAFlag)
 		if (SplashFlag)
 		{
 			gdl::PrepDisplay();
-			splashProgress = gdl::DrawSplashScreen(platformWii->_deltaTimeS, showHoldAMessage, aHoldTimer);
+			splashProgress = DrawSplashScreen(platformWii->_deltaTimeS, showHoldAMessage, aHoldTimer);
 		}
 
 		if (showHoldAMessage)

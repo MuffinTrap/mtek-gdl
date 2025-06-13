@@ -8,20 +8,22 @@
 #include <mgdl/mgdl-platform.h>
 #include <mgdl/mgdl-draw2d.h>
 
+#include <string.h>
+
 static float areaHeight;
 static float lineHeight;
 static float lineWidth;
 static float areaTop;
 static float areaBottom;
 static float animationProgress = 0.0f;
-static std::string holdMessage = "Hold A to start";
+static const char* holdMessage = "Hold A to start";
 
 
 // lean is in pixels
 // width is in [0, 1]
 static void GetCorners(float xOffset, float start, float height, float* cornersOut, float lean, float width)
 {
-	width = gdl::clampF(width, 0.0f, 1.0f);
+	width = clampF(width, 0.0f, 1.0f);
 
 	// The lean needs to be the same regardless of segment height
 	vec2 AreaTopLeft = vec2New(xOffset + lean, areaTop);
@@ -152,7 +154,7 @@ static float DrawLetters(float x, float lean, u32 color, bool useBars, float bar
 }
 
 // Returns the animation progress
-float gdl::DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer)
+float DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer)
 {
 	mgdl_glClear(GL_COLOR_BUFFER_BIT);
 	// Draws mgdl
@@ -237,10 +239,10 @@ float gdl::DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldT
 
 	if (drawHoldAMessage)
 	{
-		int messageWidth = (holdMessage.length() * 8) ;
+		int messageWidth = strlen(holdMessage) * 8;
 		int messageLeft = sw/2 - messageWidth/2;
 		int messageY = areaBottom - 8;
-		Font_Print(debf, yellow, messageLeft, messageY, 8, holdMessage.c_str());
+		Font_Print(debf, yellow, messageLeft, messageY, 8, holdMessage);
 
 		Draw2D_Rect(messageLeft, messageY - 16, messageLeft + messageWidth * aHoldTimer, messageY - 16 - 4, yellow);
 	}

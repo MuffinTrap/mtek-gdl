@@ -10,23 +10,24 @@
 #include <mgdl/mgdl-scene.h>
 #include <mgdl/mgdl-sprite.h>
 
-#include <functional>
-#include <string>
 
+#ifdef __cplusplus
 extern "C"
 {
+#endif
+
 
 void mgdl_InitSystem(const char* name,
-				gdl::ScreenAspect screenAspect,
-				std::function<void()> initCallback,
-				std::function<void()> updateCallback,
-				std::function<void()> drawCallback,
+				ScreenAspect screenAspect,
+				CallbackFunction initCallback,
+				CallbackFunction updateCallback,
+				CallbackFunction drawCallback,
 				u32 initFlags);
 
 // TODO Move all loading to AssetManager to get memory status and other stats
 PNGFile* mgdl_LoadPNG(const char* filename);
-Image* mgdl_LoadImage(const char* filename, gdl::TextureFilterModes filterMode);
-Image* mgdl_LoadImagePNG(PNGFile* png, gdl::TextureFilterModes filterMode);
+Image* mgdl_LoadImage(const char* filename, TextureFilterModes filterMode);
+Image* mgdl_LoadImagePNG(PNGFile* png, TextureFilterModes filterMode);
 
 Sound* mgdl_LoadSound(const char* filename);
 Music* mgdl_LoadOgg(const char* filename);
@@ -41,12 +42,14 @@ Font* mgdl_LoadFontSelective(const char* filename, short characterWidth, short c
 
 WiiController* mgdl_GetController(int controllerNumber);
 
-u16 mgdl_GetScreenWidth();
-u16 mgdl_GetScreenHeight();
-float mgdl_GetAspectRatio();
-float mgdl_GetElapsedSeconds();
-float mgdl_GetDeltaTime();
+u16 mgdl_GetScreenWidth(void);
+u16 mgdl_GetScreenHeight(void);
+float mgdl_GetAspectRatio(void);
+float mgdl_GetElapsedSeconds(void);
+float mgdl_GetDeltaTime(void);
 
-void mgdl_DoProgramExit();
+void mgdl_DoProgramExit(void);
 
+#ifdef __cplusplus
 }
+#endif

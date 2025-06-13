@@ -44,9 +44,9 @@ Menu* Menu_Create(Font* font, float textHeight, float rowHeightEm)
     // TODO Calculate text and row heights just once
 
     // Default colors    //TODO Change to palette colors
-    menu->_bg = gdl::Colors::Black;
-    menu->_text = gdl::Colors::White;
-    menu->_highlight = gdl::Colors::LightBlue;
+    menu->_bg = Colors::Black;
+    menu->_text = Colors::White;
+    menu->_highlight = Colors::LightBlue;
 
     return menu;
 }

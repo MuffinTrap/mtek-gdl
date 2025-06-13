@@ -29,6 +29,7 @@ enum WiiButtons
 	ButtonZ	=		(0x0001 << 16),
 	ButtonC	=		(0x0002 << 16)
 };
+typedef enum WiiButtons WiiButtons;
 
 /**
  * @brief Struct representing the Wii controller.
@@ -50,9 +51,12 @@ struct WiiController
 	// Which controller number this is: 0-3
 	u8 _channel;
 };
+typedef struct WiiController WiiController;
 
+#ifdef __cplusplus
 extern "C"
 {
+#endif
 
 /**
  * @brief Initialize a controller and set a channel for it.
@@ -116,4 +120,6 @@ float WiiController_GetRoll(WiiController* controller);
 void _WiiController_SetButtonDown(WiiController* controller, int buttonEnum);
 void _WiiController_SetButtonUp(WiiController* controller, int buttonEnum);
 
+#ifdef __cplusplus
 }
+#endif

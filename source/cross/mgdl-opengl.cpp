@@ -69,10 +69,12 @@ void mgdl_glSetAlphaTest(bool enabled)
 {
 	if (enabled)
 	{
+		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GEQUAL, 0.5f);
 	}
 	else
 	{
+		glDisable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_ALWAYS, 0.5f);
 	}
 }

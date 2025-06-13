@@ -1,0 +1,51 @@
+# Example gitignore file for your project
+# Rename this to .gitignore
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+*.pco
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+*.dol
+*.elf
+
+# Object files from images and sound
+build/
+
+# Mac folder files?
+.DS_Store
+
+# Project files from KDevelop
+.kdev4/
+*.kdev4
+
+# Kate meta files
+*.kate-swp

@@ -63,6 +63,7 @@ void Sound_Init(Sound* sound)
     sound->buffer = 0;
     sound->source = 0;
     sound->isLooping = false;
+    sound->secondsOffset = 0.0f;
 }
 
 void Sound_DeleteData(Sound* sound) {
@@ -71,9 +72,12 @@ void Sound_DeleteData(Sound* sound) {
     alDeleteBuffers(1, &sound->buffer);
 }
 
+void Sound_Play(Sound* sound) {
+	alSourcePlay(sound->source);
+}
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-void Sound_Play(Sound* sound, float pitchOffset, float volumePercent) {
+void Sound_PlayEx(Sound* sound, float pitchOffset, float volumePercent) {
 	alSourcePlay(sound->source);
 }
 #pragma GCC diagnostic pop

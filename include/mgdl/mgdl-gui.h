@@ -2,7 +2,6 @@
 
 #include "mgdl-types.h"
 #include "mgdl-font.h"
-using namespace gdl;
 
 /**
  * @file mgdl-gui.h
@@ -35,7 +34,7 @@ struct Menu
 
     // Window
     bool _drawWindow;
-    const char* _windowName = nullptr;
+    const char* _windowName;
     float _windowx;
     float _windowy;
     float _windowHeight;
@@ -43,9 +42,12 @@ struct Menu
 
     Font* _font;
 };
+typedef struct Menu Menu;
 
+#ifdef __cplusplus
 extern "C"
 {
+#endif
 
     /**
      * @brief Creates a MenuCreator using the debug font and default values.
@@ -60,7 +62,7 @@ extern "C"
     /**
      * @brief reads the default cursor and mouse status into the gui system
      */
-    void Menu_ReadDefaultInputs();
+    void Menu_ReadDefaultInputs(void);
 
     /**
      * @brief Creates a MenuCreator using font and parameters.
@@ -87,7 +89,7 @@ extern "C"
      * @brief Creates a MenuCreator using default font and settings.
      * @return Menu struct that can be used to draw menus.
      */
-    Menu* Menu_CreateDefault();
+    Menu* Menu_CreateDefault(void);
 
     /**
      * @brief Starts the menu from given position and takes the input status.
@@ -125,17 +127,17 @@ extern "C"
     /**
      * @brief Draws the window title bar
      */
-    void _Menu_TitleBar();
+    void _Menu_TitleBar(void);
 
     /**
      * @brief Draws the window borders
      */
-    void _Menu_Borders();
+    void _Menu_Borders(void);
 
     /**
      * @brief Draws a line separating elements.
      */
-    void Menu_Separator();
+    void Menu_Separator(void);
     /**
      * @brief Draws text.
      * @param text Text to be drawn.
@@ -186,4 +188,6 @@ extern "C"
      */
     bool Menu_Slider(const char* text, float minValue, float maxValue, float* valueRef);
 
+#ifdef __cplusplus
 }
+#endif

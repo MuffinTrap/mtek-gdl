@@ -18,9 +18,12 @@ struct AssetManager
 {
 	sizetype _memoryInUse;
 };
+typedef struct AssetManager AssetManager;
 
+#ifdef __cplusplus
 extern "C"
 {
+#endif
 
 void AssetManager_Init(AssetManager* manager);
 void AssetManager_LoadFont(AssetManager* manager, Font* font);
@@ -29,4 +32,7 @@ void AssetManager_LoadPNG(AssetManager* manager, PNGFile* png);
 void AssetManager_LoadSound(AssetManager* manager, Sound* snd);
 void AssetManager_LoadMusic(AssetManager* manager, Music* music);
 
+
+#ifdef __cplusplus
 }
+#endif

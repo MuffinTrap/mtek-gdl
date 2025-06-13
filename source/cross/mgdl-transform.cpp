@@ -28,14 +28,14 @@ void Transform_Rotate (Transform* transform, short axis, float angle )
 	};
 }
 
-void Transform_Translate (Transform* transform, const vec3& t )
+void Transform_Translate (Transform* transform, vec3 t )
 {
 	V3f_X(transform->position) += V3f_X(t);
 	V3f_Y(transform->position) += V3f_Y(t);
 	V3f_Z(transform->position) += V3f_Z(t);
 }
 
-void Transform_SetScale3f (Transform* transform, const vec3& scale )
+void Transform_SetScale3f (Transform* transform, vec3 scale )
 {
 	transform->scale = scale;
 }

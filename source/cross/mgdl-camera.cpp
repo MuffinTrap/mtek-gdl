@@ -1,6 +1,7 @@
 #include <mgdl/mgdl-camera.h>
 #include <mgdl/mgdl-opengl.h>
 #include <mgdl/mgdl-main.h>
+#include <mgdl/ccVector/ccVector.h>
 
 Camera* Camera_CreateDefault()
 {
@@ -18,7 +19,28 @@ Camera* Camera_CreateDefault()
 void Camera_Apply(Camera* camera)
 {
 	mgdl_InitPerspectiveProjection(camera->fovY, camera->nearZ, camera->farZ);
-	mgdl_InitCamera(camera->position, camera->target, camera->up);
+	switch (camera->_mode)
+	{
+		case CameraTarget:
+			mgdl_InitCamera(camera->position, camera->target, camera->up);
+		break;
+		case CameraDirection:
+		{
+			vec3 unit = V3f_Create(0.0f, 0.0f, 1.0f);
+			vec3 target;
+			mat3x3 transform;
+			mat3x3Identity(transform);
+			mat3x3RotateX(transform, Deg2Rad( V3f_X(camera->rotations)));
+			mat3x3RotateY(transform, Deg2Rad( V3f_Y(camera->rotations)));
+			mat3x3RotateZ(transform, Deg2Rad( V3f_Z(camera->rotations)));
+
+			target = mat3x3MultiplyVector(transform, unit);
+			V3f_Add(camera->position, target, camera->target);
+			mgdl_InitCamera(camera->position, camera->target, camera->up);
+		}
+		break;
+
+	}
 }
 
 void Camera_DrawThirdsGuide(Camera* camera)
@@ -70,4 +92,28 @@ void Camera_DrawOverlayColor(Camera* camera, Color4f color, float opacity)
         glDepthFunc(GL_LEQUAL);
 		Camera_Apply(camera);
 	}
+}
+void Camera_SetPositionV(Camera* camera, vec3 position)
+{
+	camera->position = position;
+}
+
+void Camera_SetPosition(Camera* camera, float x, float y, float z)
+{
+	camera->position = V3f_Create(x,y,z);
+}
+
+void Camera_SetRotationsV(Camera* camera, vec3 rotations)
+{
+	camera->rotations = rotations;
+}
+
+void Camera_SetRotations(Camera* camera, float pitch, float yaw, float roll)
+{
+	camera->rotations = V3f_Create(pitch, yaw, roll);
+}
+
+void Camera_SetMode(Camera* camera, CameraMode mode)
+{
+	camera->_mode  = mode;
 }

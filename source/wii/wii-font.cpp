@@ -166,8 +166,8 @@ void gdl::FFont::DrawText(const char *text, short x, short y, float scale, u32 c
 		return;
 
 
-	if ((x == gdl::Centered) || (x == gdl::PCentered)) {
-		tx = gdl::ScreenCenterX - ((((cw+1)*strlen(text))*scale)/2)+(scale/2);
+	if ((x == Centered) || (x == Centered)) {
+		tx = Centered - ((((cw+1)*strlen(text))*scale)/2)+(scale/2);
 	} else {
 		tx = x;
 	}

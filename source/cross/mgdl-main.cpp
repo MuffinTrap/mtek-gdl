@@ -12,10 +12,10 @@
 static AssetManager assetManager;
 
 void mgdl_InitSystem(const char* name,
-	gdl::ScreenAspect screenAspect,
-								std::function<void()> initCallback,
-								std::function<void()> updateCallback,
-								std::function<void()> drawCallback,
+	ScreenAspect screenAspect,
+								CallbackFunction initCallback,
+								CallbackFunction updateCallback,
+								CallbackFunction drawCallback,
 								u32 initFlags)
 {
 	Platform_Init(name, screenAspect, initCallback, updateCallback, drawCallback, initFlags);
@@ -37,7 +37,7 @@ PNGFile* mgdl_LoadPNG(const char* filename)
 	}
 }
 
-Image* mgdl_LoadImage(const char* filename, gdl::TextureFilterModes filterMode)
+Image* mgdl_LoadImage(const char* filename, TextureFilterModes filterMode)
 {
 	Image* img = Image_LoadFile(filename, filterMode);
 	if (img != nullptr)
@@ -51,7 +51,7 @@ Image* mgdl_LoadImage(const char* filename, gdl::TextureFilterModes filterMode)
 	}
 }
 
-Image* mgdl_LoadImagePNG(PNGFile* png, gdl::TextureFilterModes filterMode)
+Image* mgdl_LoadImagePNG(PNGFile* png, TextureFilterModes filterMode)
 {
 	Image* img = Image_LoadPNG(png, filterMode);
 	if (img != nullptr)
@@ -111,7 +111,7 @@ Music* mgdl_LoadWav(const char* filename)
 
 Font* mgdl_LoadFont(const char* filename, short characterWidth, short characterHeight, char firstCharacter)
 {
-	Image* fontImage = mgdl_LoadImage(filename, gdl::TextureFilterModes::Nearest);
+	Image* fontImage = mgdl_LoadImage(filename, TextureFilterModes::Nearest);
 	Font* font = Font_Load(fontImage, characterWidth, characterHeight, firstCharacter);
 	if (font != nullptr)
 	{
@@ -126,7 +126,7 @@ Font* mgdl_LoadFont(const char* filename, short characterWidth, short characterH
 
 Font* mgdl_LoadFontCustom(const char* filename, short characterWidth, short characterHeight, char firstCharacter, short charactersPerRow)
 {
-	Image* fontImage = mgdl_LoadImage(filename, gdl::TextureFilterModes::Linear);
+	Image* fontImage = mgdl_LoadImage(filename, TextureFilterModes::Linear);
 	Font* font = Font_LoadPadded(fontImage, characterWidth, characterHeight, firstCharacter, charactersPerRow);
 
 	if (font != nullptr)
@@ -142,7 +142,7 @@ Font* mgdl_LoadFontCustom(const char* filename, short characterWidth, short char
 
 Font* mgdl_LoadFontCustom(const char* filename, short characterWidth, short characterHeight, short charactersPerRow, const char* characters)
 {
-	Image* fontImage = mgdl_LoadImage(filename, gdl::TextureFilterModes::Linear);
+	Image* fontImage = mgdl_LoadImage(filename, TextureFilterModes::Linear);
 	Font* font = Font_LoadSelective(fontImage, characterWidth, characterHeight, charactersPerRow, characters);
 	if (font != nullptr)
 	{

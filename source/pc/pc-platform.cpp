@@ -22,9 +22,9 @@ static int WII_HEIGHT = 480;
 static int glutElapsedStartMS;
 static int glutElapsedMS;
 
-static std::function<void()> initCall = nullptr;
-static std::function<void()> updateCall = nullptr;
-static std::function<void()> drawCall = nullptr;
+CallbackFunction initCall = nullptr;
+CallbackFunction updateCall = nullptr;
+CallbackFunction drawCall = nullptr;
 
 
 // Main glut functions
@@ -66,7 +66,7 @@ static void RenderEnd();
 
 static void RenderSplash()
 {
-    splashProgress = gdl::DrawSplashScreen(startUpDeltaTimeMs, showHoldAMessage, aHoldTimer);
+    splashProgress = DrawSplashScreen(startUpDeltaTimeMs, showHoldAMessage, aHoldTimer);
     RenderEnd();
 }
 
@@ -241,7 +241,11 @@ void Platform_InitAudio()
     Log_Info("OpenAL context created\n");
 }
 
-void Platform_Init(const char* name, gdl::ScreenAspect screenAspect, std::function<void ()> initCallback, std::function<void ()> updateCallback, std::function<void ()> drawCallback, u32 initFlags)
+void Platform_Init(const char* name, ScreenAspect screenAspect,
+                   CallbackFunction initCallback,
+                   CallbackFunction updateCallback,
+                   CallbackFunction drawCallback,
+                   u32 initFlags)
 {
 	mgdl_assert_print(initCallback != nullptr, "Need to provide init callback before system init on PC");
 	mgdl_assert_print(drawCallback != nullptr, "Need to provide update callback before system init on PC");
@@ -256,17 +260,17 @@ void Platform_Init(const char* name, gdl::ScreenAspect screenAspect, std::functi
     platformPC.screenHeight = WII_HEIGHT;
     switch(screenAspect)
     {
-        case gdl::ScreenAuto:
+        case ScreenAuto:
             windowWidth = 854;
             windowHeight = 480;
             platformPC.aspectRatio = 16.0f/9.0f;
             break;
-        case gdl::Screen4x3:
+        case Screen4x3:
             windowWidth = 640;
             windowHeight = 480;
             platformPC.aspectRatio = 4.0f/3.0f;
             break;
-        case gdl::Screen16x9:
+        case Screen16x9:
             // Wii only outputs 640x480, but in this format it is shown wider
             windowWidth = 854;
             windowHeight = 480;
@@ -288,7 +292,7 @@ void Platform_Init(const char* name, gdl::ScreenAspect screenAspect, std::functi
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(windowWidth, windowHeight);
     glutCreateWindow("Press 2 to write Rocket tracks");
-    if ((initFlags & gdl::PlatformInitFlag::FlagFullScreen) != 0)
+    if ((initFlags & PlatformInitFlag::FlagFullScreen) != 0)
     {
         glutFullScreen();
     }
@@ -306,8 +310,8 @@ void Platform_Init(const char* name, gdl::ScreenAspect screenAspect, std::functi
 
     glutReshapeFunc(onWindowSizeChange);
 
-	const bool SplashFlag = (initFlags & gdl::PlatformInitFlag::FlagSplashScreen)!= 0;
-	const bool HoldAFlag = (initFlags & gdl::PlatformInitFlag::FlagPauseUntilA)!= 0;
+	const bool SplashFlag = (initFlags & PlatformInitFlag::FlagSplashScreen)!= 0;
+	const bool HoldAFlag = (initFlags & PlatformInitFlag::FlagPauseUntilA)!= 0;
     // Set up A hold variables
     if (HoldAFlag||SplashFlag)
     {
@@ -355,7 +359,7 @@ void Platform_Init(const char* name, gdl::ScreenAspect screenAspect, std::functi
 	glutMainLoop();
 }
 
-WiiController* Platform_GetController(int controllerNumber)
+struct WiiController* Platform_GetController(int controllerNumber)
 {
     if (controllerNumber == 0)
     {
@@ -375,7 +379,7 @@ void Platform_DoProgramExit()
 	exit(0);
 }
 
-Platform* Platform_GetSingleton() { return &platformPC; }
+struct Platform* Platform_GetSingleton() { return &platformPC; }
 
 float Platform_GetDeltaTime()
 {

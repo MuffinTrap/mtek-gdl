@@ -10,7 +10,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-using namespace gdl;
+static short lineLimit_ = -1;
 
 Font* Font_Load(Image* fontImage, short charw, short charh, char firstCharacter )
 {
@@ -34,7 +34,7 @@ Font* Font_LoadPadded(Image* fontImage, short charw, short charh, char firstChar
 	return font;
 }
 
-Font* Font_LoadSelective(Image* fontImage, short charw, short charh, short charactersPerRow, std::string characters )
+Font* Font_LoadSelective(Image* fontImage, short charw, short charh, short charactersPerRow, const char* characters )
 {
 	mgdl_assert_print(fontImage != nullptr, "Font_Load got nullptr for fontImage\n");
 
@@ -55,8 +55,8 @@ void _Font_BindPadded(Font* font,short charw, short charh, char firstCharacter, 
 	font->_firstIndex = firstCharacter;
 	font->characterWidth = charw;
 	font->characterHeight = charh;
-	font->_uvWidth = (float)charw/(float)tw - V2f_X(font->_fontImage->thirdOfPixel);
-	font->_uvHeight = (float)charh/(float)th - V2f_Y(font->_fontImage->thirdOfPixel);;
+	font->_uvWidth = (float)charw/(float)tw;
+	font->_uvHeight = (float)charh/(float)th;
 	font->_aspect = (float)charw/(float)charh;
 
 	_Font_CreateTextureCoordList(font, rows, charactersPerRow, tw, th);
@@ -71,7 +71,7 @@ void _Font_Bind(Font* font, short charw, short charh, char firstCharacter )
 	_Font_BindPadded(font, charw, charh, firstCharacter, charactersPerRow);
 }
 
-void _Font_BindSelective (Font* font, short charw, short charh, std::string characters, short charactersPerRow )
+void _Font_BindSelective (Font* font, short charw, short charh, const char* characters, short charactersPerRow )
 {
 	const short tw = font->_fontImage->width;
 	const short th = font->_fontImage->height;
@@ -82,8 +82,8 @@ void _Font_BindSelective (Font* font, short charw, short charh, std::string char
 
 	font->characterWidth = charw;
 	font->characterHeight = charh;
-	font->_uvWidth = (float)charw/(float)tw - V2f_X(font->_fontImage->thirdOfPixel);
-	font->_uvHeight = (float)charh/(float)th - V2f_Y(font->_fontImage->thirdOfPixel);;
+	font->_uvWidth = (float)charw/(float)tw;
+	font->_uvHeight = (float)charh/(float)th;
 	font->_aspect = (float)charw/(float)charh;
 
 	_Font_CreateTextureCoordListSelective(font, rows, charactersPerRow, tw, th, characters);
@@ -93,7 +93,7 @@ void _Font_BindSelective (Font* font, short charw, short charh, std::string char
 }
 
 
-void Font_Icon (Font* font, u32 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, gdl::IconSymbol glyph )
+void Font_Icon (Font* font, u32 color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, IconSymbol glyph )
 {
 	GLuint textureName = font->_fontImage->textureId;
 	float step = font->_aspect * textHeight;
@@ -159,7 +159,7 @@ void Font_Icon (Font* font, u32 color, float x, float y, float textHeight, gdl::
 }
 
 
-void Font_PrintAligned(Font* font, u32 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* text)
+void Font_PrintAligned(Font* font, u32 color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* text)
 {
 	GLuint textureName = font->_fontImage->textureId;
 	const float step = font->_aspect * textHeight;
@@ -202,6 +202,8 @@ void Font_PrintAligned(Font* font, u32 color, float x, float y, float textHeight
 	glColor3f(f.red, f.green, f.blue);
 	for (short c = 0; text[c] != '\0'; c++)
 	{
+		if (lineLimit_ >= 0 && c >= lineLimit_) { break;}
+
 		char character = text[c];
 		if (character == '\n')
 		{
@@ -237,14 +239,15 @@ void Font_PrintAligned(Font* font, u32 color, float x, float y, float textHeight
 
 	font->_spacingX = 0.0f;
 	font->_spacingY = 0.0f;
+	lineLimit_ = -1;
 }
 
 void Font_Print(Font* font, u32 color, float x, float y, float textHeight, const char* text)
 {
-	Font_PrintAligned(font, color, x, y, textHeight, gdl::AlignmentModes::LJustify, gdl::AlignmentModes::LJustify, text);
+	Font_PrintAligned(font, color, x, y, textHeight, AlignmentModes::LJustify, AlignmentModes::LJustify, text);
 }
 
-void Font_PrintOrigo(Font* font, u32 color, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* text)
+void Font_PrintOrigo(Font* font, u32 color, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* text)
 {
 	Font_PrintAligned(font, color, 0.0f, 0.0f, textHeight, alignmentX, alignmentY, text);
 }
@@ -254,17 +257,17 @@ void Font_Printf(Font* font, u32 color, float x, float y, float textHeight, cons
 {
 	MGDL_PRINTF_TO_BUFFER(format)
 
-	Font_PrintAligned(font, color, x, y, textHeight, gdl::AlignmentModes::LJustify, gdl::AlignmentModes::LJustify, mgdl_GetPrintfBuffer());
+	Font_PrintAligned(font, color, x, y, textHeight, AlignmentModes::LJustify, AlignmentModes::LJustify, mgdl_GetPrintfBuffer());
 }
 
-void Font_PrintfOrigo(Font* font, u32 color, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* format, ... )
+void Font_PrintfOrigo(Font* font, u32 color, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* format, ... )
 {
 	MGDL_PRINTF_TO_BUFFER(format)
 
 	Font_PrintAligned(font, color, 0, 0, textHeight, alignmentX, alignmentY, mgdl_GetPrintfBuffer());
 }
 
-void Font_PrintfAligned( Font* font, u32 color, float x, float y, float textHeight, gdl::AlignmentModes alignmentX, gdl::AlignmentModes alignmentY, const char* format, ... )
+void Font_PrintfAligned( Font* font, u32 color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* format, ... )
 {
 	// Draw quads
 
@@ -279,12 +282,42 @@ void Font_SetSpacingOnce (Font* font, float x, float y )
 	font->_spacingY = y;
 }
 
+void Font_SetLineLimitOnce(short limit)
+{
+	lineLimit_ = limit;
+}
+
+static int String_FindFirst(const char* str, char character)
+{
+	sizetype length = strlen(str);
+	for (sizetype i = 0; i < length; i++)
+	{
+		if (str[i] == character)
+		{
+			return (int)i;
+		}
+	}
+	return -1;
+
+}
+
+RectF Font_GetUVRect(Font* font, char letter)
+{
+	vec2 uv = _Font_GetTextureCoordinate(font, letter);
+	return {V2f_X(uv), V2f_Y(uv), font->_uvWidth, font->_uvHeight};
+}
+
+RectF Font_GetUVRectIcon(Font* font, IconSymbol glyph)
+{
+	vec2 uv = _Font_GetTextureCoordinateGlyph(font, glyph);
+	return {V2f_X(uv), V2f_Y(uv), font->_uvWidth, font->_uvHeight};
+}
 // Version that only creates texture coordinates for
 // the given characters.
 // All other characters are the same as the first one
 
 // TODO add padding to UVs so that the corners are inside the pixels and not in between
-void _Font_CreateTextureCoordListSelective (Font* font, short rows, short charactersPerRow, short texW, short texH, std::string characters )
+void _Font_CreateTextureCoordListSelective (Font* font, short rows, short charactersPerRow, short texW, short texH, const char* characters )
 {
 	mgdl_assert_print(font->characterWidth > 0 && font->characterHeight > 0, "Character dimensions not set");
 	mgdl_assert_print(rows > 0 && charactersPerRow > 0, "Rows and cpr at zero");
@@ -292,9 +325,9 @@ void _Font_CreateTextureCoordListSelective (Font* font, short rows, short charac
 
 	// Need to also create texture coordinates for characters that are not included
 	char first = characters[0];
-	char last = characters[characters.length()-1];
+	char last = characters[strlen(characters)-1];
 	short textureArraySize =  (last - first) + 1;
-	short toBeFoundAmount = static_cast<short>(characters.length());
+	short toBeFoundAmount = static_cast<short>(strlen(characters));
 	Log_InfoF("find between %d and %d: %d characters\n", first, last, toBeFoundAmount);
 
 
@@ -319,7 +352,7 @@ void _Font_CreateTextureCoordListSelective (Font* font, short rows, short charac
 		for(short cx=0; cx<charactersPerRow; cx++) {
 			// Coordinates to source image
 			// Is this character included
-			bool included = characters.find_first_of(currentCharacter) != std::string::npos;
+			bool included = String_FindFirst(characters, currentCharacter) != -1;
 			if (!included)
 			{
 				// Not included: set texture coords same as first one
@@ -375,8 +408,8 @@ void _Font_CreateCoordinatesForGlyph (Font* font, u32 textureIndex, short cx, sh
 	float ty = texH - font->characterHeight * (cy+1);
 
 	// Lower-left
-	font->_tList[tc+0].x	= tx/texW + V2f_X(font->_fontImage->thirdOfPixel);
-	font->_tList[tc+0].y	= ty/texH + V2f_Y(font->_fontImage->thirdOfPixel);
+	font->_tList[tc+0].x	= tx/texW;
+	font->_tList[tc+0].y	= ty/texH;
 }
 
 
@@ -412,7 +445,7 @@ vec2 _Font_GetTextureCoordinate(Font* font, char character)
 	int	tc = (character - font->_firstIndex);
 	return font->_tList[tc];
 }
-vec2 _Font_GetTextureCoordinateGlyph(Font* font, gdl::IconSymbol glyph)
+vec2 _Font_GetTextureCoordinateGlyph(Font* font, IconSymbol glyph)
 {
 	int	tc = ((short)glyph - font->_firstIndex);
 	return font->_tList[tc];

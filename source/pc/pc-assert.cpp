@@ -4,7 +4,7 @@
 #include <stdarg.h>
 #include <iostream>
 #include <cassert>
-void AssertFunctionPrintf(const char* filename, int lineNumber, bool &ignoreToggle, const char* message, ...)
+void AssertFunctionPrintf(const char* filename, int lineNumber, bool *ignoreToggle, const char* message, ...)
 {
 	char	buff[256];
 	va_list args;
@@ -19,11 +19,11 @@ void AssertFunctionPrintf(const char* filename, int lineNumber, bool &ignoreTogg
 	std::cin >> answer;
 	if (answer == 'i')
 	{
-		ignoreToggle = true;
+		*ignoreToggle = true;
 		return;
 	}
 }
-void AssertFunctionPrint(const char* filename, int lineNumber, bool &ignoreToggle, const char* message)
+void AssertFunctionPrint(const char* filename, int lineNumber, bool *ignoreToggle, const char* message)
 {
 	printf("Assert failed! %s:%d:%s\n", filename, lineNumber, message);
 	printf("Input i to ignore this assert. Input nothing to proceed to assert handler\n");
@@ -31,7 +31,7 @@ void AssertFunctionPrint(const char* filename, int lineNumber, bool &ignoreToggl
 	std::cin >> answer;
 	if (answer == 'i')
 	{
-		ignoreToggle = true;
+		*ignoreToggle = true;
 		return;
 	}
 	assert(false);

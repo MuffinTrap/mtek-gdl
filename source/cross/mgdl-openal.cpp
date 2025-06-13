@@ -1,37 +1,36 @@
 #include <mgdl/mgdl-openal.h>
-
+#include <mgdl/mgdl-logger.h>
 
 #include <iostream>
 
 #ifndef GEKKO
 
-void check_al_errors(const std::string& filename, const std::uint_fast32_t line)
+void check_al_errors(const char* filename, const sizetype line)
 {
     ALCenum error = alGetError();
     if(error != AL_NO_ERROR)
     {
-        std::cerr << "***ERROR*** (" << filename << ": " << line << ")\n" ;
+        Log_ErrorF("OpenAL error at %s : %z", filename, line);
         switch(error)
         {
         case AL_INVALID_NAME:
-            std::cerr << "AL_INVALID_NAME: a bad name (ID) was passed to an OpenAL function";
+            Log_Error("AL_INVALID_NAME: a bad name (ID) was passed to an OpenAL function");
             break;
         case AL_INVALID_ENUM:
-            std::cerr << "AL_INVALID_ENUM: an invalid enum value was passed to an OpenAL function";
+            Log_Error("AL_INVALID_ENUM: an invalid enum value was passed to an OpenAL function");
             break;
         case AL_INVALID_VALUE:
-            std::cerr << "AL_INVALID_VALUE: an invalid value was passed to an OpenAL function";
+            Log_Error("AL_INVALID_VALUE: an invalid value was passed to an OpenAL function");
             break;
         case AL_INVALID_OPERATION:
-            std::cerr << "AL_INVALID_OPERATION: the requested operation is not valid";
+            Log_Error("AL_INVALID_OPERATION: the requested operation is not valid");
             break;
         case AL_OUT_OF_MEMORY:
-            std::cerr << "AL_OUT_OF_MEMORY: the requested operation resulted in OpenAL running out of memory";
+            Log_Error("AL_OUT_OF_MEMORY: the requested operation resulted in OpenAL running out of memory");
             break;
         default:
-            std::cerr << "UNKNOWN AL ERROR: " << error;
+            Log_ErrorF("UNKNOWN AL ERROR: %d", error);
         }
-        std::cerr << std::endl;
     }
 }
 

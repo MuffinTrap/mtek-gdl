@@ -2,14 +2,14 @@ include Makefile_pc.mk
 
 # ############################################
 # Linux specific settings
-CXXFLAGS += -DMGDL_PLATFORM=\"Linux\"
-CXXFLAGS += -DMGDL_PLATFORM_LINUX
+CFLAGS += -DMGDL_PLATFORM=\"Linux\"
+CFLAGS += -DMGDL_PLATFORM_LINUX
 
 # Address sanitizer reports leaks and crash reasons
-CXXFLAGS += -fsanitize=address
+CFLAGS += -fsanitize=address
 
 # Set Compiler
-CXX = clang++
+CC = clang
 EXE_SUFFIX = .elf
 
 # Include directories
@@ -57,20 +57,22 @@ TARGET	:=	$(notdir $(CURDIR))_lnx.elf
 
 # Create a list of object files that make needs to
 # process
-OFILES	:= $(cpp_src:.cpp=.pco)
 
-.PHONY: all
+OFILES	= $(c_src:.c=.pco)
+
+.PHONY: all debugprint
 
 # When all OFILES have been processed, link them together
 all : $(OFILES)
-	$(CXX) $(OFILES) $(CXXFLAGS) $(LDFLAGS) -o $(TARGET)
+	$(CC) $(OFILES) $(CFLAGS) $(LDFLAGS) -o $(TARGET)
 
 # Remove obj directory, all object files and the target
 clean:
 	@echo clean ...
 	@rm -fr $(OFILES) $(TARGET)
 
-# For any .cpp file, create a object file with the same
-# name.
-%.pco : %.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+# For any .c file, create a object file with the same
+# name
+
+%.pco : %.c
+	$(CC) $(CFLAGS) -c $< -o $@
