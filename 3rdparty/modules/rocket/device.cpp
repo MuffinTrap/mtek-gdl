@@ -8,9 +8,12 @@
 
 #include <sys/stat.h>
 
-#ifdef WIN32
+#if defined(WIN32) || defined(MGDL_PLATFORM_WINDOWS)
  #include <direct.h>
- #define S_ISDIR(m) (((m)& S_IFMT) == S_IFDIR)
+ // This is already changed in MinGW
+ // #define S_ISDIR(m) (((m)& S_IFMT) == S_IFDIR)
+
+ // Windows does not have folder modes
  #define mkdir(pathname, mode) _mkdir(pathname)
 #elif defined(GEKKO)
  #include <network.h>

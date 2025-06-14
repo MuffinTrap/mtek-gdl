@@ -20,6 +20,9 @@ build
 .kdev4/
 *.kdev4
 
+# Project folder from visual studio
+.vs/
+
 # Kate meta files
 *.kate-swp
 

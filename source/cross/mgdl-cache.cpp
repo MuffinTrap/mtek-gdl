@@ -2,21 +2,8 @@
 
 #ifdef GEKKO
 #include <mgdl/wii/mgdl-wii.h>
-
 void mgdl_CacheFlushRange ( void* rangeStart, size_t size )
 {
 	DCFlushRange(rangeStart, size);
 }
-
-#else // Win-Mac-Linux
-
-// On these platforms the cache flush does not do anything.
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-void mgdl_CacheFlushRange ( void* rangeStart, size_t size )
-{
-	// nop
-}
-#pragma GCC diagnostic pop
 #endif
