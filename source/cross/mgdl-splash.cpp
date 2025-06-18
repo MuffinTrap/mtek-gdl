@@ -17,6 +17,24 @@ static float areaTop;
 static float areaBottom;
 static float animationProgress = 0.0f;
 static const char* holdMessage = "Hold A to start";
+static bool customColors = false;
+static rgba8 bgColor;
+static rgba8 textDimColor;
+static rgba8 textLightColor;
+static float durationSeconds_ = 1.0f;
+
+void SetSplashScreenDurationSeconds(float duration)
+{
+	durationSeconds_ = duration;
+}
+
+void SetSplashScreenColors(rgba8 bg, rgba8 textDim, rgba8 textLight)
+{
+	customColors = true;
+	bgColor = bg;
+	textDimColor = textDim;
+	textLightColor = textLight;
+}
 
 
 // lean is in pixels
@@ -156,17 +174,21 @@ static float DrawLetters(float x, float lean, u32 color, bool useBars, float bar
 // Returns the animation progress
 float DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer)
 {
-	mgdl_glClear(GL_COLOR_BUFFER_BIT);
 	// Draws mgdl
 	// in stylized letters
 	mgdl_InitOrthoProjection();
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
 
-	Palette* blessing = Palette_GetDefault();
 	Font* debf = Font_GetDebugFont();
-	u32 yellow = Palette_GetColor(blessing, 3);
-	u32 grey = Palette_GetColor(blessing, 6);
+	if (customColors == false)
+	{
+		Palette* blessing = Palette_GetDefault();
+		bgColor = Palette_GetColor(blessing, 0);
+		textLightColor = Palette_GetColor(blessing, 3);
+		textDimColor = Palette_GetColor(blessing, 6);
+	}
+	Color4f clearColor = ColorToFloats(bgColor);
+	glClearColor(clearColor.red, clearColor.green, clearColor.blue, 1.0f);
+	mgdl_glClear(GL_COLOR_BUFFER_BIT);
 
 
 	const u16 sw = mgdl_GetScreenWidth();
@@ -202,11 +224,11 @@ float DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer)
 	// Space on both sides of logo
 	float paddingX = (sw - logoWidth) / 2;
 
-	float dStart = DrawLetters(paddingX, lean, grey, false, 0.0f);
+	float dStart = DrawLetters(paddingX, lean, textDimColor, false, 0.0f);
 
 	// Draw yellow over grey
 	float barsColored = 0.0f;
-	animationProgress += deltaTime * 0.5f;
+	animationProgress += deltaTime * 0.5f * durationSeconds_;
 
 	// Loop drawing
 	{
@@ -225,26 +247,26 @@ float DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer)
 			barsColored = segments;
 
 		}
-		DrawLetters(paddingX, lean, yellow, true, barsColored);
+		DrawLetters(paddingX, lean, textLightColor, true, barsColored);
 
 		// Draw grey over yellow
 		if (drawProgress > 1.0f && drawProgress <= 2.0f)
 		{
 			barsColored = (drawProgress-1.0f) * segments;
-			DrawLetters(paddingX, lean, grey, true, barsColored);
+			DrawLetters(paddingX, lean, textLightColor, true, barsColored);
 		}
 	}
-	Font_Print(debf, grey, dStart, baseLine, 8, GDL_VERSION);
-	Font_Print(debf, grey, dStart, baseLine - 8, 8, Platform_GetSingleton()->name);
+	Font_Print(debf, textLightColor, dStart, baseLine, 8, GDL_VERSION);
+	Font_Print(debf, textLightColor, dStart, baseLine - 8, 8, Platform_GetSingleton()->name);
 
 	if (drawHoldAMessage)
 	{
 		int messageWidth = strlen(holdMessage) * 8;
 		int messageLeft = sw/2 - messageWidth/2;
 		int messageY = areaBottom - 8;
-		Font_Print(debf, yellow, messageLeft, messageY, 8, holdMessage);
+		Font_Print(debf, textLightColor, messageLeft, messageY, 8, holdMessage);
 
-		Draw2D_Rect(messageLeft, messageY - 16, messageLeft + messageWidth * aHoldTimer, messageY - 16 - 4, yellow);
+		Draw2D_Rect(messageLeft, messageY - 16, messageLeft + messageWidth * aHoldTimer, messageY - 16 - 4, textLightColor);
 	}
 	return (animationProgress / 2.0f);
 }

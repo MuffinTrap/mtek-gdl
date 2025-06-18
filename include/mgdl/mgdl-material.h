@@ -13,7 +13,8 @@ struct Material
 {
 	char* name;
 	GLfloat shininess;
-	vec3 emissiveColor;
+	GLfloat emissiveColor[4];
+	GLfloat diffuseColor[4];
 	Image* texture;
 	MaterialType type;
 };
@@ -32,11 +33,14 @@ extern "C"
 	 */
 	Material* Material_Load(const char* name, Image* texture, MaterialType type);
 
+	Material* Material_CreateColor(Color4f color, GLfloat shininess, GLfloat emissionPower);
+
 	/**
 	 * @brief Applies the material properties for the next mesh drawing operation
 	 * @param material The material properties to use.
 	 */
 	void Material_Apply(Material* material);
+	void Material_Reset(void);
 
 #ifdef __cplusplus
 }

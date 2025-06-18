@@ -59,7 +59,8 @@
 	#define V2f_X(Va) Va.x
 	#define V2f_Y(Va) Va.y
 
-	#define V2f_Add(Va, Vb) vec2Add(Va, Vb)
+	#define V2f_Add(Va, Vb, dest) dest = vec2Add(Va, Vb)
+	#define V2f_Sub(Va, Vb, dest) dest = vec2Subtract(Va, Vb)
 
 	// Vector3
 
@@ -75,7 +76,7 @@
 
 	#define V3f_Scale(Va, scalar, dest) dest = vec3Multiply(Va, scalar)
 	#define V3f_Add(Va, Vb, dest) dest = vec3Add(Va, Vb)
-	#define V3f_Sub(Va, Vb, dest) dest = vec3Sub(Va, Vb)
+	#define V3f_Sub(Va, Vb, dest) dest = vec3Subtract(Va, Vb)
 	#define V3f_Normalize(Va) Va = vec3Normalize(Va)
 	#define V3f_Cross(Va, Vb, dest) dest = vec3Cross(Va, Vb)
 	#define V3f_Dot(Va, Vb) vec3Dot(Va, Vb)

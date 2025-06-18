@@ -39,4 +39,4 @@ CXXFLAGS += $(MGDL_INCLUDE)
 # CXXFLAGS += -O3
 
 # The rocket code of the release is compiled in SYNC_PLAYER mode
-# CXX_FLAGS += -DSYNC_PLAYER
+# CXXFLAGS += -DSYNC_PLAYER

@@ -357,14 +357,14 @@ void Example::DrawTimingInfo()
         {
             case SoundStatus::Playing:
                 musicColor = Colors::Green;
-                icon = IconSymbol::TriangleRight;
+                icon = IconSymbol::TriangleUp;
                 break;
             case SoundStatus::Paused:
                 musicColor = Colors::Yellow;
-                icon = IconSymbol::TriangleVertical;
+                icon = IconSymbol::Clock;
                 break;
             case SoundStatus::Stopped: musicColor = Colors::Red;
-                icon = IconSymbol::BlockUnder;
+                icon = IconSymbol::Skull;
                 break;
             case SoundStatus::Initial: musicColor = Colors::Black; break;
         };
@@ -380,14 +380,14 @@ void Example::DrawTimingInfo()
     {
         case SoundStatus::Playing:
             musicColor = Colors::Green;
-            icon = IconSymbol::TriangleRight;
+            icon = IconSymbol::TriangleUp;
             break;
         case SoundStatus::Paused:
             musicColor = Colors::Yellow;
-            icon = IconSymbol::TriangleVertical;
+            icon = IconSymbol::Clock;
             break;
         case SoundStatus::Stopped: musicColor = Colors::Red;
-            icon = IconSymbol::BlockUnder;
+            icon = IconSymbol::Skull;
             break;
         case SoundStatus::Initial: musicColor = Colors::Black; break;
     };

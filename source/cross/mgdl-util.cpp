@@ -39,6 +39,11 @@ Color4f ColorToFloats(u32 color)
     return components;
 }
 
+Color4f Color_FromHex(u32 hexColor)
+{
+	return ColorToFloats(hexColor);
+}
+
 float GetRandomFloat(float min, float max)
 {
     float range = max - min;

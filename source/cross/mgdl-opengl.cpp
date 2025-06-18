@@ -2,6 +2,11 @@
 #include <mgdl/mgdl-main.h>
 #include <mgdl/mgdl-types.h>
 
+// OpenGL state
+static bool lightingEnabled_ = false;
+static bool lightsOn_[8] = {false, false, false, false,
+							false, false, false, false};
+
 void mgdl_glClear(GLbitfield flags)
 {
 #ifdef GEKKO
@@ -76,6 +81,77 @@ void mgdl_glSetAlphaTest(bool enabled)
 	{
 		glDisable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_ALWAYS, 0.5f);
+	}
+}
+
+void mgdl_SetFaceCulling(bool enabled)
+{
+	if (enabled)
+	{
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+	}
+	else
+	{
+		glDisable(GL_CULL_FACE);
+	}
+}
+
+void mgdl_SetDepthTest(bool enabled)
+{
+	if (enabled)
+	{
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
+	}
+	else
+	{
+		glDisable(GL_DEPTH_TEST);
+	}
+}
+
+void mgdl_SetLightingEnabled(bool enabled)
+{
+	if (enabled == lightingEnabled_)
+	{
+		return;
+	}
+	if (enabled)
+	{
+		glEnable(GL_LIGHTING);
+	}
+	else
+	{
+		glDisable(GL_LIGHTING);
+	}
+	lightingEnabled_ = enabled;
+}
+
+bool mgdl_GetLightingEnabled(void)
+{
+	return lightingEnabled_;
+}
+
+GLint mgdl_EnableLightGetIndex(void)
+{
+	for (GLint i = 0; i < 8; i++)
+	{
+		if (lightsOn_[i] == false)
+		{
+			lightsOn_[i] = true;
+			glEnable(GL_LIGHT0 + i);
+			return i;
+		}
+	}
+	return -1;
+}
+
+void mgdl_DisableLightIndex(GLint index)
+{
+	if (index >=0 && index < 8)
+	{
+		lightsOn_[index] = false;
+		glDisable(GL_LIGHT0 + index);
 	}
 }
 

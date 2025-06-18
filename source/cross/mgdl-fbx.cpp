@@ -317,7 +317,8 @@ Light* _FBX_LoadLight(ufbx_light* fbxLight)
 {
 	Light* light = new Light();
 
-	light->color = V3f_Create(fbxLight->color.x, fbxLight->color.y, fbxLight->color.z);
+	Color4f c = {fbxLight->color.x, fbxLight->color.y, fbxLight->color.z, 1.0f};
+	Light_SetColor(light, &c);
 	light->intensity = fbxLight->intensity;
 	light->name = fbxLight->name.data;
 

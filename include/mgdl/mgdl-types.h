@@ -163,6 +163,7 @@ typedef u32 rgba8;
 // Debug font contains these glyphs
 enum IconSymbol : short
 {
+    Dot = 0x7f,
     FaceInvert = 0x80,
     Face,
     ArrowUp,
@@ -219,6 +220,7 @@ struct Color4b
     u8 alpha;
 };
 typedef struct Color4b Color4b;
+
 
 typedef u32 ColorHex;
 

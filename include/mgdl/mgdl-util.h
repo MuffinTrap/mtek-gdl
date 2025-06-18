@@ -14,7 +14,7 @@ extern "C"
 Color4f ColorToFloats(u32 color);
 Color4b ColorToComponents(u32 color);
 u32 ComponentsToColor(Color4f components);
-
+Color4f Color_FromHex(u32 hexColor);
 
 float GetRandomFloat(float min, float max);
 float GetRandomFloatNormal(void);

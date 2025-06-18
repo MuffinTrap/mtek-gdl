@@ -28,7 +28,7 @@ int main()
 {
     u32 flags = 0;//gdl::PlatformInitFlag::FlagSplashScreen;
     mgdl_InitSystem(MGDL_PLATFORM,
-        gdl::ScreenAspect::Screen4x3,
+        ScreenAspect::Screen4x3,
         init,
         update,  // std::function callbacks
         render,

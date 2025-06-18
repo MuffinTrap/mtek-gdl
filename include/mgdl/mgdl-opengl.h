@@ -51,6 +51,17 @@ extern "C"
     void mgdl_glTriangleV3F(vec3 a, vec3 b, vec3 c);
     void mgdl_glTriangleV3F_xy(vec3 a, vec3 b, vec3 c);
 
+    void mgdl_SetFaceCulling(bool enabled);
+
+    void mgdl_SetDepthTest(bool enabled);
+
+
+    // Light status
+    void mgdl_SetLightingEnabled(bool enabled);
+    bool mgdl_GetLightingEnabled(void);
+    GLint mgdl_EnableLightGetIndex(void);
+    void mgdl_DisableLightIndex(GLint index);
+
 /** NOTE!!!!
 * @brief Sets up the camera.
 * @details Without this setup the Dolphin is all messed up with the rendering.

@@ -179,7 +179,7 @@ void Mesh_CalculateMatcapUVs(Mesh* mesh, mat4x4 modelViewMatrix, mat4x4 normalMa
 			const float rz12 = pow(reflection.z+1, 2.0f);
 			const float sqrtR2 = sqrt(rx2 + ry2 + rz12) * 2.0f;
 			R2 = reflection.xy;
-			matcapUV = V2f_Add(vec2New(R2.x/sqrtR2, R2.y/sqrtR2), half);
+			V2f_Add( V2f_Create(R2.x/sqrtR2, R2.y/sqrtR2), half, matcapUV);
 		}
 		Mesh_SetUVToArray(mesh, i, matcapUV);
 	}
