@@ -29,7 +29,8 @@ EXE_SUFFIX = .elf
 # Link libraries
 
 # Create a list of libraries that need to be linked
-LDFLAGS = -lmgdl -lpng -lsndfile -lopenal -lGL -lGLU -lglut -lvorbisfile -logg -Wno-unused-function -z muldefs
+# Link statically to mgdl
+LDFLAGS = -Wl,-Bstatic -lmgdl -Wl,-Bdynamic -lpng -lsndfile -lopenal -lGL -lGLU -lglut -lvorbisfile -logg -lm -Wno-unused-function -z muldefs
 
 
 
@@ -45,8 +46,8 @@ LDFLAGS = -lmgdl -lpng -lsndfile -lopenal -lGL -lGLU -lglut -lvorbisfile -logg -
 
 
 
-# Add mgdl library search directory and include
-LDFLAGS += -L$(MGDL_DIR)
+# Add mgdl library search directory
+LDFLAGS += -L$(MGDL_LIBRARY_DIR)
 
 # Executable is the same name as current directory +
 # platform specific postfix

@@ -6,12 +6,12 @@
 #include <mgdl/mgdl-platform.h>
 #include <mgdl/mgdl-controller.h>
 #include <mgdl/wii/mgdl-wii.h>
+#include "mgdl/wii/mgdl-wii-globals-internal.h"
 
 static Platform* platformWii;
 
 static CallbackFunction initCall = nullptr;
-static CallbackFunction updateCall = nullptr;
-static CallbackFunction drawCall = nullptr;
+static CallbackFunction frameCall = nullptr;
 
 static WiiController controller;
 
@@ -20,24 +20,21 @@ static void MainLoop();
 static void SplashHoldLoop(bool SplashFlag, bool HoldAFlag);
 static u64 deltaTimeStart;
 
-void Platform_Init(const char* name,
+void Platform_Init(const char* windowName,
 	ScreenAspect screenAspect,
-								  CallbackFunction initCallback,
-								  CallbackFunction updateCallback,
-								  CallbackFunction drawCallback,
-								  u32 initFlags)
+	CallbackFunction initCallback,
+	CallbackFunction frameCallback,
+	u32 initFlags)
 {
 	mgdl_assert_print(initCallback != nullptr, "Need to provide init callback before system init on PC");
-	mgdl_assert_print(updateCallback != nullptr, "Need to provide update callback before system init on PC");
-	mgdl_assert_print(drawCallback != nullptr, "Need to provide draw callback before system init on PC");
+	mgdl_assert_print(frameCallback != nullptr, "Need to provide update callback before system init on PC");
 
 	initCall = initCallback;
-	drawCall = drawCallback;
-	updateCall = updateCallback;
+	frameCall = frameCallback;
 
 	platformWii = new Platform();
 
-	platformWii->name = name;
+	platformWii->windowName = windowName;
 
 	// Convert to Wii InitAspectmode for now
 	gdl::InitAspectMode mode = gdl::InitAspectMode::AspectAuto;
@@ -45,17 +42,22 @@ void Platform_Init(const char* name,
 	{
 		case ScreenAuto:
 			mode = gdl::InitAspectMode::AspectAuto;
+			platformWii->aspect = ScreenAspect::ScreenAuto;
 			break;
 		case Screen4x3:
 			mode = gdl::InitAspectMode::Aspect4x3;
 			platformWii->aspectRatio = 4.0f/3.0f;
+			platformWii->aspect = ScreenAspect::Screen4x3;
 			break;
 		case Screen16x9:
 			mode = gdl::InitAspectMode::Aspect16x9;
 			platformWii->aspectRatio = 16.0f/9.0f;
+			platformWii->aspect = ScreenAspect::Screen16x9;
 			break;
 	};
 	fatInitDefault();
+
+	// TODO set aspect ratio as requested
 	gdl::InitSystem(gdl::ModeAuto, mode, gdl::HiRes, gdl::InitFlags::OpenGX);
 
     platformWii->screenWidth = gdl::ScreenXres;
@@ -63,6 +65,15 @@ void Platform_Init(const char* name,
 	if (screenAspect == ScreenAuto)
 	{
 		platformWii->aspectRatio = platformWii->screenWidth / platformWii->screenHeight;
+		// TODO read system aspect ratio
+		if (gdl::wii::WidescreenMode)
+		{
+			platformWii->aspect = ScreenAspect::Screen16x9;
+		}
+		else
+		{
+			platformWii->aspect = ScreenAspect::Screen4x3;
+		}
 	}
 
 	ogx_initialize();
@@ -165,9 +176,8 @@ void MainLoop()
 
 		WiiController_StartFrame(&controller);
 		ReadControllers();
-		updateCall();
 		gdl::PrepDisplay();
-		drawCall();
+		frameCall();
 		glFlush();
 		gdl::Display();
 	}
@@ -190,9 +200,14 @@ void ReadControllers()
 	WPADData *data1 = WPAD_Data(controller._channel);
 
 	const ir_t &ir = data1->ir;
-	// Multiply x and y to match them to 16:9 screen
-	controller._cursorX = ir.x * 1.67f - 16.f;
-	controller._cursorY = ir.y * 1.2f - 16.f;
+	controller._cursorX = ir.x;
+	controller._cursorY = ir.y;
+	if(platformWii->aspect == Screen16x9)
+	{
+		// Multiply x and y to match them to 16:9 screen
+		controller._cursorX *= 1.67f - 16.f;
+		controller._cursorY *= 1.2f - 16.f;
+	}
 
 	controller._pressedButtons = WPAD_ButtonsDown(0);
 	controller._releasedButtons = WPAD_ButtonsUp(0);

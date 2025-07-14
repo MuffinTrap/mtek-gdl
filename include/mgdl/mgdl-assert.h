@@ -19,11 +19,10 @@ extern "C"
 	*
 	* @param filename    The filename of the code where assert happened. This is provided by __FILE__ macro.
 	* @param lineNumber  Line in code where assert happened. This is provided by __LINE__ macro.
-	* @param ignoreThis    Pointer to a static bool controlling if the assert will be ignored when it happens again.
 	* @param message The message to show when assert fails. Has to contain format specifiers.
 	* @param __VA_ARGS__ Arguments for the format specifiers in message.
 	*/
-	void AssertFunctionPrintf(const char* filename, int lineNumber, bool *ignoreThis, const char* message, ...);
+	void AssertFunctionPrintf(const char* filename, int lineNumber, const char* message, ...);
 
 	/**
 	 * @brief If the assert fails, break into assert display loop and ask if assert should be ignored.
@@ -33,10 +32,9 @@ extern "C"
 	*
 	* @param filename    The filename of the code where assert happened. This is provided by __FILE__ macro.
 	* @param lineNumber  Line in code where assert happened. This is provided by __LINE__ macro.
-	* @param ignoreThis    Pointer to a static bool controlling if the assert will be ignored when it happens again.
 	* @param message The message to show when assert fails.
 	*/
-	void AssertFunctionPrint(const char* filename, int lineNumber, bool *ignoreThis, const char* message);
+	void AssertFunctionPrint(const char* filename, int lineNumber, const char* message);
 
 
 #ifdef __cplusplus
@@ -55,10 +53,7 @@ extern "C"
 	#define mgdl_assert_printf(test, message, ...) \
 	if ((test) == false) \
 	{ \
-		static bool ignoreThis = false; \
-		if (ignoreThis == false) { \
-			AssertFunctionPrintf(__FILE__, __LINE__, &ignoreThis, message, ##__VA_ARGS__); \
-		} \
+		AssertFunctionPrintf(__FILE__, __LINE__, message, ##__VA_ARGS__); \
 	}
 #else
 	// On Windows and Mac the ##__VA_ARGS__ does not work
@@ -71,10 +66,7 @@ extern "C"
 	#define mgdl_assert_printf(test, message, ...) \
 	if ((test) == false) \
 	{ \
-		static bool ignoreThis = false; \
-		if (ignoreThis == false) { \
-			AssertFunctionPrintf(__FILE__, __LINE__, &ignoreThis, message, __VA_ARGS__); \
-		} \
+		AssertFunctionPrintf(__FILE__, __LINE__, message, __VA_ARGS__); \
 	}
 
 #ifdef MGDL_PLATFORM_MAC
@@ -88,19 +80,13 @@ extern "C"
 #define mgdl_assert_print(test, message) \
 if ((test) == false) \
 { \
-    static bool ignoreThis = false; \
-    if (ignoreThis == false) { \
-		AssertFunctionPrint(__FILE__, __LINE__, &ignoreThis, message); \
-	} \
+	AssertFunctionPrint(__FILE__, __LINE__, message); \
 }
 
 #define mgdl_assert_test(test) \
 if ((test) == false) \
 { \
-    static bool ignoreThis = false; \
-    if (ignoreThis == false) { \
-		AssertFunctionPrint(__FILE__, __LINE__, &ignoreThis, #test); \
-	} \
+	AssertFunctionPrint(__FILE__, __LINE__, #test); \
 }
 
 

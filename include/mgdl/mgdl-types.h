@@ -121,7 +121,7 @@ typedef enum AlignmentModes AlignmentModes;
 
 // Screen aspect ratios supported
 enum ScreenAspect {
-    ScreenAuto = 0, // Use system default
+    ScreenAuto, // Use system default
     Screen16x9,
     Screen4x3
 };
@@ -130,6 +130,7 @@ typedef enum ScreenAspect ScreenAspect;
 // Flags for initializing the system. They can be combined
 enum PlatformInitFlag
 {
+    FlagNone = 0x0,
     FlagPauseUntilA = 0x01, // Enters a loop after system init and continues when A button is pressed
     FlagFullScreen = 0x02, // Start in full screen mode
     FlagSplashScreen = 0x04, // Show splash screen with logo. If FlagPauseUntilA is set will stay in splash screen

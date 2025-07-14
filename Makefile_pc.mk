@@ -4,6 +4,7 @@
 # Library name
 LIB 	:= mgdl
 ARC 	:= lib$(LIB).a
+DLL	:= lib$(LIB).so
 
 # Own code
 CXXFILES	= $(wildcard source/cross/*.cpp)
@@ -29,6 +30,9 @@ CXXFLAGS = -O3 -Werror=unused-function -Wall -Wextra -Wpedantic -std=c++11 -stat
 CXXFLAGS += -DUFBX_REAL_IS_FLOAT
 # Vector library
 CXXFLAGS	+= -DMGDL_USE_CCVECTOR
+
+# Position independent code
+CXXFLAGS += -fPIC
 
 # Add own include files so that #include <...> works
 MGDL_INCLUDE = -Iinclude/

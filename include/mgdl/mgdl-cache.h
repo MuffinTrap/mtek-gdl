@@ -23,17 +23,21 @@ extern "C"
 	 */
 #ifdef GEKKO
 	void mgdl_CacheFlushRange(void* rangeStart, sizetype size);
-#else
+#endif
+
+#ifdef MGDL_PLATFORM_WINDOWS
 	// If the function is defined in the .cpp file
 	// the clang compiler leaves it out and then the 
 	// linker complains that it cannot find the definition...
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
+	#pragma clang diagnostic push
+	#pragma clang diagnostic ignored "-Wunused-parameter"
 	void mgdl_CacheFlushRange(void* rangeStart, size_t size)
 	{
 		// nop
 	}
-#pragma clang diagnostic pop
+	#pragma clang diagnostic pop
+#else
+	void mgdl_CacheFlushRange(void* rangeStart, size_t size);
 #endif
 
 #ifdef __cplusplus

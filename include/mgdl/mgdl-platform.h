@@ -5,7 +5,7 @@
 
 struct Platform
 {
-	const char* name;
+	const char* windowName;
 	short screenWidth;
 	short screenHeight;
 	float aspectRatio;
@@ -22,11 +22,10 @@ extern "C"
 {
 #endif
 
-void Platform_Init(const char* name,
+void Platform_Init(const char* windowName,
 						ScreenAspect screenAspect,
 						CallbackFunction initCallback,
-						CallbackFunction updateCallback,
-						CallbackFunction drawCallback,
+						CallbackFunction frameCallback,
 						u32 initFlags);
 
 struct WiiController* Platform_GetController(int controllerNumber);

@@ -46,6 +46,7 @@ OGC_INCLUDE	:= -I$(LIBOGC_INC) -I$(PORTLIBS_PPC) -I$(PORTLIBS_WII)
 MACHDEP		:= -mrvl -mcpu=750 -meabi -mhard-float
 # NOTE: Cannot use -Wpedantic since OGC is C
 CXXFLAGS	= -O3 -Werror -Wall -Wextra -std=c++11 $(MACHDEP) -DGEKKO
+CXXFLAGS	+= -DMGDL_PLATFORM=\"Wii\"
 # UFBX settings
 CXXFLAGS	+= -DUFBX_REAL_IS_FLOAT
 

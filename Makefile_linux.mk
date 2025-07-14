@@ -4,6 +4,7 @@ include Makefile_pc.mk
 CXX = clang++
 LIBDIR	:= lib/lnx
 CXXFLAGS += -DMGDL_PLATFORM_LINUX
+CXXFLAGS += -DMGDL_PLATFORM=\"Linux\"
 
 # Common part
 
@@ -15,8 +16,11 @@ $(ARC): $(OFILES)
 	@mkdir -p $(LIBDIR)
 # Create static library
 	@$(AR) rcs $(ARC) $(OFILES)
+# Create shared library
+	$(CXX) -shared -o $(DLL) $(OFILES)
 # Move static library
 	@mv $(ARC) $(LIBDIR)
+	@mv $(DLL) $(LIBDIR)
 	@echo built library $(ARC)
 
 # Installs to /home/user/libmgdl
@@ -27,6 +31,7 @@ install: $(ARC)
 	@mkdir -p $(INSTALL_DIR)/$(LIB)/pc
 
 	@cp $(LIBDIR)/$(ARC) $(INSTALL_DIR)
+	@cp $(LIBDIR)/$(DLL) $(INSTALL_DIR)
 
 	@cp $(LIBHDR) $(INSTALL_DIR)
 	@cp $(HDRS_X) $(INSTALL_DIR)/$(LIB)

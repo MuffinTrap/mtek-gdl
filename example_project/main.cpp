@@ -48,19 +48,28 @@ void init()
 #endif
 }
 
-// Called before render()
-void update()
+void frame()
 {
+    example.Update();
+
+    // NOTE Use the mgdl_glClear to assure depth buffer working correctly on Wii
+    mgdl_glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    example.Draw();
+
     if (WiiController_ButtonPress(mgdl_GetController(0), WiiButtons::ButtonHome))
     {
         mgdl_DoProgramExit();
     }
-    example.Update();
+
 
 #ifdef MGDL_ROCKET
-    float r = 1.0f;
+
     gdl::RocketSync::UpdateRow();
-    r = gdl::RocketSync::GetFloat(clear_r);
+    float r = gdl::RocketSync::GetFloat(clear_r);
+    float g = 1.0f;
+    float b = 174.0f/255.0f;
+    glClearColor(r,g ,b , 0.0f);
+
 #ifndef SYNC_PLAYER
 
     if (WiiController_ButtonPress(mgdl_GetController(0), WiiButtons::Button2))
@@ -70,30 +79,17 @@ void update()
        gdl::RocketSync::EndSaveToHeader();
     }
 #endif
-/*
-    float g = 1.0f;
-    float b = 174.0f/255.0f;
-    glClearColor(r,g ,b , 0.0f);
-    */
 #endif
 }
 
-// Rendering callback. glFlush etc.. is done automatically after it
-void render()
-{
-    // NOTE Use this instead of glClear() for Wii quirk.
-    mgdl_glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    example.Draw();
-}
 
 int main()
 {
-    mgdl_InitSystem(MGDL_PLATFORM,
+    mgdl_InitSystem("mgdl example project",
         ScreenAspect::Screen4x3,
         init,
-        update,  // std::function callbacks
-        render,
-        0
+        frame,
+        FlagNone
         //,gdl::PlatformInitFlag::FlagPauseUntilA
         //,gdl::PlatformInitFlag::FlagSplashScreen
         //,gdl::PlatformInitFlag::FlagSplashScreen|gdl::PlatformInitFlag::FlagPauseUntilA|gdl::PlatformInitFlag::FlagFullScreen

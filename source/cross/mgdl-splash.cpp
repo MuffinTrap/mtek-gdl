@@ -257,7 +257,7 @@ float DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer)
 		}
 	}
 	Font_Print(debf, textLightColor, dStart, baseLine, 8, GDL_VERSION);
-	Font_Print(debf, textLightColor, dStart, baseLine - 8, 8, Platform_GetSingleton()->name);
+	Font_Print(debf, textLightColor, dStart, baseLine - 8, 8, MGDL_PLATFORM);
 
 	if (drawHoldAMessage)
 	{

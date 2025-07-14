@@ -22,9 +22,10 @@ static int WII_HEIGHT = 480;
 static int glutElapsedStartMS;
 static int glutElapsedMS;
 
+static int glutWindowId = 0;
+
 CallbackFunction initCall = nullptr;
-CallbackFunction updateCall = nullptr;
-CallbackFunction drawCall = nullptr;
+CallbackFunction frameCall = nullptr;
 
 
 // Main glut functions
@@ -70,6 +71,7 @@ static void RenderSplash()
     RenderEnd();
 }
 
+// Nothing is shown but program waits for A button to be held down
 static void RenderAHold()
 {
     RenderEnd();
@@ -151,18 +153,12 @@ static void UpdateAHold(int value)
 static void UpdateLoop(int value)
 {
     UpdateDeltaMS();
-
-	updateCall();
-
     glutTimerFunc(16, UpdateLoop, value);
     UpdateEnd();
 }
+
 static void UpdateEnd()
 {
-    // TODO Where is the correct place for this?
-    // Need to have up to date information for the game to read
-    WiiController_StartFrame(&glutController);
-
     glutElapsedStartMS = glutElapsedMS;
     platformPC._elapsedUpdates += 1;
     // Tell glut that the window needs to be
@@ -172,16 +168,19 @@ static void UpdateEnd()
 
 void RenderLoop()
 {
-	drawCall();
+	frameCall();
+
+    // Reset controller for next frame
+    WiiController_StartFrame(&glutController);
+
     RenderEnd();
 }
 
 static void RenderEnd()
 {
     // End drawing and process all commands
-    glFlush();
-
     // Wait for v sync and swap
+    // glutSwapBuffers() will call glFlush();
     glutSwapBuffers();
 }
 
@@ -241,21 +240,19 @@ void Platform_InitAudio()
     Log_Info("OpenAL context created\n");
 }
 
-void Platform_Init(const char* name, ScreenAspect screenAspect,
+void Platform_Init(const char* windowName,
+                   ScreenAspect screenAspect,
                    CallbackFunction initCallback,
-                   CallbackFunction updateCallback,
-                   CallbackFunction drawCallback,
+                   CallbackFunction frameCallback,
                    u32 initFlags)
 {
 	mgdl_assert_print(initCallback != nullptr, "Need to provide init callback before system init on PC");
-	mgdl_assert_print(drawCallback != nullptr, "Need to provide update callback before system init on PC");
-	mgdl_assert_print(updateCallback != nullptr, "Need to provide draw callback before system init on PC");
+	mgdl_assert_print(frameCallback != nullptr, "Need to provide frame callback before system init on PC");
     initCall = initCallback;
-	drawCall = drawCallback;
-	updateCall = updateCallback;
+	frameCall = frameCallback;
 
 
-    platformPC.name = name;
+    platformPC.windowName = windowName;
     platformPC.screenWidth = WII_WIDTH;
     platformPC.screenHeight = WII_HEIGHT;
     switch(screenAspect)
@@ -291,7 +288,7 @@ void Platform_Init(const char* name, ScreenAspect screenAspect,
     Log_Info("glutInitDisplayMode\n");
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(windowWidth, windowHeight);
-    glutCreateWindow("Press 2 to write Rocket tracks");
+    glutWindowId = glutCreateWindow(windowName);
     if ((initFlags & PlatformInitFlag::FlagFullScreen) != 0)
     {
         glutFullScreen();
@@ -375,6 +372,9 @@ void Platform_DoProgramExit()
 	alcMakeContextCurrent(NULL);
 	alcDestroyContext(context);
 	alcCloseDevice(device);
+
+    // Close window
+    glutDestroyWindow(glutWindowId);
 
 	exit(0);
 }

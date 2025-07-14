@@ -11,14 +11,13 @@
 
 static AssetManager assetManager;
 
-void mgdl_InitSystem(const char* name,
+void mgdl_InitSystem(const char* windowName,
 	ScreenAspect screenAspect,
-								CallbackFunction initCallback,
-								CallbackFunction updateCallback,
-								CallbackFunction drawCallback,
-								u32 initFlags)
+	CallbackFunction initCallback,
+	CallbackFunction frameCallback,
+	u32 initFlags)
 {
-	Platform_Init(name, screenAspect, initCallback, updateCallback, drawCallback, initFlags);
+	Platform_Init(windowName, screenAspect, initCallback, frameCallback, initFlags);
 	AssetManager_Init(&assetManager);
 }
 

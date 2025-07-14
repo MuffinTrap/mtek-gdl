@@ -20,8 +20,7 @@ extern "C"
 void mgdl_InitSystem(const char* name,
 				ScreenAspect screenAspect,
 				CallbackFunction initCallback,
-				CallbackFunction updateCallback,
-				CallbackFunction drawCallback,
+				CallbackFunction frameCallback,
 				u32 initFlags);
 
 // TODO Move all loading to AssetManager to get memory status and other stats

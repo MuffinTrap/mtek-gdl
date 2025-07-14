@@ -27,8 +27,10 @@ ROCKET_INCLUDE = -Irocket/
 CXXFLAGS += $(ROCKET_INCLUDE)
 
 # Add mgdl library search directory and include
-# Need to have mgdl as well because ufbx
 MGDL_DIR	=$(HOME)/libmgdl
+# By default this is the same as the installation directory
+# but depending on your environment it might be something else
+MGDL_LIBRARY_DIR = /var/mnt/homessd/muffintrap/libmgdl
 MGDL_INCLUDE	= -I$(MGDL_DIR)
 CXXFLAGS += $(MGDL_INCLUDE)
 

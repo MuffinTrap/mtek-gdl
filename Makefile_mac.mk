@@ -4,6 +4,7 @@ include Makefile_pc.mk
 CXX = clang++
 LIBDIR	:= lib/mac
 CXXFLAGS += -DMGDL_PLATFORM_MAC
+CXXFLAGS += -DMGDL_PLATFORM=\"MacOS\"
 
 # Do not complain about OpenAL
 CXXFLAGS += -Wno-deprecated-declarations

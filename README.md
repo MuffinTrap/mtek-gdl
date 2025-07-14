@@ -86,13 +86,18 @@ You need to include these files when you release your executable.
 
 Windows makefile is Makefile_win.mk
 
+```sh
+make -f Makefile_win.mk
+make -f Makefile_win.mk install
+```
+
 ## How to compile and install on Ubuntu/Debian Linux:
 ### List of needed packages:
 
 These packages are needed for C/C++ Development in general:
-- build-essentials
+- build-essential
 
-Mtek-GDL makefiles for linux use clang:
+Mtek-GDL makefiles for linux use clang: (but g++ works too)
 - clang
 
 Mtek-gdl uses these libraries:
@@ -101,7 +106,11 @@ Mtek-gdl uses these libraries:
 - freeglut3-dev
 - libpng-dev
 
-Linux makefile is Makefile_linux.mk
+Linux makefile is Makefile_linux.mk, use it with:
+```sh
+make -f Makefile_linux.mk
+make -f Makefile_linux.mk install
+```
 
 ### Rocket editor
 These libraries are needed if you build the rocket editor on Linux
@@ -135,6 +144,10 @@ After installing, install these ports:
 - libvorbis
 
 MacOS makefile is Makefile_mac.mk
+```sh
+make -f Makefile_mac.mk
+make -f Makefile_mac.mk install
+```
 
 This file was changed for version 0.100.0-muffintrap by muffintrap to add explanation of the fork.
 Original contents of README.md are below:
