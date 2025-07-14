@@ -47,7 +47,7 @@ LDFLAGS = -Wl,-Bstatic -lmgdl -Wl,-Bdynamic -lpng -lsndfile -lopenal -lGL -lGLU 
 
 
 # Add mgdl library search directory
-LDFLAGS += -L$(MGDL_LIBRARY_DIR)
+LDFLAGS += -L$(MGDL_DIR)
 
 # Executable is the same name as current directory +
 # platform specific postfix
