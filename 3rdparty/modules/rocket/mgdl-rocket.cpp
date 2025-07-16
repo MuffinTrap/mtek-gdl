@@ -91,7 +91,7 @@ double Rocket_GetRow()
 
 int Rocket_GetRowInt()
 {
-    return static_cast<int>(floor(instance->row));
+    return (int)(floor(instance->row));
 }
 
 // Use for effects not tied to tracks
@@ -109,13 +109,13 @@ SyncState Rocket_GetState()
 
 bool Rocket_Init(struct Music* music, float bpm, int rowsPerBeat)
 {
-    if (music == nullptr)
+    if (music == NULL)
     {
         perror("No music pointer given to RocketSync\n");
         return false;
     }
 
-    sync_device* rocket = sync_create_device("sync");
+    struct sync_device* rocket = sync_create_device("sync");
     #ifndef SYNC_PLAYER
     if (sync_tcp_connect(rocket, "localhost", SYNC_DEFAULT_PORT))
     {
@@ -158,7 +158,7 @@ void Rocket_SetRowsPerBeat(int rowsPerBeat)
 
 void Rocket_StartSync()
 {
-    mgdl_assert_print(instance!=nullptr, "No RocketSync instance");
+    mgdl_assert_print(instance!=NULL, "No RocketSync instance");
     Rocket_Play();
 }
 
@@ -181,19 +181,19 @@ void Rocket_UpdateRow()
 void Rocket_Disconnect()
 {
 	sync_destroy_device(instance->rocket_device);
-    delete[] instance->_tracks;
-    delete instance;
-    instance = nullptr;
+    free(instance->_tracks);
+    free(instance);
+    instance = NULL;
 }
 
 // For internal use
 
 Rocket* _Rocket_GetSingleton()
 {
-    if (instance == nullptr)
+    if (instance == NULL)
     {
-        instance = new Rocket();
-        instance->_tracks = new ROCKET_TRACK[ROCKET_TRACK_AMOUNT];
+        instance = (struct Rocket*)malloc(sizeof(struct Rocket));
+        instance->_tracks = (ROCKET_TRACK*)malloc(sizeof(ROCKET_TRACK) * ROCKET_TRACK_AMOUNT);
         instance->musicElapsedSeconds = 0.0f;
         instance->syncState = SyncStop;
         instance->_trackCount = 0;
@@ -204,7 +204,7 @@ Rocket* _Rocket_GetSingleton()
 // Call when the music should start
 void Rocket_Play()
 {
-    mgdl_assert_print(instance->music != nullptr, "No music loaded");
+    mgdl_assert_print(instance->music != NULL, "No music loaded");
     Music_Play(instance->music, false);
     instance->syncState = SyncPlay;
 }
@@ -217,11 +217,11 @@ void Rocket_Play()
     // No getting tracks
     ROCKET_TRACK Rocket_AddTrack(const char* trackName)
     {
-        return nullptr;
+        return NULL;
     }
     ROCKET_TRACK Rocket_AddTempTrack(const char* trackName)
     {
-        return nullptr;
+        return NULL;
     }
     // Tracks are static in a header/cpp file in SYNC_PLAYER mode
 
@@ -259,7 +259,7 @@ void Rocket_Play()
     ROCKET_TRACK Rocket_AddTrack(const char* trackName)
     {
         ROCKET_TRACK track = Rocket_AddTempTrack(trackName);
-        if (track != nullptr)
+        if (track != NULL)
         {
             Rocket_SetToBeSaved(track);
         }
@@ -267,15 +267,15 @@ void Rocket_Play()
     }
     ROCKET_TRACK Rocket_AddTempTrack(const char* trackName)
     {
-        if (instance == nullptr)
+        if (instance == NULL)
         {
             printf("No instance\n");
-            return nullptr;
+            return NULL;
         }
-        if (instance->rocket_device == nullptr)
+        if (instance->rocket_device == NULL)
         {
             printf("No device\n");
-            return nullptr;
+            return NULL;
         }
         ROCKET_TRACK track = sync_get_track(instance->rocket_device, trackName);
         return track;
@@ -285,7 +285,7 @@ void Rocket_Play()
     // Functions for saving tracks
     void Rocket_SaveTrack(ROCKET_TRACK track)
     {
-        mgdl_assert_print(track != nullptr, "Rocket track was null");
+        mgdl_assert_print(track != NULL, "Rocket track was null");
         save_sync(track, MGDL_ROCKET_FILE_H, MGDL_ROCKET_FILE_CPP);
     }
 
@@ -335,7 +335,7 @@ ROCKET_TRACK Rocket_GetTrack(unsigned short index)
     {
         return instance->_tracks[index];
     }
-    return nullptr;
+    return NULL;
 }
 
 unsigned short Rocket_GetTrackIndex(ROCKET_TRACK track)
@@ -352,7 +352,7 @@ unsigned short Rocket_GetTrackIndex(ROCKET_TRACK track)
 
 float Rocket_Float(ROCKET_TRACK track)
 {
-    return static_cast<float>(sync_get_val(track, instance->row));
+    return (float)(sync_get_val(track, instance->row));
 }
 
 double Rocket_Double(ROCKET_TRACK track)
@@ -362,7 +362,7 @@ double Rocket_Double(ROCKET_TRACK track)
 
 int Rocket_Int(ROCKET_TRACK track)
 {
-    return static_cast<int>(floor(sync_get_val(track, instance->row)));
+    return (int)(floor(sync_get_val(track, instance->row)));
 }
 
 bool Rocket_Bool(ROCKET_TRACK track)
