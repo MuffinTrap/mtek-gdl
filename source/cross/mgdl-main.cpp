@@ -3,6 +3,8 @@
 #include <mgdl/mgdl-assetmanager.h>
 #include <mgdl/mgdl-fbx.h>
 
+#include <mgdl/mgdl-font.h>
+
 #ifdef GEKKO
 #include <mgdl/wii/mgdl-wii-sound.h>
 #else
@@ -182,4 +184,5 @@ u16 mgdl_GetScreenWidth() { return Platform_GetSingleton()->screenWidth; }
 u16 mgdl_GetScreenHeight(){ return Platform_GetSingleton()->screenHeight; }
 float mgdl_GetAspectRatio(){ return Platform_GetSingleton()->aspectRatio; }
 float mgdl_GetElapsedSeconds(){ return Platform_GetElapsedSeconds(); };
+u32 mgdl_GetElapsedFrames(){ return Platform_GetElapsedUpdates(); };
 float mgdl_GetDeltaTime(){ return Platform_GetDeltaTime(); };

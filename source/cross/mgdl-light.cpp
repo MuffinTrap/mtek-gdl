@@ -3,7 +3,7 @@
 
 Light* Light_Create()
 {
-    Light* l = new Light();
+    Light* l = (Light*)malloc(sizeof(Light));
     l->type = LightType::Point;
     l->spotHalfAngle = 180.0f;
     l->constantAttenuation = 1.0f;

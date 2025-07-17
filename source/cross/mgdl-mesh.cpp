@@ -343,7 +343,7 @@ Mesh* Mesh_CreateIcosahedron(u32 creationFlags)
     const float Z = 0.850650808352039932;
     const float N = 0.0f;
 
-	Mesh* icosa = new Mesh();
+	Mesh* icosa = (Mesh*)malloc(sizeof(Mesh));
 	Mesh_Init(icosa, 12, 60, creationFlags);
 
 	delete[] icosa->positions;

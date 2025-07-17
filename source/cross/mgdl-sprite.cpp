@@ -6,7 +6,7 @@
 
 Sprite* Sprite_Load(Font* font)
 {
-	Sprite* sprite = new Sprite();
+	Sprite* sprite = (Sprite*)malloc(sizeof(Sprite));
 	sprite->_font = font;
 	return sprite;
 }

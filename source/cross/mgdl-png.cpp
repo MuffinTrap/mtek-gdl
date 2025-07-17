@@ -297,7 +297,7 @@ PNGFile* _PNG_ReadFilePointer(FILE* fp)
 		return nullptr;
 	}
 
-	PNGFile* png = new PNGFile();
+	PNGFile* png = (PNGFile*)malloc(sizeof(PNGFile));
 	png->width = width;
 	png->height = height;
 	png->bytesPerPixel = bpp;

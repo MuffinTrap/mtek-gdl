@@ -10,7 +10,7 @@
 
 Image* Image_Create()
 {
-	Image* img = new Image();
+	Image* img = (Image*)malloc(sizeof(Image));
 	img->aspectRatio = 1.0f;
 	img->width = 0;
 	img->height = 0;

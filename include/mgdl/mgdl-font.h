@@ -37,6 +37,7 @@ extern "C"
 {
 #endif
 
+Font* Font_Create(void);
 
 /**
  * @brief Sets the spacing of the font for the next Print call.

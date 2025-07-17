@@ -4,12 +4,12 @@
 #include "mgdl-controller.h"
 #include <mgdl/mgdl-png.h>
 #include <mgdl/mgdl-image.h>
-#include <mgdl/mgdl-font.h>
 #include <mgdl/mgdl-sound.h>
 #include <mgdl/mgdl-music.h>
 #include <mgdl/mgdl-scene.h>
 #include <mgdl/mgdl-sprite.h>
 
+struct Font;
 
 #ifdef __cplusplus
 extern "C"
@@ -46,6 +46,7 @@ u16 mgdl_GetScreenHeight(void);
 float mgdl_GetAspectRatio(void);
 float mgdl_GetElapsedSeconds(void);
 float mgdl_GetDeltaTime(void);
+u32 mgdl_GetElapsedFrames(void);
 
 void mgdl_DoProgramExit(void);
 

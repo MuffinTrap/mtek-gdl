@@ -5,7 +5,7 @@
 
 Camera* Camera_CreateDefault()
 {
-	Camera* camera = new Camera();
+	Camera* camera = (Camera*)malloc(sizeof(Camera));
 	camera->target = V3f_Create(0.0f, 0.0f, 0.0f);
 	camera->position = V3f_Create(0.0f, 0.0f, 1.0f);
 	camera->up = V3f_Create(0.0f, 1.0f, 0.0f);

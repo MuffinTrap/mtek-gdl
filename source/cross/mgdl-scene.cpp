@@ -13,7 +13,7 @@ void Scene_Init(Scene* scene)
 
 Scene* Scene_CreateEmpty()
 {
-	Scene* scene = new Scene();
+	Scene* scene = (Scene*)malloc(sizeof(Scene));
 	Scene_Init(scene);
 	return scene;
 }

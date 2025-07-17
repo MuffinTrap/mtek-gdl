@@ -28,7 +28,7 @@ Palette* Palette_GetDefault()
 
 Palette* Palette_Create(u32* colorsArray, u8 size)
 {
-	Palette* palette = new Palette();
+	Palette* palette = (Palette*)malloc(sizeof(Palette));
 	palette->_colors = colorsArray;
 	palette->size = size;
 	return palette;
@@ -37,7 +37,7 @@ Palette* Palette_Create(u32* colorsArray, u8 size)
 
 Palette* Palette_CreateEmpty(u8 size)
 {
-	Palette* palette = new Palette();
+	Palette* palette = (Palette*)malloc(sizeof(Palette));
 	palette->_colors = (u32*)malloc(sizeof(u32)*size);
 	palette->size = size;
 	return palette;

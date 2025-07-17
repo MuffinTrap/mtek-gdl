@@ -3,7 +3,7 @@
 
 Node* Node_Create(u8 childCapacity)
 {
-	Node* node = new Node();
+	Node* node = (Node*)malloc(sizeof(Node));
 	node->transform = Transform_CreateZero();
 	node->mesh = nullptr;
 	node->material = nullptr;

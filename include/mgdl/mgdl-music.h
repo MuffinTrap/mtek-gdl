@@ -39,7 +39,7 @@ extern "C"
 {
 #endif
 
-void Music_Init(Music* music);
+Music* Music_Create(void);
 Music* Music_LoadOgg(const char* fileName);
 Music* Music_LoadWav(const char* fileName);
 

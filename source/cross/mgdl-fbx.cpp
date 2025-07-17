@@ -214,7 +214,7 @@ Mesh * _FBX_AllocateMesh ( ufbx_mesh* fbxMesh )
 	sizetype vertices = fbxMesh->num_triangles * 3;
 	bool normals = fbxMesh->vertex_normal.exists;
 	bool uvs = fbxMesh->vertex_uv.exists;
-	Mesh *mesh = new Mesh();
+	Mesh *mesh = (Mesh*)malloc(sizeof(Mesh));
 	u32 creationFlags = 0;
 	if (normals)
 	{

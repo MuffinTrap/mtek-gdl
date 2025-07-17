@@ -51,6 +51,9 @@ struct Rocket
 
 	ROCKET_TRACK* _tracks;
 	unsigned short _trackCount;
+
+	// Reading from json file
+	const char *jsonFilename;
 };
 typedef struct Rocket Rocket;
 
@@ -66,6 +69,7 @@ extern "C" {
 	// Supply the rocket connection you created and the music
 	Rocket* _Rocket_GetSingleton(void);
 	bool Rocket_Init(struct Music* music, float bpm, int beatsPerRow);
+	void Rocket_SetJsonFile(const char* filename);
 	void Rocket_SetBeatsPerMinute(float bpm);
 	void Rocket_SetRowsPerBeat(int rowsPerBeat);
 	void Rocket_UpdateRow(void);

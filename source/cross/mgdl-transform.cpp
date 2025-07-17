@@ -10,7 +10,7 @@ Transform* Transform_CreateZero()
 
 Transform* Transform_Create(vec3 position, vec3 rotationDegrees, vec3 scale)
 {
-	Transform* transform = new Transform();
+	Transform* transform = (Transform*)malloc(sizeof(Transform));
 	transform->position = position;
 	transform->rotationDegrees = rotationDegrees;
 	transform->scale = scale;

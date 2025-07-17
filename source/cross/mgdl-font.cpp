@@ -12,11 +12,28 @@
 
 static short lineLimit_ = -1;
 
+Font* Font_Create(void)
+{
+	Font* font = (Font*)malloc(sizeof(Font));
+	font->_fontImage = nullptr;
+	font->_tList = nullptr;
+	font->characterWidth = 0;
+	font->characterHeight = 0;
+	font->_uvWidth = 0;
+	font->_uvHeight = 0;
+	font->_firstIndex = 0;
+	font->_characterCount = 0;
+	font->_spacingX = 0;
+	font->_spacingY = 0;
+	font->_aspect = 0;
+	return font;
+}
+
 Font* Font_Load(Image* fontImage, short charw, short charh, char firstCharacter )
 {
 	mgdl_assert_print(fontImage != nullptr, "Font_Load got nullptr for fontImage\n");
 
-	Font* font = new Font();
+	Font* font = Font_Create();
 	font->_fontImage = fontImage;
 	// TODO Log info printf("\tCreating font/sprite coordinates\n");
 	_Font_Bind(font, charw, charh, firstCharacter);
@@ -27,7 +44,7 @@ Font* Font_LoadPadded(Image* fontImage, short charw, short charh, char firstChar
 {
 	mgdl_assert_print(fontImage != nullptr, "Font_Load got nullptr for fontImage\n");
 
-	Font* font = new Font();
+	Font* font = Font_Create();
 	font->_fontImage = fontImage;
 	// TODO Log info printf("\tCreating font/sprite coordinates\n");
 	_Font_BindPadded(font, charw, charh, firstCharacter, charactersPerRow);
@@ -38,7 +55,7 @@ Font* Font_LoadSelective(Image* fontImage, short charw, short charh, short chara
 {
 	mgdl_assert_print(fontImage != nullptr, "Font_Load got nullptr for fontImage\n");
 
-	Font* font = new Font();
+	Font* font = Font_Create();
 	font->_fontImage = fontImage;
 	// TODO Log info printf("\tCreating font/sprite coordinates\n");
 	_Font_BindSelective(font, charw, charh, characters, charactersPerRow);
@@ -416,6 +433,7 @@ void _Font_CreateCoordinatesForGlyph (Font* font, u32 textureIndex, short cx, sh
 
 void _Font_CreateTextureCoordList(Font* font, short rows, short charactersPerRow, short texW, short texH)
 {
+	mgdl_assert_print(font != nullptr, "Font is null");
 	mgdl_assert_print(font->characterWidth > 0 && font->characterHeight > 0, "Character dimensions not set");
 	mgdl_assert_print(rows > 0 && charactersPerRow > 0, "Rows and cpr at zero");
 	mgdl_assert_print(texW > 0 && texH > 0, "Texture size is 0");

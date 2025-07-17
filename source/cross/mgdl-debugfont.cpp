@@ -568,7 +568,7 @@ Font* Font_GetDebugFont()
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, fontImage);
 		glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
 
-		Image* img = new Image();
+		Image* img = (Image*)malloc(sizeof(Image));
 		Image_SetGLName(img, texName, width, height, ColorFormats::RGBA);
 		Image_SetTint(img, 1.0f, 1.0f, 1.0f);
 		debugFont = Font_Load(img, 8, 8, ' ');
