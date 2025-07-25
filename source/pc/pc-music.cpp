@@ -234,7 +234,7 @@ bool ReadOggProperties()
 		audioData.format = AL_FORMAT_STEREO16;
 	else
 	{
-		Log_ErrorF("ERROR: unrecognised ogg format: %d channels, %d bps", audioData.channels, audioData.bitsPerSample);
+		Log_ErrorF("ERROR: unrecognised ogg format: %d channels, %d bps\n", audioData.channels, audioData.bitsPerSample);
 		audioData.file.close();
 		return false;
 	}
@@ -257,12 +257,12 @@ bool VerifyALSource()
     bool sourceOk = alCall(alIsSource, audioData.source);
     if (sourceOk == false)
     {
-        Log_ErrorF("Audiodata did not get valid AL source ID %d", audioData.source);
+        Log_ErrorF("Audiodata did not get valid AL source ID %d\n", audioData.source);
         return false;
     }
     else
     {
-        Log_Info("Ogg file loaded ok");
+        Log_Info("Ogg file loaded ok\n");
     }
 
 	return true;
@@ -300,7 +300,7 @@ Music* Music_LoadWav(const char* filename)
     return nullptr;
 }
 
-Music* Music_Init(void)
+Music* Music_Create(void)
 {
     Music* music = (Music*)malloc(sizeof(Music));
     pcmBuffer = nullptr;

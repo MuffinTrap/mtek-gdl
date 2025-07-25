@@ -215,7 +215,7 @@ Image* Image_GenerateCheckerBoard()
 	const u32 width = 8;
 	const u32 height = 8;
 	u32 index = 0;
-	GLubyte checkerImage[height][width][4];
+	GLubyte checkerImage[height][width][2];
 
 	for(u32 y = 0; y < height; y++)
 	{
@@ -224,9 +224,7 @@ Image* Image_GenerateCheckerBoard()
 			index = (x+y)%2;
 
 			checkerImage[y][x][0] = index == 0? 255 :0;
-			checkerImage[y][x][1] = index == 0? 255 :0;
-			checkerImage[y][x][2] = index == 0? 255 :0;
-			checkerImage[y][x][3] = 255;
+			checkerImage[y][x][1] = 255;
 		}
 	}
 
@@ -240,11 +238,11 @@ Image* Image_GenerateCheckerBoard()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, checkerImage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8_ALPHA8, width, height, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, checkerImage);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
 
 	Image* img = Image_Create();
-	Image_SetGLName(img, texName, width, height, ColorFormats::RGBA);
+	Image_SetGLName(img, texName, width, height, ColorFormats::GrayAlpha);
 	return img;
 }
 

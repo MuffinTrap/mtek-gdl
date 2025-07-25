@@ -1,5 +1,6 @@
 #include <mgdl/mgdl-util.h>
 #include <cstdlib>
+#include <mgdl/wflcg/WFLCG_c.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
 
@@ -10,55 +11,34 @@
     #endif
 #endif
 
-Color4b ColorToComponents(u32 color)
+static WFLCG_c randomGenerator;
+
+
+void Random_CreateGenerator(void)
 {
-    Color4b components = {0,0,0,0};
-    components.red = RED(color);
-    components.green = GREEN(color);
-    components.blue = BLUE(color);
-    components.alpha = ALPHA(color);
-    return components;
-}
-u32 ComponentsToColor(Color4f components)
-{
-    u32 color = TO_RGBA(
-    components.red,
-    components.green,
-    components.blue,
-    components.alpha);
-    return color;
+	WFLCG_c_init_default(&randomGenerator);
 }
 
-Color4f ColorToFloats(u32 color)
+void Random_SetSeed(u32 seed)
 {
-    Color4f components = {0,0,0,0};
-    components.red = (float)RED(color)/255.0f;
-    components.green = (float)GREEN(color)/255.0f;
-    components.blue = (float)BLUE(color)/255.0f;
-    components.alpha = (float)ALPHA(color)/255.0f;
-    return components;
+	WFLCG_c_init_1_seed(&randomGenerator, seed);
 }
 
-Color4f Color_FromHex(u32 hexColor)
-{
-	return ColorToFloats(hexColor);
-}
-
-float GetRandomFloat(float min, float max)
+float Random_Float(float min, float max)
 {
     float range = max - min;
-	return min + range * ((float)rand()/(float)RAND_MAX);
+	return min + range * WFLCG_c_get_float(&randomGenerator);
 }
-float GetRandomFloatNormal()
+float Random_FloatNormalized()
 {
-	return GetRandomFloat(0.0f, 1.0f);
+	return Random_Float(0.0f, 1.0f);
 }
 
-int GetRandomInt(int min, int max)
+int Random_Int(int min, int max)
 {
     int range = max - min;
 	if (range == 0) { return 0;}
-	return min + rand()%range;
+	return min + WFLCG_c_get_value(&randomGenerator) % range;
 }
 
 u32 clampU32(u32 val, u32 minVal, u32 maxVal)

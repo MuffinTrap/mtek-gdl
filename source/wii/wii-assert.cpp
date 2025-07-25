@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include <wiiuse/wpad.h>
 #include <mgdl/wii/mgdl-wii.h>
+#include <mgdl/mgdl-console.h>
 
 void AssertFunctionPrintf(const char* filename, int lineNumber, const char* message, ...)
 {
@@ -15,8 +16,8 @@ void AssertFunctionPrintf(const char* filename, int lineNumber, const char* mess
     va_end(args);
 
     gdl::ConsoleMode();
-    printf("Assert failed! %s:%d:%s\n", filename, lineNumber, buff);
-    printf("Press HOME to quit\n");
+    Console_Printf(ConsoleText_Cyan, "Assert failed! %s:%d:%s\n", filename, lineNumber, buff);
+    printf("Press HOME to quit or A to continue\n");
     while (true)
     {
         WPAD_ScanPads();
@@ -25,6 +26,11 @@ void AssertFunctionPrintf(const char* filename, int lineNumber, const char* mess
             // Return to homebrew menu
             break;
         }
+        if (WPAD_ButtonsDown(0) & WPAD_BUTTON_A)
+        {
+            return;
+        }
+
         VIDEO_WaitVSync();
     }
 

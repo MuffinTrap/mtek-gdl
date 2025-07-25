@@ -31,12 +31,6 @@ DATA		:=	data
 TEXTURES	:=	
 INCLUDES	:=	include
 
-#-------------------
-# Extra modules
-#-------------------
-# Rocket
-SOURCES += rocket/
-INCLUDES += rocket/
 
 #---------------------------------------------------------------------------------
 # options for code generation

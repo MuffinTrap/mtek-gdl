@@ -26,6 +26,7 @@ static int glutWindowId = 0;
 
 CallbackFunction initCall = nullptr;
 CallbackFunction frameCall = nullptr;
+CallbackFunction quitCall = nullptr;
 
 
 // Main glut functions
@@ -170,10 +171,19 @@ void RenderLoop()
 {
 	frameCall();
 
+    RenderEnd();
+
+    if (WiiController_ButtonPress(&glutController, ButtonHome))
+    {
+        if (quitCall != NULL)
+        {
+            quitCall();
+        }
+        Platform_DoProgramExit();
+    }
     // Reset controller for next frame
     WiiController_StartFrame(&glutController);
 
-    RenderEnd();
 }
 
 static void RenderEnd()
@@ -244,12 +254,14 @@ void Platform_Init(const char* windowName,
                    ScreenAspect screenAspect,
                    CallbackFunction initCallback,
                    CallbackFunction frameCallback,
+                   CallbackFunction quitCallback,
                    u32 initFlags)
 {
 	mgdl_assert_print(initCallback != nullptr, "Need to provide init callback before system init on PC");
 	mgdl_assert_print(frameCallback != nullptr, "Need to provide frame callback before system init on PC");
     initCall = initCallback;
 	frameCall = frameCallback;
+    quitCall = quitCallback;
 
 
     platformPC.windowName = windowName;
@@ -304,6 +316,7 @@ void Platform_Init(const char* windowName,
     glutMouseFunc(mouseKey);        // Register mouse buttons and movement
     glutMotionFunc(mouseMove);
     glutPassiveMotionFunc(mouseMove);
+    glutSetCursor(GLUT_CURSOR_NONE);
 
     glutReshapeFunc(onWindowSizeChange);
 
@@ -347,6 +360,8 @@ void Platform_Init(const char* windowName,
     }
     else if (HoldAFlag)
     {
+        printf("\n>> MGDL INIT COMPLETE\n");
+        printf(">> Hold A button to continue\n");
         glutTimerFunc(16, UpdateAHold, 0);
     }
     else

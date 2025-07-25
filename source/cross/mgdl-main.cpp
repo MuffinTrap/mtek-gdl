@@ -17,9 +17,10 @@ void mgdl_InitSystem(const char* windowName,
 	ScreenAspect screenAspect,
 	CallbackFunction initCallback,
 	CallbackFunction frameCallback,
+	CallbackFunction quitCallback,
 	u32 initFlags)
 {
-	Platform_Init(windowName, screenAspect, initCallback, frameCallback, initFlags);
+	Platform_Init(windowName, screenAspect, initCallback, frameCallback, quitCallback, initFlags);
 	AssetManager_Init(&assetManager);
 }
 

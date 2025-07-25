@@ -4,6 +4,17 @@
 
 #include <string>
 
+#ifdef MGDL_ROCKET
+    #include <mgdl/mgdl-rocket.h>
+
+
+    #ifdef SYNC_PLAYER
+        #include MGDL_ROCKET_FILE_H
+    #else
+        static ROCKET_TRACK clear_r;
+    #endif
+#endif
+
 Example::Example()
 {
 
@@ -17,8 +28,9 @@ void Example::Init()
     mel_sprites = mgdl_LoadSprite("assets/mel_tiles.png", spriteHeight, spriteHeight);
     fruitSprites = mgdl_LoadSprite("assets/fruits.png", 16, 16);
     pointerImage = mgdl_LoadImage("assets/pointer.png", TextureFilterModes::Nearest);
+
     ibmFont = mgdl_LoadFont("assets/font8x16.png", 8, 16, ' ');
-    debugFont = Font_GetDebugFont();
+    debugFont = DefaultFont_GetDefaultFont();
 
     // Audio
     blip = mgdl_LoadSound("assets/blipSelect.wav");
@@ -59,22 +71,67 @@ void Example::Init()
 
 
     menu = Menu_CreateWindowed(ibmFont, 1.0f, 1.0f, 128, 256, "MTEK GDL");
-    cameraMenu = Menu_Create(debugFont, 1.0f, 1.0f);
-    controllerMenu = Menu_Create(ibmFont, 1.0f, 1.0f);
-    performanceMenu = Menu_Create(debugFont, 1.0f, 1.0f);
-    audioMenu = Menu_Create(debugFont, 1.0f, 1.0f);
+    cameraMenu = Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 128, 256, "Camera");
+    controllerMenu = Menu_CreateWindowed(ibmFont, 1.0f, 1.0f, 128, 356, "Controls");
+    performanceMenu = Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 256, 64, "Performance");
+    audioMenu = Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 128, 256, "Audio");
 
     musicLooping = Music_GetLooping(sampleMusic);
     sceneRotation = V3f_Create(0.0f, 1.0f,0.0f);
     //quad->DebugPrint();
 
     cameraDistance = 30.0f;
+
+    #ifdef MGDL_ROCKET
+        // Connect to editor
+        RocketTrackFormat trackSource = TrackEditor;
+        #ifdef SYNC_PLAYER
+            // Read from CPP file
+            RocketTrackFormat trackSource = TrackCPP;
+        #endif
+
+        bool rocketInit = Rocket_Connect(trackSource, TrackCPP, sampleMusic, 120, 4);
+        if (rocketInit == false)
+        {
+            mgdl_DoProgramExit();
+        }
+
+        #ifdef SYNC_PLAYER
+            // In release mode start the music and tracks
+            Rocket_PlayTracks();
+        #else
+            // When tracks are in CPP file, this should not be called
+            clear_r = Rocket_AddTrack("clear_r");
+        #endif
+    #endif
+}
+
+void Example::Quit()
+{
+#ifdef MGDL_ROCKET
+    Rocket_Disconnect();
+#endif
 }
 
 void Example::Update()
 {
+    #ifdef MGDL_ROCKET
 
-    // These are available only during update
+        Rocket_UpdateRow();
+        float r = Rocket_Float(clear_r);
+        float g = 1.0f;
+        float b = 174.0f/255.0f;
+        glClearColor(r, g, b, 0.0f);
+
+        #ifndef SYNC_PLAYER
+
+            if (WiiController_ButtonPress(mgdl_GetController(0), WiiButtons::Button2))
+            {
+                Rocket_SaveAllTracks();
+            }
+        #endif
+    #endif
+
     elapsedSeconds = mgdl_GetElapsedSeconds();
     deltaTime = mgdl_GetDeltaTime();
 
@@ -114,13 +171,7 @@ void Example::Draw()
     glLoadIdentity();
 
 
-    if ( toggleSprites) {DrawSprites();}
     if ( toggle3D) {DrawIcosa();}
-    if ( toggleImage) {DrawImage();}
-    if ( toggleCamera) {DrawCameraControls();}
-    if ( toggleInputs) {DrawInputInfo();}
-    if ( togglePerformance) {DrawTimingInfo();}
-    if ( toggleAudio) {DrawAudio();}
 
 
     mgdl_InitOrthoProjection();
@@ -128,8 +179,14 @@ void Example::Draw()
     glLoadIdentity();
     DrawMenu();
 
-    Image_Draw2DAligned(pointerImage, cursorPos.x, cursorPos.y, Colors::White, LJustify, LJustify);
-    Font_Printf(debugFont, Colors::White, 10, 16, 16, "Mouse down: %d, click %d", mouseDown, mouseClick);
+    if ( toggleSprites) {DrawSprites();}
+    if ( toggleImage) {DrawImage();}
+    if ( toggleCamera) {DrawCameraControls();}
+    if ( toggleInputs) {DrawInputInfo();}
+    if ( togglePerformance) {DrawTimingInfo();}
+    if ( toggleAudio) {DrawAudio();}
+
+    Menu_DrawCursor();
 }
 
 void Example::DrawSprites()
@@ -139,7 +196,7 @@ void Example::DrawSprites()
     for (int i = 0; i < 16; i++)
     {
         int size = 64;
-        Sprite_Draw2D(fruitSprites, i, size * (i%4), size + (i/4) * size, size, LJustify, RJustify, Colors::White);
+        Sprite_Draw2D(fruitSprites, i, size * (i%4), size + (i/4) * size, size, LJustify, RJustify, Color_GetDefaultColor(Color_White));
     }
 
     const short h = Sprite_GetHeight(mel_sprites);
@@ -151,7 +208,7 @@ void Example::DrawSprites()
     short placeY = mgdl_GetScreenHeight();
     for (short i = 0; i < 4; i++)
     {
-        Sprite_Draw2D(mel_sprites, i, placeX, placeY, spriteH, LJustify, LJustify, Colors::White);
+        Sprite_Draw2D(mel_sprites, i, placeX, placeY, spriteH, LJustify, LJustify, Color_GetDefaultColor(Color_White));
         placeY -= spriteH;
     }
 }
@@ -213,7 +270,7 @@ void Example::DrawVersion()
 #endif
 
 
-void Example::DrawScene ( Scene* scene, vec3 scale)
+void Example::DrawScene ( Scene* scene, V3f scale)
 {
     // Try to draw Wii 3D model
     mgdl_InitPerspectiveProjection(75.0f, 0.1f, 100.0f);
@@ -248,14 +305,12 @@ void Example::DrawScene ( Scene* scene, vec3 scale)
 }
 
 
-#if 0
 
 void DrawDPad(short x, short y, short size)
 {
-    short box = size/3;
+    short box = size;
     short h=box/2;
-    x += box + h;
-    y += box + h;
+    y -= box + h;
     // Dpad
     int dpad_buttons[] = {
         WiiButtons::ButtonUp,
@@ -264,20 +319,25 @@ void DrawDPad(short x, short y, short size)
         WiiButtons::ButtonRight
     };
     vec2 directions[] = {
-        vec2New(0,-1),
         vec2New(0,1),
+        vec2New(0,-1),
         vec2New(-1,0),
         vec2New(1,0)
     };
+    Palette* blessing = Palette_GetDefault();
+    Color4f c = Palette_GetColor4f(blessing, 6);
     for (int i=0;i<4;i++)
     {
-        Colors c = Colors::LightRed;
-        if (WiiController_ButtonHeld(GetController(0), dpad_buttons[i]))
+        if (WiiController_ButtonHeld(mgdl_GetController(0), dpad_buttons[i]))
         {
-            c = Colors::Red;
+            c = Palette_GetColor4f(blessing, 4);
+        }
+        else
+        {
+            c = Palette_GetColor4f(blessing, 6);
         }
         vec2 d=directions[i];
-        DrawBoxF(x+d.x*box-h, y+ d.y*box-h, x+box+d.x*box-h, y+box+d.y*box-h, c);
+        Draw2D_Rect(x+d.x*box-h, y+ d.y*box-h, x+box+d.x*box-h, y+box+d.y*box-h, &c);
     }
 }
 
@@ -285,23 +345,22 @@ void DrawJoystick(short x, short y, short size)
 {
     // Draw joystick direction
     short jsize=size;
-    short box = jsize/3;
+    short box = jsize;
     short h=box/2;
-    rgba8 jc = Colors::Green;
-    vec2 jdir = WiiController_GetNunchukJoystickDirection(GetController(0));
+    Palette* blessing = Palette_GetDefault();
+    Color4f jc = Palette_GetColor4f(blessing, 6);
+    vec2 jdir = WiiController_GetNunchukJoystickDirection(mgdl_GetController(0));
     short jleft= x + jsize/2 + jdir.x * box-h;
-    short jtop = y + jsize/2 + jdir.y * box-h;
-    DrawBox(x, y, x+jsize, y+jsize, jc);
-    if (jdir.x != 0.0f && jdir.y != 0.0f)
+    short jtop = y - jsize/2 - jdir.y * box-h;
+    Draw2D_RectLines(x-jsize, y, x+jsize*2, y-jsize*3, &jc);
+    if (jdir.x != 0.0f || jdir.y != 0.0f)
     {
-        jc = Colors::LightGreen;
+        jc = Palette_GetColor4f(blessing, 4);
     }
-    DrawBoxF(jleft, jtop, jleft+box, jtop+box,jc);
+    Draw2D_Rect(jleft, jtop, jleft+box, jtop-box, &jc);
 }
 
 
-#endif
-static const char* names[] ={ "A", "B", "+", "-", "1", "2" };
 void Example::DrawInputInfo()
 {
     int x = 10;
@@ -311,28 +370,40 @@ void Example::DrawInputInfo()
     Menu_SetActive(controllerMenu);
     Menu_StartInput(x, y, 100, cursorPos, false, false);
 
-    Menu_Text("Input");
-
-
+    Menu_Text("Buttons");
 
     // Draw button states
-    int buttons[] = {
+    int buttons[8] = {
         WiiButtons::ButtonA,
         WiiButtons::ButtonB,
         WiiButtons::ButtonPlus,
         WiiButtons::ButtonMinus,
         WiiButtons::Button1,
-        WiiButtons::Button2
+        WiiButtons::Button2,
+        WiiButtons::ButtonZ,
+        WiiButtons::ButtonC
         };
 
-    for(int i = 0; i < 6;i++ )
+    for(int i = 0; i < 8;i++ )
     {
         bool held = WiiController_ButtonHeld(mgdl_GetController(0), buttons[i]);
-        Menu_Flag(names[i], held);
+        Menu_Flag(WiiController_GetButtonSymbol(buttons[i]), held);
     }
 
-    // DrawDPad();
-    // DrawJoystick();
+    Menu_Text("D pad");
+    DrawDPad(controllerMenu->_drawx + 50, controllerMenu->_drawy, controllerMenu->_textSize);
+    Menu_Empty(controllerMenu->_textSize*3);
+
+    Menu_Text("Joystick");
+    DrawJoystick(controllerMenu->_drawx + 50, controllerMenu->_drawy, controllerMenu->_textSize);
+    Menu_Empty(controllerMenu->_textSize*3);
+
+    float pitch = WiiController_GetPitch(mgdl_GetController(0));
+    float yaw = WiiController_GetYaw(mgdl_GetController(0));
+    float roll = WiiController_GetRoll(mgdl_GetController(0));
+    Menu_TextF("Pitch %.0f ", Rad2Deg(pitch));
+    Menu_TextF("Yaw %.0f", Rad2Deg(yaw));
+    Menu_TextF("Roll %.0f", Rad2Deg(roll));
 }
 
 void Example::DrawTimingInfo()
@@ -350,23 +421,26 @@ void Example::DrawTimingInfo()
     {
         Menu_TextF("Music elapsed: %.2f", Music_GetElapsedSeconds(sampleMusic));
         SoundStatus musicStatus = Music_GetStatus(sampleMusic);
-        rgba8 musicColor = Colors::Red;
-        IconSymbol icon = IconSymbol::Dot;
+        Color4f* musicColor = Color_GetDefaultColor(Color_Red);
+        IconSymbol icon = IconSymbol::Icon_Dot;
 
         switch(musicStatus)
         {
             case SoundStatus::Playing:
-                musicColor = Colors::Green;
-                icon = IconSymbol::TriangleUp;
+                musicColor = Color_GetDefaultColor(Color_Green);
+                icon = IconSymbol::Icon_TriangleUp;
                 break;
             case SoundStatus::Paused:
-                musicColor = Colors::Yellow;
-                icon = IconSymbol::Clock;
+                musicColor = Color_GetDefaultColor(Color_White);
+                icon = IconSymbol::Icon_Clock;
                 break;
-            case SoundStatus::Stopped: musicColor = Colors::Red;
-                icon = IconSymbol::Skull;
+            case SoundStatus::Stopped:
+                musicColor = Color_GetDefaultColor(Color_Red);
+                icon = IconSymbol::Icon_Skull;
                 break;
-            case SoundStatus::Initial: musicColor = Colors::Black; break;
+            case SoundStatus::Initial:
+                musicColor = Color_GetDefaultColor(Color_Black);
+            break;
         };
         Menu_Icon(icon, musicColor);
     }
@@ -374,22 +448,25 @@ void Example::DrawTimingInfo()
     float blipElapsed = Sound_GetElapsedSeconds(blip);
     Menu_TextF("Sound elapsed: %.2f", blipElapsed);
     SoundStatus musicStatus = Sound_GetStatus(blip);
-    rgba8 musicColor = Colors::Red;
-    IconSymbol icon = IconSymbol::Dot;
+    Color4f* musicColor = Color_GetDefaultColor(Color_Red);
+    IconSymbol icon = IconSymbol::Icon_Dot;
     switch(musicStatus)
     {
         case SoundStatus::Playing:
-            musicColor = Colors::Green;
-            icon = IconSymbol::TriangleUp;
+            musicColor = Color_GetDefaultColor(Color_Green);
+            icon = IconSymbol::Icon_TriangleUp;
             break;
         case SoundStatus::Paused:
-            musicColor = Colors::Yellow;
-            icon = IconSymbol::Clock;
+            musicColor = Color_GetDefaultColor(Color_White);
+            icon = IconSymbol::Icon_Clock;
             break;
-        case SoundStatus::Stopped: musicColor = Colors::Red;
-            icon = IconSymbol::Skull;
+        case SoundStatus::Stopped:
+            musicColor = Color_GetDefaultColor(Color_Red);
+            icon = IconSymbol::Icon_Skull;
             break;
-        case SoundStatus::Initial: musicColor = Colors::Black; break;
+        case SoundStatus::Initial:
+            musicColor = Color_GetDefaultColor(Color_Black);
+            break;
     };
     Menu_Icon(icon, musicColor);
 }
@@ -411,6 +488,12 @@ void Example::DrawMenu()
     Menu_Toggle("Inputs", &toggleInputs);
     Menu_Toggle("Performance", &togglePerformance);
     Menu_Toggle("Audio", &toggleAudio);
+#if MGDL_ROCKET
+    if (Menu_Button("Write Rocket"))
+    {
+        Rocket_SaveAllTracks();
+    }
+#endif
 }
 
 void Example::DrawAudio()

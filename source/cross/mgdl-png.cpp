@@ -354,7 +354,7 @@ PNGFile* PNG_ReadFile(const char* filename)
 	return png;
 }
 
-rgba8 PNG_GetRGBA(PNGFile* png, int x, int y)
+Color4b PNG_GetRGBA(PNGFile* png, int x, int y)
 {
 	size_t index = x + y * png->width;
 	size_t byteIndex = index * png->bytesPerPixel;
@@ -367,8 +367,7 @@ rgba8 PNG_GetRGBA(PNGFile* png, int x, int y)
 		alpha = png->_texels[byteIndex + 3];
 	}
 
-	u32 c = TO_RGBA(red, green, blue, alpha);
-	return c;
+	return Color_Create4b(red, green, blue, alpha);
 }
 
 float PNG_GetGrayscale(PNGFile* png, int x, int y)

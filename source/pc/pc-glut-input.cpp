@@ -3,6 +3,7 @@
 #ifndef GEKKO
 #include <mgdl/pc/mgdl-pc-input.h>
 #include <mgdl/mgdl-opengl.h>
+#include <mgdl/mgdl-main.h>
 
 #include <stdio.h>
 
@@ -10,14 +11,34 @@ WiiController glutController;
 
 #define ascii_1  49
 #define ascii_2  50
+#define ascii_plus  43
+#define ascii_minus  45
+// D pad
 #define ascii_w  119
 #define ascii_a  97
 #define ascii_s  115
 #define ascii_d  100
-#define ascii_q  113
-#define ascii_e  101
+
+// Nunchuck buttons
+#define ascii_c  99
+#define ascii_z  122
+
+// Roll
+#define ascii_u  117
+#define ascii_o  111
+// Pitch
+#define ascii_i  105
+#define ascii_k  107
+// Yaw
+#define ascii_j  106
+#define ascii_l  108
 
 #define ascii_ESC 27
+
+// Others
+
+#define ascii_q  113
+#define ascii_e  101
 
 
 #pragma GCC diagnostic push
@@ -57,67 +78,124 @@ void mouseMove(int x, int y) {
 
 	// In OpenGL the Y increases up
 	// but these coordinates the y increses down
+    y = mgdl_GetScreenHeight() - y;
 	glutController._cursorY = y;
 }
 
 void keyboardDown(unsigned char key, int x, int y) {
-	if (key == ascii_ESC) { // ASCII code for 'Escape'
-		_WiiController_SetButtonDown(&glutController, WiiButtons::ButtonHome);
+	switch(key)
+	{
+		case ascii_ESC: // ASCII code for 'Escape'
+			_WiiController_SetButtonDown(&glutController, WiiButtons::ButtonHome);
+			break;
+		case ascii_w:
+			glutController._nunchukJoystickDirectionY = -1.0f;
+			break;
+		case ascii_s:
+			glutController._nunchukJoystickDirectionY = 1.0f;
+			break;
+		case ascii_a:
+			glutController._nunchukJoystickDirectionX = -1.0f;
+			break;
+		case ascii_d:
+			glutController._nunchukJoystickDirectionX = 1.0f;
+			break;
+		case ascii_1:
+			_WiiController_SetButtonDown(&glutController, WiiButtons::Button1);
+			break;
+		case ascii_2:
+			_WiiController_SetButtonDown(&glutController, WiiButtons::Button2);
+			break;
+		case ascii_minus:
+			_WiiController_SetButtonDown(&glutController, WiiButtons::ButtonMinus);
+			break;
+		case ascii_plus:
+			_WiiController_SetButtonDown(&glutController, WiiButtons::ButtonPlus);
+			break;
+
+		case ascii_z:
+			_WiiController_SetButtonDown(&glutController, WiiButtons::ButtonZ);
+			break;
+		case ascii_c:
+			_WiiController_SetButtonDown(&glutController, WiiButtons::ButtonC);
+			break;
+
+		case ascii_u:
+			glutController._roll = -M_PI;
+			break;
+		case ascii_o:
+			glutController._roll = M_PI;
+			break;
+		case ascii_i:
+			glutController._pitch = -M_PI;
+			break;
+		case ascii_k:
+			glutController._pitch = M_PI;
+			break;
+		case ascii_j:
+			glutController._yaw = -M_PI;
+			break;
+		case ascii_l:
+			glutController._yaw = M_PI;
+			break;
+		};
 	}
-	else if (key == ascii_w) {
-		glutController._nunchukJoystickDirectionY = -1.0f;
-	}
-	else if (key == ascii_s) {
-		glutController._nunchukJoystickDirectionY = 1.0f;
-	}
-	else if (key == ascii_a) {
-		glutController._nunchukJoystickDirectionX = -1.0f;
-	}
-	else if (key == ascii_d) {
-		glutController._nunchukJoystickDirectionX = 1.0f;
-	}
-	else if (key == ascii_1) {
-		_WiiController_SetButtonDown(&glutController, WiiButtons::Button1);
-	}
-	else if (key == ascii_2) {
-		_WiiController_SetButtonDown(&glutController, WiiButtons::Button2);
-	}
-	else if (key == ascii_q) {
-		_WiiController_SetButtonDown(&glutController, WiiButtons::ButtonMinus);
-	}
-	else if (key == ascii_e) {
-		_WiiController_SetButtonDown(&glutController, WiiButtons::ButtonPlus);
-	}
-}
 
 void keyboardUp(unsigned char key, int x, int y) {
-	if (key == ascii_ESC) { // ASCII code for 'Escape'
-		_WiiController_SetButtonUp(&glutController, WiiButtons::ButtonHome);
-	}
-	else if (key == ascii_w) {
-		glutController._nunchukJoystickDirectionY = 0.0f;
-	}
-	else if (key == ascii_s) {
-		glutController._nunchukJoystickDirectionY = 0.0f;
-	}
-	else if (key == ascii_a) {
-		glutController._nunchukJoystickDirectionX = 0.0f;
-	}
-	else if (key == ascii_d) {
-		glutController._nunchukJoystickDirectionX = 0.0f;
-	}
-	else if (key == ascii_1) {
-		_WiiController_SetButtonUp(&glutController, WiiButtons::Button1);
-	}
-	else if (key == ascii_2) {
-		_WiiController_SetButtonUp(&glutController, WiiButtons::Button2);
-	}
-	else if (key == ascii_q) {
-		_WiiController_SetButtonUp(&glutController, WiiButtons::ButtonMinus);
-	}
-	else if (key == ascii_e) {
-		_WiiController_SetButtonUp(&glutController, WiiButtons::ButtonPlus);
-	}
+	switch(key)
+	{
+		case ascii_ESC: // ASCII code for 'Escape'
+			_WiiController_SetButtonUp(&glutController, WiiButtons::ButtonHome);
+			break;
+		case ascii_w:
+			glutController._nunchukJoystickDirectionY = 0.0f;
+			break;
+		case ascii_s:
+			glutController._nunchukJoystickDirectionY = 0.0f;
+			break;
+		case ascii_a:
+			glutController._nunchukJoystickDirectionX = 0.0f;
+			break;
+		case ascii_d:
+			glutController._nunchukJoystickDirectionX = 0.0f;
+			break;
+		case ascii_1:
+			_WiiController_SetButtonUp(&glutController, WiiButtons::Button1);
+			break;
+		case ascii_2:
+			_WiiController_SetButtonUp(&glutController, WiiButtons::Button2);
+			break;
+		case ascii_minus:
+			_WiiController_SetButtonUp(&glutController, WiiButtons::ButtonMinus);
+			break;
+		case ascii_plus:
+			_WiiController_SetButtonUp(&glutController, WiiButtons::ButtonPlus);
+			break;
+		case ascii_z:
+			_WiiController_SetButtonUp(&glutController, WiiButtons::ButtonZ);
+			break;
+		case ascii_c:
+			_WiiController_SetButtonUp(&glutController, WiiButtons::ButtonC);
+			break;
+		case ascii_u:
+			glutController._roll = 0.0f;
+			break;
+		case ascii_o:
+			glutController._roll = 0.0f;
+			break;
+		case ascii_i:
+			glutController._pitch = 0.0f;
+			break;
+		case ascii_k:
+			glutController._pitch = 0.0f;
+			break;
+		case ascii_j:
+			glutController._yaw = 0.0f;
+			break;
+		case ascii_l:
+			glutController._yaw = 0.0f;
+			break;
+	};
 }
 
 void specialKeyDown(int key, int x, int y) {

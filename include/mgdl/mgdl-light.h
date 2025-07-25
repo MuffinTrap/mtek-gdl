@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mgdl-types.h"
+#include "mgdl-color.h"
 #include "mgdl-opengl.h"
 
 enum LightType
@@ -42,15 +43,15 @@ extern "C"
 #endif
 
 	Light* Light_Create(void);
-	void Light_SetPosition(Light* light, vec3 position);
-	void Light_SetDirection(Light* light, vec3 direction);
+	void Light_SetPosition(Light* light, V3f position);
+	void Light_SetDirection(Light* light, V3f direction);
 	void Light_SetColor(Light* light, Color4f* color);
 	void Light_SetAmbientColor(Light* light, Color4f* color);
 	void Light_Enable(Light* light);
 	void Light_Disable(Light* light);
 	void Light_Apply(Light* light);
 
-	vec3 Light_GetDirection(Light* light);
+	V3f Light_GetDirection(Light* light);
 
 
 #ifdef __cplusplus

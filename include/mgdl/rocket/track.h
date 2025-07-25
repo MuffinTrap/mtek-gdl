@@ -29,9 +29,16 @@ struct sync_track {
 	int num_keys;
 };
 
+// CPP write
 void start_save_sync ( const char* filename_h, const char* filename_cpp );
 void save_sync(const struct sync_track *t, const char *filename_h, const char* filename_cpp);
 void end_save_sync( const char* filename_h, const char* filename_cpp );
+
+// JSON write
+void start_save_sync_json ( const char* filename);
+void save_sync_json(const struct sync_track *t, const char *filename);
+void end_save_sync_json( const char* filename);
+
 int sync_find_key(const struct sync_track *, int);
 static inline int key_idx_floor(const struct sync_track *t, int row)
 {

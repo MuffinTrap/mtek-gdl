@@ -24,7 +24,7 @@ extern "C"
 #endif
 
 	Node* Node_Create(u8 childCapacity);
-	void Node_SetTransform(Node* node, const char* name, vec3 position, vec3 rotationAngles);
+	void Node_SetTransform(Node* node, const char* name, V3f position, V3f rotationAngles);
 	void Node_SetContent(Node* node, const char* name, Mesh* meshParam, Material* materialParam);
 	void Node_Draw(Node* node);
 

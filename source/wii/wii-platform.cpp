@@ -10,6 +10,7 @@
 
 static CallbackFunction initCall = nullptr;
 static CallbackFunction frameCall = nullptr;
+static CallbackFunction quitCall = nullptr;
 
 static WiiController controller;
 
@@ -25,6 +26,7 @@ void Platform_Init(const char* windowName,
 	ScreenAspect screenAspect,
 	CallbackFunction initCallback,
 	CallbackFunction frameCallback,
+	CallbackFunction quitCallback,
 	u32 initFlags)
 {
 	mgdl_assert_print(initCallback != nullptr, "Need to provide init callback before system init on PC");
@@ -32,6 +34,7 @@ void Platform_Init(const char* windowName,
 
 	initCall = initCallback;
 	frameCall = frameCallback;
+	quitCall = quitCallback;
 
 	platformWii.windowName = windowName;
 
@@ -169,6 +172,7 @@ void MainLoop()
 	while(true)
 	{
 		// Timing
+		// TODO how is gdl::Delta different from this?
 		u64 now = gettime();
 		platformWii._deltaTimeS = (float)(now - deltaTimeStart) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
 		deltaTimeStart = now;
@@ -180,6 +184,15 @@ void MainLoop()
 		frameCall();
 		glFlush();
 		gdl::Display();
+
+		if (WiiController_ButtonPress(&controller, ButtonHome))
+		{
+			if (quitCall != NULL)
+			{
+				quitCall();
+			}
+			Platform_DoProgramExit();
+		}
 
 		frameCount++;
 	}
@@ -203,7 +216,9 @@ void ReadControllers()
 
 	const ir_t &ir = data1->ir;
 	controller._cursorX = ir.x;
-	controller._cursorY = ir.y;
+    float y = platformWii.screenHeight - ir.y;
+	controller._cursorY = y;
+
 	if(platformWii.aspect == Screen16x9)
 	{
 		// Multiply x and y to match them to 16:9 screen
@@ -235,6 +250,8 @@ void ReadControllers()
 	}
 
 	controller._roll = DegToRad(data1->orient.roll);
+	controller._pitch = DegToRad(data1->orient.pitch);
+	controller._yaw = DegToRad(data1->orient.yaw);
 }
 
 Platform* Platform_GetSingleton() { return &platformWii; }

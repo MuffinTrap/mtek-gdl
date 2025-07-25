@@ -16,11 +16,22 @@ extern "C"
 {
 #endif
 
-
+/**
+ * @brief Initializes the systems and creates a window.
+ * @details Call this function to open the window and start the main loop. Don't call other mgdl functions before this except
+ * SetSplashScreenColors and SetSplashScreenDuration
+ * @param name Name of the window. Does not have any meaning on Wii.
+ * @param screenAspect Aspect ratio of the screen. Auto means to use the platform default. On Wii this is what is set in the console settings.
+ * @param initCallback This is called once after the system is initialized. Use it to load all assets.
+ * @param frameCallback This is called once each frame. The framebuffer is swapped automatically after it returns.
+ * @param quitCallback This is called when the HOME button is pressed on controller or window is closed for some other reason. Can be NULL.
+ * @param initFlags Combination of initialization flags to set full screen, wait for A button hold or to show splash screen.
+ */
 void mgdl_InitSystem(const char* name,
 				ScreenAspect screenAspect,
 				CallbackFunction initCallback,
 				CallbackFunction frameCallback,
+				CallbackFunction quitCallback,
 				u32 initFlags);
 
 // TODO Move all loading to AssetManager to get memory status and other stats
@@ -40,6 +51,8 @@ Font* mgdl_LoadFontCustom(const char* filename, short characterWidth, short char
 Font* mgdl_LoadFontSelective(const char* filename, short characterWidth, short characterHeight, short charactersPerRow, const char* characters);
 
 WiiController* mgdl_GetController(int controllerNumber);
+
+// TODO mgdl_GetQuitReason(void) HOME pressed, Error or Window closed
 
 u16 mgdl_GetScreenWidth(void);
 u16 mgdl_GetScreenHeight(void);

@@ -1,4 +1,4 @@
-#include <mgdl/mgdl-opengl.h>
+#include <mgdl/mgdl-opengl_util.h>
 #include <mgdl/mgdl-main.h>
 #include <mgdl/mgdl-types.h>
 
@@ -47,7 +47,7 @@ void mgdl_InitOrthoProjection()
 	glTranslatef(0.375f, 0.375f, 0.0f);
 }
 
-void mgdl_InitCamera(vec3 cameraPos, vec3 cameraTarget, vec3 cameraUp)
+void mgdl_InitCamera(V3f cameraPos, V3f cameraTarget, V3f cameraUp)
 {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -155,33 +155,42 @@ void mgdl_DisableLightIndex(GLint index)
 	}
 }
 
-void mgdl_glColor4f(Color4f color)
+void mgdl_glColor3f(Color4f* color)
 {
-	glColor4f(color.red, color.green, color.blue, color.alpha);
+	glColor3f(color->red, color->green, color->blue);
 }
-void mgdl_glColor4fa(Color4f color, float alpha)
+void mgdl_glColor4f(Color4f* color)
 {
-	glColor4f(color.red, color.green, color.blue, alpha);
+	glColor4f(color->red, color->green, color->blue, color->alpha);
+}
+void mgdl_glColor4fa(Color4f* color, float alpha)
+{
+	glColor4f(color->red, color->green, color->blue, alpha);
 }
 
-void mgdl_glVertexV3F(vec3 position)
+void mgdl_glClearColor4f(Color4f* color)
+{
+	glClearColor(color->red, color->green, color->blue, color->alpha);
+}
+
+void mgdl_glVertexV3F(V3f position)
 {
 	glVertex3f(V3f_X(position), V3f_Y(position), V3f_Z(position));
 }
 
-void mgdl_glVertexV3F_xy(vec3 position)
+void mgdl_glVertexV3F_xy(V3f position)
 {
 	glVertex2f(V3f_X(position), V3f_Y(position));
 }
 
-void mgdl_glTriangleV3F_xy(vec3 a, vec3 b, vec3 c)
+void mgdl_glTriangleV3F_xy(V3f a, V3f b, V3f c)
 {
 	mgdl_glVertexV3F_xy(a);
 	mgdl_glVertexV3F_xy(b);
 	mgdl_glVertexV3F_xy(c);
 }
 
-void mgdl_glTriangleV3F(vec3 a, vec3 b, vec3 c)
+void mgdl_glTriangleV3F(V3f a, V3f b, V3f c)
 {
 	mgdl_glVertexV3F(a);
 	mgdl_glVertexV3F(b);

@@ -4,9 +4,9 @@
 
 struct Transform
 {
-	vec3 position;
-	vec3 rotationDegrees;
-	vec3 scale;
+	V3f position;
+	V3f rotationDegrees;
+	V3f scale;
 };
 typedef struct Transform Transform;
 
@@ -15,11 +15,11 @@ extern "C"
 {
 #endif
 	Transform* Transform_CreateZero(void);
-	Transform* Transform_Create(vec3 position, vec3 rotationDegrees, vec3 scale);
-	void Transform_Translate(Transform*, vec3 t);
+	Transform* Transform_Create(V3f position, V3f rotationDegrees, V3f scale);
+	void Transform_Translate(Transform*, V3f t);
 	void Transform_Rotate(Transform*, short axis, float angle);
 	void Transform_SetScalef(Transform*, float scale);
-	void Transform_SetScale3f(Transform*, vec3 scale);
+	void Transform_SetScale3f(Transform*, V3f scale);
 
 #ifdef __cplusplus
 }

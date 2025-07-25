@@ -20,7 +20,8 @@ extern "C"
 /**
  * @brief Use this function when memory needs to be aligned.
  *
- * @details Memory needs to be aligned for graphical data on Wii.
+ * @details Memory needs to be aligned for graphical and audio data on Wii. Anything that is read by gpu or audio device
+ * is safest to allocate aligned and also flush
  *
  * @param size Size of memory in bytes
  * @return Address of the reserved memory or nullptr on allocation failure.

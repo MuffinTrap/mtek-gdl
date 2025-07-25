@@ -28,6 +28,11 @@ double key_ramp(const struct track_key k[2], double row) {
 double sync_get_val(const struct sync_track *t, double row) {
     int idx, irow;
 
+    if (t == NULL)
+    {
+        return 0.0f;
+    }
+
     /* If we have no keys at all, return a constant 0 */
     if (!t->num_keys)
     {
@@ -59,6 +64,19 @@ double sync_get_val(const struct sync_track *t, double row) {
     }
 }
 
+void start_save_sync_json(const char* filename)
+{
+
+}
+void save_sync_json(const struct sync_track *t, const char *filename)
+{
+
+}
+void end_save_sync_json(const char* filename)
+{
+
+}
+
 void start_save_sync(const char *filename_h, const char *filename_cpp) {
     { // Header
     FILE *file_h = fopen(filename_h, "w");
@@ -70,7 +88,7 @@ void start_save_sync(const char *filename_h, const char *filename_cpp) {
     fprintf(file_h, "// sync data declaration\n");
     fprintf(file_h, "#ifdef SYNC_PLAYER\n");
     fprintf(file_h, "#pragma once\n");
-    fprintf(file_h, "#include \"rocket/track.h\"\n");
+    fprintf(file_h, "#include <mgdl/rocket/track.h>\n");
     fclose(file_h);
     }
 
@@ -83,7 +101,7 @@ void start_save_sync(const char *filename_h, const char *filename_cpp) {
 
     fprintf(file_cpp, "// sync data implementation\n");
     fprintf(file_cpp, "#ifdef SYNC_PLAYER\n");
-    fprintf(file_cpp, "#include \"rocket/track.h\"\n");
+    fprintf(file_cpp, "#include <mgdl/rocket/track.h>\n");
     fclose(file_cpp);
     }
 }

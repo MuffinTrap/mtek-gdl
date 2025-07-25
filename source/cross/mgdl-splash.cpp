@@ -1,9 +1,9 @@
 #include <mgdl/mgdl-splash.h>
-#include <mgdl/mgdl-opengl.h>
+#include <mgdl/mgdl-opengl_util.h>
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-palette.h>
 #include <mgdl/mgdl-main.h>
-#include <mgdl/mgdl-debugfont.h>
+#include <mgdl/mgdl-defaultfont.h>
 #include <mgdl/mgdl-config.h>
 #include <mgdl/mgdl-platform.h>
 #include <mgdl/mgdl-draw2d.h>
@@ -18,9 +18,9 @@ static float areaBottom;
 static float animationProgress = 0.0f;
 static const char* holdMessage = "Hold A to start";
 static bool customColors = false;
-static rgba8 bgColor;
-static rgba8 textDimColor;
-static rgba8 textLightColor;
+static Color4f bgColor;
+static Color4f textDimColor;
+static Color4f textLightColor;
 static float durationSeconds_ = 1.0f;
 
 void SetSplashScreenDurationSeconds(float duration)
@@ -28,12 +28,12 @@ void SetSplashScreenDurationSeconds(float duration)
 	durationSeconds_ = duration;
 }
 
-void SetSplashScreenColors(rgba8 bg, rgba8 textDim, rgba8 textLight)
+void SetSplashScreenColors(Color4f* bg, Color4f* textDim, Color4f* textLight)
 {
 	customColors = true;
-	bgColor = bg;
-	textDimColor = textDim;
-	textLightColor = textLight;
+	bgColor = Color_CreateFromPointer4f(bg);
+	textDimColor = Color_CreateFromPointer4f(textDim);
+	textLightColor = Color_CreateFromPointer4f(textLight);
 }
 
 
@@ -72,7 +72,7 @@ static void GetCorners(float xOffset, float start, float height, float* cornersO
 
 // bars colored is how many bars should
 // have color. Fractional value means bar is not fully coloured
-static float DrawLetter(float x, u8* sl, u8 bars, u32 color, float lean, bool useBars, float barsColored)
+static float DrawLetter(float x, u8* sl, u8 bars, Color4f* color, float lean, bool useBars, float barsColored)
 {
 	float startX = x;
 	float corners[] = {0,0,0,0, 0,0,0,0};
@@ -98,7 +98,7 @@ static float DrawLetter(float x, u8* sl, u8 bars, u32 color, float lean, bool us
 	return x - startX;
 }
 // Returns where the version string should be
-static float DrawLetters(float x, float lean, u32 color, bool useBars, float barsColored)
+static float DrawLetters(float x, float lean, Color4f* color, bool useBars, float barsColored)
 {
 	// m
 	// start points and lengths
@@ -178,16 +178,15 @@ float DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer)
 	// in stylized letters
 	mgdl_InitOrthoProjection();
 
-	Font* debf = Font_GetDebugFont();
+	Font* debf = DefaultFont_GetDefaultFont();
 	if (customColors == false)
 	{
 		Palette* blessing = Palette_GetDefault();
-		bgColor = Palette_GetColor(blessing, 0);
-		textLightColor = Palette_GetColor(blessing, 3);
-		textDimColor = Palette_GetColor(blessing, 6);
+		bgColor = Palette_GetColor4f(blessing, 0);
+		textLightColor = Palette_GetColor4f(blessing, 3);
+		textDimColor = Palette_GetColor4f(blessing, 6);
 	}
-	Color4f clearColor = ColorToFloats(bgColor);
-	glClearColor(clearColor.red, clearColor.green, clearColor.blue, 1.0f);
+	mgdl_glClearColor4f(&bgColor);
 	mgdl_glClear(GL_COLOR_BUFFER_BIT);
 
 
@@ -224,7 +223,7 @@ float DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer)
 	// Space on both sides of logo
 	float paddingX = (sw - logoWidth) / 2;
 
-	float dStart = DrawLetters(paddingX, lean, textDimColor, false, 0.0f);
+	float dStart = DrawLetters(paddingX, lean, &textDimColor, false, 0.0f);
 
 	// Draw yellow over grey
 	float barsColored = 0.0f;
@@ -247,26 +246,26 @@ float DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer)
 			barsColored = segments;
 
 		}
-		DrawLetters(paddingX, lean, textLightColor, true, barsColored);
+		DrawLetters(paddingX, lean, &textLightColor, true, barsColored);
 
 		// Draw grey over yellow
 		if (drawProgress > 1.0f && drawProgress <= 2.0f)
 		{
 			barsColored = (drawProgress-1.0f) * segments;
-			DrawLetters(paddingX, lean, textLightColor, true, barsColored);
+			DrawLetters(paddingX, lean, &textLightColor, true, barsColored);
 		}
 	}
-	Font_Print(debf, textLightColor, dStart, baseLine, 8, GDL_VERSION);
-	Font_Print(debf, textLightColor, dStart, baseLine - 8, 8, MGDL_PLATFORM);
+	Font_Print(debf, &textLightColor, dStart, baseLine, 8, GDL_VERSION);
+	Font_Print(debf, &textLightColor, dStart, baseLine - 8, 8, MGDL_PLATFORM);
 
 	if (drawHoldAMessage)
 	{
 		int messageWidth = strlen(holdMessage) * 8;
 		int messageLeft = sw/2 - messageWidth/2;
 		int messageY = areaBottom - 8;
-		Font_Print(debf, textLightColor, messageLeft, messageY, 8, holdMessage);
+		Font_Print(debf, &textLightColor, messageLeft, messageY, 8, holdMessage);
 
-		Draw2D_Rect(messageLeft, messageY - 16, messageLeft + messageWidth * aHoldTimer, messageY - 16 - 4, textLightColor);
+		Draw2D_Rect(messageLeft, messageY - 16, messageLeft + messageWidth * aHoldTimer, messageY - 16 - 4, &textLightColor);
 	}
 	return (animationProgress / 2.0f);
 }

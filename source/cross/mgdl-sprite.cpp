@@ -2,6 +2,7 @@
 #include <mgdl/mgdl-sprite.h>
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-main.h>
+#include <mgdl/mgdl-opengl_util.h>
 
 
 Sprite* Sprite_Load(Font* font)
@@ -11,7 +12,7 @@ Sprite* Sprite_Load(Font* font)
 	return sprite;
 }
 
-vec3 Sprite_AdjustDrawingPosition(Sprite* sprite, short x, short y, float scale, AlignmentModes alignX, AlignmentModes alignY)
+V3f Sprite_AdjustDrawingPosition(Sprite* sprite, short x, short y, float scale, AlignmentModes alignX, AlignmentModes alignY)
 {
 	float dx = x;
 	float dy = y;
@@ -38,16 +39,15 @@ vec3 Sprite_AdjustDrawingPosition(Sprite* sprite, short x, short y, float scale,
 	return V3f_Create(dx, dy, dz);
 }
 
-void Sprite_Draw2D(Sprite* sprite, u16 spriteIndex, short x, short y, float scale, AlignmentModes alignX, AlignmentModes alignY, u32 tintColor)
+void Sprite_Draw2D(Sprite* sprite, u16 spriteIndex, short x, short y, float scale, AlignmentModes alignX, AlignmentModes alignY, Color4f* tintColor)
 {
-	vec3 drawPos = Sprite_AdjustDrawingPosition(sprite, x, y, scale, alignX, alignY);
+	V3f drawPos = Sprite_AdjustDrawingPosition(sprite, x, y, scale, alignX, alignY);
 	float width = sprite->_font->_aspect * scale;
 	float height = scale;
 	const float uvW = sprite->_font->_uvWidth;
 	const float uvH = sprite->_font->_uvHeight;
 
-	Color4f f = ColorToFloats(tintColor);
-	glColor3f(f.red, f.green, f.blue);
+	mgdl_glColor4f(tintColor);
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, sprite->_font->_fontImage->textureId);
@@ -79,16 +79,15 @@ void Sprite_Draw2D(Sprite* sprite, u16 spriteIndex, short x, short y, float scal
 }
 
 
-void Sprite_Draw3D(Sprite* sprite, u16 spriteIndex, float scale, AlignmentModes alignX, AlignmentModes alignY, u32 tintColor)
+void Sprite_Draw3D(Sprite* sprite, u16 spriteIndex, float scale, AlignmentModes alignX, AlignmentModes alignY, Color4f* tintColor)
 {
-	vec3 drawPos = Sprite_AdjustDrawingPosition(sprite, 0, 0, scale, alignX, alignY);
+	V3f drawPos = Sprite_AdjustDrawingPosition(sprite, 0, 0, scale, alignX, alignY);
 	float width = sprite->_font->_aspect * scale;
 	float height = scale;
 	const float uvW = sprite->_font->_uvWidth;
 	const float uvH = sprite->_font->_uvHeight;
 
-	Color4f f = ColorToFloats(tintColor);
-	glColor3f(f.red, f.green, f.blue);
+	mgdl_glColor4f(tintColor);
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, sprite->_font->_fontImage->textureId);

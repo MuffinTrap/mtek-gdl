@@ -16,7 +16,7 @@ extern "C"
 	/**
 	 * @brief Used to flus the cache after writing to memory.
 	 *
-	 * This function is needed on some operations on the Wii.
+	 * This function is needed after code has modified memory that is read by gpu or audio device.
 	 *
 	 * @param rangeStart Memory address to flush.
 	 * @param size Size of the memory in bytes
@@ -31,13 +31,13 @@ extern "C"
 	// linker complains that it cannot find the definition...
 	#pragma clang diagnostic push
 	#pragma clang diagnostic ignored "-Wunused-parameter"
-	void mgdl_CacheFlushRange(void* rangeStart, size_t size)
+	void mgdl_CacheFlushRange(void* rangeStart, sizetype size)
 	{
 		// nop
 	}
 	#pragma clang diagnostic pop
 #else
-	void mgdl_CacheFlushRange(void* rangeStart, size_t size);
+	void mgdl_CacheFlushRange(void* rangeStart, sizetype size);
 #endif
 
 #ifdef __cplusplus

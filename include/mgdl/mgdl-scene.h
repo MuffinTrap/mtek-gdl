@@ -51,8 +51,8 @@ extern "C"
 	Node* Scene_GetNodeByIndex(Scene* scene, short index);
 	Material* Scene_GetMaterial(Scene* scene, const char* materialName);
 
-	vec3 Scene_GetNodePosition(Scene* scene, Node* node);
-	bool Scene_GetNodeModelMatrix(Scene* scene, Node* node, mat4x4 modelOut);
+	V3f Scene_GetNodePosition(Scene* scene, Node* node);
+	bool Scene_GetNodeModelMatrix(Scene* scene, Node* node, MTX4x4 modelOut);
 
 	void _Scene_DebugDrawNode (Node* node, short depth, short* index, u32 drawFlags );
 
@@ -60,8 +60,8 @@ extern "C"
 	Node* Scene_FindChildNodeByIndex(Node* parent, short targetIndex, short index);
 	Material* Scene_FindNodeMaterial(Scene* scene, Node* node, const char*  materialName);
 
-	bool Scene_CalculateNodePosition(Node* parent, Node* target, mat4x4 world, vec3* posOut);
-	bool Scene_CalculateNodeModelMatrix(Node* parent, Node* target, mat4x4 model);
+	bool Scene_CalculateNodePosition(Node* parent, Node* target, MTX4x4 world, V3f* posOut);
+	bool Scene_CalculateNodeModelMatrix(Node* parent, Node* target, MTX4x4 model);
 
 
 #ifdef __cplusplus

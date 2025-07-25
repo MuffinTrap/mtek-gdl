@@ -27,13 +27,14 @@ Material * DynamicArray_GetMaterial ( DynamicArray* array, sizetype index )
 
 sizetype DynamicArray_AddMaterial ( DynamicArray* array, Material* item )
 {
-    if (array->count + 1 <= array->capacity) { \
-        Material** v = (Material**)array->data; \
-        v[array->count] = item; \
-        array->count += 1; \
-        return  array->count-1; \
+    if (array->count + 1 > array->capacity) { \
+        array->data = (void*)realloc(array->data, sizeof(Material*) * array->capacity * 2); \
+        array->capacity *= 2; \
     } \
-    return 0;
+    Material** v = (Material**)array->data;
+    v[array->count] = item; \
+    array->count += 1; \
+    return  array->count-1; \
 }
 
 #define DYNAMIC_ARRAY_IMPL(TYPE) \
@@ -56,11 +57,13 @@ TYPE* DynamicArray_Get##TYPE ( DynamicArray* array, sizetype index ) { \
     } \
 } \
 sizetype DynamicArray_Add##TYPE ( DynamicArray* array, TYPE* item ) {\
-    if (array->count + 1 <= array->capacity) { \
-        TYPE** v = (TYPE**)array->data; \
-        v[array->count] = item; \
-        array->count += 1; \
+    if (array->count + 1 > array->capacity) { \
+        array->data = (void*)realloc(array->data, sizeof(TYPE*) * array->capacity * 2); \
+        array->capacity *= 2; \
     } \
+    TYPE** v = (TYPE**)array->data; \
+    v[array->count] = item; \
+    array->count += 1; \
     return  array->count-1; \
 }
 

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "mgdl-types.h"
+#include "mgdl-color.h"
 #include "mgdl-opengl.h"
 
 struct PNGFile
@@ -28,7 +29,7 @@ GLenum PNG_GetGLFormat(PNGFile* png);
 GLenum PNG_GetGLInternalFormat(PNGFile* png);
 
 GLubyte* PNG_GetTexels(PNGFile* png);
-rgba8 PNG_GetRGBA(PNGFile* png, int x, int y);
+Color4b PNG_GetRGBA(PNGFile* png, int x, int y);
 float PNG_GetGrayscale(PNGFile* png, int x, int y);
 
 GLenum PNG_PNGtoGLFormat(int pngFormat);

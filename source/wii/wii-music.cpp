@@ -32,13 +32,14 @@ Music* Music_LoadOgg(const char *filename)
 {
 	Music* music = Music_Create();
 
-	music->filenameChar = new char[strlen(filename)];
+	music->filenameChar = (char*)malloc(sizeof(char) * strlen(filename) + 1);
 	strcpy(music->filenameChar, filename);
 
 	Log_InfoF("Loading Ogg %s\n", filename);
 	music->oggFile = fopen(filename, "r");
 	if (music->oggFile != NULL)
 	{
+		music->type = MusicOgg;
 		return music;
 	}
 	else
@@ -52,7 +53,7 @@ Music* Music_LoadOgg(const char *filename)
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 Music* Music_LoadWav(const char* filename)
 {
-	Log_Warning("Loading wav music on Wii takes up lots of memory! Use Ogg instead");
+	mgdl_assert_print(false, "Loading wav music on Wii takes up lots of memory! Use Ogg instead!");
     Log_InfoF("Loading music from %s\n", filename);
 
     Sound* snd = Sound_Load(filename);

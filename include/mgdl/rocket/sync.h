@@ -46,6 +46,7 @@ struct sync_io_cb {
 void sync_set_io_cb(struct sync_device *d, struct sync_io_cb *cb);
 
 const struct sync_track *sync_get_track(struct sync_device *, const char *);
+const struct sync_track *sync_get_track_json(const char *track_name, const char *file_name);
 
 double sync_get_val(const struct sync_track *t, double row);
 

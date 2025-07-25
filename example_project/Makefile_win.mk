@@ -6,7 +6,7 @@ CXXFLAGS += -DMGDL_PLATFORM=\"Windows\"
 CXXFLAGS += -DMGDL_PLATFORM_WINDOWS
 
 # Set Compiler
-CXX = g++
+CXX = clang++
 EXE_SUFFIX = .exe
 
 # Include directories

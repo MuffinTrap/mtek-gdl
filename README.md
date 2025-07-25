@@ -149,6 +149,13 @@ make -f Makefile_mac.mk
 make -f Makefile_mac.mk install
 ```
 
+## External libraries
+This library contains code from the following libraries under these licenses:
+* [WFLCG] (https://github.com/WarpRules/WFLCG) MIT license
+* [ufbx] (ufbx.github.io) MIT license 
+* [rocket] (https://github.com/rocket/rocket) Zlib license
+* [ccVector] (https://github.com/jobtalle/ccVector) Public domain
+
 This file was changed for version 0.100.0-muffintrap by muffintrap to add explanation of the fork.
 Original contents of README.md are below:
 

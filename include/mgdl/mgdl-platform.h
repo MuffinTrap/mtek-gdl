@@ -26,6 +26,7 @@ void Platform_Init(const char* windowName,
 						ScreenAspect screenAspect,
 						CallbackFunction initCallback,
 						CallbackFunction frameCallback,
+						CallbackFunction quitCallback,
 						u32 initFlags);
 
 struct WiiController* Platform_GetController(int controllerNumber);

@@ -14,6 +14,8 @@
 // Vector types
 #include <mgdl/mgdl-vectorfunctions.h>
 
+#include <mgdl/mgdl-opengl.h>
+
 // For MacOS
 #include <stddef.h>
 
@@ -41,13 +43,13 @@ typedef size_t sizetype;
 
 
 /**
- * @brief Callback function type needed for platform initializing
+ * @brief Callback function type needed for platform initializing and rendering
  */
 typedef void (*CallbackFunction)(void);
 
-/*! Input color format options
- *
- *	\details Options for the gdl::Texture::ConvertRawImage() function when converting raw image data into a texture.
+/**
+ * @brief Input color format options
+ *	@details Options for the gdl::Texture::ConvertRawImage() function when converting raw image data into a texture.
  *		These are not to be confused with gdl::TextureFormatModes which designates GX texture formats.
  */
 enum ColorFormats {
@@ -58,11 +60,12 @@ enum ColorFormats {
 };
 typedef enum ColorFormats ColorFormats;
 
-/*! Texture wrap modes
+/**
+ * @brief Texture wrap modes
  *
- *	\details Wrapping modes for gdl::Texture::SetWrapMode().
+ * @details Wrapping modes for gdl::Texture::SetWrapMode().
  *
- *	\note Wrapping modes other than gdl::Clamp require a texture resolution that is a power of two to work correctly.
+ * @note Wrapping modes other than gdl::Clamp require a texture resolution that is a power of two to work correctly.
  */
 enum TextureWrapModes {
     Clamp,		//!< Clamped (no wrap).
@@ -71,11 +74,12 @@ enum TextureWrapModes {
 };
 typedef enum TextureWrapModes TextureWrapModes;
 
-/*! Texture filter modes
+/**
+ * @brief Texture filter modes
  *
- *	\details Filter modes for gdl::Texture and gdl::Image classes for creation and loading functions.
+ * @details Filter modes for gdl::Texture and gdl::Image classes for creation and loading functions.
  *
- *	\note Mipmapped filtering modes only work if the texture or image was created with gdl::Texture::CreateMipmapped(),
+ * @note Mipmapped filtering modes only work if the texture or image was created with gdl::Texture::CreateMipmapped(),
  *		gdl::Image::CreateMipmapped() and gdl::Image::LoadImageMipmapped() and must be specified to the minFilt parameter
  *		of said functions to work.
  */
@@ -89,13 +93,10 @@ enum TextureFilterModes {
 };
 typedef enum TextureFilterModes TextureFilterModes;
 
-/*! Material types
+/**
+ * @brief Material types
  *
- *	\details Different types of materials for rendering meshes.
- *
- *	\note Mipmapped filtering modes only work if the texture or image was created with gdl::Texture::CreateMipmapped(),
- *		gdl::Image::CreateMipmapped() and gdl::Image::LoadImageMipmapped() and must be specified to the minFilt parameter
- *		of said functions to work.
+ * @details Different types of materials for rendering meshes.
  */
 enum MaterialType {
     Diffuse,    // Straightforward texture
@@ -103,19 +104,18 @@ enum MaterialType {
 };
 typedef enum MaterialType MaterialType;
 
-/*! Alignment modes
+/**
+ * @brief Alignment modes
  *
- *	\details Alignment modes for gdl::Font, gdl::FFont, gdl::Image and gdl::SpriteSet drawing functions.
- *
- *	\note For gdl::Font and gdl::FFont functions, only gdl::Centered is applicable to said classes.
+ * @details Alignment modes for different drawing functions. For vertical (y) alignment the LJustify means top and RJustify means bottom
  */
 enum AlignmentModes {
-    Centered	= 0x7ff0,	//!< Centered.
-    PCentered	= 0x7ff1,	//!< Pixel centered (most noticable when image is zoomed in).
-    Pivot       = 0x7ff2,	//!< Alligned according to its pivot coordinate (only applicable to gdl::SpriteSet functions).
-    CPivot      = 0x7ff3,	//!< Alligned according to its pivot coordinate and pixel centered (only applicable to gdl::SpriteSet functions).
-    RJustify	= 0x7ff4,	//!< Right justified (also bottom justified when used for the Y pivot axis).
-    LJustify    = 0x7ff5    //!< Left justified (also top justified when used for the Y axis) The default alignment;
+    Centered	= 0x7ff0,	/**< Centered. */
+    PCentered	= 0x7ff1,	/**< Pixel centered (most noticable when image is zoomed in). */
+    Pivot       = 0x7ff2,	/**< Aligned according to its pivot coordinate (only applicable to gdl::SpriteSet functions). */
+    CPivot      = 0x7ff3,	/**< Aligned according to its pivot coordinate and pixel centered (only applicable to gdl::SpriteSet functions). */
+    RJustify	= 0x7ff4,	/**< Right justified (also bottom justified when used for the Y pivot axis). */
+    LJustify    = 0x7ff5    /**< Left justified (also top justified when used for the Y axis) The default alignment; */
 };
 typedef enum AlignmentModes AlignmentModes;
 
@@ -137,93 +137,49 @@ enum PlatformInitFlag
 };
 typedef enum PlatformInitFlag PlatformInitFlag;
 
-/*!	Color values
- *
- *	\details Preset colors for prototyping and convenience reasons.
- *
- *	\note For a better method of selecting colors, use the RGBA() macro instead.
- */
-enum Colors : u32 { // RRGGBBAA
-    Black		= 0x000000ff,	//!< Black.
-    White		= 0xffffffff,	//!< White.
-    Red			= 0xff0000ff,	//!< Red.
-    Green		= 0x00ff00ff,	//!< Green.
-    Blue		= 0x0000ffff,	//!< Blue.
-    Yellow		= 0xffff00ff,	//!< Yellow.
-    Cyan		= 0x00ffffff,	//!< Cyan.
-    Magenta		= 0xff00ffff,	//!< Magenta.
-    LightRed	= 0xff7f7fff,	//!< Light red.
-    LightGreen	= 0x7fff7fff,	//!< Light green.
-    LightBlue	= 0x7f7fffff,	//!< Light blue.
-};
-typedef enum Colors Colors;
-
-// Color in four bytes, each from 0 to 255(FF)
-typedef u32 rgba8;
-
 // Debug font contains these glyphs
-enum IconSymbol : short
+enum IconSymbol
 {
-    Dot = 0x7f,
-    FaceInvert = 0x80,
-    Face,
-    ArrowUp,
-    TriangleUp,
-    ScrollArrow,
-    Printer,
-    Skull,
-    LightningBolt,
-    Notes,
-    Sparkle,
-    Key,
-    Chevrons,
-    Alien,
-    Spiral,
-    FloppyDisk,
-    Folder,
-    Lock,
-    Bird,
-    Clock,
-    Ghost,
-    Pill,
-    SquareWave,
-    SawWave,
-    TriangleWave,
-    Bottle,
-    PartyLeben,
-    WiFi,
-    Popsicle,
-    CursorPoint, // : DiagonalFill
-    CursorBase,
-    NekoEar, // CursorWing: These are the same. Rotate Ear 90 right to get cursor
-    NekoFace,
+    Icon_Dot = 0x7f,
+    Icon_FaceInvert = 0x80,
+    Icon_Face,
+    Icon_ArrowUp,
+    Icon_TriangleUp,
+    Icon_ScrollArrow,
+    Icon_Printer,
+    Icon_Skull,
+    Icon_LightningBolt,
+    Icon_Notes,
+    Icon_Sparkle,
+    Icon_Key,
+    Icon_Chevrons,
+    Icon_Alien,
+    Icon_Spiral,
+    Icon_FloppyDisk,
+    Icon_Folder,
+    Icon_Lock,
+    Icon_Bird,
+    Icon_Clock,
+    Icon_Ghost,
+    Icon_Pill,
+    Icon_SquareWave,
+    Icon_SawWave,
+    Icon_TriangleWave,
+    Icon_Bottle,
+    Icon_PartyLeben,
+    Icon_WiFi,
+    Icon_Popsicle,
+    Icon_CursorPoint, // : DiagonalFill
+    Icon_CursorBase,
+    Icon_NekoEar, // CursorWing: These are the same. Rotate Ear 90 right to get cursor
+    Icon_NekoFace,
     IconSymbol_Count,
 
-    DiagonalFill = CursorPoint,
-    CursorWing = NekoEar
+    Icon_DiagonalFill = Icon_CursorPoint,
+    Icon_CursorWing = Icon_NekoEar
 };
 typedef enum IconSymbol IconSymbol;
 
-struct Color4f
-{
-    float red;
-    float green;
-    float blue;
-    float alpha;
-};
-typedef struct Color4f Color4f;
-
-struct Color4b
-{
-    u8 red;
-    u8 green;
-    u8 blue;
-    u8 alpha;
-};
-typedef struct Color4b Color4b;
-
-
-typedef u32 ColorHex;
 
 enum MeshAttributeFlags
 {
@@ -248,7 +204,6 @@ struct Rect
     short w;
     short h;
 };
-
 typedef struct Rect Rect;
 
 // Windows uses Rectangle
@@ -259,6 +214,5 @@ struct RectF
     float w;
     float h;
 };
-
 typedef struct RectF RectF;
 

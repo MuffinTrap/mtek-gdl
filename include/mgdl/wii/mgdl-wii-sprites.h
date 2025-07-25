@@ -6,6 +6,7 @@
 #define _GDL_WII_SPRITES_H
 
 #include <mgdl/wii/mgdl-wii-image.h>
+#include <mgdl/mgdl-color.h>
 
 namespace gdl {
 
@@ -122,7 +123,7 @@ public:
 	 *	\param[in]	scale	Scale of image (1.0f is original size).
 	 *	\param[in]	angle	Rotation angle in degrees.
 	 */
-	void	Put(short x, short y, int index, u_int col = Colors::White, short cx = 0, short cy = 0, float scale = 1.f, float angle = 0.f);
+	void	Put(short x, short y, int index, u_int col, short cx = 0, short cy = 0, float scale = 1.f, float angle = 0.f);
 
 
 
@@ -139,7 +140,7 @@ public:
      *	\param[in]	index	Index of sprite to draw.
      *	\param[in]	col		Color of sprite (use Colors::White for normal colors).
      */
-    void	PutS(short x1, short y1, short x2, short y2, short index, u_int col = Colors::White);
+    void	PutS(short x1, short y1, short x2, short y2, short index, u_int col);
 
     private:
 

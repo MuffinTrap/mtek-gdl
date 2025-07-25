@@ -1,5 +1,5 @@
 #include <mgdl/mgdl-light.h>
-#include <mgdl/mgdl-opengl.h>
+#include <mgdl/mgdl-opengl_util.h>
 
 Light* Light_Create()
 {
@@ -59,7 +59,7 @@ void Light_Disable(Light* light)
         mgdl_DisableLightIndex(light->glIndex );
     }
 }
-void Light_SetDirection(Light* light, vec3 direction)
+void Light_SetDirection(Light* light, V3f direction)
 {
     light->direction[0] = V3f_X(direction);
     light->direction[1] = V3f_Y(direction);
@@ -67,7 +67,7 @@ void Light_SetDirection(Light* light, vec3 direction)
     light->direction[3] = 0.0f;
 }
 
-vec3 Light_GetDirection(Light* light)
+V3f Light_GetDirection(Light* light)
 {
     return V3f_Create(
         light->direction[0],
@@ -75,7 +75,7 @@ vec3 Light_GetDirection(Light* light)
         light->direction[2]);
 }
 
-void Light_SetPosition(Light* light, vec3 position)
+void Light_SetPosition(Light* light, V3f position)
 {
     light->position[0] = V3f_X(position);
     light->position[1] = V3f_Y(position);

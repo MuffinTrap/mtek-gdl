@@ -13,6 +13,7 @@
 
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-logger.h>
+#include <mgdl/mgdl-color.h>
 
 #include <mgdl/wii/mgdl-wii-config.h>
 #include <mgdl/wii/mgdl-wii-types.h>

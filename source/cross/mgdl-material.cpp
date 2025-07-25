@@ -1,5 +1,5 @@
 #include <mgdl/mgdl-scene.h>
-#include <mgdl/mgdl-opengl.h>
+#include <mgdl/mgdl-opengl_util.h>
 
 static GLfloat whiteSpecular[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 static GLfloat blackEmissive[4] = {0.0f, 0.0f, 0.0f, 1.0f};

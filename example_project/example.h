@@ -27,7 +27,7 @@ class Example
     Material* matcapMaterial;
 
     float cameraDistance = 1.0f;
-    vec3 sceneRotation;
+    V3f sceneRotation;
 
     float deltaTime;
     float elapsedSeconds;
@@ -40,6 +40,7 @@ class Example
         void Init();
         void Update();
         void Draw();
+        void Quit();
 
     private:
         void DrawMenu();
@@ -54,7 +55,7 @@ class Example
         void DrawAudio();
 
         void DrawVersion();
-        void DrawScene(Scene* scene, vec3 scale);
+        void DrawScene(Scene* scene, V3f scale);
 
         vec2 cursorPos;
         bool mouseClick;
