@@ -1,0 +1,8 @@
+<map id="ufbx_error" name="ufbx_error">
+<area shape="rect" id="Node000001" title=" " alt="" coords="8,196,97,221"/>
+<area shape="rect" id="Node000002" href="$structufbx__string.html" title=" " alt="" coords="5,5,100,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="52,45,48,86,47,133,54,196,48,196,42,133,43,86,46,44"/>
+<area shape="rect" id="Node000003" href="$structufbx__error__frame.html" title=" " alt="" coords="133,108,268,133"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="82,36,185,106,182,110,79,41"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="170,142,74,198,71,193,168,138"/>
+</map>

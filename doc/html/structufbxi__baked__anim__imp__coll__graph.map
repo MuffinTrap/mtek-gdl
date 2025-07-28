@@ -1,0 +1,29 @@
+<map id="ufbxi_baked_anim_imp" name="ufbxi_baked_anim_imp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="367,567,541,592"/>
+<area shape="rect" id="Node000002" href="$structufbxi__refcount.html" title=" " alt="" coords="287,479,403,504"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="372,511,441,564,437,569,369,515"/>
+<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="418,483,429,491,421,499,403,502,403,497,419,494,424,491,415,487"/>
+<area shape="rect" id="Node000003" href="$structufbxi__buf.html" title=" " alt="" coords="330,391,413,416"/>
+<area shape="poly" id="edge3_Node000002_Node000003" title=" " alt="" coords="366,430,351,479,346,477,361,428"/>
+<area shape="rect" id="Node000004" href="$structufbxi__allocator.html" title=" " alt="" coords="216,293,335,319"/>
+<area shape="poly" id="edge13_Node000002_Node000004" title=" " alt="" coords="277,333,279,373,290,415,311,450,334,476,330,480,306,453,285,417,274,373,272,333"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="299,327,361,388,358,392,295,330"/>
+<area shape="rect" id="Node000005" href="$structufbx__error.html" title=" " alt="" coords="156,196,245,221"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="220,231,268,291,264,295,216,234"/>
+<area shape="rect" id="Node000006" href="$structufbx__string.html" title=" " alt="" coords="5,5,100,31"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="45,44,36,88,37,111,46,132,68,157,96,175,127,188,156,197,155,202,125,194,93,180,64,161,41,135,32,112,31,88,40,43"/>
+<area shape="rect" id="Node000007" href="$structufbx__error__frame.html" title=" " alt="" coords="133,108,268,133"/>
+<area shape="poly" id="edge8_Node000007_Node000006" title=" " alt="" coords="82,36,185,106,182,110,79,41"/>
+<area shape="poly" id="edge7_Node000005_Node000007" title=" " alt="" coords="203,147,203,195,198,195,198,147"/>
+<area shape="rect" id="Node000008" href="$structufbx__allocator__opts.html" title=" " alt="" coords="272,196,423,221"/>
+<area shape="poly" id="edge9_Node000004_Node000008" title=" " alt="" coords="332,234,286,295,282,291,328,231"/>
+<area shape="rect" id="Node000009" href="$structufbx__allocator.html" title=" " alt="" coords="293,108,407,133"/>
+<area shape="poly" id="edge10_Node000008_Node000009" title=" " alt="" coords="352,147,350,196,345,195,347,147"/>
+<area shape="rect" id="Node000010" href="$structufbxi__buf__chunk.html" title=" " alt="" coords="359,293,488,319"/>
+<area shape="poly" id="edge11_Node000003_Node000010" title=" " alt="" coords="413,332,380,392,375,389,408,329"/>
+<area shape="poly" id="edge12_Node000010_Node000010" title=" " alt="" coords="503,296,511,300,515,306,507,315,489,318,488,313,504,310,509,306,508,304,501,301"/>
+<area shape="rect" id="Node000011" href="$structufbx__baked__anim.html" title=" " alt="" coords="497,479,635,504"/>
+<area shape="poly" id="edge14_Node000001_Node000011" title=" " alt="" coords="541,515,471,569,468,564,538,511"/>
+<area shape="rect" id="Node000012" href="$structufbx__baked__anim__metadata.html" title=" " alt="" coords="463,391,669,416"/>
+<area shape="poly" id="edge15_Node000011_Node000012" title=" " alt="" coords="569,430,569,478,563,478,563,430"/>
+</map>

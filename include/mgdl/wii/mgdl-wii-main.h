@@ -4,22 +4,17 @@
 
 /*!	\mainpage
  *
- *	\version	0.100.2-muffintrap
+ *	\version	0.100.4-muffintrap
  *	\author		Jobert "Lameguy" Villamor (Lameguy64/TheCodingBrony)
  *	\author		muffintrap (Forked from version 0.75)
  *	\copyright	GNU General Public License
  *
- *	\attention This is a work-in-progress "sneak-peek" version of this library! Avoid using functions that are not documented
- *	yet as they have not yet been finalized.
+ *	\attention This is a work-in-progress library! Everything changes all the time.
  *
  *	\section introSectionn Introduction
  *  MTek-GDL Wii is an open-source game development library designed to make homebrew game and application development for the
  *	Nintendo Wii a lot easier to do for both beginner and intermediate programmers. This library supports GX accelerated 2D
  *	graphics routines, sound playback, ogg vorbis streaming and image loading and texture conversion routines.
- *
- *  Despite this library mostly supporting 2D graphics only, the way how this library is written allows one to be able to use
- *	MTek-GDL as a base for developing custom 2D or 3D graphics engines provided that they know how to write their own GX
- *	graphics routines and knowing enough how to make a decent game engine in general.
  *
  *	\section changeLog Changes since v0.66:
  *	- Fixed a bug in oggplayer library where oggplayer.h didn't include ivorbisfile.h which is needed for a certain function

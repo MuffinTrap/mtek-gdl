@@ -1,0 +1,19 @@
+<map id="ufbx_metadata" name="ufbx_metadata">
+<area shape="rect" id="Node000001" title=" " alt="" coords="338,259,459,284"/>
+<area shape="rect" id="Node000002" href="$structufbx__string.html" title=" " alt="" coords="118,5,213,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="129,39,82,65,37,100,20,119,11,139,9,159,18,180,38,197,69,212,155,237,252,253,338,263,338,268,251,258,154,242,67,217,35,202,14,183,4,160,5,138,16,116,33,96,79,61,126,34"/>
+<area shape="rect" id="Node000005" href="$structufbx__application.html" title=" " alt="" coords="141,139,272,165"/>
+<area shape="poly" id="edge6_Node000005_Node000002" title=" " alt="" coords="176,43,206,138,201,140,170,45"/>
+<area shape="rect" id="Node000003" href="$structufbx__blob.html" title=" " alt="" coords="337,5,423,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="372,44,353,107,349,144,353,181,371,224,392,257,387,260,366,226,348,182,344,144,348,106,367,43"/>
+<area shape="rect" id="Node000006" href="$structufbx__thumbnail.html" title=" " alt="" coords="477,139,601,165"/>
+<area shape="poly" id="edge9_Node000006_Node000003" title=" " alt="" coords="406,38,527,137,523,141,403,42"/>
+<area shape="rect" id="Node000004" href="$structufbx__props.html" title=" " alt="" coords="570,5,665,31"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="630,43,633,54,639,91,640,121,632,150,616,183,602,201,585,217,545,242,501,257,460,267,459,261,500,252,542,237,581,213,598,198,611,180,627,148,634,120,634,91,628,55,625,44"/>
+<area shape="poly" id="edge4_Node000004_Node000004" title=" " alt="" coords="680,7,688,11,691,18,683,28,665,32,665,26,681,24,686,18,684,14,677,11"/>
+<area shape="poly" id="edge8_Node000006_Node000004" title=" " alt="" coords="601,43,592,56,565,102,546,140,542,138,560,100,587,53,597,40"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="195,177,185,207,185,221,191,233,214,246,251,256,338,266,338,271,250,261,212,251,187,236,180,222,180,206,190,176"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="516,176,414,260,411,256,513,171"/>
+<area shape="rect" id="Node000007" href="$structufbx__quat.html" title=" " alt="" coords="759,139,846,165"/>
+<area shape="poly" id="edge10_Node000001_Node000007" title=" " alt="" coords="779,175,730,208,669,237,615,252,559,263,460,272,459,266,559,257,614,247,667,232,727,203,776,171"/>
+</map>

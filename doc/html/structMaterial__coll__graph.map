@@ -1,0 +1,9 @@
+<map id="Material" name="Material">
+<area shape="rect" id="Node000001" title="Material used by a node." alt="" coords="52,181,128,207"/>
+<area shape="rect" id="Node000002" href="$structTexture.html" title="Abstract class for cross platform PNG image loading." alt="" coords="55,93,125,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="93,133,93,181,87,181,87,133"/>
+<area shape="rect" id="Node000003" href="$structPNGFile.html" title=" " alt="" coords="5,5,79,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="49,44,59,68,78,91,74,94,54,71,44,46"/>
+<area shape="rect" id="Node000004" href="$structColor4f.html" title=" " alt="" coords="103,5,173,31"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="127,44,99,94,94,91,123,41"/>
+</map>

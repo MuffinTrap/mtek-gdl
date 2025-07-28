@@ -11,7 +11,7 @@ All changes made to the original are clearly commented in the code, as required 
 If you use this fork for making a Wii game or demo, I won't be available to give tech support. And naturally, there is no warranty of any kind.
 
 ## Version number
-This is version 0.100.3-muffintrap "skrolli"
+This is version 0.100.4-muffintrap "assembly"
 
 ## How to compile and install the library and run the example with Dolphin
 1. Install devkitpro following instructions here: [DevkitPro Getting Started](https://devkitpro.org/wiki/Getting_Started)

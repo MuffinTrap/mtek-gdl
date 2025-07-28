@@ -1,0 +1,9 @@
+<map id="ufbx_geometry_cache_opts" name="ufbx_geometry_cache_opts">
+<area shape="rect" id="Node000001" title=" " alt="" coords="65,196,267,221"/>
+<area shape="rect" id="Node000002" href="$structufbx__allocator__opts.html" title=" " alt="" coords="5,93,156,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="85,132,90,152,100,170,115,184,132,194,130,198,112,188,96,174,85,154,80,133"/>
+<area shape="rect" id="Node000003" href="$structufbx__allocator.html" title=" " alt="" coords="23,5,138,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="83,45,83,93,78,93,78,45"/>
+<area shape="rect" id="Node000004" href="$structufbx__open__file__cb.html" title=" " alt="" coords="181,93,319,119"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="239,133,211,174,184,198,180,194,207,170,235,130"/>
+</map>

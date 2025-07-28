@@ -1,6 +1,6 @@
 # Version history and a summary of changes
 
-### Version 0.101.0-muffintrap "yaris"
+### Version 0.100.4-muffintrap "assembly"
 This version changes to C and breaks all backwards compatibility.
 
 #### Changes
@@ -9,6 +9,11 @@ This version changes to C and breaks all backwards compatibility.
 + Removed namespace gdl mostly.
 + WiiController converted to C. Removed deadzones since they were not used anyway.
 + Font converted to C and removed redundant UVs that were stored.
++ All cross platform and PC code is now in C, but some C++ things are used internally.
++ Image was renamed to Texture
++ Rocket integration was added to the library properly
++ WFLCG random number generation library was added to the library
++ Default font was added
 
 
 ### Version 0.100.3-muffintrap "skrolli"

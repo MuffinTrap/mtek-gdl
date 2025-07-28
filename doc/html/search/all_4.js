@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['callbackfunction_0',['CallbackFunction',['../mgdl-types_8h.html#adb5a39de9b196ebf782129ca0beb9ef8',1,'mgdl-types.h']]],
+  ['callerrorcallback_1',['CallErrorCallback',['../group__mainModule.html#gad4b766c1e4de0d9dc165e95735a00643',1,'gdl']]],
+  ['camera_2',['Camera',['../structCamera.html',1,'']]],
+  ['ccv_5fvec_5ftypename_3',['CCV_VEC_TYPENAME',['../unionCCV__VEC__TYPENAME.html',1,'']]],
+  ['centered_4',['Centered',['../mgdl-types_8h.html#a4d63894224115987e744a93537b30ecfa6401d9299229000e62c9f3894b87d9f0',1,'mgdl-types.h']]],
+  ['changes_20since_20v0_2066_3a_5',['Changes since v0.66:',['../index.html#changeLog',1,'']]],
+  ['characterheight_6',['characterHeight',['../structFont.html#a92bdd9f3655f7fbf2714677b75af9041',1,'Font']]],
+  ['characterwidth_7',['characterWidth',['../structFont.html#a670ae4473dedf5d6ff0b510f902537bd',1,'Font']]],
+  ['clamp_8',['Clamp',['../mgdl-types_8h.html#a5b66455d534a4139b0d3e190adcb630fa65cd6695b7f90c094cad51f9d69a1cbe',1,'mgdl-types.h']]],
+  ['color_20handling_20macros_9',['Color Handling Macros',['../group__colorMacros.html',1,'']]],
+  ['color4b_10',['Color4b',['../structColor4b.html',1,'']]],
+  ['color4f_11',['Color4f',['../structColor4f.html',1,'']]],
+  ['colorformats_12',['ColorFormats',['../mgdl-types_8h.html#ab3a295dcd815c8b9bd1507415238b482',1,'mgdl-types.h']]],
+  ['confb_13',['conFB',['../namespacegdl_1_1wii.html#a9fa8ca0a80c60a5020ce67c61809fb5a',1,'gdl::wii']]],
+  ['conrmode_14',['conRMode',['../namespacegdl_1_1wii.html#adcf8bec0f5f4b1396cdd1cb981f63976',1,'gdl::wii']]],
+  ['consoleactive_15',['ConsoleActive',['../group__globalScreenVars.html#gac625338fc20d853230adfcfbfdb6c312',1,'gdl']]],
+  ['consolemode_16',['ConsoleMode',['../group__mainModule.html#gabbda6c0114a972c98c9376b300357929',1,'gdl']]],
+  ['convertrawimage_17',['ConvertRawImage',['../classgdl_1_1Texture.html#aaffe421bcebcea966d0d1a4676967747',1,'gdl::Texture']]],
+  ['copyfromscreen_18',['CopyFromScreen',['../classgdl_1_1Texture.html#a7d1dc848f2549ea9d7d174655a729405',1,'gdl::Texture']]],
+  ['cpivot_19',['CPivot',['../mgdl-types_8h.html#a4d63894224115987e744a93537b30ecfa12cfe5faa5ea275b9fc446150d2ce993',1,'mgdl-types.h']]],
+  ['cpudelta_20',['CPUdelta',['../namespacegdl_1_1wii.html#a96393cd74fe4efec7ba4e5e961fdb85c',1,'gdl::wii']]],
+  ['create_21',['create',['../classgdl_1_1Texture.html#a4af250929cebba0f42562a0fd390449f',1,'gdl::Texture::Create()'],['../classgdl_1_1ImageWii.html#ab75ef89a68e769f27b7911b4677a66b9',1,'gdl::ImageWii::Create()']]],
+  ['createmipmapped_22',['createmipmapped',['../classgdl_1_1Texture.html#ac03eb675a00b8c2a15c1b3554c505f5a',1,'gdl::Texture::CreateMipmapped()'],['../classgdl_1_1ImageWii.html#af0c33d22d6cdb968deb125807128ca0d',1,'gdl::ImageWii::CreateMipmapped()']]],
+  ['cx_23',['cx',['../structgdl_1_1Sprite.html#a38bd35704c0fd510a89ff5e82d86b171',1,'gdl::Sprite']]],
+  ['cy_24',['cy',['../structgdl_1_1Sprite.html#a0e49e06df7cd0a97180346111dd3f5a3',1,'gdl::Sprite']]]
+];

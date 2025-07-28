@@ -1,0 +1,12 @@
+<map id="ufbx_scene_settings" name="ufbx_scene_settings">
+<area shape="rect" id="Node000001" title=" " alt="" coords="279,93,434,119"/>
+<area shape="rect" id="Node000002" href="$structufbx__props.html" title=" " alt="" coords="5,5,100,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="107,32,317,91,315,96,106,37"/>
+<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="115,9,127,18,118,26,101,29,100,23,116,21,121,18,112,14"/>
+<area shape="rect" id="Node000003" href="$structufbx__coordinate__axes.html" title=" " alt="" coords="205,5,369,31"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="308,40,349,91,345,94,303,43"/>
+<area shape="rect" id="Node000004" href="$structufbx__vec3.html" title=" " alt="" coords="393,5,483,31"/>
+<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="420,43,370,95,366,91,416,39"/>
+<area shape="rect" id="Node000005" href="$structufbx__string.html" title=" " alt="" coords="512,5,607,31"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="542,43,526,58,506,72,471,86,435,96,434,91,469,81,503,67,522,54,539,39"/>
+</map>

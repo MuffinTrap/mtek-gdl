@@ -1,0 +1,16 @@
+<map id="ufbxi_xml_load_opts" name="ufbxi_xml_load_opts">
+<area shape="rect" id="Node000001" title=" " alt="" coords="197,372,354,397"/>
+<area shape="rect" id="Node000002" href="$structufbxi__allocator.html" title=" " alt="" coords="216,284,335,309"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="278,323,278,371,273,371,273,323"/>
+<area shape="rect" id="Node000003" href="$structufbx__error.html" title=" " alt="" coords="156,196,245,221"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="222,230,267,282,263,285,218,234"/>
+<area shape="rect" id="Node000004" href="$structufbx__string.html" title=" " alt="" coords="5,5,100,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="45,44,36,88,37,111,46,132,68,157,96,175,127,188,156,197,155,202,125,194,93,180,64,161,41,135,32,112,31,88,40,43"/>
+<area shape="rect" id="Node000005" href="$structufbx__error__frame.html" title=" " alt="" coords="133,108,268,133"/>
+<area shape="poly" id="edge5_Node000005_Node000004" title=" " alt="" coords="82,36,185,106,182,110,79,41"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="203,147,203,195,198,195,198,147"/>
+<area shape="rect" id="Node000006" href="$structufbx__allocator__opts.html" title=" " alt="" coords="272,196,423,221"/>
+<area shape="poly" id="edge6_Node000002_Node000006" title=" " alt="" coords="331,234,287,285,283,282,327,230"/>
+<area shape="rect" id="Node000007" href="$structufbx__allocator.html" title=" " alt="" coords="293,108,407,133"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="352,147,350,196,345,195,347,147"/>
+</map>

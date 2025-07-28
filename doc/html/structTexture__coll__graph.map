@@ -1,0 +1,7 @@
+<map id="Texture" name="Texture">
+<area shape="rect" id="Node000001" title="Abstract class for cross platform PNG image loading." alt="" coords="55,93,125,119"/>
+<area shape="rect" id="Node000002" href="$structPNGFile.html" title=" " alt="" coords="5,5,79,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="49,44,59,68,78,91,74,94,54,71,44,46"/>
+<area shape="rect" id="Node000003" href="$structColor4f.html" title=" " alt="" coords="103,5,173,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="127,44,99,94,94,91,123,41"/>
+</map>

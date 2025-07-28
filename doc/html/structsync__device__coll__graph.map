@@ -1,0 +1,9 @@
+<map id="sync_device" name="sync_device">
+<area shape="rect" id="Node000001" title=" " alt="" coords="59,181,161,207"/>
+<area shape="rect" id="Node000002" href="$structsync__track.html" title=" " alt="" coords="5,93,97,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="69,129,104,179,100,182,65,132"/>
+<area shape="rect" id="Node000003" href="$structtrack__key.html" title=" " alt="" coords="9,5,94,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="54,45,54,93,49,93,49,45"/>
+<area shape="rect" id="Node000004" href="$structsync__io__cb.html" title=" " alt="" coords="122,93,215,119"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="156,132,138,159,121,183,116,179,133,156,151,129"/>
+</map>

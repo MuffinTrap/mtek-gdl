@@ -1,0 +1,19 @@
+<map id="ufbxi_buf" name="ufbxi_buf">
+<area shape="rect" id="Node000001" title=" " alt="" coords="307,391,390,416"/>
+<area shape="rect" id="Node000002" href="$structufbxi__allocator.html" title=" " alt="" coords="216,293,335,319"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="295,328,342,389,337,392,290,331"/>
+<area shape="rect" id="Node000003" href="$structufbx__error.html" title=" " alt="" coords="156,196,245,221"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="220,231,268,291,264,295,216,234"/>
+<area shape="rect" id="Node000004" href="$structufbx__string.html" title=" " alt="" coords="5,5,100,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="45,44,36,88,37,111,46,132,68,157,96,175,127,188,156,197,155,202,125,194,93,180,64,161,41,135,32,112,31,88,40,43"/>
+<area shape="rect" id="Node000005" href="$structufbx__error__frame.html" title=" " alt="" coords="133,108,268,133"/>
+<area shape="poly" id="edge5_Node000005_Node000004" title=" " alt="" coords="82,36,185,106,182,110,79,41"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="203,147,203,195,198,195,198,147"/>
+<area shape="rect" id="Node000006" href="$structufbx__allocator__opts.html" title=" " alt="" coords="272,196,423,221"/>
+<area shape="poly" id="edge6_Node000002_Node000006" title=" " alt="" coords="332,234,286,295,282,291,328,231"/>
+<area shape="rect" id="Node000007" href="$structufbx__allocator.html" title=" " alt="" coords="293,108,407,133"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="352,147,350,196,345,195,347,147"/>
+<area shape="rect" id="Node000008" href="$structufbxi__buf__chunk.html" title=" " alt="" coords="359,293,488,319"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="408,331,360,392,356,389,404,328"/>
+<area shape="poly" id="edge9_Node000008_Node000008" title=" " alt="" coords="503,296,511,300,515,306,507,315,489,318,488,313,504,310,509,306,508,304,501,301"/>
+</map>

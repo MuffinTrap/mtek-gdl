@@ -1,0 +1,12 @@
+<map id="Menu" name="Menu">
+<area shape="rect" id="Node000001" title="Struct for holding the state of immeadiate mode gui menu." alt="" coords="29,299,88,324"/>
+<area shape="rect" id="Node000002" href="$structColor4f.html" title=" " alt="" coords="5,5,75,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="44,44,53,186,61,298,55,299,48,187,39,44"/>
+<area shape="rect" id="Node000004" href="$structTexture.html" title="Abstract class for cross platform PNG image loading." alt="" coords="98,93,169,119"/>
+<area shape="poly" id="edge5_Node000004_Node000002" title=" " alt="" coords="65,38,122,91,119,95,61,42"/>
+<area shape="rect" id="Node000003" href="$structFont.html" title="Represents a font that can be used to draw text." alt="" coords="91,211,141,236"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="103,249,69,300,64,297,98,246"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="132,133,120,211,115,210,127,132"/>
+<area shape="rect" id="Node000005" href="$structPNGFile.html" title=" " alt="" coords="102,5,175,31"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="140,45,137,93,131,93,134,44"/>
+</map>

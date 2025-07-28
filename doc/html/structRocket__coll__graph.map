@@ -1,0 +1,16 @@
+<map id="Rocket" name="Rocket">
+<area shape="rect" id="Node000001" title=" " alt="" coords="130,269,197,295"/>
+<area shape="rect" id="Node000002" href="$structsync__device.html" title=" " alt="" coords="123,181,225,207"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="169,220,167,231,166,269,160,269,162,230,164,219"/>
+<area shape="rect" id="Node000003" href="$structsync__track.html" title=" " alt="" coords="5,93,97,119"/>
+<area shape="poly" id="edge7_Node000001_Node000003" title=" " alt="" coords="50,133,50,169,53,188,60,205,76,226,95,243,136,267,134,272,92,247,72,229,56,208,48,189,44,169,45,133"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="81,125,159,179,156,183,78,129"/>
+<area shape="rect" id="Node000004" href="$structtrack__key.html" title=" " alt="" coords="9,5,94,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="54,45,54,93,49,93,49,45"/>
+<area shape="rect" id="Node000005" href="$structsync__io__cb.html" title=" " alt="" coords="127,93,221,119"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="177,133,177,181,171,181,171,133"/>
+<area shape="rect" id="Node000006" href="$structMusic.html" title=" " alt="" coords="259,181,319,207"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="281,221,261,247,230,266,198,277,196,272,228,261,258,243,277,218"/>
+<area shape="rect" id="Node000007" href="$structSound.html" title="Sound handling struct." alt="" coords="257,93,320,119"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="291,133,291,181,286,181,286,133"/>
+</map>

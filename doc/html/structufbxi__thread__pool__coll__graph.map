@@ -1,0 +1,27 @@
+<map id="ufbxi_thread_pool" name="ufbxi_thread_pool">
+<area shape="rect" id="Node000001" title=" " alt="" coords="254,372,393,397"/>
+<area shape="rect" id="Node000002" href="$structufbx__thread__opts.html" title=" " alt="" coords="15,284,149,309"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="106,316,128,332,152,346,203,363,254,373,253,378,202,368,150,350,125,336,103,320"/>
+<area shape="rect" id="Node000003" href="$structufbx__thread__pool.html" title=" " alt="" coords="5,196,140,221"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="78,235,83,283,78,284,73,236"/>
+<area shape="rect" id="Node000004" href="$structufbxi__allocator.html" title=" " alt="" coords="264,284,383,309"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="326,323,326,371,321,371,321,323"/>
+<area shape="rect" id="Node000005" href="$structufbx__error.html" title=" " alt="" coords="164,196,253,221"/>
+<area shape="poly" id="edge10_Node000001_Node000005" title=" " alt="" coords="207,236,207,272,210,291,218,308,233,328,253,346,295,370,292,374,250,350,229,332,213,311,205,292,202,272,202,236"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="237,227,309,282,306,286,233,232"/>
+<area shape="rect" id="Node000006" href="$structufbx__string.html" title=" " alt="" coords="13,5,108,31"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="53,44,44,88,45,111,54,132,72,148,103,165,175,194,173,198,101,170,69,153,49,135,40,112,39,88,48,43"/>
+<area shape="rect" id="Node000007" href="$structufbx__error__frame.html" title=" " alt="" coords="141,108,276,133"/>
+<area shape="poly" id="edge7_Node000007_Node000006" title=" " alt="" coords="90,36,193,106,190,110,87,41"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="211,147,211,195,206,195,206,147"/>
+<area shape="rect" id="Node000008" href="$structufbx__allocator__opts.html" title=" " alt="" coords="280,196,431,221"/>
+<area shape="poly" id="edge8_Node000004_Node000008" title=" " alt="" coords="349,235,330,284,325,283,344,233"/>
+<area shape="rect" id="Node000009" href="$structufbx__allocator.html" title=" " alt="" coords="301,108,415,133"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="360,147,358,196,353,195,355,147"/>
+<area shape="rect" id="Node000010" href="$structufbxi__task__group.html" title=" " alt="" coords="407,284,541,309"/>
+<area shape="poly" id="edge11_Node000001_Node000010" title=" " alt="" coords="443,319,345,374,342,369,441,314"/>
+<area shape="rect" id="Node000011" href="$structufbxi__task__imp.html" title=" " alt="" coords="566,284,689,309"/>
+<area shape="poly" id="edge12_Node000001_Node000011" title=" " alt="" coords="580,316,464,351,371,375,370,369,463,345,578,311"/>
+<area shape="rect" id="Node000012" href="$structufbxi__task.html" title=" " alt="" coords="582,196,673,221"/>
+<area shape="poly" id="edge13_Node000011_Node000012" title=" " alt="" coords="630,235,630,283,625,283,625,235"/>
+</map>
