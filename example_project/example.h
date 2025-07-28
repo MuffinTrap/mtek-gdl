@@ -4,10 +4,10 @@
 
 class Example
 {
-    Image* barb;
+    Texture* barb;
     Sprite* mel_sprites;
     Sprite* fruitSprites;
-    Image* pointerImage;
+    Texture* pointerTexture;
     Font* ibmFont;
     Font* debugFont;
     Music* sampleMusic;
@@ -19,10 +19,10 @@ class Example
     Menu* audioMenu;
     Scene* wiiScene;
     Scene* shipScene;
-    Image* wiiTexture;
+    Texture* wiiTexture;
 
-    Image* matcapTexture;
-    Image* checkerTexture;
+    Texture* matcapTexture;
+    Texture* checkerTexture;
     Scene* icosaScene;
     Material* matcapMaterial;
 
@@ -33,7 +33,7 @@ class Example
     float elapsedSeconds;
 
     // Toggles
-    bool toggleSprites, toggle3D, toggleImage, toggleCamera, toggleInputs, togglePerformance, toggleAudio = false;
+    bool toggleSprites, toggle3D, toggleTexture, toggleCamera, toggleInputs, togglePerformance, toggleAudio = false;
 
     public:
         Example();
@@ -48,7 +48,7 @@ class Example
         // Togglable
         void DrawSprites();
         void DrawIcosa();
-        void DrawImage();
+        void DrawTexture();
         void DrawCameraControls();
         void DrawInputInfo();
         void DrawTimingInfo();

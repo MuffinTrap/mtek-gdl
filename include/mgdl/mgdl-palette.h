@@ -22,7 +22,7 @@ extern "C"
 	Palette* Palette_Create4f(u32* colorsArray, u8 size);
 	Palette* Palette_CreateEmpty(u8 size);
 
-	//TODO Palette* Palette_FromImage(const char* filename);
+	//TODO Palette* Palette_FromTexture(const char* filename);
 	void Palette_SetColor(Palette* palette, u8 index, u32 color);
 	void Palette_SetColor4f(Palette* palette, u8 index, Color4f color);
 

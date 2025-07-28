@@ -3,7 +3,7 @@
 #include "mgdl-types.h"
 #include "mgdl-controller.h"
 #include <mgdl/mgdl-png.h>
-#include <mgdl/mgdl-image.h>
+#include <mgdl/mgdl-texture.h>
 #include <mgdl/mgdl-sound.h>
 #include <mgdl/mgdl-music.h>
 #include <mgdl/mgdl-scene.h>
@@ -36,8 +36,8 @@ void mgdl_InitSystem(const char* name,
 
 // TODO Move all loading to AssetManager to get memory status and other stats
 PNGFile* mgdl_LoadPNG(const char* filename);
-Image* mgdl_LoadImage(const char* filename, TextureFilterModes filterMode);
-Image* mgdl_LoadImagePNG(PNGFile* png, TextureFilterModes filterMode);
+Texture* mgdl_LoadTexture(const char* filename, TextureFilterModes filterMode);
+Texture* mgdl_LoadTexturePNG(PNGFile* png, TextureFilterModes filterMode);
 
 Sound* mgdl_LoadSound(const char* filename);
 Music* mgdl_LoadOgg(const char* filename);

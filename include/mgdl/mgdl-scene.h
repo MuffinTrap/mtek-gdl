@@ -4,7 +4,7 @@
  */
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-opengl.h>
-#include <mgdl/mgdl-image.h>
+#include <mgdl/mgdl-texture.h>
 #include <mgdl/mgdl-mesh.h>
 #include <mgdl/mgdl-material.h>
 #include <mgdl/mgdl-node.h>
@@ -43,8 +43,8 @@ extern "C"
 	void Scene_DebugDraw(Scene* scene, Menu* menu, short x, short y, u32 debugFlags);
 	void Scene_AddChildNode(Scene* scene, Node* parent, Node* child);
 	void Scene_AddMaterial(Scene* scene, Material* material);
-	void Scene_SetMaterialTexture(Scene* scene, const char* materialName, Image* texture);
-	void Scene_SetAllMaterialTextures(Scene* scene, Image* texture);
+	void Scene_SetMaterialTexture(Scene* scene, const char* materialName, Texture* texture);
+	void Scene_SetAllMaterialTextures(Scene* scene, Texture* texture);
 
 	Node* Scene_GetRootNode(Scene* scene);
 	Node* Scene_GetNode(Scene* scene, const char* name);

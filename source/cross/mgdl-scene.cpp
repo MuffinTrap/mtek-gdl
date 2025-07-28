@@ -85,7 +85,7 @@ void Scene_DrawNode ( Node* node )
 	glPopMatrix();
 }
 
-void Scene_SetMaterialTexture (Scene* scene, const char* materialName, Image* texture )
+void Scene_SetMaterialTexture (Scene* scene, const char* materialName, Texture* texture )
 {
 	Material* m = Scene_GetMaterial(scene, materialName);
 	if (m != nullptr)
@@ -99,7 +99,7 @@ void Scene_SetMaterialTexture (Scene* scene, const char* materialName, Image* te
 	}
 }
 
-void Scene_SetAllMaterialTextures (Scene* scene, Image* texture )
+void Scene_SetAllMaterialTextures (Scene* scene, Texture* texture )
 {
 	for(sizetype i = 0; i < DynamicArray_CountMaterial(scene->materials); i++)
 	{

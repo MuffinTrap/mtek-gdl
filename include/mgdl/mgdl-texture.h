@@ -9,7 +9,7 @@
 /**
 	* @brief Abstract class for cross platform PNG image loading.
 	*/
-struct Image
+struct Texture
 {
 	PNGFile* pngFile;
 
@@ -20,14 +20,14 @@ struct Image
 	ColorFormats colorFormat;
 	GLuint textureId;
 };
-typedef struct Image Image;
+typedef struct Texture Texture;
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-	Image* Image_Create(void);
+	Texture* Texture_Create(void);
 
 	/**
 		* @brief Sets the GL name and dimenions of the image.
@@ -39,7 +39,7 @@ extern "C"
 		* @param height Height of the image in pixels.
 		* @param format Color format of the image.
 		*/
-	void Image_SetGLName(Image* img, GLuint textureName, GLsizei width, GLsizei height, ColorFormats format);
+	void Texture_SetGLName(Texture* img, GLuint textureName, GLsizei width, GLsizei height, ColorFormats format);
 
 	/**
 		* @brief Draws the image using 2D vertices.
@@ -51,7 +51,7 @@ extern "C"
 		* @param alignX Alignment on the X axis.
 		* @param alignY Alignment on the Y axis.
 		*/
-	void Image_Draw2DAligned(Image* img, short x, short y, float scale, AlignmentModes alignX, AlignmentModes alignY);
+	void Texture_Draw2DAligned(Texture* img, short x, short y, float scale, AlignmentModes alignX, AlignmentModes alignY);
 
 	/**
 		* @brief Draws the image using 2D vertices.
@@ -62,7 +62,7 @@ extern "C"
 		* @param x2 Lower right corner x of the image.
 		* @param y2 Lower right corner y of the image.
 		*/
-	void Image_Draw2DAbsolute(Image* img, short x, short y, short x2, short y2);
+	void Texture_Draw2DAbsolute(Texture* img, short x, short y, short x2, short y2);
 
 	/**
 		* @brief Draws the image on the origo in 3D space.
@@ -71,7 +71,7 @@ extern "C"
 		* @param alignX Alignment on the X axis.
 		* @param alignY Alignment on the Y axis.
 		*/
-	void Image_Draw3D(Image* img, float scale, AlignmentModes alignX, AlignmentModes alignY);
+	void Texture_Draw3D(Texture* img, float scale, AlignmentModes alignX, AlignmentModes alignY);
 
 	/**
 		* @brief Sets the tint of the image.
@@ -81,7 +81,7 @@ extern "C"
 		* @param green Red component of the tint color, [0,1].
 		* @param blue Red component of the tint color, [0,1].
 		*/
-	void Image_SetTint(Image* img, float red, float green, float blue);
+	void Texture_SetTint(Texture* img, float red, float green, float blue);
 
 
 	/**
@@ -90,7 +90,7 @@ extern "C"
 		* @param filterMode Filtering mode to use.
 		* @return True if loading was succesfull.
 		*/
-	Image* Image_LoadFile(const char* filename, TextureFilterModes filterMode);
+	Texture* Texture_LoadFile(const char* filename, TextureFilterModes filterMode);
 
 	/**
 		* @brief Loads an image from a PNG file object.
@@ -98,13 +98,13 @@ extern "C"
 		* @param filterMode Filtering mode to use.
 		* @return True if loading was succesfull.
 		*/
-	Image* Image_LoadPNG(PNGFile* pngFile, TextureFilterModes filterMode);
+	Texture* Texture_LoadPNG(PNGFile* pngFile, TextureFilterModes filterMode);
 
 	/**
 	 * @brief Generates a 8x8 checkerboard image
 	 * @return The generated image
 	 */
-	Image* Image_GenerateCheckerBoard(void);
+	Texture* Texture_GenerateCheckerBoard(void);
 
 #ifdef __cplusplus
 }

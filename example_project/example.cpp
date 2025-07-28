@@ -11,7 +11,7 @@
     #ifdef SYNC_PLAYER
         #include MGDL_ROCKET_FILE_H
     #else
-        static ROCKET_TRACK clear_r;
+        static ROCKET_TRACK sync_value;
     #endif
 #endif
 
@@ -24,10 +24,10 @@ void Example::Init()
 {
     // Sprites, images and fonts
     short spriteHeight = 64;
-    barb = mgdl_LoadImage("assets/barb.png", TextureFilterModes::Linear);
+    barb = mgdl_LoadTexture("assets/barb.png", TextureFilterModes::Linear);
     mel_sprites = mgdl_LoadSprite("assets/mel_tiles.png", spriteHeight, spriteHeight);
     fruitSprites = mgdl_LoadSprite("assets/fruits.png", 16, 16);
-    pointerImage = mgdl_LoadImage("assets/pointer.png", TextureFilterModes::Nearest);
+    pointerTexture = mgdl_LoadTexture("assets/pointer.png", TextureFilterModes::Nearest);
 
     ibmFont = mgdl_LoadFont("assets/font8x16.png", 8, 16, ' ');
     debugFont = DefaultFont_GetDefaultFont();
@@ -38,12 +38,12 @@ void Example::Init()
 
     // Wii model scene
     wiiScene = mgdl_LoadFBX("assets/wii_et_baby.fbx");
-    wiiTexture = mgdl_LoadImage("assets/wii_console_texture.png", TextureFilterModes::Nearest);
+    wiiTexture = mgdl_LoadTexture("assets/wii_console_texture.png", TextureFilterModes::Nearest);
     Scene_SetMaterialTexture(wiiScene, "wii_console_texture.png", wiiTexture);
 
     // Ship with matcap texture
     shipScene = mgdl_LoadFBX("assets/ship_with_uvs.fbx");
-    matcapTexture = mgdl_LoadImage("assets/matcap.png", TextureFilterModes::Linear);
+    matcapTexture = mgdl_LoadTexture("assets/matcap.png", TextureFilterModes::Linear);
     matcapMaterial = Material_Load("matcap", matcapTexture, MaterialType::Matcap);
     Scene_SetAllMaterialTextures(shipScene, matcapTexture);
     Material* st = Scene_GetMaterial(shipScene, "standardSurface1");
@@ -59,7 +59,7 @@ void Example::Init()
 
     // Generated icosahedron and checkerboard texture
     icosaScene = Scene_CreateEmpty();
-    checkerTexture = Image_GenerateCheckerBoard();
+    checkerTexture = Texture_GenerateCheckerBoard();
     Material* checkerMaterial = Material_Load("checker", checkerTexture, MaterialType::Diffuse);
 
     Scene_AddMaterial(icosaScene, checkerMaterial );
@@ -82,6 +82,7 @@ void Example::Init()
 
     cameraDistance = 30.0f;
 
+
     #ifdef MGDL_ROCKET
         // Connect to editor
         RocketTrackFormat trackSource = TrackEditor;
@@ -101,7 +102,7 @@ void Example::Init()
             Rocket_PlayTracks();
         #else
             // When tracks are in CPP file, this should not be called
-            clear_r = Rocket_AddTrack("clear_r");
+            sync_value = Rocket_AddTrack("sync_value");
         #endif
     #endif
 }
@@ -118,10 +119,7 @@ void Example::Update()
     #ifdef MGDL_ROCKET
 
         Rocket_UpdateRow();
-        float r = Rocket_Float(clear_r);
-        float g = 1.0f;
-        float b = 174.0f/255.0f;
-        glClearColor(r, g, b, 0.0f);
+        float r = Rocket_Float(sync_value);
 
         #ifndef SYNC_PLAYER
 
@@ -166,26 +164,27 @@ void DrawTextDouble(const char* text, short x, short y, float textHeight, Font* 
 
 void Example::Draw()
 {
+    Color4f black = Palette_GetColor4f(Palette_GetDefault(), 5);
+    mgdl_glClearColor4f(&black);
+
     mgdl_InitOrthoProjection();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-
 
     if ( toggle3D) {DrawIcosa();}
 
-
     mgdl_InitOrthoProjection();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    DrawMenu();
 
     if ( toggleSprites) {DrawSprites();}
-    if ( toggleImage) {DrawImage();}
+    if ( toggleTexture) {DrawTexture();}
     if ( toggleCamera) {DrawCameraControls();}
     if ( toggleInputs) {DrawInputInfo();}
     if ( togglePerformance) {DrawTimingInfo();}
     if ( toggleAudio) {DrawAudio();}
 
+    DrawMenu();
     Menu_DrawCursor();
 }
 
@@ -221,54 +220,21 @@ void Example::DrawIcosa()
     DrawScene(wiiScene, V3f_Create(0.1f, 0.1f, 0.1f));
 }
 
-void Example::DrawImage()
+void Example::DrawTexture()
 {
-    // Draw Image
-    Image_Draw2DAligned(barb,
+    // Draw Texture
+    Texture_Draw2DAligned(barb,
             0,
             mgdl_GetScreenHeight()/2,
             1.0f,
             LJustify, Centered);
 
-    Image_Draw2DAligned(debugFont->_fontImage,
+    Texture_Draw2DAligned(debugFont->_fontTexture,
             0,
             mgdl_GetScreenHeight()/2,
             1.0f,
             LJustify, Centered);
 }
-
-#if 0
-
-    InitOrthoProjection();
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    // Input
-    short sh = GetScreenHeight();
-    short top = sh - 32;
-    short left = 22;
-    DrawMenu(left, top - 120, 120);
-    DrawSprites();
-    DrawTimingInfo(left,
-                   GetScreenHeight()/5,
-                   ibmFont->GetCharacterHeight());
-    DrawVersion();
-    DrawInputInfo(left, top);
-
-    DrawCameraControls(GetScreenWidth()-80, top-120, 80);
-}
-
-void Example::DrawVersion()
-{
-    float textHeight = debugFont->GetCharacterHeight() * 2;
-    short sh = GetScreenHeight();
-    int CenterX = GetScreenWidth()/4;
-    DrawTextDouble("MTEK-GDL", CenterX, sh - textHeight, textHeight, debugFont);
-    DrawTextDouble(GDL_VERSION, CenterX, sh - textHeight * 2, textHeight, debugFont);
-}
-
-#endif
-
 
 void Example::DrawScene ( Scene* scene, V3f scale)
 {
@@ -308,6 +274,7 @@ void Example::DrawScene ( Scene* scene, V3f scale)
 
 void DrawDPad(short x, short y, short size)
 {
+
     short box = size;
     short h=box/2;
     y -= box + h;
@@ -325,16 +292,19 @@ void DrawDPad(short x, short y, short size)
         vec2New(1,0)
     };
     Palette* blessing = Palette_GetDefault();
-    Color4f c = Palette_GetColor4f(blessing, 6);
+    Color4f c = Palette_GetColor4f(blessing, 5);
+
+    //Draw2D_Line(x, y, x+size, y-size, &c);
+
     for (int i=0;i<4;i++)
     {
         if (WiiController_ButtonHeld(mgdl_GetController(0), dpad_buttons[i]))
         {
-            c = Palette_GetColor4f(blessing, 4);
+            c = Palette_GetColor4f(blessing, 2);
         }
         else
         {
-            c = Palette_GetColor4f(blessing, 6);
+            c = Palette_GetColor4f(blessing, 5);
         }
         vec2 d=directions[i];
         Draw2D_Rect(x+d.x*box-h, y+ d.y*box-h, x+box+d.x*box-h, y+box+d.y*box-h, &c);
@@ -348,14 +318,14 @@ void DrawJoystick(short x, short y, short size)
     short box = jsize;
     short h=box/2;
     Palette* blessing = Palette_GetDefault();
-    Color4f jc = Palette_GetColor4f(blessing, 6);
+    Color4f jc = Palette_GetColor4f(blessing, 5);
     vec2 jdir = WiiController_GetNunchukJoystickDirection(mgdl_GetController(0));
     short jleft= x + jsize/2 + jdir.x * box-h;
     short jtop = y - jsize/2 - jdir.y * box-h;
     Draw2D_RectLines(x-jsize, y, x+jsize*2, y-jsize*3, &jc);
     if (jdir.x != 0.0f || jdir.y != 0.0f)
     {
-        jc = Palette_GetColor4f(blessing, 4);
+        jc = Palette_GetColor4f(blessing, 2);
     }
     Draw2D_Rect(jleft, jtop, jleft+box, jtop-box, &jc);
 }
@@ -392,11 +362,11 @@ void Example::DrawInputInfo()
 
     Menu_Text("D pad");
     DrawDPad(controllerMenu->_drawx + 50, controllerMenu->_drawy, controllerMenu->_textSize);
-    Menu_Empty(controllerMenu->_textSize*3);
+    Menu_Skip(controllerMenu->_textSize*3);
 
     Menu_Text("Joystick");
     DrawJoystick(controllerMenu->_drawx + 50, controllerMenu->_drawy, controllerMenu->_textSize);
-    Menu_Empty(controllerMenu->_textSize*3);
+    Menu_Skip(controllerMenu->_textSize*3);
 
     float pitch = WiiController_GetPitch(mgdl_GetController(0));
     float yaw = WiiController_GetYaw(mgdl_GetController(0));
@@ -483,7 +453,7 @@ void Example::DrawMenu()
     Menu_Text("Toggle features");
     Menu_Toggle("Sprites", &toggleSprites);
     Menu_Toggle("3D", &toggle3D);
-    Menu_Toggle("Image", &toggleImage);
+    Menu_Toggle("Texture", &toggleTexture);
     Menu_Toggle("Camera", &toggleCamera);
     Menu_Toggle("Inputs", &toggleInputs);
     Menu_Toggle("Performance", &togglePerformance);

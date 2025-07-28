@@ -8,7 +8,7 @@ static u32 blessing[] =
 	0x484848FF, // 0: Neutral almost black
 	// Original colors
 	0x74569bFF, // 1: Dark purple
-	0x96fbcFF,  // 2: bright green
+	0x96fbc7FF,  // 2: bright green
 	0xf7ffaeFF, // 3: neon yellow
 	0xffb3cbFF, // 4: pink
 	0xd8bfd8FF, // 5: light purple/violet

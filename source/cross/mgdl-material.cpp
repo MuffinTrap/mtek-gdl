@@ -4,7 +4,7 @@
 static GLfloat whiteSpecular[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 static GLfloat blackEmissive[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 
-Material* Material_Load (const char* name, Image* texture, MaterialType type)
+Material* Material_Load (const char* name, Texture* texture, MaterialType type)
 {
 	Material* material = (Material*)malloc(sizeof(Material));
 	sizetype nameSize = strlen(name);

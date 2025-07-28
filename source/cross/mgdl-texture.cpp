@@ -1,4 +1,4 @@
-#include <mgdl/mgdl-image.h>
+#include <mgdl/mgdl-texture.h>
 #include <mgdl/mgdl-cache.h>
 #include <mgdl/mgdl-alloc.h>
 #include <mgdl/mgdl-assert.h>
@@ -8,9 +8,9 @@
 #include <cstdlib>
 #include <cstring>
 
-Image* Image_Create()
+Texture* Texture_Create()
 {
-	Image* img = (Image*)malloc(sizeof(Image));
+	Texture* img = (Texture*)malloc(sizeof(Texture));
 	img->aspectRatio = 1.0f;
 	img->width = 0;
 	img->height = 0;
@@ -23,7 +23,7 @@ Image* Image_Create()
 	return img;
 }
 
-Image* Image_LoadFile ( const char* filename, TextureFilterModes filterMode)
+Texture* Texture_LoadFile ( const char* filename, TextureFilterModes filterMode)
 {
 	// Load using png
 	Log_InfoF("Loading image %s\n", filename);
@@ -31,9 +31,9 @@ Image* Image_LoadFile ( const char* filename, TextureFilterModes filterMode)
 	PNGFile* pngFile = PNG_ReadFile(filename);
 	if (pngFile == nullptr)
 	{
-		return Image_GenerateCheckerBoard();
+		return Texture_GenerateCheckerBoard();
 	}
-	Image* image = Image_LoadPNG(pngFile, filterMode);
+	Texture* image = Texture_LoadPNG(pngFile, filterMode);
 
 	// Data is loaded to OpenGX, release the buffers
 	PNG_DeleteData(pngFile);
@@ -41,11 +41,11 @@ Image* Image_LoadFile ( const char* filename, TextureFilterModes filterMode)
 }
 
 // The png might belong to someone else, do not free it in this function
-Image* Image_LoadPNG(PNGFile* png, TextureFilterModes filterMode)
+Texture* Texture_LoadPNG(PNGFile* png, TextureFilterModes filterMode)
 {
-	mgdl_assert_print(png != nullptr, "Image_LoadPNG got nullptr for png\n");
+	mgdl_assert_print(png != nullptr, "Texture_LoadPNG got nullptr for png\n");
 
-	Image* image = Image_Create();
+	Texture* image = Texture_Create();
 	GLint glFilter = TextureFilterToGLFilter(filterMode);
 
 	GLint alignment;
@@ -75,23 +75,23 @@ Image* Image_LoadPNG(PNGFile* png, TextureFilterModes filterMode)
 	// copy data
 	image->width = png->width;
 	image->height = png->height;
-	Image_SetTint(image, 1.0f, 1.0f, 1.0f);
+	Texture_SetTint(image, 1.0f, 1.0f, 1.0f);
 									  //(1.0f/(float)png->height) * 0.375f);
 
 	return image;
 }
 
-void Image_SetGLName(Image* img, GLuint textureName, GLsizei width, GLsizei height, ColorFormats format)
+void Texture_SetGLName(Texture* img, GLuint textureName, GLsizei width, GLsizei height, ColorFormats format)
 {
 	img->width = width;
 	img->height = height;
 	img->textureId = textureName;
 	img->colorFormat = format;
-	Image_SetTint(img, 1.0f, 1.0f, 1.0f);
+	Texture_SetTint(img, 1.0f, 1.0f, 1.0f);
 }
 
 // TODO add padding to UVs so that the corners are inside the pixels and not in between
-void Image_Draw2DAbsolute(Image* img, short x, short y, short x2, short y2)
+void Texture_Draw2DAbsolute(Texture* img, short x, short y, short x2, short y2)
 {
 	float dx = (float)x;
 	float dy = (float)y;
@@ -121,7 +121,7 @@ void Image_Draw2DAbsolute(Image* img, short x, short y, short x2, short y2)
 	glDisable(GL_TEXTURE_2D);
 }
 
-void Image_Draw2DAligned(Image* img, short x, short y, float scale, AlignmentModes alignX, AlignmentModes alignY)
+void Texture_Draw2DAligned(Texture* img, short x, short y, float scale, AlignmentModes alignX, AlignmentModes alignY)
 {
 	short w = img->width * scale;
 	short h = img->height * scale;
@@ -144,10 +144,10 @@ void Image_Draw2DAligned(Image* img, short x, short y, float scale, AlignmentMod
 	{
 		y -= h/2;
 	}
-	Image_Draw2DAbsolute(img, x, y, x+w, y+h);
+	Texture_Draw2DAbsolute(img, x, y, x+w, y+h);
 }
 
-void Image_Draw3D(Image* img, float scale, AlignmentModes alignX, AlignmentModes alignY)
+void Texture_Draw3D(Texture* img, float scale, AlignmentModes alignX, AlignmentModes alignY)
 {
 	float aspect = img->aspectRatio;
 	float x = 0.0f;
@@ -203,19 +203,19 @@ void Image_Draw3D(Image* img, float scale, AlignmentModes alignX, AlignmentModes
 
 
 
-void Image_SetTint (Image* img, float red, float green, float blue )
+void Texture_SetTint (Texture* img, float red, float green, float blue )
 {
 	img->tint.red = red;
 	img->tint.green = green;
 	img->tint.blue = blue;
 }
 
-Image* Image_GenerateCheckerBoard()
+Texture* Texture_GenerateCheckerBoard()
 {
 	const u32 width = 8;
 	const u32 height = 8;
 	u32 index = 0;
-	GLubyte checkerImage[height][width][2];
+	GLubyte checkerTexture[height][width][2];
 
 	for(u32 y = 0; y < height; y++)
 	{
@@ -223,8 +223,8 @@ Image* Image_GenerateCheckerBoard()
 		{
 			index = (x+y)%2;
 
-			checkerImage[y][x][0] = index == 0? 255 :0;
-			checkerImage[y][x][1] = 255;
+			checkerTexture[y][x][0] = index == 0? 255 :0;
+			checkerTexture[y][x][1] = 255;
 		}
 	}
 
@@ -238,11 +238,11 @@ Image* Image_GenerateCheckerBoard()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8_ALPHA8, width, height, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, checkerImage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8_ALPHA8, width, height, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, checkerTexture);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
 
-	Image* img = Image_Create();
-	Image_SetGLName(img, texName, width, height, ColorFormats::GrayAlpha);
+	Texture* img = Texture_Create();
+	Texture_SetGLName(img, texName, width, height, ColorFormats::GrayAlpha);
 	return img;
 }
 

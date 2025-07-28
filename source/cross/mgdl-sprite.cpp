@@ -50,7 +50,7 @@ void Sprite_Draw2D(Sprite* sprite, u16 spriteIndex, short x, short y, float scal
 	mgdl_glColor4f(tintColor);
 
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, sprite->_font->_fontImage->textureId);
+	glBindTexture(GL_TEXTURE_2D, sprite->_font->_fontTexture->textureId);
 
 	glBegin(GL_QUADS);
 
@@ -90,7 +90,7 @@ void Sprite_Draw3D(Sprite* sprite, u16 spriteIndex, float scale, AlignmentModes 
 	mgdl_glColor4f(tintColor);
 
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, sprite->_font->_fontImage->textureId);
+	glBindTexture(GL_TEXTURE_2D, sprite->_font->_fontTexture->textureId);
 
 	glBegin(GL_QUADS);
 

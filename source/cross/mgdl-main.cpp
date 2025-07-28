@@ -39,12 +39,12 @@ PNGFile* mgdl_LoadPNG(const char* filename)
 	}
 }
 
-Image* mgdl_LoadImage(const char* filename, TextureFilterModes filterMode)
+Texture* mgdl_LoadTexture(const char* filename, TextureFilterModes filterMode)
 {
-	Image* img = Image_LoadFile(filename, filterMode);
+	Texture* img = Texture_LoadFile(filename, filterMode);
 	if (img != nullptr)
 	{
-		AssetManager_LoadImage(&assetManager, img);
+		AssetManager_LoadTexture(&assetManager, img);
 		return img;
 	}
 	else
@@ -53,9 +53,9 @@ Image* mgdl_LoadImage(const char* filename, TextureFilterModes filterMode)
 	}
 }
 
-Image* mgdl_LoadImagePNG(PNGFile* png, TextureFilterModes filterMode)
+Texture* mgdl_LoadTexturePNG(PNGFile* png, TextureFilterModes filterMode)
 {
-	Image* img = Image_LoadPNG(png, filterMode);
+	Texture* img = Texture_LoadPNG(png, filterMode);
 	if (img != nullptr)
 	{
 		return img;
@@ -113,8 +113,8 @@ Music* mgdl_LoadWav(const char* filename)
 
 Font* mgdl_LoadFont(const char* filename, short characterWidth, short characterHeight, char firstCharacter)
 {
-	Image* fontImage = mgdl_LoadImage(filename, TextureFilterModes::Nearest);
-	Font* font = Font_Load(fontImage, characterWidth, characterHeight, firstCharacter);
+	Texture* fontTexture = mgdl_LoadTexture(filename, TextureFilterModes::Nearest);
+	Font* font = Font_Load(fontTexture, characterWidth, characterHeight, firstCharacter);
 	if (font != nullptr)
 	{
 		AssetManager_LoadFont(&assetManager, font);
@@ -128,8 +128,8 @@ Font* mgdl_LoadFont(const char* filename, short characterWidth, short characterH
 
 Font* mgdl_LoadFontCustom(const char* filename, short characterWidth, short characterHeight, char firstCharacter, short charactersPerRow)
 {
-	Image* fontImage = mgdl_LoadImage(filename, TextureFilterModes::Linear);
-	Font* font = Font_LoadPadded(fontImage, characterWidth, characterHeight, firstCharacter, charactersPerRow);
+	Texture* fontTexture = mgdl_LoadTexture(filename, TextureFilterModes::Linear);
+	Font* font = Font_LoadPadded(fontTexture, characterWidth, characterHeight, firstCharacter, charactersPerRow);
 
 	if (font != nullptr)
 	{
@@ -144,8 +144,8 @@ Font* mgdl_LoadFontCustom(const char* filename, short characterWidth, short char
 
 Font* mgdl_LoadFontCustom(const char* filename, short characterWidth, short characterHeight, short charactersPerRow, const char* characters)
 {
-	Image* fontImage = mgdl_LoadImage(filename, TextureFilterModes::Linear);
-	Font* font = Font_LoadSelective(fontImage, characterWidth, characterHeight, charactersPerRow, characters);
+	Texture* fontTexture = mgdl_LoadTexture(filename, TextureFilterModes::Linear);
+	Font* font = Font_LoadSelective(fontTexture, characterWidth, characterHeight, charactersPerRow, characters);
 	if (font != nullptr)
 	{
 		AssetManager_LoadFont(&assetManager, font);

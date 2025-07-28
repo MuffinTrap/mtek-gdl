@@ -12,7 +12,7 @@
 #include "mgdl/mgdl-palette.h"
 #include "mgdl/mgdl-camera.h"
 #include "mgdl/mgdl-png.h"
-#include "mgdl/mgdl-image.h"
+#include "mgdl/mgdl-texture.h"
 #include "mgdl/mgdl-node.h"
 #include "mgdl/mgdl-mesh.h"
 #include "mgdl/mgdl-material.h"

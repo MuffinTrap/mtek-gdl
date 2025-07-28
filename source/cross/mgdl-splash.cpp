@@ -22,6 +22,8 @@ static Color4f bgColor;
 static Color4f textDimColor;
 static Color4f textLightColor;
 static float durationSeconds_ = 1.0f;
+static float drawCounter_ = 0;
+static bool logoColorGrey_ = false;
 
 void SetSplashScreenDurationSeconds(float duration)
 {
@@ -182,9 +184,9 @@ float DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer)
 	if (customColors == false)
 	{
 		Palette* blessing = Palette_GetDefault();
-		bgColor = Palette_GetColor4f(blessing, 0);
+		bgColor = Palette_GetColor4f(blessing, 1);
 		textLightColor = Palette_GetColor4f(blessing, 3);
-		textDimColor = Palette_GetColor4f(blessing, 6);
+		textDimColor = Palette_GetColor4f(blessing, 5);
 	}
 	mgdl_glClearColor4f(&bgColor);
 	mgdl_glClear(GL_COLOR_BUFFER_BIT);
@@ -223,37 +225,35 @@ float DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer)
 	// Space on both sides of logo
 	float paddingX = (sw - logoWidth) / 2;
 
-	float dStart = DrawLetters(paddingX, lean, &textDimColor, false, 0.0f);
 
 	// Draw yellow over grey
 	float barsColored = 0.0f;
-	animationProgress += deltaTime * 0.5f * durationSeconds_;
+	animationProgress += deltaTime * durationSeconds_;
+	drawCounter_ += deltaTime * durationSeconds_;
 
 	// Loop drawing
+	float dStart = 0.0f;
 	{
-		float drawProgress = animationProgress;
-		while (drawProgress > 2.0f)
+		// Convert to milliseconds
+		if (drawCounter_ > durationSeconds_)
 		{
-			drawProgress -= 2.0f;
+			drawCounter_ = 0.0f;
+			logoColorGrey_ = !logoColorGrey_;
 		}
-		if (drawProgress <= 1.0f)
-		{
-			barsColored = segments * drawProgress;
-		}
-		else
-		{
-			// Color all yellow
-			barsColored = segments;
+		float drawProgress = (drawCounter_/durationSeconds_);
 
-		}
-		DrawLetters(paddingX, lean, &textLightColor, true, barsColored);
-
-		// Draw grey over yellow
-		if (drawProgress > 1.0f && drawProgress <= 2.0f)
+		Color4f* logoBase = &textDimColor;
+		Color4f* logoOver = &textLightColor;
+		if (logoColorGrey_)
 		{
-			barsColored = (drawProgress-1.0f) * segments;
-			DrawLetters(paddingX, lean, &textLightColor, true, barsColored);
+			logoBase = &textLightColor;
+			logoOver =&textDimColor;
 		}
+
+		dStart = DrawLetters(paddingX, lean, logoBase, false, 0.0f);
+		barsColored = segments * drawProgress;
+		DrawLetters(paddingX, lean, logoOver, true, barsColored);
+
 	}
 	Font_Print(debf, &textLightColor, dStart, baseLine, 8, GDL_VERSION);
 	Font_Print(debf, &textLightColor, dStart, baseLine - 8, 8, MGDL_PLATFORM);

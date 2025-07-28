@@ -55,6 +55,8 @@ extern "C"
      */
     void Menu_DrawCursor(void);
 
+    void _Menu_DrawCursorParams(short x, short y, short w, short h, Color4f* color);
+
     /**
      * @brief Set the menu to which the other functions are applied to.
      * @details Only one menu is drawn at one time, so using this function saves typing.
@@ -142,9 +144,10 @@ extern "C"
     void Menu_Separator(void);
 
     /**
-     * @brief Makes empty space for custom elements
+     * @brief Leaves empty space for custom elements
+     * @param height How much to move the position of next item downwards
      */
-    void Menu_Empty(short height);
+    void Menu_Skip(short height);
     /**
      * @brief Draws text.
      * @param text Text to be drawn.

@@ -13,8 +13,6 @@ void init()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    Color4f black = Palette_GetColor4f(Palette_GetDefault(), 0);
-    mgdl_glClearColor4f(&black);
 
     example.Init();
 }
@@ -44,8 +42,8 @@ int main()
             frame,
             quit,
         FlagNone
-        // | FlagPauseUntilA
-        // | FlagSplashScreen
         // | FlagFullScreen
+         | FlagSplashScreen
+        // | FlagPauseUntilA
     );
 }

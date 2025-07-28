@@ -15,7 +15,7 @@ static short lineLimit_ = -1;
 Font* Font_Create(void)
 {
 	Font* font = (Font*)malloc(sizeof(Font));
-	font->_fontImage = nullptr;
+	font->_fontTexture = nullptr;
 	font->_tList = nullptr;
 	font->characterWidth = 0;
 	font->characterHeight = 0;
@@ -29,34 +29,34 @@ Font* Font_Create(void)
 	return font;
 }
 
-Font* Font_Load(Image* fontImage, short charw, short charh, char firstCharacter )
+Font* Font_Load(Texture* fontTexture, short charw, short charh, char firstCharacter )
 {
-	mgdl_assert_print(fontImage != nullptr, "Font_Load got nullptr for fontImage\n");
+	mgdl_assert_print(fontTexture != nullptr, "Font_Load got nullptr for fontTexture\n");
 
 	Font* font = Font_Create();
-	font->_fontImage = fontImage;
+	font->_fontTexture = fontTexture;
 	// TODO Log info printf("\tCreating font/sprite coordinates\n");
 	_Font_Bind(font, charw, charh, firstCharacter);
 	return font;
 }
 
-Font* Font_LoadPadded(Image* fontImage, short charw, short charh, char firstCharacter, short charactersPerRow )
+Font* Font_LoadPadded(Texture* fontTexture, short charw, short charh, char firstCharacter, short charactersPerRow )
 {
-	mgdl_assert_print(fontImage != nullptr, "Font_Load got nullptr for fontImage\n");
+	mgdl_assert_print(fontTexture != nullptr, "Font_Load got nullptr for fontTexture\n");
 
 	Font* font = Font_Create();
-	font->_fontImage = fontImage;
+	font->_fontTexture = fontTexture;
 	// TODO Log info printf("\tCreating font/sprite coordinates\n");
 	_Font_BindPadded(font, charw, charh, firstCharacter, charactersPerRow);
 	return font;
 }
 
-Font* Font_LoadSelective(Image* fontImage, short charw, short charh, short charactersPerRow, const char* characters )
+Font* Font_LoadSelective(Texture* fontTexture, short charw, short charh, short charactersPerRow, const char* characters )
 {
-	mgdl_assert_print(fontImage != nullptr, "Font_Load got nullptr for fontImage\n");
+	mgdl_assert_print(fontTexture != nullptr, "Font_Load got nullptr for fontTexture\n");
 
 	Font* font = Font_Create();
-	font->_fontImage = fontImage;
+	font->_fontTexture = fontTexture;
 	// TODO Log info printf("\tCreating font/sprite coordinates\n");
 	_Font_BindSelective(font, charw, charh, characters, charactersPerRow);
 	return font;
@@ -65,8 +65,8 @@ Font* Font_LoadSelective(Image* fontImage, short charw, short charh, short chara
 
 void _Font_BindPadded(Font* font,short charw, short charh, char firstCharacter, short charactersPerRow )
 {
-	const short tw = font->_fontImage->width;
-	const short th = font->_fontImage->height;
+	const short tw = font->_fontTexture->width;
+	const short th = font->_fontTexture->height;
 	short rows = th / charh;
 	// Calculate the vertex and texture coordinates (vertices are not used)
 	font->_firstIndex = firstCharacter;
@@ -84,14 +84,14 @@ void _Font_BindPadded(Font* font,short charw, short charh, char firstCharacter, 
 
 void _Font_Bind(Font* font, short charw, short charh, char firstCharacter )
 {
-	short charactersPerRow = font->_fontImage->width/ charw;
+	short charactersPerRow = font->_fontTexture->width/ charw;
 	_Font_BindPadded(font, charw, charh, firstCharacter, charactersPerRow);
 }
 
 void _Font_BindSelective (Font* font, short charw, short charh, const char* characters, short charactersPerRow )
 {
-	const short tw = font->_fontImage->width;
-	const short th = font->_fontImage->height;
+	const short tw = font->_fontTexture->width;
+	const short th = font->_fontTexture->height;
 	short rows = th / charh;
 	// Calculate the vertex and texture coordinates (vertices are not used)
 
@@ -117,7 +117,7 @@ void Font_Icon (Font* font, Color4f* color, float x, float y, float textHeight, 
 
 void Font_IconRotated(Font* font, Color4f* color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, u8 rotation, IconSymbol glyph)
 {
-	GLuint textureName = font->_fontImage->textureId;
+	GLuint textureName = font->_fontTexture->textureId;
 	float step = font->_aspect * textHeight;
 	float dx = x;
 	float dy = y;
@@ -194,7 +194,7 @@ void Font_IconRotated(Font* font, Color4f* color, float x, float y, float textHe
 
 void Font_PrintAligned(Font* font, Color4f* color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* text)
 {
-	GLuint textureName = font->_fontImage->textureId;
+	GLuint textureName = font->_fontTexture->textureId;
 	const float step = font->_aspect * textHeight;
 
 	float dx = x;

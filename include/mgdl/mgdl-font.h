@@ -7,7 +7,7 @@
 
 #include "mgdl-types.h"
 #include "mgdl-color.h"
-#include "mgdl-image.h"
+#include "mgdl-texture.h"
 
 /**
  * @brief Represents a font that can be used to draw text.
@@ -18,7 +18,7 @@ struct Font
 	short characterHeight; /**< Character height in pixels.*/
 
 
-	Image* _fontImage;
+	Texture* _fontTexture;
 
 	vec2 *_tList;
 	float _uvWidth;
@@ -60,14 +60,14 @@ void Font_SetLineLimitOnce(short limit);
  *
  * The image must be PNG image. Grayscale or color. The amount of characters on every line is expected to be image width / character width. The characters should fill the image evenly.
  *
- * @param fontImage Image object.
+ * @param fontTexture Texture object.
  * @param charw Width of a character in pixels.
  * @param charw Height of a character in pixels.
  * @param firstCharacter The first character in the image.
  *
  * @return Loaded font or nullptr if failed to load.
  */
-Font* Font_Load(Image* fontImage, short charw, short charh, char firstCharacter);
+Font* Font_Load(Texture* fontTexture, short charw, short charh, char firstCharacter);
 
 /**
  * @brief Loads a font from an image.
@@ -82,7 +82,7 @@ Font* Font_Load(Image* fontImage, short charw, short charh, char firstCharacter)
  *
  * @return True if the loading succeeded.
  */
-Font* Font_LoadPadded(Image* fontImage, short charw, short charh, char firstCharacter, short charactersPerRow);
+Font* Font_LoadPadded(Texture* fontTexture, short charw, short charh, char firstCharacter, short charactersPerRow);
 
 /**
  * @brief Loads a font from an image.
@@ -98,7 +98,7 @@ Font* Font_LoadPadded(Image* fontImage, short charw, short charh, char firstChar
  *
  * @return True if the loading succeeded.
  */
-Font* Font_LoadSelective(Image* fontImage, short charw, short charh, short charactersPerRow, const char* characters );
+Font* Font_LoadSelective(Texture* fontTexture, short charw, short charh, short charactersPerRow, const char* characters );
 
 /**
  * @brief Draws text either in 2D or 3D.

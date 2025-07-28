@@ -536,7 +536,7 @@ Font* DefaultFont_GetDefaultFont(void)
 	static Font* debugFont = nullptr;
 	if (debugFont == nullptr)
 	{
-		GLubyte fontImage[height][width][2];
+		GLubyte fontTexture[height][width][2];
 
 		for(unsigned int y = 0; y < height; y++)
 		{
@@ -545,12 +545,12 @@ Font* DefaultFont_GetDefaultFont(void)
 				unsigned int read_y = height-1-y;
 				unsigned char index = header_data[read_y * width + x];
 				// index 0 is transparent / black
-				fontImage[y][x][0] = (index == 0) ? 0 : 255; // luminance byte
-				fontImage[y][x][1] = (index == 0) ? 0 : 255; // alpha byte
+				fontTexture[y][x][0] = (index == 0) ? 0 : 255; // luminance byte
+				fontTexture[y][x][1] = (index == 0) ? 0 : 255; // alpha byte
 			}
 		}
 
-		// mgdl_CacheFlushRange(fontImage, height*width*2);
+		// mgdl_CacheFlushRange(fontTexture, height*width*2);
 
 		GLint alignment;
 		glGetIntegerv(GL_UNPACK_ALIGNMENT, &alignment);
@@ -562,12 +562,12 @@ Font* DefaultFont_GetDefaultFont(void)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8_ALPHA8, width, height, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, fontImage);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8_ALPHA8, width, height, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, fontTexture);
 		glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
 
-		Image* img = (Image*)malloc(sizeof(Image));
-		Image_SetGLName(img, texName, width, height, ColorFormats::GrayAlpha);
-		Image_SetTint(img, 1.0f, 1.0f, 1.0f);
+		Texture* img = (Texture*)malloc(sizeof(Texture));
+		Texture_SetGLName(img, texName, width, height, ColorFormats::GrayAlpha);
+		Texture_SetTint(img, 1.0f, 1.0f, 1.0f);
 		debugFont = Font_Load(img, 8, 8, ' ');
 	}
 	return debugFont;

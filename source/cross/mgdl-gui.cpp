@@ -47,8 +47,8 @@ Menu* Menu_Create(Font* font, float textHeight, float rowHeightEm)
     // Default colors    //TODO Change to palette colors
     Palette* blessing = Palette_GetDefault();
 
-    menu->_bg = Palette_GetColor4f(blessing, 0);
-    menu->_text = Palette_GetColor4f(blessing, 6);
+    menu->_bg = Palette_GetColor4f(blessing, 1);
+    menu->_text = Palette_GetColor4f(blessing, 5);
     menu->_highlight = Palette_GetColor4f(blessing, 3);
 
     return menu;
@@ -126,7 +126,7 @@ void _Menu_Borders()
                   x + menu->_menuWidth,
                   y - menu->_windowHeight,
                   &menu->_bg);
-    Draw2D_RectLines(x - 1, y + 1,
+    Draw2D_RectLines(x, y,
                   x + menu->_menuWidth + 1,
                   y - menu->_windowHeight - 1,
                   &menu->_text);
@@ -272,14 +272,16 @@ void Menu_Flag(const char* text, bool enabled)
     const short w = menu->_menuWidth;
     const short h = menu->_textSize * menu->_rowHeightEm;
 
-    Color4f* c = &menu->_bg;
+    Color4f* background = &menu->_bg;
+    Color4f* pen = &menu->_text;
     if (enabled)
     {
-        c = &menu->_highlight;
+        background = &menu->_highlight;
+        pen = &menu->_bg;
     }
-    Draw2D_Rect(x, y, x + w, y - h, c);
+    Draw2D_Rect(x, y, x + w, y - h, background);
 
-    Font_PrintAligned(menu->_font, &menu->_text, x+w/2, y, menu->_textSize, Centered, LJustify, text);
+    Font_PrintAligned(menu->_font, pen, x+w/2, y, menu->_textSize, Centered, LJustify, text);
 
     menu->_drawy -= h ;
 }
@@ -290,7 +292,7 @@ void Menu_Separator(void)
     // TODO
 }
 
-void Menu_Empty(short height)
+void Menu_Skip(short height)
 {
     menu->_drawy -= height;
 }
@@ -298,13 +300,24 @@ void Menu_Empty(short height)
 void Menu_DrawCursor(void)
 {
     Font* db = DefaultFont_GetDefaultFont();
-    Color4f white = Color_Create4f(1.0f, 1.0f, 1.0f, 1.0f);
+    Color4f* white = Color_GetDefaultColor(Color_White);
+    short x = V2f_X(cursorPosition_);
+    short y= V2f_Y(cursorPosition_);
     short w = db->characterWidth;
     short h = db->characterHeight;
-    Font_Icon(db, &white,
-              V2f_X(cursorPosition_), V2f_Y(cursorPosition_), h, LJustify, LJustify, Icon_CursorPoint);
-    Font_Icon(db, &white,
-              V2f_X(cursorPosition_), V2f_Y(cursorPosition_)-h, db->characterHeight, LJustify, LJustify, Icon_CursorBase);
-    Font_IconRotated(db, &white,
-              V2f_X(cursorPosition_) + w, V2f_Y(cursorPosition_)-h+1, db->characterHeight, LJustify, LJustify, 1, Icon_CursorWing);
+    _Menu_DrawCursorParams(x+2, y-2, w, h, &menu->_bg);
+    _Menu_DrawCursorParams(x, y, w, h, white);
+}
+
+void _Menu_DrawCursorParams(short x, short y, short w, short h, Color4f* color)
+{
+
+    Font* db = DefaultFont_GetDefaultFont();
+    Font_Icon(db, color,
+              x, y, h, LJustify, LJustify, Icon_CursorPoint);
+    Font_Icon(db, color,
+              x, y-h, h, LJustify, LJustify, Icon_CursorBase);
+    Font_IconRotated(db, color,
+              x + w, y-h+1, h, LJustify, LJustify, 1, Icon_CursorWing);
+
 }
