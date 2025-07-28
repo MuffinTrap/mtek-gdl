@@ -148,6 +148,9 @@ make -f Makefile_mac.mk
 make -f Makefile_mac.mk install
 ```
 
+## Documentation and examples
+* [Doxygen generated Documentation](https://muffintrap.github.io/mtek-gdl/html/index.html)
+
 ## External libraries and resources
 
 This library contains code from the following libraries under these licenses:
