@@ -12,13 +12,14 @@
 #include <cstring>
 #include <stdlib.h>
 
+#include <mgdl/mgdl-assert.h>
+
 #include <mgdl/wii/mgdl-wii-types.h>
 #include <mgdl/wii/mgdl-wii-globals.h>
 #include <mgdl/wii/mgdl-wii-globals-internal.h>
 #include <mgdl/wii/mgdl-wii-main.h>
 #include <mgdl/wii/mgdl-wii-image.h>
 #include <mgdl/wii/mgdl-wii-font.h>
-#include <mgdl/wii/mgdl-wii-assert.h>
 
 // Fixed-sized font class functions
 
