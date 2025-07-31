@@ -12,6 +12,7 @@
 
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-types.h>
+#include "mgdl/mgdl-assert.h"
 
 #include "mgdl/wii/mgdl-wii-config.h"
 #include "mgdl/wii/mgdl-wii-types.h"
@@ -19,7 +20,6 @@
 #include "mgdl/wii/mgdl-wii-globals-internal.h"
 #include "mgdl/wii/mgdl-wii-main.h"
 #include "mgdl/wii/mgdl-wii-image.h"
-#include "mgdl/wii/mgdl-wii-assert.h"
 
 
 // Common image/sprite drawing functions (shared to the image and sprite drawing classes)
