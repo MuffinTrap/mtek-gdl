@@ -2,6 +2,7 @@
 
 #include "mgdl-types.h"
 #include "mgdl-font.h"
+#include "mgdl-color.h"
 
 /**
  * @file mgdl-gui.h
@@ -21,6 +22,7 @@ struct Menu
     float _menuWidth;
     float _textHeight;
     float _rowHeightEm;
+    float _textSize;
 
     // Input state
     bool _buttonPress;
@@ -28,9 +30,9 @@ struct Menu
     vec2 _cursorPosition;
 
     // Colors
-    rgba8 _bg; /**< Background color of elements. */
-    rgba8 _text; /**< Color of the text, toggles and slider bars. */
-    rgba8 _highlight; /**< Used instead of _text when the item is hovered. */
+    Color4f _bg; /**< Background color of elements. */
+    Color4f _text; /**< Color of the text, toggles and slider bars. */
+    Color4f _highlight; /**< Used instead of _text when the item is hovered. */
 
     // Window
     bool _drawWindow;
@@ -38,7 +40,7 @@ struct Menu
     float _windowx;
     float _windowy;
     float _windowHeight;
-    float _windowWidth;
+    //float _windowWidth;
 
     Font* _font;
 };
@@ -48,10 +50,12 @@ typedef struct Menu Menu;
 extern "C"
 {
 #endif
-
     /**
-     * @brief Creates a MenuCreator using the debug font and default values.
+     * @brief Draws a cursor using the Default font and default values.
      */
+    void Menu_DrawCursor(void);
+
+    void _Menu_DrawCursorParams(short x, short y, short w, short h, Color4f* color);
 
     /**
      * @brief Set the menu to which the other functions are applied to.
@@ -79,8 +83,8 @@ extern "C"
      * @param textHeight Height of the text.
      * @param rowHeightEm Height of the row relative to the text height. 1 Em is same as text height, 2 is twice etc. Controls the amount of padding above and below text on elements.
      * @return Menu struct that can be used to draw menus.
-     * @param width Width of the window in pixels.
-     * @param height Height of the window in pixels.
+     * @param width Width of the window in pixels. -1 means automatic
+     * @param height Height of the window in pixels. -1 means automatic
      * @param text Title of the window.
      */
     Menu* Menu_CreateWindowed(Font* font, float textHeight, float rowHeightEm, short width, short height, const char* title);
@@ -122,7 +126,7 @@ extern "C"
      * @param text Color of the text.
      * @param highlight Highlight color to show hovered element.
      */
-    void Menu_SetColors(rgba8 bg, rgba8 text, rgba8 highlight);
+    void Menu_SetColors(Color4f* bg, Color4f* text, Color4f* highlight);
 
     /**
      * @brief Draws the window title bar
@@ -138,6 +142,12 @@ extern "C"
      * @brief Draws a line separating elements.
      */
     void Menu_Separator(void);
+
+    /**
+     * @brief Leaves empty space for custom elements
+     * @param height How much to move the position of next item downwards
+     */
+    void Menu_Skip(short height);
     /**
      * @brief Draws text.
      * @param text Text to be drawn.
@@ -155,7 +165,7 @@ extern "C"
      * @brief Draws a colored icon
      * @param icon The icon to draw
      */
-    void Menu_Icon(IconSymbol icon, rgba8 color);
+    void Menu_Icon(IconSymbol icon, Color4f* color);
 
     /**
      * @brief Draws a button that can be clicked.

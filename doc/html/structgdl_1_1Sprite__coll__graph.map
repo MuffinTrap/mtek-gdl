@@ -1,0 +1,7 @@
+<map id="gdl::Sprite" name="gdl::Sprite">
+<area shape="rect" id="Node000001" title="Sprite entry structure." alt="" coords="112,93,200,119"/>
+<area shape="rect" id="Node000002" href="$structgdl_1_1wii_1_1VERT2s16.html" title="2D vertex coordinate." alt="" coords="5,5,147,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="98,39,147,91,143,95,94,43"/>
+<area shape="rect" id="Node000003" href="$structgdl_1_1wii_1_1TEX2f32.html" title="UV texture coordinate." alt="" coords="171,5,301,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="218,43,169,95,165,91,214,39"/>
+</map>

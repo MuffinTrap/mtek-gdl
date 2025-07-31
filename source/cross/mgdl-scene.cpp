@@ -13,7 +13,7 @@ void Scene_Init(Scene* scene)
 
 Scene* Scene_CreateEmpty()
 {
-	Scene* scene = new Scene();
+	Scene* scene = (Scene*)malloc(sizeof(Scene));
 	Scene_Init(scene);
 	return scene;
 }
@@ -52,7 +52,7 @@ void _Scene_DebugDrawNode ( Node* node, short depth, short* index, u32 debugFlag
 	Menu_TextF("%d: %s", drawIndex, node->name);
 	if ((debugFlags & Scene_DebugFlag::Position) > 0)
 	{
-		vec3 &p = node->transform->position;
+		V3f &p = node->transform->position;
 		Menu_TextF("P(%.1f,%.1f,%.1f)", drawIndex, p.x, p.y, p.z);
 	}
 
@@ -85,7 +85,7 @@ void Scene_DrawNode ( Node* node )
 	glPopMatrix();
 }
 
-void Scene_SetMaterialTexture (Scene* scene, const char* materialName, Image* texture )
+void Scene_SetMaterialTexture (Scene* scene, const char* materialName, Texture* texture )
 {
 	Material* m = Scene_GetMaterial(scene, materialName);
 	if (m != nullptr)
@@ -99,7 +99,7 @@ void Scene_SetMaterialTexture (Scene* scene, const char* materialName, Image* te
 	}
 }
 
-void Scene_SetAllMaterialTextures (Scene* scene, Image* texture )
+void Scene_SetAllMaterialTextures (Scene* scene, Texture* texture )
 {
 	for(sizetype i = 0; i < DynamicArray_CountMaterial(scene->materials); i++)
 	{
@@ -143,11 +143,11 @@ Node* Scene_FindChildNodeByIndex (Node* parent, short targetIndex, short index )
 	return childNode;
 }
 
-vec3 Scene_GetNodePosition ( Scene* scene, Node* node )
+V3f Scene_GetNodePosition ( Scene* scene, Node* node )
 {
 	mat4x4 matrix;
 	mat4x4Identity(matrix);
-	vec3 posOut;
+	V3f posOut;
 	Scene_CalculateNodePosition(scene->rootNode, node, matrix, &posOut);
 
 	return posOut;
@@ -162,7 +162,7 @@ bool Scene_GetNodeModelMatrix ( Scene* scene, Node* node, mat4x4 modelOut )
 
 bool Scene_CalculateNodeModelMatrix (Node* parent, Node* target, mat4x4 model )
 {
-	vec3 p = parent->transform->position;
+	V3f p = parent->transform->position;
 	mat4x4Translate(model, V3f_Create(p.x, p.y, p.z));
 	mat4x4RotateX(model, Deg2Rad(parent->transform->rotationDegrees.x));
 	mat4x4RotateY(model, Deg2Rad(parent->transform->rotationDegrees.y));
@@ -188,10 +188,10 @@ bool Scene_CalculateNodeModelMatrix (Node* parent, Node* target, mat4x4 model )
 }
 
 
-bool Scene_CalculateNodePosition ( Node* parent, Node* target, mat4x4 world, vec3* posOut )
+bool Scene_CalculateNodePosition ( Node* parent, Node* target, mat4x4 world, V3f* posOut )
 {
 
-	vec3 p = parent->transform->position;
+	V3f p = parent->transform->position;
 	mat4x4Translate(world, V3f_Create(p.x, p.y, p.z));
 	mat4x4RotateX(world, Deg2Rad(parent->transform->rotationDegrees.x));
 	mat4x4RotateY(world, Deg2Rad(parent->transform->rotationDegrees.y));

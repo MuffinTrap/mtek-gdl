@@ -37,14 +37,14 @@ extern "C"
 	 */
 	sizetype Mesh_Init(Mesh* mesh, sizetype vertexCount, sizetype indexCount, u32 creationFlags);
 
-	vec3 Mesh_GetPosition(Mesh* mesh, GLushort index);
-	vec3 Mesh_GetNormal(Mesh* mesh, GLushort index);
-	vec3 Mesh_GetPositionFromArray(Mesh* mesh, sizetype index);
-	vec3 Mesh_GetNormalFromArray(Mesh* mesh, sizetype index);
+	V3f Mesh_GetPosition(Mesh* mesh, GLushort index);
+	V3f Mesh_GetNormal(Mesh* mesh, GLushort index);
+	V3f Mesh_GetPositionFromArray(Mesh* mesh, sizetype index);
+	V3f Mesh_GetNormalFromArray(Mesh* mesh, sizetype index);
 
 	void Mesh_SetDrawingIndex(Mesh* mesh,sizetype index, GLushort drawIndex);
-	void Mesh_SetPositionToArray(Mesh* mesh,sizetype index, vec3 position);
-	void Mesh_SetNormalToArray(Mesh* mesh,sizetype index, vec3 normal);
+	void Mesh_SetPositionToArray(Mesh* mesh,sizetype index, V3f position);
+	void Mesh_SetNormalToArray(Mesh* mesh,sizetype index, V3f normal);
 	void Mesh_SetUVToArray(Mesh* mesh,sizetype index, vec2 uv);
 	bool Mesh_GetTriangleIndices(Mesh* mesh,GLsizei triangleIndex, GLushort* outA, GLushort* outB, GLushort* outC);
 
@@ -57,15 +57,15 @@ extern "C"
 	void Mesh_DrawPoints(Mesh* mesh);
 	void Mesh_DrawLines(Mesh* mesh);
 	void Mesh_DrawNormals(Mesh* mesh);
-	void Mesh_CalculateMatcapUVs(Mesh* mesh, mat4x4 modelViewMatrix, mat4x4 normalMatrix);
+	void Mesh_CalculateMatcapUVs(Mesh* mesh, MTX4x4 modelViewMatrix, MTX4x4 normalMatrix);
 
 	// Setting vertices into arrays : returns the index of vertex in GLushort
 
 	// SetPosition must be called first, just like in drawing
-	GLushort Mesh_AddPosition(Mesh* mesh, vec3 vertex);
-	void Mesh_AddNormal(Mesh* mesh, vec3 normal);
+	GLushort Mesh_AddPosition(Mesh* mesh, V3f vertex);
+	void Mesh_AddNormal(Mesh* mesh, V3f normal);
 	void Mesh_AddUV(Mesh* mesh, vec2 normal);
-	void Mesh_AddColor(Mesh* mesh, vec3 color);
+	void Mesh_AddColor(Mesh* mesh, V3f color);
 	u32 Mesh_AddTriangle(Mesh* mesh, GLushort indexA, GLushort indexB, GLushort indexC, u32 index);
 
 

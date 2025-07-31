@@ -39,6 +39,12 @@ install: $(ARC)
 # ccVector library
 	@mkdir -p $(INSTALL_DIR)/$(LIB)/ccVector
 	@cp $(CCVEC_HDR) $(INSTALL_DIR)/$(LIB)/ccVector
+# rocket library
+	@mkdir -p $(INSTALL_DIR)/$(LIB)/rocket
+	@cp $(ROCKET_CODE) $(INSTALL_DIR)/$(LIB)/rocket
+# random generation library
+	@mkdir -p $(INSTALL_DIR)/$(LIB)/wflcg
+	@cp $(RANDOM_HDR) $(INSTALL_DIR)/$(LIB)/wflcg
 
 	@echo installed to $(INSTALL_DIR)
 

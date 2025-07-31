@@ -1,10 +1,11 @@
 #include <mgdl/mgdl-gui.h>
 #include <mgdl/mgdl-font.h>
-#include <mgdl/mgdl-debugfont.h>
+#include <mgdl/mgdl-defaultfont.h>
 #include <mgdl/mgdl-draw2d.h>
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-controller.h>
 #include <mgdl/mgdl-platform.h>
+#include <mgdl/mgdl-palette.h>
 #include <mgdl/mgdl-main.h>
 
 
@@ -17,7 +18,6 @@ void Menu_ReadDefaultInputs()
 {
     WiiController* c = Platform_GetController(0);
     cursorPosition_ = WiiController_GetCursorPosition(c);
-    V2f_Y(cursorPosition_) = mgdl_GetScreenHeight() - V2f_Y(cursorPosition_);
     mouseDown_ = WiiController_ButtonHeld(c, ButtonA);
     mousePress_ = WiiController_ButtonPress(c, ButtonA);
 }
@@ -29,24 +29,27 @@ void Menu_SetActive(Menu* active)
 
 Menu* Menu_CreateDefault()
 {
-    return Menu_Create(Font_GetDebugFont(), 1.0f, 1.1f);
+    return Menu_Create(DefaultFont_GetDefaultFont(), 1.0f, 1.1f);
 }
 
 Menu* Menu_Create(Font* font, float textHeight, float rowHeightEm)
 {
-    Menu* menu = new Menu();
+    Menu* menu = (Menu*)malloc(sizeof(Menu));
 
     menu->_font = font;
     menu->_textHeight = textHeight;
     menu->_rowHeightEm = rowHeightEm;
+    menu->_textSize = textHeight * font->characterHeight;
     menu->_drawWindow = false;
 
     // TODO Calculate text and row heights just once
 
     // Default colors    //TODO Change to palette colors
-    menu->_bg = Colors::Black;
-    menu->_text = Colors::White;
-    menu->_highlight = Colors::LightBlue;
+    Palette* blessing = Palette_GetDefault();
+
+    menu->_bg = Palette_GetColor4f(blessing, 1);
+    menu->_text = Palette_GetColor4f(blessing, 5);
+    menu->_highlight = Palette_GetColor4f(blessing, 3);
 
     return menu;
 }
@@ -56,7 +59,7 @@ Menu* Menu_CreateWindowed(Font* font, float textHeight, float rowHeightEm, short
     Menu* menu = Menu_Create(font, textHeight, rowHeightEm);
     menu->_drawWindow = true;
     menu->_windowName = title;
-    menu->_windowWidth = windowWidth;
+    menu->_menuWidth = windowWidth;
     menu->_windowHeight = windowHeight;
     // Invalid starting values
     menu->_windowx = -1;
@@ -84,7 +87,6 @@ void Menu_StartInput(short x, short y, short width, vec2 cursorPosition, bool bu
             }
             menu->_drawx = menu->_windowx;
             menu->_drawy = menu->_windowy;
-            menu->_menuWidth = menu->_windowWidth;
             _Menu_Borders();
             _Menu_TitleBar();
         }
@@ -105,13 +107,13 @@ void _Menu_TitleBar()
 {
     const short x = menu->_drawx;
     const short y = menu->_drawy;
-    const short h = menu->_font->characterHeight * menu->_textHeight;
+    const short h = menu->_textSize;
     Draw2D_Rect(x, y,
-                  x + menu->_windowWidth,
+                  x + menu->_menuWidth,
                   y - h,
-                  menu->_text);
+                  &menu->_highlight);
 
-    Font_Print(menu->_font, menu->_highlight, x + 2, y, h, menu->_windowName);
+    Font_Print(menu->_font, &menu->_bg, x + 2, y, h, menu->_windowName);
 
     menu->_drawy -= h;
 }
@@ -121,26 +123,25 @@ void _Menu_Borders()
     const short x = menu->_drawx;
     const short y = menu->_drawy;
     Draw2D_Rect(x, y,
-                  x + menu->_windowWidth,
+                  x + menu->_menuWidth,
                   y - menu->_windowHeight,
-                  menu->_bg);
-    Draw2D_RectLines(x - 1, y + 1,
-                  x + menu->_windowWidth + 1,
+                  &menu->_bg);
+    Draw2D_RectLines(x, y,
+                  x + menu->_menuWidth + 1,
                   y - menu->_windowHeight - 1,
-                  menu->_highlight);
-
-    Draw2D_Line(0, 0, V2f_X(menu->_cursorPosition), V2f_Y(menu->_cursorPosition), Colors::White);
+                  &menu->_text);
 }
 
-void Menu_SetColors(u32 bg, u32 text, u32 highlight)
+void Menu_SetColors(Color4f* bg, Color4f* text, Color4f* highlight)
 {
     if (menu == nullptr) return;
-        menu->_bg = bg;
-        menu->_text = text;
-        menu->_highlight = highlight;
+
+        menu->_bg = Color_CreateFromPointer4f(bg);
+        menu->_text = Color_CreateFromPointer4f(text);
+        menu->_highlight = Color_CreateFromPointer4f(highlight);
 }
 
-void Menu_Panel(int h, u32 color)
+void Menu_Panel(int h, Color4f* color)
 {
     if (menu == nullptr) return;
 
@@ -163,18 +164,18 @@ void Menu_Text(const char* text)
 
     const short x = menu->_drawx;
     const short y = menu->_drawy;
-    const short h = menu->_font->characterHeight * menu->_textHeight;
-    Font_PrintAligned(menu->_font, menu->_text, x, y, h, LJustify, LJustify, text);
+    const short h = menu->_textSize;
+    Font_PrintAligned(menu->_font, &menu->_text, x, y, h, LJustify, LJustify, text);
     menu->_drawy -= h * menu->_rowHeightEm;
 }
 
-void Menu_Icon(IconSymbol icon, rgba8 color)
+void Menu_Icon(IconSymbol icon, Color4f* color)
 {
 
     if (menu == nullptr) return;
     const short x = menu->_drawx;
     const short y = menu->_drawy;
-    const short h = menu->_font->characterHeight * menu->_textHeight;
+    const short h = menu->_textSize;
     Font_Icon(menu->_font, color, x, y, h, LJustify, LJustify, icon);
     menu->_drawy -= h * menu->_rowHeightEm;
 }
@@ -186,7 +187,7 @@ bool Menu_Button(const char* text)
     const short x = menu->_drawx;
     const short y = menu->_drawy;
     const short w = menu->_menuWidth;
-    const short h = menu->_font->characterHeight * menu->_textHeight * menu->_rowHeightEm;
+    const short h = menu->_textSize * menu->_rowHeightEm;
 
     const short cx = V2f_X(menu->_cursorPosition);
     const short cy = V2f_Y(menu->_cursorPosition);
@@ -196,17 +197,16 @@ bool Menu_Button(const char* text)
                 (cy <= y) &&
                 (cy >= y - h));
 
-    rgba8 c = menu->_bg;
+    Color4f* background = &menu->_bg;
+    Color4f* pen = &menu->_text;
     if (inside)
     {
-        c = menu->_highlight;
+        background = &menu->_highlight;
+        pen = &menu->_bg;
     }
-    Draw2D_Rect(x, y, x + w, y - h, c);
+    Draw2D_Rect(x, y, x + w, y - h, background);
 
-    // TODO Center text
-
-    float textH = h/menu->_rowHeightEm;
-    Font_PrintAligned(menu->_font, menu->_text, x, y, textH, LJustify, LJustify, text);
+    Font_PrintAligned(menu->_font, pen, x, y, menu->_textSize, LJustify, LJustify, text);
             
     menu->_drawy -= h ;
 
@@ -222,7 +222,7 @@ bool Menu_Toggle ( const char* text, bool* valuePtr )
     const short x = menu->_drawx;
     const short y = menu->_drawy;
     const short w = menu->_menuWidth;
-    const short h = menu->_font->characterHeight * menu->_textHeight * menu->_rowHeightEm;
+    const short h = menu->_textSize * menu->_rowHeightEm;
     const short cx = V2f_X(menu->_cursorPosition);
     const short cy = V2f_Y(menu->_cursorPosition);
 
@@ -232,26 +232,28 @@ bool Menu_Toggle ( const char* text, bool* valuePtr )
                 (cy >= y - h));
 
     short padding = 2;
-    rgba8 c = menu->_bg;
+
+    Color4f* background = &menu->_bg;
+    Color4f* pen = &menu->_text;
     if (inside)
     {
-        c = menu->_highlight;
+        background = &menu->_highlight;
+        pen = &menu->_bg;
     }
-    Draw2D_RectLines(x, y, x + w, y - h, c);
+    Draw2D_Rect(x, y, x + w, y - h, background);
 
     if (isOn)
     {
         Draw2D_Rect(x + padding, y - padding,
-                      x + h - padding, y - h + padding, menu->_text);
+                      x + h - padding, y - h + padding, pen);
     }
     else
     {
         Draw2D_RectLines(x + padding, y - padding,
-                      x + h - padding, y - h + padding, menu->_text);
+                      x + h - padding, y - h + padding, pen);
     }
 
-    float textH = h/menu->_rowHeightEm;
-    Font_PrintAligned(menu->_font, menu->_text, x + h + padding * 2, y, textH, LJustify, LJustify, text);
+    Font_PrintAligned(menu->_font, pen, x + h + padding * 2, y, menu->_textSize, LJustify, LJustify, text);
 
     menu->_drawy -= h + 1 ;
 
@@ -268,25 +270,54 @@ void Menu_Flag(const char* text, bool enabled)
     const short x = menu->_drawx;
     const short y = menu->_drawy;
     const short w = menu->_menuWidth;
-    const short h = menu->_font->characterHeight * menu->_textHeight * menu->_rowHeightEm;
+    const short h = menu->_textSize * menu->_rowHeightEm;
 
-    rgba8 c = menu->_bg;
+    Color4f* background = &menu->_bg;
+    Color4f* pen = &menu->_text;
     if (enabled)
     {
-        c = menu->_highlight;
+        background = &menu->_highlight;
+        pen = &menu->_bg;
     }
-    Draw2D_Rect(x, y, x + w, y - h, c);
+    Draw2D_Rect(x, y, x + w, y - h, background);
 
-    // TODO Center text
-
-    float textH = h/menu->_rowHeightEm;
-    Font_PrintAligned(menu->_font, menu->_text, x+w/2, y, textH, Centered, LJustify, text);
+    Font_PrintAligned(menu->_font, pen, x+w/2, y, menu->_textSize, Centered, LJustify, text);
 
     menu->_drawy -= h ;
 }
 
 
-void Menu_Separator()
+void Menu_Separator(void)
 {
     // TODO
+}
+
+void Menu_Skip(short height)
+{
+    menu->_drawy -= height;
+}
+
+void Menu_DrawCursor(void)
+{
+    Font* db = DefaultFont_GetDefaultFont();
+    Color4f* white = Color_GetDefaultColor(Color_White);
+    short x = V2f_X(cursorPosition_);
+    short y= V2f_Y(cursorPosition_);
+    short w = db->characterWidth;
+    short h = db->characterHeight;
+    _Menu_DrawCursorParams(x+2, y-2, w, h, &menu->_bg);
+    _Menu_DrawCursorParams(x, y, w, h, white);
+}
+
+void _Menu_DrawCursorParams(short x, short y, short w, short h, Color4f* color)
+{
+
+    Font* db = DefaultFont_GetDefaultFont();
+    Font_Icon(db, color,
+              x, y, h, LJustify, LJustify, Icon_CursorPoint);
+    Font_Icon(db, color,
+              x, y-h, h, LJustify, LJustify, Icon_CursorBase);
+    Font_IconRotated(db, color,
+              x + w, y-h+1, h, LJustify, LJustify, 1, Icon_CursorWing);
+
 }

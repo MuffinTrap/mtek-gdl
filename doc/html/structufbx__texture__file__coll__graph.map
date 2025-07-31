@@ -1,0 +1,7 @@
+<map id="ufbx_texture_file" name="ufbx_texture_file">
+<area shape="rect" id="Node000001" title=" " alt="" coords="64,137,196,163"/>
+<area shape="rect" id="Node000002" href="$structufbx__string.html" title=" " alt="" coords="5,5,100,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="49,44,46,78,49,96,56,112,69,125,86,135,83,140,66,130,52,115,44,97,41,79,44,44"/>
+<area shape="rect" id="Node000003" href="$structufbx__blob.html" title=" " alt="" coords="165,5,252,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="208,45,199,80,182,115,168,129,154,139,151,135,165,125,177,112,194,78,203,44"/>
+</map>

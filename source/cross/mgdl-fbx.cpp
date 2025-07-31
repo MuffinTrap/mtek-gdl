@@ -31,6 +31,7 @@ Scene* FBX_Load(const char* fbxFile)
 	_FBX_LoadNode(gdlScene, Scene_GetRootNode(gdlScene), root, 0);
 
 	// DANGER ZONE
+	// TODO copy only the necessary data so that this can be freed
 	//ufbx_free_scene(scene);
 
 	return gdlScene;
@@ -188,7 +189,7 @@ void PushPosition(Mesh* mesh, size_t index, ufbx_vec3 pos)
 void PushNormal(Mesh* mesh, size_t index, ufbx_vec3 n)
 {
 	mgdl_assert_print(mesh->normals != nullptr, "Cannot push normal to nullptr");
-	// Where the vec3 begins in array
+	// Where the V3f begins in array
 	// every vertex has 3 floats
 	size_t vni = index * 3;
 	mesh->normals[vni+0] = n.x;
@@ -214,7 +215,7 @@ Mesh * _FBX_AllocateMesh ( ufbx_mesh* fbxMesh )
 	sizetype vertices = fbxMesh->num_triangles * 3;
 	bool normals = fbxMesh->vertex_normal.exists;
 	bool uvs = fbxMesh->vertex_uv.exists;
-	Mesh *mesh = new Mesh();
+	Mesh *mesh = (Mesh*)malloc(sizeof(Mesh));
 	u32 creationFlags = 0;
 	if (normals)
 	{

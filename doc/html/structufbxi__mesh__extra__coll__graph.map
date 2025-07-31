@@ -1,0 +1,7 @@
+<map id="ufbxi_mesh_extra" name="ufbxi_mesh_extra">
+<area shape="rect" id="Node000001" title=" " alt="" coords="29,181,167,207"/>
+<area shape="rect" id="Node000002" href="$structufbxi__tmp__mesh__texture.html" title=" " alt="" coords="5,93,191,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="101,133,101,181,95,181,95,133"/>
+<area shape="rect" id="Node000003" href="$structufbx__string.html" title=" " alt="" coords="51,5,145,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="101,45,101,93,95,93,95,45"/>
+</map>

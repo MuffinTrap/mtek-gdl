@@ -13,8 +13,8 @@
  */
 enum WiiButtons
 {
-	Button1 = 		0x0001,
-	Button2 = 		0x0002,
+	Button2 = 		0x0001,
+	Button1 = 		0x0002,
 	ButtonB = 		0x0004,
 	ButtonA = 		0x0008,
 	ButtonMinus = 	0x0010,
@@ -47,6 +47,8 @@ struct WiiController
 	float _cursorX;
 	float _cursorY;
 	float _roll;
+	float _pitch;
+	float _yaw;
 
 	// Which controller number this is: 0-3
 	u8 _channel;
@@ -116,6 +118,18 @@ vec2 WiiController_GetNunchukJoystickDirection(WiiController* controller);
  * @return Amount of roll in radians [-Pi, Pi]. 0 means no roll.
  */
 float WiiController_GetRoll(WiiController* controller);
+/**
+ * @brief Returns the pitch reported by the gyroscope in radians.
+ * @return Amount of pitch in radians [-Pi, Pi]. 0 means no roll.
+ */
+float WiiController_GetPitch(WiiController* controller);
+/**
+ * @brief Returns the yaw reported by the gyroscope in radians.
+ * @return Amount of yaw in radians [-Pi, Pi]. 0 means no roll.
+ */
+float WiiController_GetYaw(WiiController* controller);
+
+const char* WiiController_GetButtonSymbol(int buttonEnum);
 
 void _WiiController_SetButtonDown(WiiController* controller, int buttonEnum);
 void _WiiController_SetButtonUp(WiiController* controller, int buttonEnum);

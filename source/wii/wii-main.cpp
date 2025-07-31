@@ -19,6 +19,7 @@
 #include <asndlib.h>
 
 #include <mgdl/mgdl-util.h>
+#include <mgdl/mgdl-color.h>
 #include <mgdl/mgdl-config.h>
 #include <mgdl/wii/mgdl-wii-config.h>
 #include "mgdl/wii/mgdl-wii-types.h"
@@ -395,8 +396,7 @@ void gdl::InitSystem(gdl::InitVideoMode videoMode, gdl::InitAspectMode aspectMod
 
 
 	// Set to the default 2D orthogonal projection matrix
-	// float orthoOffset = 0.325f;
-	float orthoOffset = 0.0f;
+	float orthoOffset = 0.325f;
 	guOrtho(gdl::wii::ProjMtx, -orthoOffset, (f32)gdl::ScreenYres - orthoOffset, -orthoOffset, (f32)gdl::ScreenXres - orthoOffset, 0, 16);
 	GX_LoadProjectionMtx(gdl::wii::ProjMtx, GX_ORTHOGRAPHIC);
 
@@ -530,7 +530,7 @@ void gdl::SetClearColor(u_char red, u_char grn, u_char blu, u_char alp) {
 
 void gdl::SetClearColor(u_int color)
 {
-	Color4b comp = ColorToComponents(color);
+	Color4b comp = Color_HexToBytes(color);
 	SetClearColor(comp.red, comp.green, comp.blue, comp.alpha);
 
 }

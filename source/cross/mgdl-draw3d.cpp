@@ -3,11 +3,11 @@
 
 
 static void Quad(
-    const vec3 A_,
-    const vec3 B_,
-    const vec3 C_,
-    const vec3 D_,
-    const vec3 normal)
+    const V3f A_,
+    const V3f B_,
+    const V3f C_,
+    const V3f D_,
+    const V3f normal)
 {
 	// bottom
 	glNormal3f(normal.x, normal.y, normal.z);
@@ -24,23 +24,23 @@ static void Quad(
 
 void Draw3D_Cube(float size)
 {
-	static vec3 R = V3f_Create(1.0f, 0.0f, 0.0f);
-	static vec3 L = V3f_Create(-1.0f, 0.0f, 0.0f);
-	static vec3 U = V3f_Create(0.0f, 1.0f, 0.0f);
-	static vec3 D = V3f_Create(0.0f, -1.0f, 0.0f);
-	static vec3 F = V3f_Create(0.0f, 0.0f, 1.0f);
-	static vec3 B = V3f_Create(0.0f, 0.0f, -1.0f);
+	static V3f R = V3f_Create(1.0f, 0.0f, 0.0f);
+	static V3f L = V3f_Create(-1.0f, 0.0f, 0.0f);
+	static V3f U = V3f_Create(0.0f, 1.0f, 0.0f);
+	static V3f D = V3f_Create(0.0f, -1.0f, 0.0f);
+	static V3f F = V3f_Create(0.0f, 0.0f, 1.0f);
+	static V3f B = V3f_Create(0.0f, 0.0f, -1.0f);
 
     const float hs = size/2.0f;
-	vec3 bl = V3f_Create(-hs, -hs, -hs);
-	vec3 br = V3f_Create( hs, -hs, -hs);
-	vec3 fl = V3f_Create(-hs, -hs,  hs);
-	vec3 fr = V3f_Create( hs, -hs,  hs);
+	V3f bl = V3f_Create(-hs, -hs, -hs);
+	V3f br = V3f_Create( hs, -hs, -hs);
+	V3f fl = V3f_Create(-hs, -hs,  hs);
+	V3f fr = V3f_Create( hs, -hs,  hs);
 
-	vec3 tbl = V3f_Create(-hs, hs, -hs); // top back left
-	vec3 tbr = V3f_Create( hs, hs, -hs); // top back right
-	vec3 tfl = V3f_Create(-hs, hs, hs); //  top forward left
-	vec3 tfr = V3f_Create( hs, hs, hs);
+	V3f tbl = V3f_Create(-hs, hs, -hs); // top back left
+	V3f tbr = V3f_Create( hs, hs, -hs); // top back right
+	V3f tfl = V3f_Create(-hs, hs, hs); //  top forward left
+	V3f tfr = V3f_Create( hs, hs, hs);
 
 	glBegin(GL_QUADS);
 		// left side

@@ -4,10 +4,10 @@
 
 class Example
 {
-    Image* barb;
+    Texture* barb;
     Sprite* mel_sprites;
     Sprite* fruitSprites;
-    Image* pointerImage;
+    Texture* pointerTexture;
     Font* ibmFont;
     Font* debugFont;
     Music* sampleMusic;
@@ -19,27 +19,28 @@ class Example
     Menu* audioMenu;
     Scene* wiiScene;
     Scene* shipScene;
-    Image* wiiTexture;
+    Texture* wiiTexture;
 
-    Image* matcapTexture;
-    Image* checkerTexture;
+    Texture* matcapTexture;
+    Texture* checkerTexture;
     Scene* icosaScene;
     Material* matcapMaterial;
 
     float cameraDistance = 1.0f;
-    vec3 sceneRotation;
+    V3f sceneRotation;
 
     float deltaTime;
     float elapsedSeconds;
 
     // Toggles
-    bool toggleSprites, toggle3D, toggleImage, toggleCamera, toggleInputs, togglePerformance, toggleAudio = false;
+    bool toggleSprites, toggle3D, toggleTexture, toggleCamera, toggleInputs, togglePerformance, toggleAudio = false;
 
     public:
         Example();
         void Init();
         void Update();
         void Draw();
+        void Quit();
 
     private:
         void DrawMenu();
@@ -47,14 +48,14 @@ class Example
         // Togglable
         void DrawSprites();
         void DrawIcosa();
-        void DrawImage();
+        void DrawTexture();
         void DrawCameraControls();
         void DrawInputInfo();
         void DrawTimingInfo();
         void DrawAudio();
 
         void DrawVersion();
-        void DrawScene(Scene* scene, vec3 scale);
+        void DrawScene(Scene* scene, V3f scale);
 
         vec2 cursorPos;
         bool mouseClick;

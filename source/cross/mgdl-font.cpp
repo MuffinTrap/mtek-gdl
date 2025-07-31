@@ -1,6 +1,6 @@
 
 #include <mgdl/mgdl-font.h>
-#include <mgdl/mgdl-opengl.h>
+#include <mgdl/mgdl-opengl_util.h>
 #include <mgdl/mgdl-cache.h>
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-alloc.h>
@@ -12,34 +12,51 @@
 
 static short lineLimit_ = -1;
 
-Font* Font_Load(Image* fontImage, short charw, short charh, char firstCharacter )
+Font* Font_Create(void)
 {
-	mgdl_assert_print(fontImage != nullptr, "Font_Load got nullptr for fontImage\n");
+	Font* font = (Font*)malloc(sizeof(Font));
+	font->_fontTexture = nullptr;
+	font->_tList = nullptr;
+	font->characterWidth = 0;
+	font->characterHeight = 0;
+	font->_uvWidth = 0;
+	font->_uvHeight = 0;
+	font->_firstIndex = 0;
+	font->_characterCount = 0;
+	font->_spacingX = 0;
+	font->_spacingY = 0;
+	font->_aspect = 0;
+	return font;
+}
 
-	Font* font = new Font();
-	font->_fontImage = fontImage;
+Font* Font_Load(Texture* fontTexture, short charw, short charh, char firstCharacter )
+{
+	mgdl_assert_print(fontTexture != nullptr, "Font_Load got nullptr for fontTexture\n");
+
+	Font* font = Font_Create();
+	font->_fontTexture = fontTexture;
 	// TODO Log info printf("\tCreating font/sprite coordinates\n");
 	_Font_Bind(font, charw, charh, firstCharacter);
 	return font;
 }
 
-Font* Font_LoadPadded(Image* fontImage, short charw, short charh, char firstCharacter, short charactersPerRow )
+Font* Font_LoadPadded(Texture* fontTexture, short charw, short charh, char firstCharacter, short charactersPerRow )
 {
-	mgdl_assert_print(fontImage != nullptr, "Font_Load got nullptr for fontImage\n");
+	mgdl_assert_print(fontTexture != nullptr, "Font_Load got nullptr for fontTexture\n");
 
-	Font* font = new Font();
-	font->_fontImage = fontImage;
+	Font* font = Font_Create();
+	font->_fontTexture = fontTexture;
 	// TODO Log info printf("\tCreating font/sprite coordinates\n");
 	_Font_BindPadded(font, charw, charh, firstCharacter, charactersPerRow);
 	return font;
 }
 
-Font* Font_LoadSelective(Image* fontImage, short charw, short charh, short charactersPerRow, const char* characters )
+Font* Font_LoadSelective(Texture* fontTexture, short charw, short charh, short charactersPerRow, const char* characters )
 {
-	mgdl_assert_print(fontImage != nullptr, "Font_Load got nullptr for fontImage\n");
+	mgdl_assert_print(fontTexture != nullptr, "Font_Load got nullptr for fontTexture\n");
 
-	Font* font = new Font();
-	font->_fontImage = fontImage;
+	Font* font = Font_Create();
+	font->_fontTexture = fontTexture;
 	// TODO Log info printf("\tCreating font/sprite coordinates\n");
 	_Font_BindSelective(font, charw, charh, characters, charactersPerRow);
 	return font;
@@ -48,8 +65,8 @@ Font* Font_LoadSelective(Image* fontImage, short charw, short charh, short chara
 
 void _Font_BindPadded(Font* font,short charw, short charh, char firstCharacter, short charactersPerRow )
 {
-	const short tw = font->_fontImage->width;
-	const short th = font->_fontImage->height;
+	const short tw = font->_fontTexture->width;
+	const short th = font->_fontTexture->height;
 	short rows = th / charh;
 	// Calculate the vertex and texture coordinates (vertices are not used)
 	font->_firstIndex = firstCharacter;
@@ -67,14 +84,14 @@ void _Font_BindPadded(Font* font,short charw, short charh, char firstCharacter, 
 
 void _Font_Bind(Font* font, short charw, short charh, char firstCharacter )
 {
-	short charactersPerRow = font->_fontImage->width/ charw;
+	short charactersPerRow = font->_fontTexture->width/ charw;
 	_Font_BindPadded(font, charw, charh, firstCharacter, charactersPerRow);
 }
 
 void _Font_BindSelective (Font* font, short charw, short charh, const char* characters, short charactersPerRow )
 {
-	const short tw = font->_fontImage->width;
-	const short th = font->_fontImage->height;
+	const short tw = font->_fontTexture->width;
+	const short th = font->_fontTexture->height;
 	short rows = th / charh;
 	// Calculate the vertex and texture coordinates (vertices are not used)
 
@@ -93,9 +110,14 @@ void _Font_BindSelective (Font* font, short charw, short charh, const char* char
 }
 
 
-void Font_Icon (Font* font, u32 color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, IconSymbol glyph )
+void Font_Icon (Font* font, Color4f* color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, IconSymbol glyph )
 {
-	GLuint textureName = font->_fontImage->textureId;
+	Font_IconRotated(font, color, x, y, textHeight, alignmentX, alignmentY, 0, glyph);
+}
+
+void Font_IconRotated(Font* font, Color4f* color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, u8 rotation, IconSymbol glyph)
+{
+	GLuint textureName = font->_fontTexture->textureId;
 	float step = font->_aspect * textHeight;
 	float dx = x;
 	float dy = y;
@@ -129,29 +151,40 @@ void Font_Icon (Font* font, u32 color, float x, float y, float textHeight, Align
 	glBindTexture(GL_TEXTURE_2D, textureName);
     // Discard pixels with low alpha
 
-	Color4f f = ColorToFloats(color);
-	glBegin(GL_QUADS);
-	glColor3f(f.red, f.green, f.blue);
+	vec2 tx= _Font_GetTextureCoordinateGlyph(font, glyph); //LOW LEFT!
+	float uvs[] = {tx.x, tx.y,  // low left
+		tx.x + uvW, tx.y,       // low right
+		tx.x + uvW, tx.y + uvH, // high right
+		tx.x, tx.y + uvH,       // high left
+	};
+	short uvIndex = 0 + rotation * 2;
 
-		vec2 tx= _Font_GetTextureCoordinateGlyph(font, glyph); //LOW LEFT!
+	glBegin(GL_QUADS);
+	mgdl_glColor3f(color);
+
 
 		// LOW LEFT!
-		glTexCoord2f(tx.x, tx.y);
+		glTexCoord2f(uvs[uvIndex], uvs[uvIndex+1]);
 		glVertex3f(dx, dy - textHeight, dz);
+		uvIndex = (uvIndex + 2) % 8;
 
 		// LOW RIGHT
-		glTexCoord2f(tx.x + uvW, tx.y);
+		glTexCoord2f(uvs[uvIndex], uvs[uvIndex+1]);
 		glVertex3f(dx + step, dy - textHeight, dz);
 
+		uvIndex = (uvIndex + 2) % 8;
+
 		// TOP RIGHT
-		glTexCoord2f(tx.x + uvW, tx.y + uvH);
+		glTexCoord2f(uvs[uvIndex], uvs[uvIndex+1]);
 		glVertex3f(dx + step, dy, dz);
 
-		// TOP LEFT
-		glTexCoord2f(tx.x, tx.y + uvH);
-		glVertex3f(dx, dy, dz);
+		uvIndex = (uvIndex + 2) % 8;
 
+		// TOP LEFT
+		glTexCoord2f(uvs[uvIndex], uvs[uvIndex+1]);
+		glVertex3f(dx, dy, dz);
 	glEnd();
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_TEXTURE_2D);
@@ -159,9 +192,9 @@ void Font_Icon (Font* font, u32 color, float x, float y, float textHeight, Align
 }
 
 
-void Font_PrintAligned(Font* font, u32 color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* text)
+void Font_PrintAligned(Font* font, Color4f* color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* text)
 {
-	GLuint textureName = font->_fontImage->textureId;
+	GLuint textureName = font->_fontTexture->textureId;
 	const float step = font->_aspect * textHeight;
 
 	float dx = x;
@@ -197,9 +230,8 @@ void Font_PrintAligned(Font* font, u32 color, float x, float y, float textHeight
 	glBindTexture(GL_TEXTURE_2D, textureName);
     // Discard pixels with low alpha
 
-	Color4f f = ColorToFloats(color);
 	glBegin(GL_QUADS);
-	glColor3f(f.red, f.green, f.blue);
+	mgdl_glColor3f(color);
 	for (short c = 0; text[c] != '\0'; c++)
 	{
 		if (lineLimit_ >= 0 && c >= lineLimit_) { break;}
@@ -242,32 +274,32 @@ void Font_PrintAligned(Font* font, u32 color, float x, float y, float textHeight
 	lineLimit_ = -1;
 }
 
-void Font_Print(Font* font, u32 color, float x, float y, float textHeight, const char* text)
+void Font_Print(Font* font, Color4f* color, float x, float y, float textHeight, const char* text)
 {
 	Font_PrintAligned(font, color, x, y, textHeight, AlignmentModes::LJustify, AlignmentModes::LJustify, text);
 }
 
-void Font_PrintOrigo(Font* font, u32 color, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* text)
+void Font_PrintOrigo(Font* font, Color4f* color, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* text)
 {
 	Font_PrintAligned(font, color, 0.0f, 0.0f, textHeight, alignmentX, alignmentY, text);
 }
 
 
-void Font_Printf(Font* font, u32 color, float x, float y, float textHeight, const char* format, ... )
+void Font_Printf(Font* font, Color4f* color, float x, float y, float textHeight, const char* format, ... )
 {
 	MGDL_PRINTF_TO_BUFFER(format)
 
 	Font_PrintAligned(font, color, x, y, textHeight, AlignmentModes::LJustify, AlignmentModes::LJustify, mgdl_GetPrintfBuffer());
 }
 
-void Font_PrintfOrigo(Font* font, u32 color, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* format, ... )
+void Font_PrintfOrigo(Font* font, Color4f* color, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* format, ... )
 {
 	MGDL_PRINTF_TO_BUFFER(format)
 
 	Font_PrintAligned(font, color, 0, 0, textHeight, alignmentX, alignmentY, mgdl_GetPrintfBuffer());
 }
 
-void Font_PrintfAligned( Font* font, u32 color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* format, ... )
+void Font_PrintfAligned( Font* font, Color4f* color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* format, ... )
 {
 	// Draw quads
 
@@ -416,6 +448,7 @@ void _Font_CreateCoordinatesForGlyph (Font* font, u32 textureIndex, short cx, sh
 
 void _Font_CreateTextureCoordList(Font* font, short rows, short charactersPerRow, short texW, short texH)
 {
+	mgdl_assert_print(font != nullptr, "Font is null");
 	mgdl_assert_print(font->characterWidth > 0 && font->characterHeight > 0, "Character dimensions not set");
 	mgdl_assert_print(rows > 0 && charactersPerRow > 0, "Rows and cpr at zero");
 	mgdl_assert_print(texW > 0 && texH > 0, "Texture size is 0");

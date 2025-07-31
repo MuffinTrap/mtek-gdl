@@ -11,26 +11,24 @@ enum MusicType
 	MusicOgg,
 	MusicWav
 };
-
 typedef enum MusicType MusicType;
 
 struct Music
 {
 	// File information
 	char* filenameChar;
-
-	MusicType type;
-
-#ifdef GEKKO
-	FILE* oggFile;
-#else // PC platform
-	ALuint source;
-#endif
-	Sound* wav;
-
 	// Playback variables
 	bool isLooping;
 	float secondsOffset;
+
+	MusicType type;
+	Sound* wav;
+
+	#ifdef GEKKO
+		FILE* oggFile;
+	#else // PC platform
+		ALuint source;
+	#endif
 };
 typedef struct Music Music;
 
@@ -39,7 +37,7 @@ extern "C"
 {
 #endif
 
-void Music_Init(Music* music);
+Music* Music_Create(void);
 Music* Music_LoadOgg(const char* fileName);
 Music* Music_LoadWav(const char* fileName);
 

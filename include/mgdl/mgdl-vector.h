@@ -7,33 +7,19 @@
  * by providing macro definitions.
  */
 
-/*
-#ifdef MGDL_PLATFORM_WII
-#include <ogc/gu.h>
+#if defined(MGDL_USE_CCVECTOR)
 
-typedef Mtx44 mat4x4;
-typedef Mtx33 mat3x3;
-typedef guVector vec3;
-
-typedef struct _vecf2 {
-	f32 x, y;
-} vec2;
-*/
-
-
-#ifdef MGDL_USE_CCVECTOR
-	#ifdef GEKKO
-
+	#if defined(MGDL_PLATFORM_WII)
+		// On the Wii can use CCVector or gu
 		// Wii gcc does not complain about ccVector's tricks
 		#include <mgdl/ccVector/ccVector.h>
-
 	#else
 		// ccVector is written in C and uses anonymous structs
 		// to implement vector swizzling. Anonymous structs
 		// are not "allowed" in ISO C++ but they work
 		#pragma GCC diagnostic push
 
-		#ifdef MGDL_PLATFORM_WINDOWS
+		#if defined(MGDL_PLATFORM_WINDOWS)
 			// Only MSYS UCRT64 GCC complains about -Wpedantic
 			#pragma GCC diagnostic ignored "-Wpedantic"
 		#else
@@ -45,14 +31,29 @@ typedef struct _vecf2 {
 		#include <mgdl/ccVector/ccVector.h>
 
 		#pragma GCC diagnostic pop
-
 	#endif
+	typedef mat4x4 MTX4x4;
+	typedef mat3x3 MTX3x3;
+	typedef vec3 V3f;
+
+#elif defined(MGDL_USE_CGLM)
+
+	#include <cglm/cglm.h>
+
+#elif defined(MGDL_PLATFORM_WII)
+
+	#include <ogc/gu.h>
+
+	typedef Mtx44 MTX4x4;
+	typedef Mtx33 MTX3x3;
+	typedef guVector V3f;
+
+	typedef struct _vecf2 {
+		f32 x, y;
+	} vec2;
+
+#else
+
+	#error "No vector library specified"
+
 #endif
-
-#ifdef MGDL_USE_CGLM
-
-#include <cglm/cglm.h>
-
-#endif
-
-// #endif // PC platform

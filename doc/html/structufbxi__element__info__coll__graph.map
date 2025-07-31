@@ -1,0 +1,11 @@
+<map id="ufbxi_element_info" name="ufbxi_element_info">
+<area shape="rect" id="Node000001" title=" " alt="" coords="87,181,235,207"/>
+<area shape="rect" id="Node000002" href="$structufbx__string.html" title=" " alt="" coords="5,5,100,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="46,45,39,81,40,100,46,117,61,138,82,155,127,179,124,184,79,160,58,142,41,120,34,101,33,81,40,44"/>
+<area shape="rect" id="Node000004" href="$structufbx__dom__node.html" title=" " alt="" coords="97,93,224,119"/>
+<area shape="poly" id="edge5_Node000004_Node000002" title=" " alt="" coords="80,37,148,91,144,95,76,41"/>
+<area shape="rect" id="Node000003" href="$structufbx__props.html" title=" " alt="" coords="248,93,343,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="276,131,241,160,193,184,190,179,238,155,273,126"/>
+<area shape="poly" id="edge3_Node000003_Node000003" title=" " alt="" coords="358,97,369,106,361,114,343,117,343,111,359,109,364,106,355,102"/>
+<area shape="poly" id="edge4_Node000001_Node000004" title=" " alt="" coords="163,133,163,181,158,181,158,133"/>
+</map>

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <mgdl/mgdl-color.h>
+#include <mgdl/mgdl-types.h>
+
 /**
  * @file mgdl-draw2d.h
  * @brief Functions for basic 2D drawing operations.
@@ -8,16 +11,29 @@
  * These functions expect the ortographic projection be set
  */
 
-#include "mgdl-types.h"
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
+/**
+ * @brief Creates a rectangle struct
+ * @param x Top left corner x
+ * @param y Top left corner y
+ * @param w Width of rectangle
+ * @param h Height of rectangle
+ * @return Created rectangle
+ */
 Rect Rect_Create(short x, short y, short w, short h);
-Rect Rect_CreateV2f(vec2 position, vec2 size);
 
+/**
+ * @brief Creates a rectangle struct
+ * @param position Top left corner
+ * @param size Size of rectangle: x is width, y is height
+ * @return Created rectangle
+ */
+Rect Rect_CreateV2f(vec2 position, vec2 size);
 
 /**
  * @brief Translates the origo to given point.
@@ -32,7 +48,7 @@ void Draw2D_OrigoToV2f(vec2 origo);
 /**
  * @brief Draws a box border.
  *
- * The box is drawn using GL_LINES so the width is 1 pixel by default
+ * @details The box is drawn using GL_LINES so the width is 1 pixel by default
  *
  * @param x Upper left corner x in screen units.
  * @param y Upper left corner y in screen units.
@@ -40,9 +56,9 @@ void Draw2D_OrigoToV2f(vec2 origo);
  * @param y2 Lower right corner y in screen units.
  * @param color Color of the border
  */
-void Draw2D_RectLines(short x, short y, short x2, short y2, rgba8 color);
-void Draw2D_RectLinesWH(short x, short y, short w, short h, rgba8 color);
-void Draw2D_RectLinesRec(Rect rect, rgba8 color);
+void Draw2D_RectLines(short x, short y, short x2, short y2, Color4f* color);
+void Draw2D_RectLinesWH(short x, short y, short w, short h, Color4f* color);
+void Draw2D_RectLinesRec(Rect rect, Color4f* color);
 
 /**
  * @brief Draws a filled box.
@@ -53,13 +69,13 @@ void Draw2D_RectLinesRec(Rect rect, rgba8 color);
  * @param y2 Lower right corner y in screen units.
  * @param color Color of the box.
  */
-void Draw2D_Rect(short x, short y, short x2, short y2, rgba8 color);
-void Draw2D_RectR(Rect rect, rgba8 color);
+void Draw2D_Rect(short x, short y, short x2, short y2, Color4f* color);
+void Draw2D_RectR(Rect rect, Color4f* color);
 
 /**
  * @brief Draws a filled quad with freely positioned corners.
  *
- * Note that the points needs to be in correct relation to each other since the quad is drawn counter-clockwise.
+ * @note The points needs to be in correct relation to each other since the quad is drawn counter-clockwise.
  *
  * @param xtl Upper left corner x in screen units.
  * @param ytl Upper left corner y in screen units.
@@ -71,8 +87,8 @@ void Draw2D_RectR(Rect rect, rgba8 color);
  * @param ytr Upper right corner y in screen units.
  * @param color Color of the quad.
  */
-void Draw2D_Quad(short xtl, short ytl, short xbl, short ybl, short xbr, short ybr, short xtr, short ytr, rgba8 color);
-void Draw2D_QuadV2f(vec2 tl, vec2 bl, vec2 br, vec2 tr, rgba8 color);
+void Draw2D_Quad(short xtl, short ytl, short xbl, short ybl, short xbr, short ybr, short xtr, short ytr, Color4f* color);
+void Draw2D_QuadV2f(vec2 tl, vec2 bl, vec2 br, vec2 tr, Color4f* color);
 
 /**
  * @brief Draws a line.
@@ -83,19 +99,35 @@ void Draw2D_QuadV2f(vec2 tl, vec2 bl, vec2 br, vec2 tr, rgba8 color);
  * @param y2 End point y
  * @param color Color of the line.
  */
-void Draw2D_Line( short int x, short int y, short int x2, short int y2, rgba8 color );
-void Draw2D_LineV2f(vec2 start, vec2 end, rgba8 color );
+void Draw2D_Line( short int x, short int y, short int x2, short int y2, Color4f* color );
+
+/**
+ * @brief Draws a line.
+ *
+ * @param start Start point
+ * @param end Start point
+ * @param color Color of the line.
+ */
+void Draw2D_LineV2f(vec2 start, vec2 end, Color4f* color );
 
 /**
  * @brief Draws text using the default font.
  *
  * @param x Upper left x of first letter.
  * @param y Upper left y of first letter.
- * @param color Color of the text.
  * @param text Text to be drawn.
+ * @param color Color of the text.
  */
-void Draw2D_Text(short x, short y, const char* text, rgba8 color);
-void Draw2D_TextV2f(vec2 position, const char* text, rgba8 color);
+void Draw2D_Text(short x, short y, const char* text, Color4f* color);
+
+/**
+ * @brief Draws text using the default font.
+ *
+ * @param position Upper left corner of first letter
+ * @param text Text to be drawn.
+ * @param color Color of the text.
+ */
+void Draw2D_TextV2f(vec2 position, const char* text, Color4f* color);
 
 
 #ifdef __cplusplus

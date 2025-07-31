@@ -1,26 +1,13 @@
 # This file is included by
 # Makefile_linux, _mac and _win
 
-# Library name
-LIB 	:= mgdl
-ARC 	:= lib$(LIB).a
-DLL	:= lib$(LIB).so
-
-# Own code
-CXXFILES	= $(wildcard source/cross/*.cpp)
-HDRS_X		:= $(wildcard include/mgdl/*.h)
-
-# Embedded libraries
-CXXFILES	+= $(wildcard include/mgdl/ufbx/*.cpp)
-UFBX_HDR	:= include/mgdl/ufbx/ufbx.h
-CCVEC_HDR	:= include/mgdl/ccVector/ccVector.h
+include Makefile_common.mk
 
 # PC platform
 CXXFILES	+= $(wildcard source/pc/*.cpp)
 HDRS_PC		:= $(wildcard include/mgdl/pc/*.h)
 OFILES		:= $(CXXFILES:.cpp=.pco)
 HDRS		:= $(HDRS_X) $(HDRS_PC)
-LIBHDR		:= include/mgdl.h
 
 INSTALL_DIR = $(HOME)/libmgdl
 

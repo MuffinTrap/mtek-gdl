@@ -6,6 +6,7 @@
 #include <gccore.h>
 
 #include <mgdl/mgdl-util.h>
+#include <mgdl/mgdl-color.h>
 #include <mgdl/wii/mgdl-wii-types.h>
 #include <mgdl/wii/mgdl-wii-globals.h>
 #include <mgdl/wii/mgdl-wii-basic.h>

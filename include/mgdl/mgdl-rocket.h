@@ -9,6 +9,7 @@
 // Include these only once in your project
 #define MGDL_ROCKET_FILE_H "rocket_tracks.h"
 #define MGDL_ROCKET_FILE_CPP "rocket_tracks.cpp"
+#define MGDL_ROCKET_FILE_JSON "rocket_tracks.json"
 
 // Forward defines of Rocket types
 struct sync_device;
@@ -38,6 +39,15 @@ enum SyncState
 };
 typedef enum SyncState SyncState;
 
+// Where do the tracks and values come from and where they are saved
+enum RocketTrackFormat
+{
+	TrackEditor, /**< Connect to rocket editor and get tracks there */
+	TrackCPP, /**< The tracks and values are provided as C++ code */
+	TrackJSON /**< The tracks and values are read from JSON file */
+};
+typedef enum RocketTrackFormat RocketTrackFormat;
+
 struct Rocket
 {
 	struct sync_device *rocket_device;
@@ -51,6 +61,11 @@ struct Rocket
 
 	ROCKET_TRACK* _tracks;
 	unsigned short _trackCount;
+
+	// Reading from json file?
+	RocketTrackFormat trackSource;
+	RocketTrackFormat trackDestination;
+	const char *jsonFilename;
 };
 typedef struct Rocket Rocket;
 
@@ -65,15 +80,15 @@ extern "C" {
 
 	// Supply the rocket connection you created and the music
 	Rocket* _Rocket_GetSingleton(void);
-	bool Rocket_Init(struct Music* music, float bpm, int beatsPerRow);
+	bool Rocket_Connect(RocketTrackFormat trackSource, RocketTrackFormat trackDestination, struct Music* music, float bpm, int beatsPerRow);
+	void Rocket_SetJsonFile(const char* filename);
 	void Rocket_SetBeatsPerMinute(float bpm);
 	void Rocket_SetRowsPerBeat(int rowsPerBeat);
+	void Rocket_PlayTracks(void);
 	void Rocket_UpdateRow(void);
 	void Rocket_Disconnect(void); // Disconnects
-	void Rocket_StartSync(void);
 
 	ROCKET_TRACK Rocket_AddTrack(const char* trackName);
-	ROCKET_TRACK Rocket_AddTempTrack(const char* trackName);
 
 	ROCKET_TRACK Rocket_GetTrack(unsigned short index);
 	unsigned short Rocket_GetTrackIndex(ROCKET_TRACK track);

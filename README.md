@@ -6,12 +6,12 @@ The purpose of this fork is to:
 * Add functions and classes that are useful in Demoscene context
 * Learn more about the Wii to maybe someday port Raylib to it.
 
-All changes made to the original are clearly commented in the code, as required by the GPL-2.0 License.
+All changes made to the original are clearly commented in the code, as required by the GPL-2.0 License. Also the github commit history shows what has been changed.
 
 If you use this fork for making a Wii game or demo, I won't be available to give tech support. And naturally, there is no warranty of any kind.
 
 ## Version number
-This is now version 0.100.3-muffintrap "skrolli"
+This is version 0.100.4-muffintrap "assembly"
 
 ## How to compile and install the library and run the example with Dolphin
 1. Install devkitpro following instructions here: [DevkitPro Getting Started](https://devkitpro.org/wiki/Getting_Started)
@@ -62,8 +62,7 @@ This is now version 0.100.3-muffintrap "skrolli"
 1. Navigate to the github repository.
 2. Run command <code>make -f Makefile_win</code>
 
-####  Get or link to DLL files
-**Link to files**
+####  Link to DLL files
 - Add the folder <code>C:\msys64\ucrt64\bin</code> to PATH on windows. That way windows will look there for the dll files when running your executable.
 
 #### These are the dll files that the program needs to run.
@@ -148,6 +147,20 @@ MacOS makefile is Makefile_mac.mk
 make -f Makefile_mac.mk
 make -f Makefile_mac.mk install
 ```
+
+## External libraries and resources
+
+This library contains code from the following libraries under these licenses:
+* [WFLCG] (https://github.com/WarpRules/WFLCG) MIT license
+* [ufbx] (ufbx.github.io) MIT license 
+* [rocket] (https://github.com/rocket/rocket) Zlib license
+* [ccVector] (https://github.com/jobtalle/ccVector) Public Domain
+
+This library contains the following font:
+* [Toshiba Satellite 8x8](https://int10h.org/oldschool-pc-fonts/fontlist/font?toshibasat_8x8)
+
+This library uses colors from this palette as part of the default palette:
+* [Blessing] (https://lospec.com/palette-list/blessing)
 
 This file was changed for version 0.100.0-muffintrap by muffintrap to add explanation of the fork.
 Original contents of README.md are below:

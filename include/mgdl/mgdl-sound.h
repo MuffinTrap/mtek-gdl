@@ -55,6 +55,11 @@ extern "C"
 {
 #endif
 
+/**
+ * @brief Allocates a new Sound with empty variables
+ * @return New Sound
+ */
+Sound* Sound_Create(void);
 
 //! Loads a sound file.
 /*!
@@ -71,8 +76,6 @@ extern "C"
  *	\returns Pointer if the sound file was successfully loaded, otherwise a null pointer
  */
 Sound* Sound_Load(const char* filename);
-void Sound_Init(Sound* sound);
-
 
 //! Deletes the sound data stored in the object
 /*!

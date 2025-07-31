@@ -6,7 +6,8 @@
  */
 
 #include "mgdl-types.h"
-#include "mgdl-image.h"
+#include "mgdl-color.h"
+#include "mgdl-texture.h"
 
 /**
  * @brief Represents a font that can be used to draw text.
@@ -17,7 +18,7 @@ struct Font
 	short characterHeight; /**< Character height in pixels.*/
 
 
-	Image* _fontImage;
+	Texture* _fontTexture;
 
 	vec2 *_tList;
 	float _uvWidth;
@@ -37,6 +38,7 @@ extern "C"
 {
 #endif
 
+Font* Font_Create(void);
 
 /**
  * @brief Sets the spacing of the font for the next Print call.
@@ -58,14 +60,14 @@ void Font_SetLineLimitOnce(short limit);
  *
  * The image must be PNG image. Grayscale or color. The amount of characters on every line is expected to be image width / character width. The characters should fill the image evenly.
  *
- * @param fontImage Image object.
+ * @param fontTexture Texture object.
  * @param charw Width of a character in pixels.
  * @param charw Height of a character in pixels.
  * @param firstCharacter The first character in the image.
  *
  * @return Loaded font or nullptr if failed to load.
  */
-Font* Font_Load(Image* fontImage, short charw, short charh, char firstCharacter);
+Font* Font_Load(Texture* fontTexture, short charw, short charh, char firstCharacter);
 
 /**
  * @brief Loads a font from an image.
@@ -80,7 +82,7 @@ Font* Font_Load(Image* fontImage, short charw, short charh, char firstCharacter)
  *
  * @return True if the loading succeeded.
  */
-Font* Font_LoadPadded(Image* fontImage, short charw, short charh, char firstCharacter, short charactersPerRow);
+Font* Font_LoadPadded(Texture* fontTexture, short charw, short charh, char firstCharacter, short charactersPerRow);
 
 /**
  * @brief Loads a font from an image.
@@ -96,7 +98,7 @@ Font* Font_LoadPadded(Image* fontImage, short charw, short charh, char firstChar
  *
  * @return True if the loading succeeded.
  */
-Font* Font_LoadSelective(Image* fontImage, short charw, short charh, short charactersPerRow, const char* characters );
+Font* Font_LoadSelective(Texture* fontTexture, short charw, short charh, short charactersPerRow, const char* characters );
 
 /**
  * @brief Draws text either in 2D or 3D.
@@ -109,7 +111,7 @@ Font* Font_LoadSelective(Image* fontImage, short charw, short charh, short chara
  * @param format Text, has to containg formatting markers.
  * @param __VA_ARGS__ Values to the formatting markers.
  */
-void Font_Printf(Font* font, rgba8 color, float x, float y, float textHeight, const char* format, ... );
+void Font_Printf(Font* font, Color4f* color, float x, float y, float textHeight, const char* format, ... );
 
 /**
  * @brief Draws text either in 2D or 3D.
@@ -121,7 +123,7 @@ void Font_Printf(Font* font, rgba8 color, float x, float y, float textHeight, co
  * @param textHeight Height of the text.
  * @param text Text to be drawn.
  */
-void Font_Print(Font* font, rgba8 color, float x, float y, float textHeight, const char* text);
+void Font_Print(Font* font, Color4f* color, float x, float y, float textHeight, const char* text);
 
 
 /**
@@ -137,7 +139,7 @@ void Font_Print(Font* font, rgba8 color, float x, float y, float textHeight, con
  * @param format Text, has to containg formatting markers.
  * @param __VA_ARGS__ Values to the formatting markers.
  */
-void Font_PrintfAligned(Font* font, rgba8 color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* format, ... );
+void Font_PrintfAligned(Font* font, Color4f* color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* format, ... );
 
 /**
  * @brief Draws text either in 2D or 3D.
@@ -152,7 +154,7 @@ void Font_PrintfAligned(Font* font, rgba8 color, float x, float y, float textHei
  * @param alignmentY Alignment of text on the vertical axis.
  * @param text Text to be drawn.
  */
-void Font_PrintAligned(Font* font, rgba8 color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* text);
+void Font_PrintAligned(Font* font, Color4f* color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* text);
 
 /**
  * @brief Draws text either in 2D or 3D.
@@ -167,7 +169,7 @@ void Font_PrintAligned(Font* font, rgba8 color, float x, float y, float textHeig
  * @param format Text, has to containg formatting markers.
  * @param __VA_ARGS__ Values to the formatting markers.
  */
-void Font_PrintfOrigo(Font* font, rgba8 color, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* format, ... );
+void Font_PrintfOrigo(Font* font, Color4f* color, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* format, ... );
 
 /**
  * @brief Draws text either in 2D or 3D.
@@ -181,7 +183,7 @@ void Font_PrintfOrigo(Font* font, rgba8 color, float textHeight, AlignmentModes 
  * @param alignmentY Alignment of text on the vertical axis.
  * @param text Text to be drawn.
  */
-void Font_PrintOrigo(Font* font, rgba8 color, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* text);
+void Font_PrintOrigo(Font* font, Color4f* color, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, const char* text);
 
 /**
  * @brief Draws an icon, only compatible with the debug font.
@@ -195,9 +197,40 @@ void Font_PrintOrigo(Font* font, rgba8 color, float textHeight, AlignmentModes a
  * @param alignmentY Alignment of text on the vertical axis.
  * @param glybh The symbol/icon/glyph to be drawn.
  */
-void Font_Icon(Font* font, u32 color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, IconSymbol glyph);
+void Font_Icon(Font* font, Color4f* color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, IconSymbol glyph);
 
+/**
+ * @brief Draws an icon rotated
+ * @note Only combatible with the Default Font. Other fonts may support the icons too but they are not
+ * a standard
+ *
+ * X, Y and text height are in units when drawing in 3D and in pixels when drawing in 2D.
+ * Starts drawing from origo.
+ *
+ * @param color Color of the text. Font color is multiplied by this.
+ * @param textHeight Height of the text.
+ * @param alignmentX Alignment of text on the horizontal axis.
+ * @param alignmentY Alignment of text on the vertical axis.
+ * @param rotation How many clockwise 90 degree turns to do
+ * @param glybh The symbol/icon/glyph to be drawn.
+ */
+void Font_IconRotated(Font* font, Color4f* color, float x, float y, float textHeight, AlignmentModes alignmentX, AlignmentModes alignmentY, u8 rotation, IconSymbol glyph);
+
+/**
+ * @brief Get the texture coordinate corners of a letter
+ * @param font Font to read coordinates from
+ * @param letter The letter
+ * @return The rectangle for uv coordinates.
+ */
 RectF Font_GetUVRect(Font* font, char letter);
+
+/**
+ * @brief Get the texture coordinate corners of an IconSymbol
+ * @note Only combatible with the Default Font. Other fonts may support the icons too but they are not
+ * @param font Font to read coordinates from
+ * @param glyph The icon
+ * @return The rectangle for uv coordinates.
+ */
 RectF Font_GetUVRectIcon(Font* font, IconSymbol glyph);
 
 void _Font_Bind(Font* font, short charw, short charh, char firstCharacter);

@@ -3,7 +3,7 @@
 
 Node* Node_Create(u8 childCapacity)
 {
-	Node* node = new Node();
+	Node* node = (Node*)malloc(sizeof(Node));
 	node->transform = Transform_CreateZero();
 	node->mesh = nullptr;
 	node->material = nullptr;
@@ -15,7 +15,7 @@ Node* Node_Create(u8 childCapacity)
 	return node;
 
 }
-void Node_SetTransform(Node* node, const char* name, vec3 position, vec3 rotationAngles)
+void Node_SetTransform(Node* node, const char* name, V3f position, V3f rotationAngles)
 {
 	node->name = name;
 	node->transform = Transform_Create(position, rotationAngles, V3f_Create(1,1,1));
@@ -33,15 +33,15 @@ void Node_SetContent (Node* node, const char* name, Mesh* meshParam, Material* m
 void Node_Draw(Node* node)
 {
 
-	const vec3 t = node->transform->position;
+	const V3f t = node->transform->position;
 	glTranslatef(t.x, t.y, t.z);
 
-	const vec3 r = node->transform->rotationDegrees;
+	const V3f r = node->transform->rotationDegrees;
 	glRotatef(r.x, 1.0f, 0.0f, 0.0f);
 	glRotatef(r.y, 0.0f, 1.0f, 0.0f);
 	glRotatef(r.z, 0.0f, 0.0f, 1.0f);
 
-	const vec3& s = node->transform->scale;
+	const V3f& s = node->transform->scale;
 	glScalef(s.x, s.y, s.z);
 
 	Mesh* m = node->mesh;

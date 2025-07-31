@@ -10,7 +10,7 @@ void AssetManager_LoadFont(AssetManager* manager, Font* font)
 	manager->_memoryInUse += font->_characterCount * sizeof(vec2);
 }
 
-void AssetManager_LoadImage(AssetManager* manager, Image* image)
+void AssetManager_LoadTexture(AssetManager* manager, Texture* image)
 {
 	// TODO how much memory the image data takes extracted
 	// TODO Convert from image format to bytes per pixe;

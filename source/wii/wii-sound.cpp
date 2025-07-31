@@ -98,7 +98,7 @@ Sound* Sound_Load(const char* fileName) {
 
 	}
 
-	Sound* sound = new Sound();
+	Sound* sound = Sound_Create();
 
 	// If all is valid, allocate memory for storing the wave data
 	if (sound->sData != NULL) { vfree(sound->sData); } // If already allocated, deallocate it for reallocation
@@ -171,13 +171,15 @@ Sound* Sound_Load(const char* fileName) {
 	return sound;
 }
 
-void Sound_Init(Sound* sound) {
-
+Sound* Sound_Create(void)
+{
+	Sound* sound = (Sound*)malloc(sizeof(Sound));
 	sound->format=0;
 	sound->freq=0;
 	sound->sData=NULL;
 	sound->sSize=0;
 	sound->voiceNumber = SND_INVALID;
+	return sound;
 }
 
 

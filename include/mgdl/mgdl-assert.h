@@ -14,8 +14,8 @@ extern "C"
 	/**
 	 * @brief If the assert fails, break into assert display loop and ask if assert should be ignored.
 	*	@details This function is called by the gdl_assert macro. It breaks
-	*   normal execution and loops showing the provided error message until user selects
-	*   to ignore the assert or quit the program.
+	*   normal execution and loops showing the provided error message until user
+	* 	confirms
 	*
 	* @param filename    The filename of the code where assert happened. This is provided by __FILE__ macro.
 	* @param lineNumber  Line in code where assert happened. This is provided by __LINE__ macro.

@@ -2,26 +2,17 @@
 # Note: Only use MSys' make program for this makefile due to linux style file path conventions
 # Version 26.1 edit by muffintrap: added portlibs include
 
-# Library name
-LIB 	:= mgdl
-LIBDIR	:= lib/wii
-ARC 	:= lib$(LIB).a
+include Makefile_common.mk
 
-# Own code
-CXXFILES	= $(wildcard source/cross/*.cpp)
-HDRS_X		:= $(wildcard include/mgdl/*.h)
 
-# Embedded libraries
-CXXFILES	+= $(wildcard include/mgdl/ufbx/*.cpp)
-UFBX_HDR	:= include/mgdl/ufbx/ufbx.h
-CCVEC_HDR	:= include/mgdl/ccVector/ccVector.h
+CURDIR := $(notdir $(shell pwd))
+LIBDIR := lib/wii
 
 # Wii specific settings
 CXXFILES	+= $(wildcard source/wii/*.cpp)
 HDRS_WII	:= $(wildcard include/mgdl/wii/*.h)
 OFILES		:= $(CXXFILES:.cpp=.o)
 HDRS		:= $(HDRS_X) $(HDRS_WII)
-LIBHDR		:= include/mgdl.h
 
 ifeq ($(strip $(DEVKITPRO)),)
   $(error "Enviroment variable DEVKITPRO not set. Use sudo -E to use user's enviroment variables. DevkitPro might not be installed")
@@ -47,6 +38,7 @@ MACHDEP		:= -mrvl -mcpu=750 -meabi -mhard-float
 # NOTE: Cannot use -Wpedantic since OGC is C
 CXXFLAGS	= -O3 -Werror -Wall -Wextra -std=c++11 $(MACHDEP) -DGEKKO
 CXXFLAGS	+= -DMGDL_PLATFORM=\"Wii\"
+CXXFLAGS	+= -DMGDL_PLATFORM_WII
 # UFBX settings
 CXXFLAGS	+= -DUFBX_REAL_IS_FLOAT
 
@@ -92,6 +84,12 @@ install :
 # ccVector library
 	@mkdir -p $(INSTALL_DIR)/$(LIB)/ccVector
 	@cp $(CCVEC_HDR) $(INSTALL_DIR)/$(LIB)/ccVector
+# rocket library
+	@mkdir -p $(INSTALL_DIR)/$(LIB)/rocket
+	@cp $(ROCKET_CODE) $(INSTALL_DIR)/$(LIB)/rocket
+# random generation library
+	@mkdir -p $(INSTALL_DIR)/$(LIB)/wflcg
+	@cp $(RANDOM_HDR) $(INSTALL_DIR)/$(LIB)/wflcg
 
 	@echo Library installed
 

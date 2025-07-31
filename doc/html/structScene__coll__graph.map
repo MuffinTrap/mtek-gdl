@@ -1,0 +1,22 @@
+<map id="Scene" name="Scene">
+<area shape="rect" id="Node000001" title=" " alt="" coords="343,376,405,401"/>
+<area shape="rect" id="Node000002" href="$structNode.html" title=" " alt="" coords="253,279,309,304"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="303,312,364,374,361,378,300,316"/>
+<area shape="rect" id="Node000003" href="$structTransform.html" title=" " alt="" coords="5,181,92,207"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="68,216,82,231,99,243,139,261,180,273,253,285,252,291,179,278,137,266,97,248,79,235,64,220"/>
+<area shape="rect" id="Node000004" href="$structMesh.html" title=" " alt="" coords="117,181,175,207"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="163,216,189,243,221,263,253,278,251,283,219,268,186,247,159,220"/>
+<area shape="rect" id="Node000005" href="$structMaterial.html" title="Material used by a node." alt="" coords="199,181,275,207"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="236,220,239,244,251,262,266,276,262,280,247,266,234,246,230,221"/>
+<area shape="rect" id="Node000006" href="$structTexture.html" title="Abstract class for cross platform PNG image loading." alt="" coords="201,93,272,119"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="239,133,239,181,234,181,234,133"/>
+<area shape="rect" id="Node000007" href="$structPNGFile.html" title=" " alt="" coords="152,5,225,31"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="196,44,206,68,225,91,221,94,201,71,191,46"/>
+<area shape="rect" id="Node000008" href="$structColor4f.html" title=" " alt="" coords="250,5,319,31"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="274,44,246,94,241,91,269,41"/>
+<area shape="rect" id="Node000009" href="$structLight.html" title=" " alt="" coords="299,181,353,207"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="317,220,289,279,284,277,312,218"/>
+<area shape="rect" id="Node000010" href="$structDynamicArray.html" title=" " alt="" coords="394,181,509,207"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="454,221,451,246,438,302,412,354,390,378,387,374,408,350,433,300,446,245,449,220"/>
+<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="420,216,303,281,300,276,418,211"/>
+</map>

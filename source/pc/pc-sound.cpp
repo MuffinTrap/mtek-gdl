@@ -35,7 +35,7 @@ Sound* Sound_Load(const char* filename)
         return nullptr;
     }
 
-    Sound* sound = new Sound();
+    Sound* sound = Sound_Create();
     sound->sndfile = sndfile;
     sound->buffer = buffer;
     sound->sSize = dataSize;
@@ -57,13 +57,15 @@ Sound* Sound_Load(const char* filename)
     return sound;
 }
 
-void Sound_Init(Sound* sound)
+Sound* Sound_Create(void)
 {
+    Sound* sound = (Sound*)malloc(sizeof(Sound));
     sound->sSize = 0;
     sound->buffer = 0;
     sound->source = 0;
     sound->isLooping = false;
     sound->secondsOffset = 0.0f;
+    return sound;
 }
 
 void Sound_DeleteData(Sound* sound) {

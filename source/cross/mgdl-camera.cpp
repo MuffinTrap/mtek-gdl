@@ -1,11 +1,11 @@
 #include <mgdl/mgdl-camera.h>
-#include <mgdl/mgdl-opengl.h>
+#include <mgdl/mgdl-opengl_util.h>
 #include <mgdl/mgdl-main.h>
-#include <mgdl/ccVector/ccVector.h>
+#include <mgdl/mgdl-vectorfunctions.h>
 
 Camera* Camera_CreateDefault()
 {
-	Camera* camera = new Camera();
+	Camera* camera = (Camera*)malloc(sizeof(Camera));
 	camera->target = V3f_Create(0.0f, 0.0f, 0.0f);
 	camera->position = V3f_Create(0.0f, 0.0f, 1.0f);
 	camera->up = V3f_Create(0.0f, 1.0f, 0.0f);
@@ -26,15 +26,15 @@ void Camera_Apply(Camera* camera)
 		break;
 		case CameraDirection:
 		{
-			vec3 unit = V3f_Create(0.0f, 0.0f, 1.0f);
-			vec3 target;
-			mat3x3 transform;
-			mat3x3Identity(transform);
-			mat3x3RotateX(transform, Deg2Rad( V3f_X(camera->rotations)));
-			mat3x3RotateY(transform, Deg2Rad( V3f_Y(camera->rotations)));
-			mat3x3RotateZ(transform, Deg2Rad( V3f_Z(camera->rotations)));
+			V3f unit = V3f_Create(0.0f, 0.0f, 1.0f);
+			V3f target;
+			MTX3x3 transform;
+			MTX3x3_Identity(transform);
+			MTX3x3_RotateX(transform, Deg2Rad( V3f_X(camera->rotations)));
+			MTX3x3_RotateY(transform, Deg2Rad( V3f_Y(camera->rotations)));
+			MTX3x3_RotateZ(transform, Deg2Rad( V3f_Z(camera->rotations)));
 
-			target = mat3x3MultiplyVector(transform, unit);
+			MTX3x3_MultiplyVector(transform, unit, target);
 			V3f_Add(camera->position, target, camera->target);
 			mgdl_InitCamera(camera->position, camera->target, camera->up);
 		}
@@ -69,7 +69,7 @@ void Camera_DrawThirdsGuide(Camera* camera)
 	Camera_Apply(camera);
 }
 
-void Camera_DrawOverlayColor(Camera* camera, Color4f color, float opacity)
+void Camera_DrawOverlayColor(Camera* camera, Color4f* color, float opacity)
 {
 	if (opacity > 0.0f)
 	{
@@ -93,7 +93,7 @@ void Camera_DrawOverlayColor(Camera* camera, Color4f color, float opacity)
 		Camera_Apply(camera);
 	}
 }
-void Camera_SetPositionV(Camera* camera, vec3 position)
+void Camera_SetPositionV(Camera* camera, V3f position)
 {
 	camera->position = position;
 }
@@ -103,7 +103,7 @@ void Camera_SetPosition(Camera* camera, float x, float y, float z)
 	camera->position = V3f_Create(x,y,z);
 }
 
-void Camera_SetRotationsV(Camera* camera, vec3 rotations)
+void Camera_SetRotationsV(Camera* camera, V3f rotations)
 {
 	camera->rotations = rotations;
 }

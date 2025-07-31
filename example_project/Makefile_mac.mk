@@ -38,7 +38,7 @@ LDFLAGS += -L/usr/local/lib
 # M1 MacOs Homebrew
 LDFLAGS += -L/opt/homebrew/lib
 
-# Exact locations if needed, but shoudl not
+# Exact locations if needed
 # LDFLAGS = -L/opt/homebrew/Cellar/libsndfile/1.2.2/lib -L/opt/homebrew/Cellar/openal-soft/1.23.1/lib -L/opt/homebrew/opt/glm/lib -L/opt/homebrew/Cellar/libpng/1.6.43/lib
 
 

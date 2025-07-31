@@ -18,29 +18,33 @@
 #include "mgdl/wii/mgdl-wii-sound.h"
 #include "mgdl/wii/mgdl-wii-assert.h"
 
-void Music_Init(Music* music)
+Music* Music_Create(void)
 {
+	Music* music = (Music*)malloc(sizeof(Music));
 	music->oggFile = NULL;
 	music->secondsOffset = 0.0f;
+	music->wav = NULL;
+	return music;
 }
 
 
 Music* Music_LoadOgg(const char *filename)
 {
-	Music* music = new Music();
+	Music* music = Music_Create();
 
-	music->filenameChar = new char[strlen(filename)];
+	music->filenameChar = (char*)malloc(sizeof(char) * strlen(filename) + 1);
 	strcpy(music->filenameChar, filename);
 
 	Log_InfoF("Loading Ogg %s\n", filename);
 	music->oggFile = fopen(filename, "r");
 	if (music->oggFile != NULL)
 	{
+		music->type = MusicOgg;
 		return music;
 	}
 	else
 	{
-		delete music;
+		free(music);
 		return nullptr;
 	}
 }
@@ -49,25 +53,47 @@ Music* Music_LoadOgg(const char *filename)
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 Music* Music_LoadWav(const char* filename)
 {
-	mgdl_assert_print(false, "Dont load wav music on Wii. It eats all the memory!");
+	mgdl_assert_print(false, "Loading wav music on Wii takes up lots of memory! Use Ogg instead!");
+    Log_InfoF("Loading music from %s\n", filename);
+
+    Sound* snd = Sound_Load(filename);
+    if (snd)
+    {
+        Music* music = Music_Create();
+        music->type = MusicWav;
+        music->wav = snd;
+        return music;
+    }
 	return nullptr;
 }
 
 bool Music_Play(Music* music, bool loop)
 {
 	music->isLooping = loop;
-	int playMode = OGG_ONE_TIME;
-	if (loop) {
-		playMode = OGG_INFINITE_TIME;
-	}
-
-	int po = PlayOggFilePtr(music->oggFile, 0, playMode);
-	if (po != 0)
+	if (music->type == MusicOgg)
 	{
-		Log_ErrorF("Failed to play ogg file %s\n", music->filenameChar);
+		int playMode = OGG_ONE_TIME;
+		if (loop) {
+			playMode = OGG_INFINITE_TIME;
+		}
+
+		int po = PlayOggFilePtr(music->oggFile, 0, playMode);
+		if (po != 0)
+		{
+			Log_ErrorF("Failed to play ogg file %s\n", music->filenameChar);
+			return false;
+		}
+		return true;
+	}
+	else if (music->type == MusicWav)
+	{
+		Sound_Play(music->wav);
+		return true;
+	}
+	else
+	{
 		return false;
 	}
-	return true;
 }
 
 void Music_DeleteData(Music* music)

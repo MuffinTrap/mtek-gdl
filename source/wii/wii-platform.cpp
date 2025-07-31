@@ -8,10 +8,9 @@
 #include <mgdl/wii/mgdl-wii.h>
 #include "mgdl/wii/mgdl-wii-globals-internal.h"
 
-static Platform* platformWii;
-
 static CallbackFunction initCall = nullptr;
 static CallbackFunction frameCall = nullptr;
+static CallbackFunction quitCall = nullptr;
 
 static WiiController controller;
 
@@ -19,11 +18,15 @@ static void ReadControllers();
 static void MainLoop();
 static void SplashHoldLoop(bool SplashFlag, bool HoldAFlag);
 static u64 deltaTimeStart;
+static u32 frameCount;
+
+static Platform platformWii;
 
 void Platform_Init(const char* windowName,
 	ScreenAspect screenAspect,
 	CallbackFunction initCallback,
 	CallbackFunction frameCallback,
+	CallbackFunction quitCallback,
 	u32 initFlags)
 {
 	mgdl_assert_print(initCallback != nullptr, "Need to provide init callback before system init on PC");
@@ -31,10 +34,9 @@ void Platform_Init(const char* windowName,
 
 	initCall = initCallback;
 	frameCall = frameCallback;
+	quitCall = quitCallback;
 
-	platformWii = new Platform();
-
-	platformWii->windowName = windowName;
+	platformWii.windowName = windowName;
 
 	// Convert to Wii InitAspectmode for now
 	gdl::InitAspectMode mode = gdl::InitAspectMode::AspectAuto;
@@ -42,17 +44,17 @@ void Platform_Init(const char* windowName,
 	{
 		case ScreenAuto:
 			mode = gdl::InitAspectMode::AspectAuto;
-			platformWii->aspect = ScreenAspect::ScreenAuto;
+			platformWii.aspect = ScreenAspect::ScreenAuto;
 			break;
 		case Screen4x3:
 			mode = gdl::InitAspectMode::Aspect4x3;
-			platformWii->aspectRatio = 4.0f/3.0f;
-			platformWii->aspect = ScreenAspect::Screen4x3;
+			platformWii.aspectRatio = 4.0f/3.0f;
+			platformWii.aspect = ScreenAspect::Screen4x3;
 			break;
 		case Screen16x9:
 			mode = gdl::InitAspectMode::Aspect16x9;
-			platformWii->aspectRatio = 16.0f/9.0f;
-			platformWii->aspect = ScreenAspect::Screen16x9;
+			platformWii.aspectRatio = 16.0f/9.0f;
+			platformWii.aspect = ScreenAspect::Screen16x9;
 			break;
 	};
 	fatInitDefault();
@@ -60,19 +62,19 @@ void Platform_Init(const char* windowName,
 	// TODO set aspect ratio as requested
 	gdl::InitSystem(gdl::ModeAuto, mode, gdl::HiRes, gdl::InitFlags::OpenGX);
 
-    platformWii->screenWidth = gdl::ScreenXres;
-    platformWii->screenHeight = gdl::ScreenYres;
+    platformWii.screenWidth = gdl::ScreenXres;
+    platformWii.screenHeight = gdl::ScreenYres;
 	if (screenAspect == ScreenAuto)
 	{
-		platformWii->aspectRatio = platformWii->screenWidth / platformWii->screenHeight;
+		platformWii.aspectRatio = platformWii.screenWidth / platformWii.screenHeight;
 		// TODO read system aspect ratio
 		if (gdl::wii::WidescreenMode)
 		{
-			platformWii->aspect = ScreenAspect::Screen16x9;
+			platformWii.aspect = ScreenAspect::Screen16x9;
 		}
 		else
 		{
-			platformWii->aspect = ScreenAspect::Screen4x3;
+			platformWii.aspect = ScreenAspect::Screen4x3;
 		}
 	}
 
@@ -91,6 +93,7 @@ void Platform_Init(const char* windowName,
 	initCall();
 	u64 now = gettime();
 	deltaTimeStart = now;
+	frameCount = 0;
 
 	const bool SplashFlag = (initFlags & PlatformInitFlag::FlagSplashScreen)!= 0;
 	const bool HoldAFlag = (initFlags & PlatformInitFlag::FlagPauseUntilA)!= 0;
@@ -116,23 +119,23 @@ void SplashHoldLoop(bool SplashFlag, bool HoldAFlag)
 	while(waiting)
 	{
 		u64 now = gettime();
-		platformWii->_deltaTimeS = (float)(now - deltaTimeStart) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
+		platformWii._deltaTimeS = (float)(now - deltaTimeStart) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
 		deltaTimeStart = now;
-		platformWii->_elapsedTimeS += platformWii->_deltaTimeS;
+		platformWii._elapsedTimeS += platformWii._deltaTimeS;
 		WiiController_StartFrame(&controller);
 		ReadControllers();
 
 		if (SplashFlag)
 		{
 			gdl::PrepDisplay();
-			splashProgress = DrawSplashScreen(platformWii->_deltaTimeS, showHoldAMessage, aHoldTimer);
+			splashProgress = DrawSplashScreen(platformWii._deltaTimeS, showHoldAMessage, aHoldTimer);
 		}
 
 		if (showHoldAMessage)
 		{
 			if (WiiController_ButtonHeld(&controller, WiiButtons::ButtonA))
 			{
-				aHoldTimer += platformWii->_deltaTimeS;
+				aHoldTimer += platformWii._deltaTimeS;
 				if (aHoldTimer >= 1.0f)
 				{
 					waiting = false;
@@ -159,7 +162,7 @@ void SplashHoldLoop(bool SplashFlag, bool HoldAFlag)
 		}
 	}
 	// Reset elapsed time so game gets correct timing
-	platformWii->_elapsedTimeS = 0.0f;
+	platformWii._elapsedTimeS = 0.0f;
 }
 
 
@@ -169,10 +172,11 @@ void MainLoop()
 	while(true)
 	{
 		// Timing
+		// TODO how is gdl::Delta different from this?
 		u64 now = gettime();
-		platformWii->_deltaTimeS = (float)(now - deltaTimeStart) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
+		platformWii._deltaTimeS = (float)(now - deltaTimeStart) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
 		deltaTimeStart = now;
-		platformWii->_elapsedTimeS += platformWii->_deltaTimeS;
+		platformWii._elapsedTimeS += platformWii._deltaTimeS;
 
 		WiiController_StartFrame(&controller);
 		ReadControllers();
@@ -180,6 +184,17 @@ void MainLoop()
 		frameCall();
 		glFlush();
 		gdl::Display();
+
+		if (WiiController_ButtonPress(&controller, ButtonHome))
+		{
+			if (quitCall != NULL)
+			{
+				quitCall();
+			}
+			Platform_DoProgramExit();
+		}
+
+		frameCount++;
 	}
 }
 
@@ -201,8 +216,10 @@ void ReadControllers()
 
 	const ir_t &ir = data1->ir;
 	controller._cursorX = ir.x;
-	controller._cursorY = ir.y;
-	if(platformWii->aspect == Screen16x9)
+    float y = platformWii.screenHeight - ir.y;
+	controller._cursorY = y;
+
+	if(platformWii.aspect == Screen16x9)
 	{
 		// Multiply x and y to match them to 16:9 screen
 		controller._cursorX *= 1.67f - 16.f;
@@ -233,15 +250,17 @@ void ReadControllers()
 	}
 
 	controller._roll = DegToRad(data1->orient.roll);
+	controller._pitch = DegToRad(data1->orient.pitch);
+	controller._yaw = DegToRad(data1->orient.yaw);
 }
 
-Platform* Platform_GetSingleton() { return platformWii; }
+Platform* Platform_GetSingleton() { return &platformWii; }
 
-float Platform_GetDeltaTime() { return platformWii->_deltaTimeS; }
-float Platform_GetElapsedSeconds() { return platformWii->_elapsedTimeS; }
+float Platform_GetDeltaTime() { return platformWii._deltaTimeS; }
+float Platform_GetElapsedSeconds() { return platformWii._elapsedTimeS; }
+u32 Platform_GetElapsedUpdates() { return frameCount;}
 
 void Platform_DoProgramExit()
 {
-	delete platformWii;
 	gdl::wii::DoProgramExit();
 }

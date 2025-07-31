@@ -208,7 +208,7 @@ bool OpenOggNoCallbacks()
     if (ov_open_callbacks(audioData.filePointer,
         &audioData.oggVorbisFile, nullptr, 0, OV_CALLBACKS_NOCLOSE) < 0)
     {
-        std::cerr << "OGG Error: could not use ov_open_callbacks" << std::endl;
+        Log_Error("OGG Error: could not use ov_open_callbacks");
         return false;
     }
     return true;
@@ -234,7 +234,7 @@ bool ReadOggProperties()
 		audioData.format = AL_FORMAT_STEREO16;
 	else
 	{
-		std::cerr << "ERROR: unrecognised ogg format: " << audioData.channels << " channels, " << audioData.bitsPerSample << " bps" << std::endl;
+		Log_ErrorF("ERROR: unrecognised ogg format: %d channels, %d bps\n", audioData.channels, audioData.bitsPerSample);
 		audioData.file.close();
 		return false;
 	}
@@ -257,12 +257,12 @@ bool VerifyALSource()
     bool sourceOk = alCall(alIsSource, audioData.source);
     if (sourceOk == false)
     {
-        std::cerr << "Audiodata did not get valid AL source ID" << audioData.source << std::endl;
+        Log_ErrorF("Audiodata did not get valid AL source ID %d\n", audioData.source);
         return false;
     }
     else
     {
-        std::cout << "Ogg file loaded ok" << std::endl;
+        Log_Info("Ogg file loaded ok\n");
     }
 
 	return true;
@@ -272,8 +272,7 @@ Music* Music_LoadOgg(const char* filename)
 {
     Log_InfoF("Loading music from %s\n", filename);
 
-    Music* music = new Music();
-    Music_Init(music);
+    Music* music = Music_Create();
     if (LoadFileNonStreaming(filename, music))
     {
         music->type = MusicOgg;
@@ -292,8 +291,7 @@ Music* Music_LoadWav(const char* filename)
     Sound* snd = Sound_Load(filename);
     if (snd)
     {
-        Music* music = new Music();
-        Music_Init(music);
+        Music* music = Music_Create();
         music->type = MusicWav;
         music->wav = snd;
         music->source = music->wav->source;
@@ -302,10 +300,12 @@ Music* Music_LoadWav(const char* filename)
     return nullptr;
 }
 
-void Music_Init(Music* music)
+Music* Music_Create(void)
 {
+    Music* music = (Music*)malloc(sizeof(Music));
     pcmBuffer = nullptr;
     music->isLooping = false;
+    return music;
 }
 
 bool LoadAudioDataFilePtr ( const char* filename )
@@ -550,38 +550,38 @@ std::int32_t ReadOggToPCMBuffer ( char* buffer, std::int32_t bufferSize)
 
         if(result == OV_HOLE)
         {
-            std::cerr << "ERROR: OV_HOLE found in update of buffer " << std::endl;
+            Log_Error("ERROR: OV_HOLE found in update of buffer ");
             return -1;
         }
         else if(result == OV_EBADLINK)
         {
-            std::cerr << "ERROR: OV_EBADLINK found in update of buffer " << std::endl;
+            Log_Error("ERROR: OV_EBADLINK found in update of buffer ");
             return -1;
         }
         else if(result == OV_EINVAL)
         {
-            std::cerr << "ERROR: OV_EINVAL found in update of buffer " << std::endl;
+            Log_Error("ERROR: OV_EINVAL found in update of buffer ");
             return -1;
         }
         else if(result == 0)
         {
             std::int32_t seekResult = ov_raw_seek(&audioData.oggVorbisFile, 0);
             if(seekResult == OV_ENOSEEK)
-                std::cerr << "ERROR: OV_ENOSEEK found when trying to loop" << std::endl;
+                Log_Error("ERROR: OV_ENOSEEK found when trying to loop");
             else if(seekResult == OV_EINVAL)
-                std::cerr << "ERROR: OV_EINVAL found when trying to loop" << std::endl;
+                Log_Error("ERROR: OV_EINVAL found when trying to loop");
             else if(seekResult == OV_EREAD)
-                std::cerr << "ERROR: OV_EREAD found when trying to loop" << std::endl;
+                Log_Error("ERROR: OV_EREAD found when trying to loop");
             else if(seekResult == OV_EFAULT)
-                std::cerr << "ERROR: OV_EFAULT found when trying to loop" << std::endl;
+                Log_Error("ERROR: OV_EFAULT found when trying to loop");
             else if(seekResult == OV_EOF)
-                std::cerr << "ERROR: OV_EOF found when trying to loop" << std::endl;
+                Log_Error("ERROR: OV_EOF found when trying to loop");
             else if(seekResult == OV_EBADLINK)
-                std::cerr << "ERROR: OV_EBADLINK found when trying to loop" << std::endl;
+                Log_Error("ERROR: OV_EBADLINK found when trying to loop");
 
             if(seekResult != 0)
             {
-                std::cerr << "ERROR: Unknown error in ov_raw_seek" << std::endl;
+                Log_Error("ERROR: Unknown error in ov_raw_seek");
                 return -1;
             }
         }

@@ -2,12 +2,12 @@
 
 #include <mgdl/mgdl-opengl.h>
 #include <mgdl/mgdl-types.h>
-#include <mgdl/mgdl-image.h>
+#include <mgdl/mgdl-texture.h>
 
 
 /**
  * @brief Material used by a node.
- * @details Contains a pointer to Image and material properties used in rendering.
+ * @details Contains a pointer to Texture and material properties used in rendering.
  */
 struct Material
 {
@@ -15,7 +15,7 @@ struct Material
 	GLfloat shininess;
 	GLfloat emissiveColor[4];
 	GLfloat diffuseColor[4];
-	Image* texture;
+	Texture* texture;
 	MaterialType type;
 };
 typedef struct Material Material;
@@ -27,11 +27,11 @@ extern "C"
 	/**
 	 * @brief Creates a material from an image.
 	 * @param name Name for the material.
-	 * @param texture Image to use for the material.
+	 * @param texture Texture to use for the material.
 	 * @param type What kind of material this is.
 	 * @returns Created material.
 	 */
-	Material* Material_Load(const char* name, Image* texture, MaterialType type);
+	Material* Material_Load(const char* name, Texture* texture, MaterialType type);
 
 	Material* Material_CreateColor(Color4f color, GLfloat shininess, GLfloat emissionPower);
 

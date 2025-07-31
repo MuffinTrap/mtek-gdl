@@ -1,0 +1,7 @@
+<map id="ufbx_prop_override" name="ufbx_prop_override">
+<area shape="rect" id="Node000001" title=" " alt="" coords="36,108,184,133"/>
+<area shape="rect" id="Node000002" href="$structufbx__string.html" title=" " alt="" coords="5,5,100,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="54,44,57,64,64,83,75,95,89,106,86,110,72,99,60,85,52,65,49,44"/>
+<area shape="rect" id="Node000003" href="$structufbx__vec4.html" title=" " alt="" coords="124,5,213,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="162,45,142,85,123,109,119,106,137,83,157,42"/>
+</map>

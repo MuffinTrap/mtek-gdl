@@ -1,0 +1,7 @@
+<map id="ufbx_tessellate_curve_opts" name="ufbx_tessellate_curve_opts">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,196,205,221"/>
+<area shape="rect" id="Node000002" href="$structufbx__allocator__opts.html" title=" " alt="" coords="30,93,181,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="108,133,108,196,103,196,103,133"/>
+<area shape="rect" id="Node000003" href="$structufbx__allocator.html" title=" " alt="" coords="48,5,163,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="108,45,108,93,103,93,103,45"/>
+</map>
