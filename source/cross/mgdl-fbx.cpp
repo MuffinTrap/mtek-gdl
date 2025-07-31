@@ -199,10 +199,14 @@ void PushNormal(Mesh* mesh, size_t index, ufbx_vec3 n)
 
 void PushUV(Mesh* mesh, size_t index, ufbx_vec2 uv)
 {
+	// NOTE This might be because Blockbench and Blender think about
+	// this fdifferently
 	// Flip the y coordinates because in OpenGL images Y grows upwards
 	float y = uv.y;
+	/*
 	y -= 1.0f;
 	y *= -1.0f;
+	*/
 
 	// Every vertex has 2 floats for uv
 	size_t vti = index * 2;

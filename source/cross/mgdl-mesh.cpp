@@ -83,7 +83,7 @@ void Mesh_SetupVertexArrays(Mesh* mesh)
 	if (mesh->colors != nullptr)
 	{
 		glEnableClientState(GL_COLOR_ARRAY);
-		glColorPointer(2, GL_FLOAT, 0, mesh->uvs);
+		glColorPointer(3, GL_FLOAT, 0, mesh->colors);
 	}
 	else
 	{
