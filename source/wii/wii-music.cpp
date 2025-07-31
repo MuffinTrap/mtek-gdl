@@ -10,13 +10,13 @@
 #include <mgdl/mgdl-music.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-assert.h>
+#include "mgdl/mgdl-assert.h"
 
 #include "mgdl/wii/mgdl-wii-config.h"
 #include "mgdl/wii/mgdl-wii-globals.h"
 #include "mgdl/wii/mgdl-wii-globals-internal.h"
 #include "mgdl/wii/mgdl-wii-main.h"
 #include "mgdl/wii/mgdl-wii-sound.h"
-#include "mgdl/wii/mgdl-wii-assert.h"
 
 Music* Music_Create(void)
 {
