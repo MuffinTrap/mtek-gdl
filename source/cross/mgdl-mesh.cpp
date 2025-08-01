@@ -5,13 +5,25 @@
 #include <mgdl/mgdl-opengl_util.h>
 
 
-sizetype Mesh_Init (Mesh* mesh, sizetype vertexCount, sizetype indexCount, u32 creationFlags)
+Mesh* Mesh_CreateEmpty(void)
 {
+	Mesh* mesh = (Mesh*)malloc(sizeof(Mesh));
 	mesh->positions = nullptr;
 	mesh->indices = nullptr;
 	mesh->normals = nullptr;
 	mesh->uvs=nullptr;
 	mesh->colors = nullptr;
+
+	mesh->indexCount = 0;
+	mesh->vertexCount = 0;
+	mesh->indexCounter = 0;
+
+	mesh->name = nullptr;
+	return mesh;
+}
+
+sizetype Mesh_Init (Mesh* mesh, sizetype vertexCount, sizetype indexCount, u32 creationFlags)
+{
 	mesh->vertexCount = vertexCount;
 	mesh->indexCount = indexCount;
 

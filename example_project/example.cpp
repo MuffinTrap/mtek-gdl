@@ -7,7 +7,6 @@
 #ifdef MGDL_ROCKET
     #include <mgdl/mgdl-rocket.h>
 
-
     #ifdef SYNC_PLAYER
         #include MGDL_ROCKET_FILE_H
     #else
