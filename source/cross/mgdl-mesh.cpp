@@ -101,6 +101,7 @@ void Mesh_SetupVertexArrays(Mesh* mesh)
 	{
 		glDisableClientState(GL_COLOR_ARRAY);
 	}
+	return;
 }
 
 void Mesh_DrawElements(Mesh* mesh)
@@ -357,7 +358,7 @@ Mesh* Mesh_CreateIcosahedron(u32 creationFlags)
     const float Z = 0.850650808352039932;
     const float N = 0.0f;
 
-	Mesh* icosa = (Mesh*)malloc(sizeof(Mesh));
+	Mesh* icosa = Mesh_CreateEmpty();
 	Mesh_Init(icosa, 12, 60, creationFlags);
 
 	delete[] icosa->positions;

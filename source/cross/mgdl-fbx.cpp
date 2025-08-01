@@ -52,7 +52,7 @@ bool _FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short d
 	ufbx_vec3 t = node->local_transform.translation;
 	ufbx_vec3 r = node->euler_rotation;
 
-	if (false)
+	if (true)
 	{
 		Indent(depth);
 		Log_InfoF("Node: %s\n", node->name.data);
@@ -97,29 +97,49 @@ bool _FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short d
 
 
 		// Does this node have materials?
-		for(size_t mi = 0; mi < node->materials.count; mi++)
+		if (node->materials.count > 0)
 		{
-			// TODO How to load the textures automatically
-			// or if loaded later, match them to the meshes?
-
-			ufbx_material* material = node->materials[mi];
-			if (false)
+			for(size_t mi = 0; mi < node->materials.count; mi++)
 			{
-				Indent(depth);
-				Log_InfoF("Material: %s\n", material->name.data);
-			}
+				// TODO How to load the textures automatically
+				// or if loaded later, match them to the meshes?
 
-			// Has this material been loaded already?
-			mgdl_assert_print(gdlScene->materials != nullptr, "No materials array in scene");
-			mgdl_assert_print(gdlScene->materials->data != nullptr, "Scene materials array is nullptr");
-			Material* mat = Scene_GetMaterial(gdlScene, material->name.data);
-			if (mat == nullptr)
-			{
-				mat = Material_Load(material->name.data, nullptr, MaterialType::Diffuse);
-				Scene_AddMaterial(gdlScene, mat);
+				ufbx_material* material = node->materials[mi];
+				if (true)
+				{
+					Indent(depth);
+					Log_InfoF("Material: %s\n", material->name.data);
+				}
+
+				// Has this material been loaded already?
+				mgdl_assert_print(gdlScene->materials != nullptr, "No materials array in scene");
+				mgdl_assert_print(gdlScene->materials->data != nullptr, "Scene materials array is nullptr");
+				Material* mat = Scene_GetMaterial(gdlScene, material->name.data);
+
+				if (mat == nullptr)
+				{
+					Log_InfoF("Creating default material\n");
+					Texture* defaultTex = Texture_GenerateCheckerBoard();
+					mat = Material_Load(material->name.data, defaultTex, MaterialType::Diffuse);
+					Scene_AddMaterial(gdlScene, mat);
+				}
+				else
+				{
+					Log_InfoF("Material was already loaded\n");
+				}
+				n->material = mat;
 			}
+		}
+		else {
+			// Set default material for safety?
+			Log_Warning("Node has mesh but no material, setting default material");
+			Log_InfoF("Creating default material\n");
+			Texture* defaultTex = Texture_GenerateCheckerBoard();
+			Material* mat = Material_Load("Checkboard", defaultTex, MaterialType::Diffuse);
+			Scene_AddMaterial(gdlScene, mat);
 			n->material = mat;
 		}
+
 
 	}
 	else if (node->light != nullptr)
@@ -216,10 +236,10 @@ void PushUV(Mesh* mesh, size_t index, ufbx_vec2 uv)
 
 Mesh * _FBX_AllocateMesh ( ufbx_mesh* fbxMesh )
 {
+	Mesh *mesh = Mesh_CreateEmpty();
 	sizetype vertices = fbxMesh->num_triangles * 3;
 	bool normals = fbxMesh->vertex_normal.exists;
 	bool uvs = fbxMesh->vertex_uv.exists;
-	Mesh *mesh = (Mesh*)malloc(sizeof(Mesh));
 	u32 creationFlags = 0;
 	if (normals)
 	{

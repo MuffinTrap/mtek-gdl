@@ -1,5 +1,7 @@
 #include <mgdl/mgdl-node.h>
 #include <mgdl/mgdl-dynamic_array.h>
+#include <mgdl/mgdl-assert.h>
+#include <mgdl/mgdl-logger.h>
 
 Node* Node_Create(u8 childCapacity)
 {
@@ -32,7 +34,6 @@ void Node_SetContent (Node* node, const char* name, Mesh* meshParam, Material* m
 
 void Node_Draw(Node* node)
 {
-
 	const V3f t = node->transform->position;
 	glTranslatef(t.x, t.y, t.z);
 
