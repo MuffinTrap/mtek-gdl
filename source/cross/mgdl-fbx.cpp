@@ -66,6 +66,10 @@ bool _FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short d
 
 	size_t childAmount = node->children.count;
 	mgdl_assert_print(childAmount <= 255, "UFBX node has too many children > 255");
+	if (childAmount == 0) // TODO FIX THIS
+	{
+		childAmount = 1;
+	}
 	Node* n = Node_Create((u8)childAmount);
 	mgdl_assert_print(n != nullptr, "Could not create new Node");
 
