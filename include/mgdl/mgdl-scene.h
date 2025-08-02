@@ -57,7 +57,7 @@ extern "C"
 	void _Scene_DebugDrawNode (Node* node, short depth, short* index, u32 drawFlags );
 
 	Node* Scene_FindChildNode(Node* node, const char* nodeName);
-	Node* Scene_FindChildNodeByIndex(Node* parent, short targetIndex, short index);
+	Node* Scene_FindChildNodeByIndex(Node* parent, short targetIndex, short* index);
 	Material* Scene_FindNodeMaterial(Scene* scene, Node* node, const char*  materialName);
 
 	bool Scene_CalculateNodePosition(Node* parent, Node* target, MTX4x4 world, V3f* posOut);

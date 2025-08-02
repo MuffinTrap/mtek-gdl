@@ -121,26 +121,25 @@ Node* Scene_GetRootNode(Scene* scene )
 Node* Scene_GetNodeByIndex ( Scene* scene, short targetIndex )
 {
 	short index = 0;
-	return Scene_FindChildNodeByIndex(scene->rootNode, targetIndex, index);
+	return Scene_FindChildNodeByIndex(scene->rootNode, targetIndex, &index);
 }
 
-Node* Scene_FindChildNodeByIndex (Node* parent, short targetIndex, short index )
+Node* Scene_FindChildNodeByIndex (Node* parent, short targetIndex, short* index )
 {
-	if (index == targetIndex)
+	if ((*index) == targetIndex)
 	{
 		return parent;
 	}
-	index++;
-	Node* childNode = nullptr;
 	for(sizetype i = 0; i < DynamicArray_CountNode(parent->children); i++)
 	{
-		childNode = Scene_FindChildNodeByIndex(DynamicArray_GetNode(parent->children, i), targetIndex, index);
+		(*index) += 1;
+		Node* childNode =  Scene_FindChildNodeByIndex(DynamicArray_GetNode(parent->children, i), targetIndex, index);
 		if (childNode != nullptr)
 		{
-			break;
+			return childNode;
 		}
 	}
-	return childNode;
+	return nullptr;
 }
 
 V3f Scene_GetNodePosition ( Scene* scene, Node* node )
@@ -229,16 +228,15 @@ Node* Scene_FindChildNode (Node* node, const char* nodeName )
 	{
 		return node;
 	}
-	Node* childNode = nullptr;
 	for(sizetype i = 0; i < DynamicArray_CountNode(node->children); i++)
 	{
-		childNode = Scene_FindChildNode(DynamicArray_GetNode(node->children, i), nodeName);
+		Node* childNode = Scene_FindChildNode(DynamicArray_GetNode(node->children, i), nodeName);
 		if (childNode != nullptr)
 		{
-			break;
+			return childNode;
 		}
 	}
-	return childNode;
+	return nullptr;
 }
 
 Material* Scene_GetMaterial (Scene* scene, const char* materialName )
