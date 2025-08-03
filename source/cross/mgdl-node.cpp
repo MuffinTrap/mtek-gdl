@@ -2,6 +2,7 @@
 #include <mgdl/mgdl-dynamic_array.h>
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-logger.h>
+#include <mgdl/mgdl-util.h>
 
 Node* Node_Create(u8 childCapacity)
 {
@@ -15,8 +16,48 @@ Node* Node_Create(u8 childCapacity)
 	node->children = DynamicArray_CreateNode(childCapacity);
 
 	return node;
-
 }
+
+Node* Node_Clone(Node* source, u32 cloningFlags)
+{
+	Node* clone = nullptr;
+	if (mgdl_IsFlagSet(cloningFlags, CloneChildren))
+	{
+		sizetype childAmount = DynamicArray_CountNode(source->children);
+		if (childAmount == 0)
+		{
+			childAmount = 1;
+		}
+		clone = Node_Create(childAmount);
+
+		for(sizetype i = 0; i < DynamicArray_CountNode(source->children); i++)
+		{
+			Node* childNode = DynamicArray_GetNode(source->children, i);
+			if (childNode != nullptr)
+			{
+				DynamicArray_AddNode(clone->children, Node_Clone(childNode, cloningFlags));
+			}
+		}
+	}
+
+	if (mgdl_IsFlagSet(cloningFlags, CloneTransform))
+	{
+		clone->transform = Transform_Create(source->transform->position,
+											source->transform->rotationDegrees,
+											source->transform->scale);
+	}
+	else
+	{
+		clone->transform = source->transform;
+	}
+
+	clone->mesh = source->mesh;
+	clone->material = source->material;
+	clone->light = source->light;
+	clone->name = source->name;
+	return clone;
+}
+
 void Node_SetTransform(Node* node, const char* name, V3f position, V3f rotationAngles)
 {
 	node->name = name;

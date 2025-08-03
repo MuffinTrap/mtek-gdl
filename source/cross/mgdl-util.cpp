@@ -27,7 +27,8 @@ void Random_SetSeed(u32 seed)
 float Random_Float(float min, float max)
 {
     float range = max - min;
-	return min + range * WFLCG_c_get_float(&randomGenerator);
+	// The wflcg returns [1.0f, 2.0f]
+	return min + range * (WFLCG_c_get_float(&randomGenerator) -1.0f);
 }
 float Random_FloatNormalized()
 {
