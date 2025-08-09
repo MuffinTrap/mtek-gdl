@@ -12,24 +12,48 @@ Node* Node_Create(u8 childCapacity)
 	node->material = nullptr;
 	node->light = nullptr;
 	node->name = nullptr;
-
+	node->enabledElements = (NodeTransform |NodeMesh| NodeMaterial| NodeLight| NodeChildren);
 	node->children = DynamicArray_CreateNode(childCapacity);
 
 	return node;
 }
 
-Node* Node_Clone(Node* source, u32 cloningFlags)
+void Node_SetEnabled(Node* node, NodeFlagField elements)
+{
+	node->enabledElements = Flag_SetAll(node->enabledElements, elements);
+}
+
+void Node_SetDisabled(Node* node, NodeFlagField elements)
+{
+	node->enabledElements = Flag_UnsetAll(node->enabledElements, elements);
+}
+
+void Node_EnableDrawing(Node* node)
+{
+	Node_SetEnabled(node, NodeMesh|NodeMaterial);
+
+}
+void Node_DisableDrawing(Node* node)
+{
+	Node_SetDisabled(node, NodeMesh|NodeMaterial);
+}
+
+Node* Node_Clone(Node* source, NodeFlagField cloningFlags)
 {
 	Node* clone = nullptr;
-	if (mgdl_IsFlagSet(cloningFlags, CloneChildren))
+	sizetype childAmount = 1;
+	if (Flag_IsSet(cloningFlags, NodeChildren))
 	{
-		sizetype childAmount = DynamicArray_CountNode(source->children);
-		if (childAmount == 0)
+		sizetype childCount = DynamicArray_CountNode(source->children);
+		if (childCount > 1)
 		{
-			childAmount = 1;
+			childAmount = childCount;
 		}
-		clone = Node_Create(childAmount);
+	}
+	clone = Node_Create(childAmount);
 
+	if (Flag_IsSet(cloningFlags, NodeChildren))
+	{
 		for(sizetype i = 0; i < DynamicArray_CountNode(source->children); i++)
 		{
 			Node* childNode = DynamicArray_GetNode(source->children, i);
@@ -40,11 +64,9 @@ Node* Node_Clone(Node* source, u32 cloningFlags)
 		}
 	}
 
-	if (mgdl_IsFlagSet(cloningFlags, CloneTransform))
+	if (Flag_IsSet(cloningFlags, NodeTransform))
 	{
-		clone->transform = Transform_Create(source->transform->position,
-											source->transform->rotationDegrees,
-											source->transform->scale);
+		clone->transform = Transform_Clone(source->transform);
 	}
 	else
 	{
@@ -73,23 +95,67 @@ void Node_SetContent (Node* node, const char* name, Mesh* meshParam, Material* m
 	node->material = materialParam;
 }
 
+Node* Node_FindChildByIndex ( Node* parent, short index )
+{
+	short indexCounter = 0;
+	return Node_FindChildByIndexRecursive_(parent, index, &indexCounter);
+}
+
+Node* Node_FindChildByIndexRecursive_ (Node* parent, short index, short* indexCounter )
+{
+	if ((*indexCounter) == index)
+	{
+		return parent;
+	}
+	for(sizetype i = 0; i < DynamicArray_CountNode(parent->children); i++)
+	{
+		(*indexCounter) += 1;
+		Node* childNode =  Node_FindChildByIndexRecursive_(DynamicArray_GetNode(parent->children, i), index, indexCounter);
+		if (childNode != nullptr)
+		{
+			return childNode;
+		}
+	}
+	return nullptr;
+}
+
+Node* Node_FindChildByName (Node* node, const char* nodeName )
+{
+	if (strcmp(node->name, nodeName) == 0)
+	{
+		return node;
+	}
+	for(sizetype i = 0; i < DynamicArray_CountNode(node->children); i++)
+	{
+		Node* childNode = Node_FindChildByName(DynamicArray_GetNode(node->children, i), nodeName);
+		if (childNode != nullptr)
+		{
+			return childNode;
+		}
+	}
+	return nullptr;
+}
+
 void Node_Draw(Node* node)
 {
-	const V3f t = node->transform->position;
-	glTranslatef(t.x, t.y, t.z);
+	if (Flag_IsSet(node->enabledElements, NodeTransform) )
+	{
+		const V3f t = node->transform->position;
+		glTranslatef(t.x, t.y, t.z);
 
-	const V3f r = node->transform->rotationDegrees;
-	glRotatef(r.x, 1.0f, 0.0f, 0.0f);
-	glRotatef(r.y, 0.0f, 1.0f, 0.0f);
-	glRotatef(r.z, 0.0f, 0.0f, 1.0f);
+		const V3f r = node->transform->rotationDegrees;
+		glRotatef(r.x, 1.0f, 0.0f, 0.0f);
+		glRotatef(r.y, 0.0f, 1.0f, 0.0f);
+		glRotatef(r.z, 0.0f, 0.0f, 1.0f);
 
-	const V3f& s = node->transform->scale;
-	glScalef(s.x, s.y, s.z);
+		const V3f& s = node->transform->scale;
+		glScalef(s.x, s.y, s.z);
+	}
 
 	Mesh* m = node->mesh;
-	if (m != nullptr)
+	if (m != nullptr && Flag_IsSet(node->enabledElements, NodeMesh))
 	{
-		if (node->material != nullptr)
+		if (node->material != nullptr && Flag_IsSet(node->enabledElements, NodeMaterial))
 		{
 			// TODO do not reapply same material
 			Material_Apply(node->material);

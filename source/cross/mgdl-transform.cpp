@@ -17,6 +17,11 @@ Transform* Transform_Create(V3f position, V3f rotationDegrees, V3f scale)
 	return transform;
 }
 
+Transform* Transform_Clone(Transform* source)
+{
+	return Transform_Create(source->position, source->rotationDegrees, source->scale);
+}
+
 
 void Transform_Rotate (Transform* transform, short axis, float angle )
 {

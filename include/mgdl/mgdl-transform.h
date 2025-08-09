@@ -16,6 +16,7 @@ extern "C"
 #endif
 	Transform* Transform_CreateZero(void);
 	Transform* Transform_Create(V3f position, V3f rotationDegrees, V3f scale);
+	Transform* Transform_Clone(Transform* source);
 	void Transform_Translate(Transform*, V3f t);
 	void Transform_Rotate(Transform*, short axis, float angle);
 	void Transform_SetScalef(Transform*, float scale);

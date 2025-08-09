@@ -47,8 +47,6 @@ extern "C"
 	void Scene_SetAllMaterialTextures(Scene* scene, Texture* texture);
 
 	Node* Scene_GetRootNode(Scene* scene);
-	Node* Scene_GetNode(Scene* scene, const char* name);
-	Node* Scene_GetNodeByIndex(Scene* scene, short index);
 	Material* Scene_GetMaterial(Scene* scene, const char* materialName);
 
 	V3f Scene_GetNodePosition(Scene* scene, Node* node);
@@ -56,8 +54,6 @@ extern "C"
 
 	void _Scene_DebugDrawNode (Node* node, short depth, short* index, u32 drawFlags );
 
-	Node* Scene_FindChildNode(Node* node, const char* nodeName);
-	Node* Scene_FindChildNodeByIndex(Node* parent, short targetIndex, short* index);
 	Material* Scene_FindNodeMaterial(Scene* scene, Node* node, const char*  materialName);
 
 	bool Scene_CalculateNodePosition(Node* parent, Node* target, MTX4x4 world, V3f* posOut);

@@ -118,7 +118,32 @@ char* mgdl_GetPrintfBuffer()
 	return printfBuffer;
 }
 
-bool mgdl_IsFlagSet(u32 bitfield, u32 flag)
+bool Flag_IsSet(u32 bitfield, u32 flag)
 {
 	return (bitfield & flag) != 0;
+}
+
+bool Flag_IsSetAll(u32 bitfield, u32 flags)
+{
+	return (bitfield & flags) == flags;
+}
+
+u32 Flag_Set(u32 bitfield, u32 flag)
+{
+	return (bitfield | flag);
+}
+
+u32 Flag_SetAll(u32 bitfield, u32 flags)
+{
+	return (bitfield | flags);
+}
+
+u32 Flag_Unset(u32 bitfield, u32 flag)
+{
+	return (bitfield & ~flag);
+}
+
+u32 Flag_UnsetAll(u32 bitfield, u32 flags)
+{
+	return (bitfield & ~flags);
 }
