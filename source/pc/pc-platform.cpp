@@ -6,11 +6,12 @@
 #include <mgdl/mgdl-logger.h>
 
 #include <mgdl/pc/mgdl-pc-input.h>
+#include <mgdl/pc/mgdl-joystick.h>
 
 #include <sndfile.h>
 
 static Platform platformPC;
-
+static Joystick* gamepad;
 // Declarations
 
 static int windowWidth = 0;
@@ -97,7 +98,7 @@ static void UpdateDeltaTime()
 
 static bool IncreaseAHoldAndTest()
 {
-    if (WiiController_ButtonHeld(&glutController, WiiButtons::ButtonA))
+    if (WiiController_ButtonHeld(Platform_GetController(0), WiiButtons::ButtonA))
     {
         aHoldTimer += platformPC._deltaTimeS;
         if (aHoldTimer >= 1.0f)
@@ -188,7 +189,9 @@ void RenderLoop()
 
     RenderEnd();
 
-    if (WiiController_ButtonPress(&glutController, ButtonHome))
+    WiiController* controller = Platform_GetController(0);
+
+    if (WiiController_ButtonPress(controller, ButtonHome))
     {
         if (quitCall != NULL)
         {
@@ -197,7 +200,14 @@ void RenderLoop()
         Platform_DoProgramExit();
     }
     // Reset controller for next frame
-    WiiController_StartFrame(&glutController);
+    WiiController_StartFrame(controller);
+    if (Joystick_IsConnected(gamepad))
+    {
+        Joystick_ReadInputs(gamepad);
+        // Always read cursor from glut
+        controller->_cursorX = glutController._cursorX;
+        controller->_cursorY = glutController._cursorY;
+    }
 }
 
 static void RenderEnd()
@@ -340,6 +350,14 @@ void Platform_Init(const char* windowName,
 
     WiiController_ZeroAllInputs(&glutController);
     WiiController_StartFrame(&glutController);
+
+    // Init Joystick
+    gamepad = Joystick_Create(0);
+    if (Joystick_IsConnected(gamepad))
+    {
+        Joystick_ZeroInputs(gamepad);
+    }
+
     initCall();
     glutElapsedStartMS = 0;
     platformPC._elapsedUpdates = 0;
@@ -381,7 +399,11 @@ void Platform_Init(const char* windowName,
 
 struct WiiController* Platform_GetController(int controllerNumber)
 {
-    if (controllerNumber == 0)
+    if (Joystick_IsConnected(gamepad) && gamepad->index == controllerNumber)
+    {
+        return Joystick_GetController(gamepad);
+    }
+    else if (controllerNumber == 0)
     {
         return &glutController;
     }

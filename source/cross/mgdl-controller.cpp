@@ -25,16 +25,16 @@ void WiiController_StartFrame(WiiController* controller)
 	controller->_releasedButtons = 0;
 }
 
-bool WiiController_ButtonPress(WiiController* controller, int buttonEnum) {
-	return (controller->_pressedButtons & buttonEnum) != 0;
+bool WiiController_ButtonPress(WiiController* controller, u32 buttonEnum) {
+	return Flag_IsSet(controller->_pressedButtons, buttonEnum);
 }
 
-bool WiiController_ButtonRelease(WiiController* controller, int buttonEnum) {
-	return (controller->_releasedButtons & buttonEnum) != 0;
+bool WiiController_ButtonRelease(WiiController* controller, u32 buttonEnum) {
+	return Flag_IsSet(controller->_releasedButtons, buttonEnum);
 }
 
-bool WiiController_ButtonHeld(WiiController* controller, int buttonEnum) {
-	return (controller->_heldButtons & buttonEnum) != 0;
+bool WiiController_ButtonHeld(WiiController* controller, u32 buttonEnum) {
+	return Flag_IsSet(controller->_heldButtons, buttonEnum);
 }
 
 vec2 WiiController_GetCursorPosition(WiiController* controller) {
@@ -65,15 +65,15 @@ float WiiController_GetRoll(WiiController* controller) {
 	return controller->_roll;
 }
 
-void _WiiController_SetButtonDown (WiiController* controller, int buttonEnum )
+void _WiiController_SetButtonDown (WiiController* controller, u32 buttonEnum )
 {
-	controller->_pressedButtons += buttonEnum;
-	controller->_heldButtons += buttonEnum;
+	controller->_pressedButtons = Flag_Set(controller->_pressedButtons, buttonEnum);
+	controller->_heldButtons = Flag_Set(controller->_heldButtons, buttonEnum);
 }
-void _WiiController_SetButtonUp (WiiController* controller, int buttonEnum )
+void _WiiController_SetButtonUp (WiiController* controller, u32 buttonEnum )
 {
-	controller->_heldButtons -= buttonEnum;
-	controller->_releasedButtons += buttonEnum;
+	controller->_heldButtons = Flag_Unset(controller->_heldButtons,buttonEnum);
+	controller->_releasedButtons = Flag_Set(controller->_releasedButtons, buttonEnum);
 }
 
 const char* WiiController_GetButtonSymbol(int buttonEnum)
