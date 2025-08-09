@@ -122,9 +122,7 @@ bool _FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short d
 
 				if (mat == nullptr)
 				{
-					Log_InfoF("Creating default material\n");
-					Texture* defaultTex = Texture_GenerateCheckerBoard();
-					mat = Material_Load(material->name.data, defaultTex, MaterialType::Diffuse);
+					mat = Material_Load(material->name.data, nullptr, MaterialType::Diffuse);
 					Scene_AddMaterial(gdlScene, mat);
 				}
 				else

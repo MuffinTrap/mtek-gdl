@@ -27,7 +27,9 @@ enum WiiButtons
 
 	// Nunchuck
 	ButtonZ	=		(0x0001 << 16),
-	ButtonC	=		(0x0002 << 16)
+	ButtonC	=		(0x0002 << 16),
+
+	ButtonAny = 	0xFFFF
 };
 typedef enum WiiButtons WiiButtons;
 

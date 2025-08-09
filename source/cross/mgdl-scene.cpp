@@ -36,13 +36,12 @@ void Scene_DebugDraw(Scene* scene,  Menu* menu, short x, short y, u32 debugFlags
 	if (scene->rootNode != nullptr)
 	{
 		short index = 0;
-		Menu_SetActive(menu);
-		Menu_Start(x, y, 100);
-		_Scene_DebugDrawNode(scene->rootNode, 0, &index, debugFlags);
+		Menu_Start(menu, x, y, 100);
+		Scene_DebugDrawNode_(scene->rootNode, menu, 0, &index, debugFlags);
 	}
 }
 
-void _Scene_DebugDrawNode ( Node* node, short depth, short* index, u32 debugFlags)
+void Scene_DebugDrawNode_( Node* node, Menu* menu, short depth, short* index, u32 debugFlags)
 {
 	if (node == nullptr)
 	{
@@ -51,19 +50,19 @@ void _Scene_DebugDrawNode ( Node* node, short depth, short* index, u32 debugFlag
 	short drawIndex = *index;
 	if (strlen(node->name) > 0)
 	{
-		Menu_TextF("%d: %s", drawIndex, node->name);
+		Menu_TextF(menu, "%d: %s", drawIndex, node->name);
 	}
 	if ((debugFlags & Scene_DebugFlag::Position) > 0)
 	{
 		V3f &p = node->transform->position;
-		Menu_TextF("P(%.1f,%.1f,%.1f)", drawIndex, p.x, p.y, p.z);
+		Menu_TextF(menu, "P(%.1f,%.1f,%.1f)", drawIndex, p.x, p.y, p.z);
 	}
 
 	for(sizetype i = 0; i < DynamicArray_CountNode(node->children); i++)
 	{
 		drawIndex += 1;
 		*index = drawIndex;
-		_Scene_DebugDrawNode(DynamicArray_GetNode(node->children, i), depth+1, index, debugFlags);
+		Scene_DebugDrawNode_(DynamicArray_GetNode(node->children, i), menu, depth+1, index, debugFlags);
 	}
 }
 

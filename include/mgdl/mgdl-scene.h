@@ -52,7 +52,7 @@ extern "C"
 	V3f Scene_GetNodePosition(Scene* scene, Node* node);
 	bool Scene_GetNodeModelMatrix(Scene* scene, Node* node, MTX4x4 modelOut);
 
-	void _Scene_DebugDrawNode (Node* node, short depth, short* index, u32 drawFlags );
+	void Scene_DebugDrawNode_(Node* node, Menu* menu, short depth, short* index, u32 drawFlags );
 
 	Material* Scene_FindNodeMaterial(Scene* scene, Node* node, const char*  materialName);
 

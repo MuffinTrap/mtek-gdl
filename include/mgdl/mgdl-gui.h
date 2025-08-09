@@ -12,37 +12,47 @@
  *
  */
 
+enum MenuDrawDirection
+{
+    MenuDownward,
+    MenuRightward
+};
+typedef enum MenuDrawDirection MenuDrawDirection;
+
 /**
  * @brief Struct for holding the state of immeadiate mode gui menu.
  */
 struct Menu
 {
-    float _drawx;
-    float _drawy;
-    float _menuWidth;
-    float _textHeight;
-    float _rowHeightEm;
-    float _textSize;
+    float drawx;
+    float drawy;
+    float menuWidth;
+    float textHeight;
+    float rowHeightEm;
+    float textSize;
 
     // Input state
-    bool _buttonPress;
-    bool _buttonHeld;
-    vec2 _cursorPosition;
+    bool buttonPress;
+    bool buttonHeld;
+    vec2 cursorPosition;
 
     // Colors
-    Color4f _bg; /**< Background color of elements. */
-    Color4f _text; /**< Color of the text, toggles and slider bars. */
-    Color4f _highlight; /**< Used instead of _text when the item is hovered. */
+    Color4f bg; /**< Background color of elements. */
+    Color4f text; /**< Color of the text, toggles and slider bars. */
+    Color4f highlight; /**< Used instead of _text when the item is hovered. */
 
     // Window
-    bool _drawWindow;
-    const char* _windowName;
-    float _windowx;
-    float _windowy;
-    float _windowHeight;
-    //float _windowWidth;
+    bool drawWindow;
+    const char* windowName;
+    float windowx;
+    float windowy;
+    float windowHeight;
 
-    Font* _font;
+    Font* font;
+
+    MenuDrawDirection drawDirection;
+    float largestHeightOnRow;
+    float startx;
 };
 typedef struct Menu Menu;
 
@@ -53,9 +63,9 @@ extern "C"
     /**
      * @brief Draws a cursor using the Default font and default values.
      */
-    void Menu_DrawCursor(void);
+    void Menu_DrawCursor(Menu* menu);
 
-    void _Menu_DrawCursorParams(short x, short y, short w, short h, Color4f* color);
+    void Menu_DrawCursorParams_(short x, short y, short w, short h, Color4f* color);
 
     /**
      * @brief Set the menu to which the other functions are applied to.
@@ -64,9 +74,9 @@ extern "C"
     void Menu_SetActive(Menu* menu);
 
     /**
-     * @brief reads the default cursor and mouse status into the gui system
+     * @brief reads the default cursor and mouse status into the menu
      */
-    void Menu_ReadDefaultInputs(void);
+    void Menu_ReadDefaultInputs(Menu* menu);
 
     /**
      * @brief Creates a MenuCreator using font and parameters.
@@ -106,7 +116,7 @@ extern "C"
      * @param cursorX cursorPosition Position of the cursor on the screen in pixels.
      * @param buttonPress Is the button pressed on this frame.
      */
-    void Menu_StartInput(short x, short y, short width, vec2 cursorPosition, bool buttonPress, bool buttonHeld);
+    void Menu_StartInput(Menu* menu, short x, short y, short width, vec2 cursorPosition, bool buttonPress, bool buttonHeld);
 
     /**
      * @brief Starts the menu from given position and uses default inputs
@@ -118,7 +128,7 @@ extern "C"
      * @param y Upper left corner y of the first element.
      * @param width Width of the elements in the menu.
      */
-    void Menu_Start(short x, short y, short width);
+    void Menu_Start(Menu* menu, short x, short y, short width);
 
     /**
      * @brief Sets the colors used in the menu.
@@ -126,67 +136,83 @@ extern "C"
      * @param text Color of the text.
      * @param highlight Highlight color to show hovered element.
      */
-    void Menu_SetColors(Color4f* bg, Color4f* text, Color4f* highlight);
+    void Menu_SetColors(Menu* menu, Color4f* bg, Color4f* text, Color4f* highlight);
+
+    void Menu_BeginRow(Menu* menu);
+    void Menu_EndRow(Menu* menu);
 
     /**
      * @brief Draws the window title bar
      */
-    void _Menu_TitleBar(void);
+    void Menu_TitleBar_(Menu* menu);
 
     /**
      * @brief Draws the window borders
      */
-    void _Menu_Borders(void);
+    void Menu_Borders_(Menu* menu);
 
     /**
-     * @brief Draws a line separating elements.
+     * @brief Tells if cursor is inside the next area of this menu
+     * @param menu The menu to use
+     * @param w Width of the next area
+     * @param h Height of the next area
+     * @return True when cursor is inside
      */
-    void Menu_Separator(void);
+    bool Menu_IsCursorInside(Menu* menu, short w, short h);
+
 
     /**
      * @brief Leaves empty space for custom elements
      * @param height How much to move the position of next item downwards
      */
-    void Menu_Skip(short height);
+    void Menu_Skip(Menu* menu, short pixels);
     /**
      * @brief Draws text.
      * @param text Text to be drawn.
      */
-    void Menu_Text(const char* text);
+    void Menu_Text(Menu* menu, const char* text);
 
     /**
      * @brief Draws formatted text.
      * @param text Format string.
      * @param __VA_ARGS__ Format parameters.
      */
-    void Menu_TextF(const char* format, ...);
+    void Menu_TextF(Menu* menu, const char* format, ...);
 
     /**
      * @brief Draws a colored icon
      * @param icon The icon to draw
      */
-    void Menu_Icon(IconSymbol icon, Color4f* color);
+    void Menu_Icon(Menu* menu, IconSymbol icon, Color4f* color);
 
     /**
      * @brief Draws a button that can be clicked.
      * @param text Text on the button.
      * @return True if the button was clicked.
      */
-    bool Menu_Button(const char* text);
+    bool Menu_Button(Menu* menu, const char* text);
+
+    /**
+     * @brief Draws a button with a texture that can be clicked.
+     * @param text Texture on the button
+     * @param flipflags Combination of TextureFlipModes flags
+     * @return True if the button was clicked.
+     */
+    bool Menu_TexturedButton(Menu* menu, Texture* texture, TextureFlipModes flipflags);
     /**
      * @brief Draws a toggle that can be clicked.
      * @param text Text on the toggle.
      * @param valueRef Pointer to the boolean controller by the toggle.
      * @return True if the toggle was clicked.
      */
-    bool Menu_Toggle(const char* text, bool* valueRef);
+    bool Menu_Toggle(Menu* menu, const char* text, bool* valueRef);
 
     /**
      * @brief Draws a text label with can be highlighted.
      * @param text Text on the label.
      * @param enabled When true, the label uses highlight color
      */
-    void Menu_Flag(const char* text, bool enabled);
+    void Menu_Flag(Menu* menu, const char* text, bool enabled);
 
     /**
      * @brief Draws a slider that can be adjusted with mouse or by pressing buttons.
@@ -196,7 +222,7 @@ extern "C"
      * @param valueRef Reference to the float value controlled by the slider.
      * @return True if the value was changed.
      */
-    bool Menu_Slider(const char* text, float minValue, float maxValue, float* valueRef);
+    bool Menu_Slider(Menu* menu, const char* text, float minValue, float maxValue, float* valueRef);
 
 #ifdef __cplusplus
 }
