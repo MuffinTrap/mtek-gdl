@@ -1,8 +1,10 @@
 #include <mgdl/mgdl-dynamic_array.h>
+#include <mgdl/mgdl-assert.h>
 #include <vector>
 
 DynamicArray* DynamicArray_CreateMaterial(sizetype capacity)
 {
+    mgdl_assert_print(capacity > 0, "Cannot create empty DynamicArray for Material"); \
     DynamicArray* arr = new DynamicArray();
     arr->data = (void*)malloc(sizeof(Material*) * capacity);
     arr->capacity = capacity;
@@ -39,6 +41,7 @@ sizetype DynamicArray_AddMaterial ( DynamicArray* array, Material* item )
 
 #define DYNAMIC_ARRAY_IMPL(TYPE) \
 DynamicArray* DynamicArray_Create##TYPE(sizetype capacity) { \
+    mgdl_assert_print(capacity > 0, "Cannot create empty DynamicArray for " #TYPE); \
     DynamicArray* arr = new DynamicArray(); \
     arr->data = (void*)malloc(sizeof(TYPE*) * capacity); \
     arr->capacity = capacity; \

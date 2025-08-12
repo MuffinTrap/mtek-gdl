@@ -36,31 +36,33 @@ void Scene_DebugDraw(Scene* scene,  Menu* menu, short x, short y, u32 debugFlags
 	if (scene->rootNode != nullptr)
 	{
 		short index = 0;
-		Menu_SetActive(menu);
-		Menu_Start(x, y, 100);
-		_Scene_DebugDrawNode(scene->rootNode, 0, &index, debugFlags);
+		Menu_Start(menu, x, y, 100);
+		Scene_DebugDrawNode_(scene->rootNode, menu, 0, &index, debugFlags);
 	}
 }
 
-void _Scene_DebugDrawNode ( Node* node, short depth, short* index, u32 debugFlags)
+void Scene_DebugDrawNode_( Node* node, Menu* menu, short depth, short* index, u32 debugFlags)
 {
 	if (node == nullptr)
 	{
 		return;
 	}
 	short drawIndex = *index;
-	Menu_TextF("%d: %s", drawIndex, node->name);
+	if (strlen(node->name) > 0)
+	{
+		Menu_TextF(menu, "%d: %s", drawIndex, node->name);
+	}
 	if ((debugFlags & Scene_DebugFlag::Position) > 0)
 	{
 		V3f &p = node->transform->position;
-		Menu_TextF("P(%.1f,%.1f,%.1f)", drawIndex, p.x, p.y, p.z);
+		Menu_TextF(menu, "P(%.1f,%.1f,%.1f)", drawIndex, p.x, p.y, p.z);
 	}
 
 	for(sizetype i = 0; i < DynamicArray_CountNode(node->children); i++)
 	{
 		drawIndex += 1;
 		*index = drawIndex;
-		_Scene_DebugDrawNode(DynamicArray_GetNode(node->children, i), depth+1, index, debugFlags);
+		Scene_DebugDrawNode_(DynamicArray_GetNode(node->children, i), menu, depth+1, index, debugFlags);
 	}
 }
 
@@ -78,9 +80,12 @@ void Scene_DrawNode ( Node* node )
 {
 	glPushMatrix();
 		Node_Draw(node);
-		for(sizetype i = 0; i < DynamicArray_CountNode(node->children); i++)
+		if (Flag_IsSet(node->enabledElements, NodeChildren))
 		{
-			Scene_DrawNode(DynamicArray_GetNode(node->children, i));
+			for(sizetype i = 0; i < DynamicArray_CountNode(node->children); i++)
+			{
+				Scene_DrawNode(DynamicArray_GetNode(node->children, i));
+			}
 		}
 	glPopMatrix();
 }
@@ -118,30 +123,6 @@ Node* Scene_GetRootNode(Scene* scene )
 	return scene->rootNode;
 }
 
-Node* Scene_GetNodeByIndex ( Scene* scene, short targetIndex )
-{
-	short index = 0;
-	return Scene_FindChildNodeByIndex(scene->rootNode, targetIndex, index);
-}
-
-Node* Scene_FindChildNodeByIndex (Node* parent, short targetIndex, short index )
-{
-	if (index == targetIndex)
-	{
-		return parent;
-	}
-	index++;
-	Node* childNode = nullptr;
-	for(sizetype i = 0; i < DynamicArray_CountNode(parent->children); i++)
-	{
-		childNode = Scene_FindChildNodeByIndex(DynamicArray_GetNode(parent->children, i), targetIndex, index);
-		if (childNode != nullptr)
-		{
-			break;
-		}
-	}
-	return childNode;
-}
 
 V3f Scene_GetNodePosition ( Scene* scene, Node* node )
 {
@@ -216,29 +197,6 @@ bool Scene_CalculateNodePosition ( Node* parent, Node* target, mat4x4 world, V3f
 		}
 	}
 	return false;
-}
-
-Node* Scene_GetNode (Scene* scene, const char* name )
-{
-	return Scene_FindChildNode(scene->rootNode, name);
-}
-
-Node* Scene_FindChildNode (Node* node, const char* nodeName )
-{
-	if (strcmp(node->name, nodeName) == 0)
-	{
-		return node;
-	}
-	Node* childNode = nullptr;
-	for(sizetype i = 0; i < DynamicArray_CountNode(node->children); i++)
-	{
-		childNode = Scene_FindChildNode(DynamicArray_GetNode(node->children, i), nodeName);
-		if (childNode != nullptr)
-		{
-			break;
-		}
-	}
-	return childNode;
 }
 
 Material* Scene_GetMaterial (Scene* scene, const char* materialName )

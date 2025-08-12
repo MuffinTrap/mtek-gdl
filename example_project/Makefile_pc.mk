@@ -19,7 +19,7 @@ CXXFLAGS += -DMGDL_USE_CCVECTOR
 SRC_DIRS += $(MGDL_DIR)/mgdl/rocket
 ROCKET_INCLUDE = -I$(MGDL_DIR)/mgdl/rocket
 CXXFLAGS += $(ROCKET_INCLUDE)
-CXXFLAGS += -DMGDL_ROCKET
+# CXXFLAGS += -DMGDL_ROCKET
 
 # Use find to gather all .cpp and .c files in SRC_DIRS
 cpp_src := $(shell find $(SRC_DIRS) -name '*.cpp')

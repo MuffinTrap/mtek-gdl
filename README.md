@@ -13,7 +13,12 @@ If you use this fork for making a Wii game or demo, I won't be available to give
 ## Version number
 This is version 0.100.4-muffintrap "assembly"
 
-## How to compile and install the library and run the example with Dolphin
+# Installation
+This library allows to use the same codebase to make executables for Wii, Windows, Mac and Linux.
+The first part is installing the environment for creating executables for the Wii.
+After that are the different platforms. If you only ever want to make your demo/game work on Wii, you don't have to install the Win/Mac/Linux tools.
+
+## How to compile and install the library and run the example with Dolphin and Wii
 1. Install devkitpro following instructions here: [DevkitPro Getting Started](https://devkitpro.org/wiki/Getting_Started)
 2. Add DEVKITPRO and DEVKITPPC to your environment variables. If you used the default install location, they should be:
 ```sh
@@ -22,48 +27,42 @@ This is version 0.100.4-muffintrap "assembly"
 ```
 3. Using (dkp-)pacman, install the package **wii-dev**
 4. Using (dkp-)pacman, install these packages if they are not already installed:
-	* ppc-libpng
-	* ppc-zlib
-	* ppc-libvorbis
-	* ppc-libvorbisidec
-	* ppc-libogg
-	* wii-glu
-	* wii-opengx
-	* wii-freeglut
+```sh
+	ppc-libpng ppc-zlib ppc-libvorbis ppc-libvorbisidec ppc-libogg wii-glu wii-opengx wii-freeglut
+```
 5. Clone this repository to your computer. In the next steps the folder of the repository is called **mtek-gdl/**
-5. Go to mtek-gdl/3rdparty/libs-wii/ and run these commands. They will compile and install libraries that mtek-gdl uses.
+6. Go to mtek-gdl/3rdparty/libs-wii/ and run these commands. They will compile and install libraries that mtek-gdl uses.
 ```sh
 	make
 	sudo -E make install
 ```
-6. Go to mtek-gdl/ and run these commands. They will compile and install the library itself.
+7. Go to mtek-gdl/ and run these commands. They will compile and install the library itself.
 ```sh
 	make
 	sudo -E make install
 ```
-7. Go to mtek-gdl/example_project/ and run the command to compile it. It should produce a file called **boot.dol**
+8. Go to mtek-gdl/example_project/ and run the command to compile it. It should produce a file called **boot.dol**
 ```sh
 	make
 ```
-8. Open the Dolphin emulator, Select File > Open... and select the file **boot.dol**
+9. Open the Dolphin emulator.
+* Open Configuration and select the Wii tab.
+* Configure SD card folder to be the example_projec folder
+* Pack the SD card so that the exe can see the assets
+* Select File > Open... and select the file **boot.dol**
 
 
-
-## How to compile and install on Windows
+## How to compile and install tools to make Windows executables
 ### Development environment and libraries
 1. Install [MSYS2](https://www.msys2.org/) (This is a different version from the one that comes with DevkitPro) [Detailed instructions for install](https://www.freecodecamp.org/news/how-to-install-c-and-cpp-compiler-on-windows/)
 2. Launch the UCRT64 variant and update the packages as explained in the Detailed instructions above.
 3. Install the compiler 
-<code>pacman -S mingw-w64-ucrt-x86_64-gcc</code>
+<code>pacman -S mingw-w64-ucrt-x86_64-clang</code>
 4. Install the required libraries:
 <code>pacman -S mingw-w64-ucrt-x86_64-openal mingw-w64-ucrt-x86_64-freeglut mingw-w64-ucrt-x86_64-libpng mingw-w64-ucrt-x86_64-libsndfile make</code>
 
-### Compiling the executable and getting the .dll files
-1. Navigate to the github repository.
-2. Run command <code>make -f Makefile_win</code>
-
 ####  Link to DLL files
-- Add the folder <code>C:\msys64\ucrt64\bin</code> to PATH on windows. That way windows will look there for the dll files when running your executable.
+- Add the folder <code>C:\msys64\ucrt64\bin</code> to System PATH on windows. That way windows will look there for the dll files when running your executable.
 
 #### These are the dll files that the program needs to run.
 You need to include these files when you release your executable.
@@ -83,14 +82,22 @@ You need to include these files when you release your executable.
 - libopus-0.dll
 - libvorbisenc-2.dll
 
-Windows makefile is Makefile_win.mk
+### Compiling the framework
+1. Navigate to the github repository.
+2. Run commands:
 
 ```sh
 make -f Makefile_win.mk
 make -f Makefile_win.mk install
 ```
 
-## How to compile and install on Ubuntu/Debian Linux:
+Now you should be able to compile the example project also to Windows by giving the command
+```sh
+make win
+```
+in the mtek-gdl/example_project directory
+
+## How to install the framework and create executables on Ubuntu/Debian Linux:
 ### List of needed packages:
 
 These packages are needed for C/C++ Development in general:

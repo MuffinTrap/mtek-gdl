@@ -42,7 +42,46 @@ GLint TextureFilterToGLFilter(TextureFilterModes filterMode);
  * @param flag The flag to inspect
  * @return True if the flag is set.
  */
-bool mgdl_IsFlagSet(u32 bitfield, u32 flag);
+bool Flag_IsSet(u32 bitfield, u32 flag);
+
+/**
+ * @brief Tells if all given flags are set
+ * @param bitfield The bitfield containing flags
+ * @param flag The flag to inspect
+ * @return True if the flag is set.
+ */
+bool Flag_IsSetAll(u32 bitfield, u32 flags);
+
+/**
+ * @brief Sets a flag on bitfield
+ * @param bitfield The bitfield containing flags
+ * @param flag The flag to set
+ * @return The modified bitfield
+ */
+u32 Flag_Set(u32 bitfield, u32 flag);
+
+/**
+ * @brief Sets all given flags on bitfield
+ * @param bitfield The bitfield containing flags
+ * @param flag The flags to set
+ * @return The modified bitfield
+ */
+u32 Flag_SetAll(u32 bitfield, u32 flag);
+
+/**
+ * @brief Unsets a flag on bitfield
+ * @param bitfield The bitfield containing flags
+ * @param flag The flag to unset
+ * @return The modified bitfield
+ */
+u32 Flag_Unset(u32 bitfield, u32 flag);
+/**
+ * @brief Unsets all given flags on bitfield
+ * @param bitfield The bitfield containing flags
+ * @param flag The flags to unset
+ * @return The modified bitfield
+ */
+u32 Flag_UnsetAll(u32 bitfield, u32 flag);
 
 /**
  * @return Buffer containging the text, max size 255 chars.

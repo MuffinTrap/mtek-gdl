@@ -75,6 +75,7 @@ Texture* Texture_LoadPNG(PNGFile* png, TextureFilterModes filterMode)
 	// copy data
 	image->width = png->width;
 	image->height = png->height;
+	image->aspectRatio = image->width / image->height;
 	Texture_SetTint(image, 1.0f, 1.0f, 1.0f);
 									  //(1.0f/(float)png->height) * 0.375f);
 
@@ -105,16 +106,16 @@ void Texture_Draw2DAbsolute(Texture* img, short x, short y, short x2, short y2)
 
 		// Lower left
 		glTexCoord2f(0.0f, 0.0f);
-		glVertex2f(dx, dy);
+		glVertex2f(dx, dy2);
 		// Lower right
 		glTexCoord2f(1.0f, 0.0f);
-		glVertex2f(dx2, dy);
+		glVertex2f(dx2, dy2);
 		// Upper right
 		glTexCoord2f(1.0f, 1.0f);
-		glVertex2f(dx2, dy2);
+		glVertex2f(dx2, dy);
 		// Upper left
 		glTexCoord2f(0.0f, 1.0f);
-		glVertex2f(dx, dy2);
+		glVertex2f(dx, dy);
 
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -144,7 +145,7 @@ void Texture_Draw2DAligned(Texture* img, short x, short y, float scale, Alignmen
 	{
 		y -= h/2;
 	}
-	Texture_Draw2DAbsolute(img, x, y, x+w, y+h);
+	Texture_Draw2DAbsolute(img, x, y, x+w, y-h);
 }
 
 void Texture_Draw3D(Texture* img, float scale, AlignmentModes alignX, AlignmentModes alignY)
@@ -238,7 +239,7 @@ Texture* Texture_GenerateCheckerBoard()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8_ALPHA8, width, height, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, checkerTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE_ALPHA, width, height, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, checkerTexture);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
 
 	Texture* img = Texture_Create();

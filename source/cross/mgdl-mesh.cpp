@@ -5,13 +5,25 @@
 #include <mgdl/mgdl-opengl_util.h>
 
 
-sizetype Mesh_Init (Mesh* mesh, sizetype vertexCount, sizetype indexCount, u32 creationFlags)
+Mesh* Mesh_CreateEmpty(void)
 {
+	Mesh* mesh = (Mesh*)malloc(sizeof(Mesh));
 	mesh->positions = nullptr;
 	mesh->indices = nullptr;
 	mesh->normals = nullptr;
 	mesh->uvs=nullptr;
 	mesh->colors = nullptr;
+
+	mesh->indexCount = 0;
+	mesh->vertexCount = 0;
+	mesh->indexCounter = 0;
+
+	mesh->name = nullptr;
+	return mesh;
+}
+
+sizetype Mesh_Init (Mesh* mesh, sizetype vertexCount, sizetype indexCount, u32 creationFlags)
+{
 	mesh->vertexCount = vertexCount;
 	mesh->indexCount = indexCount;
 
@@ -27,7 +39,7 @@ sizetype Mesh_Init (Mesh* mesh, sizetype vertexCount, sizetype indexCount, u32 c
 		byteCount += positionFloats * sizeof(float);
 	}
 
-	if (mgdl_IsFlagSet(creationFlags, FlagNormals))
+	if (Flag_IsSet(creationFlags, FlagNormals))
 	{
 		// 3 floats per normal
 		sizetype normalFloats = vertexCount * 3;
@@ -35,7 +47,7 @@ sizetype Mesh_Init (Mesh* mesh, sizetype vertexCount, sizetype indexCount, u32 c
 		byteCount += normalFloats * sizeof(float);
 	}
 
-	if (mgdl_IsFlagSet(creationFlags, FlagUVs))
+	if (Flag_IsSet(creationFlags, FlagUVs))
 	{
 		// 2 floats per uv
 		sizetype uvFloats = vertexCount * 2;
@@ -43,7 +55,7 @@ sizetype Mesh_Init (Mesh* mesh, sizetype vertexCount, sizetype indexCount, u32 c
 		byteCount += uvFloats * sizeof(float);
 	}
 
-	if (mgdl_IsFlagSet(creationFlags, FlagColors))
+	if (Flag_IsSet(creationFlags, FlagColors))
 	{
 		// 3 floats per color
 		sizetype colorFloats = vertexCount * 3;
@@ -83,12 +95,13 @@ void Mesh_SetupVertexArrays(Mesh* mesh)
 	if (mesh->colors != nullptr)
 	{
 		glEnableClientState(GL_COLOR_ARRAY);
-		glColorPointer(2, GL_FLOAT, 0, mesh->uvs);
+		glColorPointer(3, GL_FLOAT, 0, mesh->colors);
 	}
 	else
 	{
 		glDisableClientState(GL_COLOR_ARRAY);
 	}
+	return;
 }
 
 void Mesh_DrawElements(Mesh* mesh)
@@ -345,7 +358,7 @@ Mesh* Mesh_CreateIcosahedron(u32 creationFlags)
     const float Z = 0.850650808352039932;
     const float N = 0.0f;
 
-	Mesh* icosa = (Mesh*)malloc(sizeof(Mesh));
+	Mesh* icosa = Mesh_CreateEmpty();
 	Mesh_Init(icosa, 12, 60, creationFlags);
 
 	delete[] icosa->positions;
@@ -363,7 +376,7 @@ Mesh* Mesh_CreateIcosahedron(u32 creationFlags)
 		 Z, -X,  N,
 		-Z, -X,  N};
 
-    if (mgdl_IsFlagSet(creationFlags, FlagNormals))
+    if (Flag_IsSet(creationFlags, FlagNormals))
 	{
 		delete[] icosa->normals;
 		icosa->normals = icosa->positions;
@@ -417,7 +430,7 @@ Mesh * Mesh_CreateQuad (u32 creationFlags)
 		sz, sz, 0.0f,
 		-sz, sz, 0.0f};
 
-	if (mgdl_IsFlagSet(creationFlags, FlagNormals))
+	if (Flag_IsSet(creationFlags, FlagNormals))
 	{
 		for (int i = 0; i < 4*3; i+=3)
 		{
@@ -427,7 +440,7 @@ Mesh * Mesh_CreateQuad (u32 creationFlags)
 		}
 	}
 
-	if (mgdl_IsFlagSet(creationFlags, FlagUVs))
+	if (Flag_IsSet(creationFlags, FlagUVs))
 	{
 		Mesh_SetUVToArray(quad, 0, vec2New(0.0f, 0.0f));
 		Mesh_SetUVToArray(quad, 1, vec2New(1.0f, 0.0f));

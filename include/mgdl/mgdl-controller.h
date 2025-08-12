@@ -13,6 +13,7 @@
  */
 enum WiiButtons
 {
+	ButtonNone = 	0x0000,
 	Button2 = 		0x0001,
 	Button1 = 		0x0002,
 	ButtonB = 		0x0004,
@@ -27,7 +28,9 @@ enum WiiButtons
 
 	// Nunchuck
 	ButtonZ	=		(0x0001 << 16),
-	ButtonC	=		(0x0002 << 16)
+	ButtonC	=		(0x0002 << 16),
+
+	ButtonAny = 	0xFFFF
 };
 typedef enum WiiButtons WiiButtons;
 
@@ -85,20 +88,20 @@ void WiiController_StartFrame(WiiController* controller);
  * @return True if the given button was pressed down this frame.
  */
 
-bool WiiController_ButtonPress(WiiController* controller, int buttonEnum);
+bool WiiController_ButtonPress(WiiController* controller, u32 buttonEnum);
 /**
  * @brief Tells if a button was released this frame.
  * @param buttonEnum The button to query.
  * @return True if the given button was released this frame.
  */
-bool WiiController_ButtonRelease(WiiController* controller, int buttonEnum);
+bool WiiController_ButtonRelease(WiiController* controller, u32 buttonEnum);
 
 /**
  * @brief Tells if a button is down.
  * @param buttonEnum The button to query.
  * @return True if the given button was pressed down this frame or before.
  */
-bool WiiController_ButtonHeld(WiiController* controller, int buttonEnum);
+bool WiiController_ButtonHeld(WiiController* controller, u32 buttonEnum);
 
 /**
  * @brief Returns the position of the cursor.
@@ -131,8 +134,8 @@ float WiiController_GetYaw(WiiController* controller);
 
 const char* WiiController_GetButtonSymbol(int buttonEnum);
 
-void _WiiController_SetButtonDown(WiiController* controller, int buttonEnum);
-void _WiiController_SetButtonUp(WiiController* controller, int buttonEnum);
+void _WiiController_SetButtonDown(WiiController* controller, u32 buttonEnum);
+void _WiiController_SetButtonUp(WiiController* controller, u32 buttonEnum);
 
 #ifdef __cplusplus
 }

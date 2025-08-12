@@ -27,7 +27,8 @@ void Random_SetSeed(u32 seed)
 float Random_Float(float min, float max)
 {
     float range = max - min;
-	return min + range * WFLCG_c_get_float(&randomGenerator);
+	// The wflcg returns [1.0f, 2.0f]
+	return min + range * (WFLCG_c_get_float(&randomGenerator) -1.0f);
 }
 float Random_FloatNormalized()
 {
@@ -117,7 +118,32 @@ char* mgdl_GetPrintfBuffer()
 	return printfBuffer;
 }
 
-bool mgdl_IsFlagSet(u32 bitfield, u32 flag)
+bool Flag_IsSet(u32 bitfield, u32 flag)
 {
 	return (bitfield & flag) != 0;
+}
+
+bool Flag_IsSetAll(u32 bitfield, u32 flags)
+{
+	return (bitfield & flags) == flags;
+}
+
+u32 Flag_Set(u32 bitfield, u32 flag)
+{
+	return (bitfield | flag);
+}
+
+u32 Flag_SetAll(u32 bitfield, u32 flags)
+{
+	return (bitfield | flags);
+}
+
+u32 Flag_Unset(u32 bitfield, u32 flag)
+{
+	return (bitfield & ~flag);
+}
+
+u32 Flag_UnsetAll(u32 bitfield, u32 flags)
+{
+	return (bitfield & ~flags);
 }

@@ -11,6 +11,7 @@
 #include <math.h>
 
 #include <mgdl/mgdl-logger.h>
+#include <mgdl/mgdl-assert.h>
 
 #include <mgdl/wii/mgdl-wii-types.h>
 #include <mgdl/wii/mgdl-wii-globals.h>
@@ -18,7 +19,6 @@
 #include <mgdl/wii/mgdl-wii-main.h>
 #include <mgdl/wii/mgdl-wii-image.h>
 #include <mgdl/wii/mgdl-wii-sprites.h>
-#include <mgdl/wii/mgdl-wii-assert.h>
 
 
 // External declarations to be able to access the image module's put routines

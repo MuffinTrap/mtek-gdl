@@ -93,6 +93,14 @@ enum TextureFilterModes {
 };
 typedef enum TextureFilterModes TextureFilterModes;
 
+
+enum TextureFlipModes {
+    FlipNone = 0,
+    FlipVertical = 1,
+    FlipHorizontal = 2
+};
+typedef enum TextureFlipModes TextureFlipModes;
+
 /**
  * @brief Material types
  *

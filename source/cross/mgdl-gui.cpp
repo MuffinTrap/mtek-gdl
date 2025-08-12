@@ -9,23 +9,14 @@
 #include <mgdl/mgdl-main.h>
 
 
-static Menu* menu = nullptr; /**< The active menu used. */
-static bool mouseDown_ = false; /**< Default input state. */
-static bool mousePress_ = false;
-static vec2 cursorPosition_;
-
-void Menu_ReadDefaultInputs()
+void Menu_ReadDefaultInputs(Menu* menu)
 {
     WiiController* c = Platform_GetController(0);
-    cursorPosition_ = WiiController_GetCursorPosition(c);
-    mouseDown_ = WiiController_ButtonHeld(c, ButtonA);
-    mousePress_ = WiiController_ButtonPress(c, ButtonA);
+    menu->cursorPosition = WiiController_GetCursorPosition(c);
+    menu->buttonHeld = WiiController_ButtonHeld(c, ButtonA);
+    menu->buttonPress = WiiController_ButtonPress(c, ButtonA);
 }
 
-void Menu_SetActive(Menu* active)
-{
-    menu = active;
-}
 
 Menu* Menu_CreateDefault()
 {
@@ -36,20 +27,23 @@ Menu* Menu_Create(Font* font, float textHeight, float rowHeightEm)
 {
     Menu* menu = (Menu*)malloc(sizeof(Menu));
 
-    menu->_font = font;
-    menu->_textHeight = textHeight;
-    menu->_rowHeightEm = rowHeightEm;
-    menu->_textSize = textHeight * font->characterHeight;
-    menu->_drawWindow = false;
+    menu->font = font;
+    menu->textHeight = textHeight;
+    menu->rowHeightEm = rowHeightEm;
+    menu->textSize = textHeight * font->characterHeight;
+    menu->drawWindow = false;
 
     // TODO Calculate text and row heights just once
 
     // Default colors    //TODO Change to palette colors
     Palette* blessing = Palette_GetDefault();
 
-    menu->_bg = Palette_GetColor4f(blessing, 1);
-    menu->_text = Palette_GetColor4f(blessing, 5);
-    menu->_highlight = Palette_GetColor4f(blessing, 3);
+    menu->bg = Palette_GetColor4f(blessing, 1);
+    menu->text = Palette_GetColor4f(blessing, 5);
+    menu->highlight = Palette_GetColor4f(blessing, 3);
+
+    menu->drawDirection = MenuDownward;
+    menu->largestHeightOnRow = 0.0f;
 
     return menu;
 }
@@ -57,174 +51,284 @@ Menu* Menu_Create(Font* font, float textHeight, float rowHeightEm)
 Menu* Menu_CreateWindowed(Font* font, float textHeight, float rowHeightEm, short windowWidth, short windowHeight, const char* title)
 {
     Menu* menu = Menu_Create(font, textHeight, rowHeightEm);
-    menu->_drawWindow = true;
-    menu->_windowName = title;
-    menu->_menuWidth = windowWidth;
-    menu->_windowHeight = windowHeight;
+    menu->drawWindow = true;
+    menu->windowName = title;
+    menu->menuWidth = windowWidth;
+    menu->windowHeight = windowHeight;
     // Invalid starting values
-    menu->_windowx = -1;
-    menu->_windowy = -1;
+    menu->windowx = -1;
+    menu->windowy = -1;
 
     return menu;
 }
 
 
-void Menu_Start(short x, short y, short width)
+void Menu_Start(Menu* menu, short x, short y, short width)
 {
-    Menu_StartInput(x, y, width, cursorPosition_, mousePress_, mouseDown_);
+    WiiController* c = Platform_GetController(0);
+    Menu_StartInput(menu, x, y, width,
+        WiiController_GetCursorPosition(c),
+        WiiController_ButtonPress(c, ButtonA),
+        WiiController_ButtonHeld(c, ButtonA));
+
 }
 
-void Menu_StartInput(short x, short y, short width, vec2 cursorPosition, bool buttonPress, bool buttonHeld)
+void Menu_StartInput(Menu* menu, short x, short y, short width, vec2 cursorPosition, bool buttonPress, bool buttonHeld)
 {
     if (menu != nullptr)
     {
-        if (menu->_drawWindow)
+        if (menu->drawWindow)
         {
-            if( menu->_windowx < 0)
+            if( menu->windowx < 0)
             {
-                menu->_windowx = x;
-                menu->_windowy = y;
+                menu->windowx = x;
+                menu->windowy = y;
             }
-            menu->_drawx = menu->_windowx;
-            menu->_drawy = menu->_windowy;
-            _Menu_Borders();
-            _Menu_TitleBar();
+            menu->drawx = menu->windowx;
+            menu->drawy = menu->windowy;
+            Menu_Borders_(menu);
+            Menu_TitleBar_(menu);
         }
         else
         {
-            menu->_drawx = x;
-            menu->_drawy = y;
-            menu->_menuWidth = width;
+            menu->drawx = x;
+            menu->drawy = y;
+            menu->menuWidth = width;
         }
-        menu->_cursorPosition = cursorPosition;
-        menu->_buttonPress = buttonPress;
-        menu->_buttonHeld = buttonHeld;
+        menu->cursorPosition = cursorPosition;
+        menu->buttonPress = buttonPress;
+        menu->buttonHeld = buttonHeld;
+
+        menu->largestHeightOnRow = 0.0f;
+        menu->startx = menu->drawx;
     }
 
 }
 
-void _Menu_TitleBar()
+void Menu_BeginRow(Menu* menu)
 {
-    const short x = menu->_drawx;
-    const short y = menu->_drawy;
-    const short h = menu->_textSize;
+    menu->largestHeightOnRow = 0.0f;
+    menu->drawDirection = MenuRightward;
+}
+void Menu_EndRow(Menu* menu)
+{
+    menu->drawDirection = MenuDownward;
+    menu->drawx = menu->startx;
+    menu->drawy -= menu->largestHeightOnRow;
+    menu->largestHeightOnRow = 0.0f;
+}
+
+void Menu_TitleBar_(Menu* menu)
+{
+    const short x = menu->drawx;
+    const short y = menu->drawy;
+    const short h = menu->textSize;
+    const short w = menu->menuWidth;
     Draw2D_Rect(x, y,
-                  x + menu->_menuWidth,
+                  x + w,
                   y - h,
-                  &menu->_highlight);
+                  &menu->highlight);
 
-    Font_Print(menu->_font, &menu->_bg, x + 2, y, h, menu->_windowName);
+    Font_Print(menu->font, &menu->bg, x + 2, y, h, menu->windowName);
 
-    menu->_drawy -= h;
+    // NOTE titlebar cannot be on a row
+    menu->drawy -= h;
 }
 
-void _Menu_Borders()
+void Menu_Borders_(Menu* menu)
 {
-    const short x = menu->_drawx;
-    const short y = menu->_drawy;
+    const short x = menu->drawx;
+    const short y = menu->drawy;
     Draw2D_Rect(x, y,
-                  x + menu->_menuWidth,
-                  y - menu->_windowHeight,
-                  &menu->_bg);
+                  x + menu->menuWidth,
+                  y - menu->windowHeight,
+                  &menu->bg);
     Draw2D_RectLines(x, y,
-                  x + menu->_menuWidth + 1,
-                  y - menu->_windowHeight - 1,
-                  &menu->_text);
+                  x + menu->menuWidth + 1,
+                  y - menu->windowHeight - 1,
+                  &menu->text);
 }
 
-void Menu_SetColors(Color4f* bg, Color4f* text, Color4f* highlight)
+void Menu_SetColors(Menu* menu, Color4f* bg, Color4f* text, Color4f* highlight)
 {
     if (menu == nullptr) return;
 
-        menu->_bg = Color_CreateFromPointer4f(bg);
-        menu->_text = Color_CreateFromPointer4f(text);
-        menu->_highlight = Color_CreateFromPointer4f(highlight);
+        menu->bg = Color_CreateFromPointer4f(bg);
+        menu->text = Color_CreateFromPointer4f(text);
+        menu->highlight = Color_CreateFromPointer4f(highlight);
 }
 
-void Menu_Panel(int h, Color4f* color)
-{
-    if (menu == nullptr) return;
-
-        const short x = menu->_drawx;
-        const short y = menu->_drawy;
-        const short w = menu->_menuWidth;
-        Draw2D_Rect(x, y, x + w, y - h, color);
-        menu->_drawy -= h;
-}
-
-void Menu_TextF(const char* text, ...)
+void Menu_TextF(Menu* menu, const char* text, ...)
 {
     MGDL_PRINTF_TO_BUFFER(text);
-    Menu_Text(mgdl_GetPrintfBuffer());
+    Menu_Text(menu, mgdl_GetPrintfBuffer());
 }
 
-void Menu_Text(const char* text)
+void Menu_Text(Menu* menu, const char* text)
 {
     if (menu == nullptr) return;
 
-    const short x = menu->_drawx;
-    const short y = menu->_drawy;
-    const short h = menu->_textSize;
-    Font_PrintAligned(menu->_font, &menu->_text, x, y, h, LJustify, LJustify, text);
-    menu->_drawy -= h * menu->_rowHeightEm;
+    const short x = menu->drawx;
+    const short y = menu->drawy;
+    const short h = menu->textSize;
+    Font_PrintAligned(menu->font, &menu->text, x, y, h, LJustify, LJustify, text);
+
+    float drawh = h * menu->rowHeightEm;
+    menu->largestHeightOnRow = maxF(menu->largestHeightOnRow, drawh);
+
+    switch(menu->drawDirection)
+    {
+        case MenuDownward: menu->drawy -= drawh; break;
+        case MenuRightward: menu->drawx += strlen(text) * menu->font->characterWidth; break;
+    }
 }
 
-void Menu_Icon(IconSymbol icon, Color4f* color)
+void Menu_Icon(Menu* menu, IconSymbol icon, Color4f* color)
 {
 
     if (menu == nullptr) return;
-    const short x = menu->_drawx;
-    const short y = menu->_drawy;
-    const short h = menu->_textSize;
-    Font_Icon(menu->_font, color, x, y, h, LJustify, LJustify, icon);
-    menu->_drawy -= h * menu->_rowHeightEm;
+    const short x = menu->drawx;
+    const short y = menu->drawy;
+    const short h = menu->textSize;
+    Font_Icon(menu->font, color, x, y, h, LJustify, LJustify, icon);
+
+    float drawh = h * menu->rowHeightEm;
+    menu->largestHeightOnRow = maxF(menu->largestHeightOnRow, drawh);
+    switch(menu->drawDirection)
+    {
+        case MenuDownward: menu->drawy -= drawh; break;
+        case MenuRightward: menu->drawx += menu->font->characterWidth; break;
+    }
 }
 
-bool Menu_Button(const char* text)
+bool Menu_Button(Menu* menu, const char* text)
 {
     if (menu == nullptr) return false;
 
-    const short x = menu->_drawx;
-    const short y = menu->_drawy;
-    const short w = menu->_menuWidth;
-    const short h = menu->_textSize * menu->_rowHeightEm;
+    const short x = menu->drawx;
+    const short y = menu->drawy;
+    const short w = menu->menuWidth;
+    const short h = menu->textSize * menu->rowHeightEm;
 
-    const short cx = V2f_X(menu->_cursorPosition);
-    const short cy = V2f_Y(menu->_cursorPosition);
+    const short cx = V2f_X(menu->cursorPosition);
+    const short cy = V2f_Y(menu->cursorPosition);
 
     bool inside = ((cx >= x) &&
                 (cx <= x + w) &&
                 (cy <= y) &&
                 (cy >= y - h));
 
-    Color4f* background = &menu->_bg;
-    Color4f* pen = &menu->_text;
+    Color4f* background = &menu->bg;
+    Color4f* pen = &menu->text;
     if (inside)
     {
-        background = &menu->_highlight;
-        pen = &menu->_bg;
+        background = &menu->highlight;
+        pen = &menu->bg;
     }
     Draw2D_Rect(x, y, x + w, y - h, background);
 
-    Font_PrintAligned(menu->_font, pen, x, y, menu->_textSize, LJustify, LJustify, text);
-            
-    menu->_drawy -= h ;
+    Font_PrintAligned(menu->font, pen, x, y, menu->textSize, LJustify, LJustify, text);
 
-    return (inside && menu->_buttonPress);
+    float drawh = h * menu->rowHeightEm;
+    menu->largestHeightOnRow = maxF(menu->largestHeightOnRow, drawh);
+    switch(menu->drawDirection)
+    {
+        case MenuDownward: menu->drawy -= h; break;
+        case MenuRightward: menu->drawx += w; break;
+    }
+
+    return (inside && menu->buttonPress);
 }
 
-bool Menu_Toggle ( const char* text, bool* valuePtr )
+bool Menu_TexturedButton(Menu* menu, Texture* texture, TextureFlipModes flipflags)
+{
+    if (menu == nullptr) return false;
+
+    const short x = menu->drawx;
+    const short y = menu->drawy;
+    const short w = menu->menuWidth;
+    const short h = w / texture->aspectRatio;
+
+    const short cx = V2f_X(menu->cursorPosition);
+    const short cy = V2f_Y(menu->cursorPosition);
+
+    bool inside = ((cx >= x) &&
+                (cx <= x + w) &&
+                (cy <= y) &&
+                (cy >= y - h));
+
+    Texture_SetTint(texture, 1.0f, 1.0f, 1.0f);
+    if (!inside)
+    {
+        Texture_SetTint(texture, 0.7f, 0.7f, 0.7f);
+    }
+    short tx1 = x;
+    short tx2 = x+w;
+    short ty1 = y;
+    short ty2 = y - h;
+
+    if (Flag_IsSet(flipflags, FlipVertical) || Flag_IsSet(flipflags, FlipHorizontal))
+    {
+        glDisable(GL_CULL_FACE);
+    }
+    if (Flag_IsSet(flipflags, FlipVertical))
+    {
+            tx1 = x+w;
+            tx2 = x;
+    }
+    if (Flag_IsSet(flipflags, FlipHorizontal))
+    {
+            ty1 = y-h;
+            ty2 = y;
+    }
+
+    Texture_Draw2DAbsolute(texture, tx1, ty1, tx2, ty2);
+
+    if (Flag_IsSet(flipflags, FlipVertical) || Flag_IsSet(flipflags, FlipHorizontal))
+    {
+        glEnable(GL_CULL_FACE);
+    }
+
+    Texture_SetTint(texture, 1.0f, 1.0f, 1.0f);
+
+    menu->largestHeightOnRow = maxF(menu->largestHeightOnRow, h);
+    switch(menu->drawDirection)
+    {
+        case MenuDownward: menu->drawy -= h; break;
+        case MenuRightward: menu->drawx += w; break;
+    }
+
+    return (inside && menu->buttonPress);
+}
+
+bool Menu_IsCursorInside(Menu* menu, short w, short h)
+{
+    const short x = menu->drawx;
+    const short y = menu->drawy;
+
+    const short cx = V2f_X(menu->cursorPosition);
+    const short cy = V2f_Y(menu->cursorPosition);
+
+    bool inside = ((cx >= x) &&
+                (cx <= x + w) &&
+                (cy <= y) &&
+                (cy >= y - h));
+
+    return inside;
+}
+
+bool Menu_Toggle (Menu* menu,const char* text, bool* valuePtr )
 {
     if (menu == nullptr) return false;
 
     bool isOn = *valuePtr;
 
-    const short x = menu->_drawx;
-    const short y = menu->_drawy;
-    const short w = menu->_menuWidth;
-    const short h = menu->_textSize * menu->_rowHeightEm;
-    const short cx = V2f_X(menu->_cursorPosition);
-    const short cy = V2f_Y(menu->_cursorPosition);
+    const short x = menu->drawx;
+    const short y = menu->drawy;
+    const short w = menu->menuWidth;
+    const short h = menu->textSize * menu->rowHeightEm;
+    const short cx = V2f_X(menu->cursorPosition);
+    const short cy = V2f_Y(menu->cursorPosition);
 
     bool inside = ((cx >= x) &&
                 (cx <= x + w) &&
@@ -233,12 +337,12 @@ bool Menu_Toggle ( const char* text, bool* valuePtr )
 
     short padding = 2;
 
-    Color4f* background = &menu->_bg;
-    Color4f* pen = &menu->_text;
+    Color4f* background = &menu->bg;
+    Color4f* pen = &menu->text;
     if (inside)
     {
-        background = &menu->_highlight;
-        pen = &menu->_bg;
+        background = &menu->highlight;
+        pen = &menu->bg;
     }
     Draw2D_Rect(x, y, x + w, y - h, background);
 
@@ -253,63 +357,76 @@ bool Menu_Toggle ( const char* text, bool* valuePtr )
                       x + h - padding, y - h + padding, pen);
     }
 
-    Font_PrintAligned(menu->_font, pen, x + h + padding * 2, y, menu->_textSize, LJustify, LJustify, text);
+    Font_PrintAligned(menu->font, pen, x + h + padding * 2, y, menu->textSize, LJustify, LJustify, text);
 
-    menu->_drawy -= h + 1 ;
+    float drawh = h + 1;
 
-    if (inside && menu->_buttonPress)
+    menu->largestHeightOnRow = maxF(menu->largestHeightOnRow, drawh);
+    switch(menu->drawDirection)
+    {
+        case MenuDownward:  menu->drawy -= drawh; break;
+        case MenuRightward: menu->drawx += w;
+    };
+
+    if (inside && menu->buttonPress)
     {
         *valuePtr = (!isOn);
     }
 
-    return (inside && menu->_buttonPress);
+    return (inside && menu->buttonPress);
 }
 
-void Menu_Flag(const char* text, bool enabled)
+void Menu_Flag(Menu* menu, const char* text, bool enabled)
 {
-    const short x = menu->_drawx;
-    const short y = menu->_drawy;
-    const short w = menu->_menuWidth;
-    const short h = menu->_textSize * menu->_rowHeightEm;
+    const short x = menu->drawx;
+    const short y = menu->drawy;
+    const short w = menu->menuWidth;
+    const short h = menu->textSize * menu->rowHeightEm;
 
-    Color4f* background = &menu->_bg;
-    Color4f* pen = &menu->_text;
+    Color4f* background = &menu->bg;
+    Color4f* pen = &menu->text;
     if (enabled)
     {
-        background = &menu->_highlight;
-        pen = &menu->_bg;
+        background = &menu->highlight;
+        pen = &menu->bg;
     }
     Draw2D_Rect(x, y, x + w, y - h, background);
 
-    Font_PrintAligned(menu->_font, pen, x+w/2, y, menu->_textSize, Centered, LJustify, text);
+    Font_PrintAligned(menu->font, pen, x+w/2, y, menu->textSize, Centered, LJustify, text);
 
-    menu->_drawy -= h ;
+    menu->largestHeightOnRow = maxF(menu->largestHeightOnRow, h);
+    switch(menu->drawDirection)
+    {
+        case MenuDownward:  menu->drawy -= h; break;
+        case MenuRightward: menu->drawx += w; break;
+    };
 }
 
 
-void Menu_Separator(void)
+
+void Menu_Skip(Menu* menu, short pixels)
 {
-    // TODO
+    menu->largestHeightOnRow = maxF(menu->largestHeightOnRow, pixels);
+    switch(menu->drawDirection)
+    {
+        case MenuDownward:  menu->drawy -= pixels; break;
+        case MenuRightward: menu->drawx += pixels; break;
+    };
 }
 
-void Menu_Skip(short height)
-{
-    menu->_drawy -= height;
-}
-
-void Menu_DrawCursor(void)
+void Menu_DrawCursor(Menu* menu)
 {
     Font* db = DefaultFont_GetDefaultFont();
     Color4f* white = Color_GetDefaultColor(Color_White);
-    short x = V2f_X(cursorPosition_);
-    short y= V2f_Y(cursorPosition_);
+    short x = V2f_X(menu->cursorPosition);
+    short y = V2f_Y(menu->cursorPosition);
     short w = db->characterWidth;
     short h = db->characterHeight;
-    _Menu_DrawCursorParams(x+2, y-2, w, h, &menu->_bg);
-    _Menu_DrawCursorParams(x, y, w, h, white);
+    Menu_DrawCursorParams_(x+2, y-2, w, h, Color_GetDefaultColor(Color_Black));
+    Menu_DrawCursorParams_(x, y, w, h, white);
 }
 
-void _Menu_DrawCursorParams(short x, short y, short w, short h, Color4f* color)
+void Menu_DrawCursorParams_(short x, short y, short w, short h, Color4f* color)
 {
 
     Font* db = DefaultFont_GetDefaultFont();

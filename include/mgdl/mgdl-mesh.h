@@ -26,6 +26,7 @@ typedef struct Mesh Mesh;
 extern "C"
 {
 #endif
+	Mesh* Mesh_CreateEmpty(void);
 	/**
 	 * @brief Reserves space for a mesh and sets mesh variables.
 	 * @details Use this function to reserve memory for a mesh.

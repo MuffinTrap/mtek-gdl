@@ -35,6 +35,7 @@
 	typedef mat4x4 MTX4x4;
 	typedef mat3x3 MTX3x3;
 	typedef vec3 V3f;
+	typedef vec2 V2f;
 
 #elif defined(MGDL_USE_CGLM)
 

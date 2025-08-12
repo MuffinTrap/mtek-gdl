@@ -28,7 +28,7 @@
 	#define V3f_Add(Va, Vb, dest) dest = vec3Add(Va, Vb)
 	#define V3f_Sub(Va, Vb, dest) dest = vec3Subtract(Va, Vb)
 	#define V3f_Normalize(Va, dest) dest = vec3Normalize(Va)
-	#define V3f_Cross(Va, Vb, dest) dest = vec3Cross(Va, Vb)
+	#define V3f_Cross(Va, Vb, dest) dest = vec3CrossProduct(Va, Vb)
 	#define V3f_Dot(Va, Vb) vec3Dot(Va, Vb)
 	#define V3f_Length(Va) vec3Length(Va)
 	#define V3f_Reflect(Vnormal, Veye, Vdest) Vdest = vec3Reflect(Vnormal, Veye)
