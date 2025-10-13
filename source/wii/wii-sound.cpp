@@ -307,22 +307,22 @@ SoundStatus Sound_GetStatus(Sound* sound)
 	s32 status = ASND_StatusVoice(sound->voiceNumber);
 	if (status == SND_WORKING)
 	{
-		return SoundStatus::Playing;
+		return SoundStatus::SoundPlaying;
 	}
 	else if (status == SND_UNUSED)
 	{
 		if (sound->sData == nullptr)
 		{
-			return SoundStatus::Initial;
+			return SoundStatus::SoundInitial;
 		}
 		else
 		{
-			return SoundStatus::Stopped;
+			return SoundStatus::SoundStopped;
 		}
 	}
 	else
 	{
-		return SoundStatus::Paused;
+		return SoundStatus::SoundPaused;
 	}
 }
 

@@ -7,7 +7,8 @@
 
 /**
  * @file mgdl-dynamic_array.h
- * @brief Interface to std::vector
+ * @ingroup core
+ * @brief DynamicArray Class
  */
 
 struct DynamicArray {

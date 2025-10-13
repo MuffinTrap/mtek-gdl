@@ -43,10 +43,14 @@ extern "C"
 #define OGG_ONE_TIME         0
 #define OGG_INFINITE_TIME    1
 
+#define OGG_STATUS_NONE      0
 #define OGG_STATUS_RUNNING   1
 #define OGG_STATUS_ERR      -1
 #define OGG_STATUS_PAUSED    2
 #define OGG_STATUS_EOF     255
+
+// Added by muffintrap
+#define OGG_STATUS_LOOP_FAIL 3
 
 /****************************************************************************
  * PlayOgg

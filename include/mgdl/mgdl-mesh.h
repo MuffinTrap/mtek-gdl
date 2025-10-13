@@ -3,6 +3,12 @@
 #include <mgdl/mgdl-opengl.h>
 #include <mgdl/mgdl-types.h>
 
+/**
+ * @file mgdl-mesh.h
+ * @ingroup draw3d scene
+ * @brief Mesh class for storing 3D models
+ */
+
 /* Contains vertex data that is needed for
  * rendering the mesh
  * positions, normals, uvs, indices

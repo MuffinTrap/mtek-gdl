@@ -2,53 +2,6 @@
  *	\brief Main library module header
  */
 
-/*!	\mainpage
- *
- *	\version	0.100.4-muffintrap
- *	\author		Jobert "Lameguy" Villamor (Lameguy64/TheCodingBrony)
- *	\author		muffintrap (Forked from version 0.75)
- *	\copyright	GNU General Public License
- *
- *	\attention This is a work-in-progress library! Everything changes all the time.
- *
- *	\section introSectionn Introduction
- *  MTek-GDL Wii is an open-source game development library designed to make homebrew game and application development for the
- *	Nintendo Wii a lot easier to do for both beginner and intermediate programmers. This library supports GX accelerated 2D
- *	graphics routines, sound playback, ogg vorbis streaming and image loading and texture conversion routines.
- *
- *	\section changeLog Changes since v0.66:
- *	- Fixed a bug in oggplayer library where oggplayer.h didn't include ivorbisfile.h which is needed for a certain function
- *	  declaration in the header.
- *
- *	- Removed PutX() functions in both gdl::Image and gdl::SpriteSet classes in place of the improved gdl::Image::Put() and
- *	  gdl::SpriteSet::Put() functions which now has optional parameters for pivot point, rotation angle and scale factor.
- *
- *	- Changed syntax of gdl::InitSystem() function significantly.
- *
- *	- Added multisample anti-aliasing support but only works in hi-res mode.
- *
- *	- Optimized gdl::Display() routine which now performs a EFB to XFB copy prior to GX_DrawDone() to prevent potential
- *	  frame dropping when the framerate drops.
- *
- *	- Removed letterboxed aspect ratio mode, it was pretty buggy and problematic and is much better to implement it yourself
- *	  in the long run.
- *
- *	- Fixed argument order of gdl::Image::LoadImageMipmapped() to match with gdl::Image::CreateMipmapped().
- *
- *	- gdl::SaveScreen() can now take screenshots in anti-aliased modes. The function also now works by setting a
- *	  screen capture request to the main library which is then processed by gdl::Display() when called so that the
- *	  finished scene will always be captured correctly.
- *
- *	- Added gdl::wii::CPUdelta and gdl::wii::GPUdelta global variables for profiling/benchmarking purposes.
- *
- *	- Made gdl::wii::LowResolutionMode, gdl::wii::ProgressiveMode and gdl::wii::WidescreenMode into
- *	  gdl::wii::IsLowResMode(), gdl::wii::IsProgressive() and gdl::wii::IsWidescreen() functions respectively.
- *
- *	- Made gdl::SpriteSet::SpriteInfo() return a const pointer to prevent accidental modification.
- *
- *	- Fixed a bunch of typos and spelling mistakes in the documentation.
- *
- */
 
 
 #ifndef _GDL_WII_MAIN_H

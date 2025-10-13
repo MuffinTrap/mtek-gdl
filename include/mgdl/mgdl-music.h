@@ -6,6 +6,12 @@
 #include <mgdl/mgdl-openal.h>
 #endif
 
+/**
+ * @file mgdl-music.h
+ * @ingroup audio asset
+ * @brief Music class for different types of music
+ */
+
 enum MusicType
 {
 	MusicOgg,
@@ -48,16 +54,20 @@ void Music_DeleteData(Music* music);
  * @details Plays a music file in the background. Unlike the gdl::Sound class which loads the sound data entirely into
  * memory, this one streams audio data off of a music file which is ideal for music tracks as they tend to be lengthy and take up a bit of memory.
  *
- * @note If the new music cannot be loaded, this function will attempt to play previous music again
- * @note To resume a stopped or paused music, use this function but specify NULL as the file name.
- * @note This port of the library only supports mono or stereo OGG Vorbis audio files. Looping OGG files (logg) and mp3s are
- *	    not supported.
- *
- *	@param[in]	loop		Loop flag (music will be looped if true).
+ *	@param[in]	music		The music to start
+ *	@param[in]	loop		Loop flag. If true music will loop and you have to call Music_UpdatePlay to make sure it does
  * @returns True if playback started.
  */
 
 bool Music_Play(Music* music, bool loop);
+
+/**
+ * @brief Continues playback of a previously started music
+ * @details Call this every frame to make sure music keeps playing and looping. If you only want to play music once, this does not need to be called
+ *
+ *	@param[in]	music		The music to keep playing
+ */
+void Music_UpdatePlay(Music* music);
 
 /*!
  *  \details Pauses the current playing music.

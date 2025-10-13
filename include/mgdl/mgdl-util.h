@@ -4,7 +4,12 @@
 #include <mgdl/mgdl-opengl.h>
 #include <stdarg.h>
 #include <string.h>
-// helper functions
+
+/**
+ * @file mgdl-util.h
+ * @ingroup core
+ * @brief Helper functions and random number generation
+ */
 
 
 #ifdef __cplusplus

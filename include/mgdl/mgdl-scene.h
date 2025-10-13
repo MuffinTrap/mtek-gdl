@@ -1,7 +1,4 @@
 #pragma once
-/* This file contains types that represent a 3D scene
- *
- */
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-opengl.h>
 #include <mgdl/mgdl-texture.h>
@@ -10,6 +7,12 @@
 #include <mgdl/mgdl-node.h>
 #include <mgdl/mgdl-gui.h>
 #include <mgdl/mgdl-vectorfunctions.h>
+
+/**
+ * @file mgdl-scene.h
+ * @ingroup scene draw3d
+ * @brief This file contains types that represent a 3D scene
+ */
 
 enum Scene_DebugFlag : u32
 {

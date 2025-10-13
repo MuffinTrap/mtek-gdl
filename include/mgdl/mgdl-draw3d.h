@@ -4,6 +4,7 @@
 
 /**
 * @file mgdl-draw3d.h
+* @ingroup draw3d
 * @brief Functions for drawing 3 dimensional objects
 */
 

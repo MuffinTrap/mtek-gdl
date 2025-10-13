@@ -4,6 +4,11 @@
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-texture.h>
 
+/**
+ * @file mgdl-material.h
+ * @ingroup scene
+ * @brief Material struct and functions
+ */
 
 /**
  * @brief Material used by a node.

@@ -189,16 +189,16 @@ Incomplete game for Ludum Dare 55. *mtek-gdl 0.100.0*
 ## External libraries and resources
 
 This library contains code from the following libraries under these licenses:
-* [WFLCG] (https://github.com/WarpRules/WFLCG) MIT license
-* [ufbx] (ufbx.github.io) MIT license 
-* [rocket] (https://github.com/rocket/rocket) Zlib license
-* [ccVector] (https://github.com/jobtalle/ccVector) Public Domain
+* [WFLCG](https://github.com/WarpRules/WFLCG) MIT license
+* [ufbx](ufbx.github.io) MIT license 
+* [rocket](https://github.com/rocket/rocket) Zlib license
+* [ccVector](https://github.com/jobtalle/ccVector) Public Domain
 
 This library contains the following font:
 * [Toshiba Satellite 8x8](https://int10h.org/oldschool-pc-fonts/fontlist/font?toshibasat_8x8)
 
 This library uses colors from this palette as part of the default palette:
-* [Blessing] (https://lospec.com/palette-list/blessing)
+* [Blessing](https://lospec.com/palette-list/blessing)
 
 This file was changed for version 0.100.0-muffintrap by muffintrap to add explanation of the fork.
 Original contents of README.md are below:

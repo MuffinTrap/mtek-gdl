@@ -6,6 +6,7 @@
 
 /**
  * @file mgdl-gui.h
+ * @ingroup imgui
  * @brief MenuCreator class for simple Immediate Mode Gui
  *
  * @details This can be used to create simple menus with buttons and labels. Not much else yet. Added for version 0.100.0-muffintrap

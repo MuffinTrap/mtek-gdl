@@ -2,10 +2,12 @@
 
 /**
  * @file mgdl-alloc.h
+ * @ingroup core
  * @brief Workaround of windows missing aligned_alloc(aligment, size).
  *
  * @details mingw-ucrt on Windows does not have aligned_alloc(alignment, size), so this is
  * a workaround since the alignment is only needed on Wii anyway.
+ *
  */
 
 #include <stdlib.h>

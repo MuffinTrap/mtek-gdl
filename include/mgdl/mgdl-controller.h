@@ -2,6 +2,7 @@
 
 /**
  * @file mgdl-controller.h
+ * @ingroup input
  * @brief Header for the controller class.
  */
 

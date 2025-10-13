@@ -128,15 +128,15 @@ SoundStatus Sound_GetStatus(Sound* sound) {
     alGetSourcei(sound->source, AL_SOURCE_STATE, &sourceState);
 
     if (sourceState == AL_PLAYING) {
-        return SoundStatus::Playing;
+        return SoundStatus::SoundPlaying;
     } else if (sourceState == AL_PAUSED) {
-        return SoundStatus::Paused;
+        return SoundStatus::SoundPaused;
     } else if (sourceState == AL_STOPPED) {
-        return SoundStatus::Stopped;
+        return SoundStatus::SoundStopped;
     } else if (sourceState == AL_INITIAL) {
-        return SoundStatus::Initial;
+        return SoundStatus::SoundInitial;
     }
-    return SoundStatus::Initial;
+    return SoundStatus::SoundInitial;
 }
 
 #endif

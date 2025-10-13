@@ -1,6 +1,9 @@
 #pragma once
 
-// includes the OpenGL needed by platform
+/**
+ * @file mgdl-opengl.h
+ * @brief includes the OpenGL needed by platform
+ */
 #ifdef GEKKO
     #include <opengx.h>
     #include <GL/glu.h>

@@ -2,6 +2,7 @@
 
 /**
  * @file mgdl-font.h
+ * @ingroup draw2d draw3d asset
  * @brief Class for loading fonts and drawing text with them.
  */
 

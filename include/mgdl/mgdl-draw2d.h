@@ -5,6 +5,7 @@
 
 /**
  * @file mgdl-draw2d.h
+ * @ingroup draw2d
  * @brief Functions for basic 2D drawing operations.
  *
  * 2D drawing functions for debugging and ui elements and simple games.

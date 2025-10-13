@@ -1,7 +1,8 @@
-/*! \file mgdl-config.h
- *	\brief Library configuration header
+/** @file mgdl-config.h
+ *  @ingroup wii
+ *	@brief Library configuration header
  *
- *	\details This header file defines the general internal configuration of this library. If you change any of the settings
+ *	@details This header file defines the general internal configuration of this library. If you change any of the settings
  *	in this file, a recompile is necessary.
  */
 

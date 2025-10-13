@@ -2,6 +2,7 @@
 
 /**
  * @file mgdl-defaultfont.h
+ * @ingroup asset
  * @brief Function for getting the Default font.
  */
 

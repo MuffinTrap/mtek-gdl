@@ -36,6 +36,7 @@
 #include <gccore.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "oggplayer.h"
 
@@ -63,7 +64,8 @@ typedef struct
 	// OGG file operation
 	FILE *fd;
 	int mode;
-	int eof;
+	int status;
+	bool eof;
 	int flag;
 	int volume;
 	int seek_time;
@@ -88,6 +90,8 @@ static int ogg_thread_running = 0;
 
 void *ogg_buffer_pointer = NULL;
 int  ogg_loop_start = 0;
+
+// status reporting back to engine
 
 static void ogg_add_callback(int voice)
 {
@@ -143,16 +147,18 @@ static void * ogg_player_thread(private_data_ogg * priv)
 
 	priv[0].pcm_indx = 0;
 	priv[0].pcmout_pos = 0;
-	priv[0].eof = 0;
+	priv[0].status = OGG_STATUS_NONE;
 	priv[0].flag = 0;
 	priv[0].current_section = 0;
 
 	ogg_thread_running = 1;
 
-	while (!priv[0].eof && ogg_thread_running)
+	while (priv[0].eof == false && ogg_thread_running)
 	{
 		if (priv[0].flag)
+		{
 			LWP_ThreadSleep(oggplayer_queue); // wait only when i have samples to send
+		}
 
 		if (priv[0].flag == 0) // wait to all samples are sent
 		{
@@ -172,8 +178,7 @@ static void * ogg_player_thread(private_data_ogg * priv)
 					priv[0].seek_time = -1;
 				}
 
-				ret
-						= ov_read(
+				ret = ov_read(
 								&priv[0].vf,
 								(void*)&priv[0].pcmout[priv[0].pcmout_pos][priv[0].pcm_indx],
 								MAX_PCMOUT,/*0,2,1,*/&priv[0].current_section);
@@ -182,10 +187,30 @@ static void * ogg_player_thread(private_data_ogg * priv)
 				if (ret == 0)
 				{
 					/* EOF */
-					if (priv[0].mode & 1)
-						ov_pcm_seek(&priv[0].vf, ogg_loop_start); // repeat
-					else
-						priv[0].eof = 1; // stops
+					bool stop = true;
+					if (priv[0].mode == OGG_INFINITE_TIME)
+					{
+						//ov_pcm_seek(&priv[0].vf, ogg_loop_start); // repeat
+						int repeat_result = ov_time_seek(&priv[0].vf, 0.0); // Seek back to beginning
+						switch(repeat_result)
+						{
+							case 0:  // success
+								stop = false;
+								break;
+							case OV_ENOSEEK:
+							case OV_EINVAL:
+							case OV_EREAD:
+							case OV_EFAULT:
+							case OV_EBADLINK:
+								// Cannot seek
+								// Failed to read
+								// Invalid argument
+								priv[0].status = OGG_STATUS_LOOP_FAIL;
+								stop = true;
+								break;
+						}
+					}
+					priv[0].eof = stop; // stops
 				}
 				else if (ret < 0)
 				{
@@ -196,7 +221,7 @@ static void * ogg_player_thread(private_data_ogg * priv)
 						if (priv[0].mode & 1)
 							ov_time_seek(&priv[0].vf, 0); // repeat
 						else
-							priv[0].eof = 1; // stops
+							priv[0].eof = true; // stops
 					}
 				}
 				else
@@ -204,19 +229,22 @@ static void * ogg_player_thread(private_data_ogg * priv)
 					/* we don't bother dealing with sample rate changes, etc, but you'll have to*/
 
 					// Reverse stereo fix added by Lameguy64/TheCodingBrony
-					if (priv[0].vi->channels == 2) {
+					if (priv[0].vi->channels == 2)
+					{
 						buff=(u_int*)&priv[0].pcmout[priv[0].pcmout_pos][priv[0].pcm_indx];
-						for(offs=0; offs<ret/4; offs+=1) {
+						for(offs=0; offs<ret/4; offs+=1)
+						{
 							buff[offs] = SWAPINT(buff[offs]);
 						}
 					}
 
 					priv[0].pcm_indx += ret >> 1; //get 16 bits samples
-
 				}
 			}
 			else
+			{
 				priv[0].flag = 1;
+			}
 		}
 
 		if (priv[0].flag == 1)
@@ -260,7 +288,7 @@ static void * ogg_player_thread(private_data_ogg * priv)
 	}
 
 	ov_clear(&priv[0].vf);
-	fclose(private_ogg.fd);
+	// fclose(private_ogg.fd);
 	priv[0].pcm_indx = 0;
 
 	return 0;
@@ -308,7 +336,8 @@ int PlayOggFilePtr(FILE* file, int time_pos, int mode)
 	}
 	private_ogg.fd = file;
 	private_ogg.mode = mode;
-	private_ogg.eof = 0;
+	private_ogg.eof = false;
+	private_ogg.status = OGG_STATUS_NONE;
 	private_ogg.volume = 127;
 	private_ogg.flag = 0;
 	private_ogg.seek_time = -1;
@@ -317,10 +346,18 @@ int PlayOggFilePtr(FILE* file, int time_pos, int mode)
 	if (time_pos > 0)
 		private_ogg.seek_time = time_pos;
 
+	/*
 	if (ov_open_callbacks(private_ogg.fd, &private_ogg.vf, NULL, 0, callbacks) < 0)
 	{
 		fclose(private_ogg.fd);
 		ogg_thread_running = 0;
+		return -1;
+	}
+	*/
+	if (ov_open(private_ogg.fd, &private_ogg.vf, NULL, 0) < 0)
+	{
+		ov_clear(&private_ogg.vf);
+		fclose(private_ogg.fd);
 		return -1;
 	}
 
@@ -358,13 +395,15 @@ void PauseOgg(int pause)
 int StatusOgg()
 {
 	if (ogg_thread_running == 0)
-		return -1; // Error
+		return OGG_STATUS_ERR; // Error
+	else if (private_ogg.status == OGG_STATUS_LOOP_FAIL)
+		return OGG_STATUS_LOOP_FAIL;
 	else if (private_ogg.eof)
-		return 255; // EOF
+		return OGG_STATUS_EOF; // EOF
 	else if (private_ogg.flag & 128)
-		return 2; // paused
+		return OGG_STATUS_PAUSED; // paused
 	else
-		return 1; // running
+		return OGG_STATUS_RUNNING; // running
 }
 
 void SetVolumeOgg(int volume)

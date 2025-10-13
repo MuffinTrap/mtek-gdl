@@ -8,6 +8,7 @@
 
 /**
  * @file mgdl-assetmanager.h
+ * @ingroup asset
  * @brief Keeping track of loaded assets and memory use
 */
 

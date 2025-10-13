@@ -3,6 +3,7 @@
 
 /**
  * @file mgdl-cache.h
+ * @ingroup core
  * @brief Function for flushing cache after writing to memory.
  */
 

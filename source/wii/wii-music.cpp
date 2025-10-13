@@ -24,27 +24,29 @@ Music* Music_Create(void)
 	music->oggFile = NULL;
 	music->secondsOffset = 0.0f;
 	music->wav = NULL;
+	music->isLooping = false;
+	music->filenameChar = nullptr;
+	music->type = MusicOgg;
 	return music;
 }
 
 
 Music* Music_LoadOgg(const char *filename)
 {
-	Music* music = Music_Create();
-
-	music->filenameChar = (char*)malloc(sizeof(char) * strlen(filename) + 1);
-	strcpy(music->filenameChar, filename);
-
 	Log_InfoF("Loading Ogg %s\n", filename);
-	music->oggFile = fopen(filename, "r");
-	if (music->oggFile != NULL)
+	FILE* oggFile = fopen(filename, "r");
+	if (oggFile != NULL)
 	{
+		Music* music = Music_Create();
+		music->filenameChar = (char*)malloc(sizeof(char) * strlen(filename) + 1);
+		strcpy(music->filenameChar, filename);
+		music->oggFile = oggFile;
 		music->type = MusicOgg;
+
 		return music;
 	}
 	else
 	{
-		free(music);
 		return nullptr;
 	}
 }
@@ -96,6 +98,17 @@ bool Music_Play(Music* music, bool loop)
 	}
 }
 
+void Music_UpdatePlay(Music* music)
+{
+	SoundStatus status = Music_GetStatus(music);
+	// Restart looping music if it has stopped or failed to loop
+    if (music->isLooping == true && (status == SoundStopped || status == SoundLoopFailed))
+    {
+		Music_Stop(music);
+        Music_Play(music, music->isLooping);
+    }
+}
+
 void Music_DeleteData(Music* music)
 {
 }
@@ -128,19 +141,32 @@ void Music_Stop(Music* music)
 	StopOgg();
 }
 
+
 SoundStatus Music_GetStatus(Music* music)
 {
-	if (StatusOgg() == OGG_STATUS_RUNNING)
+	int status = StatusOgg();
+	switch(status)
 	{
-		return SoundStatus::Playing;
+		case OGG_STATUS_RUNNING:
+			return SoundStatus::SoundPlaying;
+		break;
+		case OGG_STATUS_PAUSED:
+			return SoundStatus::SoundPaused;
+		break;
+		case OGG_STATUS_ERR:
+			return SoundStatus::SoundError;
+		break;
+		case OGG_STATUS_EOF:
+			return SoundStatus::SoundStopped;
+		break;
+		case OGG_STATUS_LOOP_FAIL:
+			return SoundStatus::SoundLoopFailed;
+		break;
 	}
-	else
-	{
-		return SoundStatus::Paused;
-	}
+	return SoundStatus::SoundInitial;
 }
-
 #pragma GCC diagnostic pop
+
 
 void Music_SetLooping(Music* music, bool looping)
 {

@@ -455,6 +455,7 @@ void Music_DeleteData(Music* music)
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 bool Music_Play(Music* music, bool looping)
 {
+    Music_SetLooping(music, looping);
 	alCall(alSourcePlay, music->source);
     return true;
 }
@@ -509,16 +510,16 @@ SoundStatus Music_GetStatus(Music* music) {
     alGetSourcei(music->source, AL_SOURCE_STATE, &sourceState);
 
     if (sourceState == AL_PLAYING) {
-        return SoundStatus::Playing;
+        return SoundStatus::SoundPlaying;
     } else if (sourceState == AL_PAUSED) {
-        return SoundStatus::Paused;
+        return SoundStatus::SoundPaused;
     } else if (sourceState == AL_STOPPED) {
-        return SoundStatus::Stopped;
+        return SoundStatus::SoundStopped;
     } else if (sourceState == AL_INITIAL) {
-        return SoundStatus::Initial;
+        return SoundStatus::SoundInitial;
     }
 
-    return SoundStatus::Initial;
+    return SoundStatus::SoundInitial;
 }
 
 // Returns how many bytes read
@@ -594,6 +595,14 @@ std::int32_t ReadOggToPCMBuffer ( char* buffer, std::int32_t bufferSize)
     return sizeRead;
 }
 
+void Music_UpdatePlay(Music* music)
+{
+    if (Music_GetStatus(music) == SoundStopped)
+    {
+        return;
+    }
+    // NOP does not do anything on PC, because OpenAL can loop a buffer
+}
 
 #if 0
 void Music_UpdatePlay(Music* music)

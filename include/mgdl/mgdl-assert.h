@@ -2,6 +2,7 @@
 
 /**
  * @file mgdl-assert.h
+ * @ingroup core
  * @brief Different assert macros
  */
 

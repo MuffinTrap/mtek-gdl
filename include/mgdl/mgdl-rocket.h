@@ -6,6 +6,12 @@
 
 #include <mgdl/mgdl-types.h>
 
+/**
+ * @file mgdl-rocket.h
+ * @ingroup sync
+ * @brief Interface to the rocket library
+ */
+
 // Include these only once in your project
 #define MGDL_ROCKET_FILE_H "rocket_tracks.h"
 #define MGDL_ROCKET_FILE_CPP "rocket_tracks.cpp"

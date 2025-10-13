@@ -6,6 +6,12 @@
 #include "mgdl-color.h"
 #include "mgdl-opengl.h"
 
+/**
+ * @file mgdl-png.h
+ * @ingroup asset
+ * @brief Struct and functions for loading PNG files
+ */
+
 struct PNGFile
 {
 	GLsizei width;

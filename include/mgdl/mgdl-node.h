@@ -5,6 +5,12 @@
 #include <mgdl/mgdl-material.h>
 #include <mgdl/mgdl-light.h>
 
+/**
+ * @file mgdl-node.h
+ * @ingroup scene
+ * @brief Node class for scene graph
+ */
+
 struct DynamicArray;
 
 enum NodeFlags

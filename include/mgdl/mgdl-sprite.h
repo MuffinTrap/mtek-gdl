@@ -2,8 +2,11 @@
 
 #include "mgdl-font.h"
 
-// This class is almost the same as the font class, but supports
-// combining sprites and doing animations on them
+/**
+ * @file mgdl-sprite.h
+ * @ingroup draw2d
+ * @brief  This class is almost the same as the font class, but supports  combining sprites and doing animations on them
+ */
 
 struct Sprite
 {

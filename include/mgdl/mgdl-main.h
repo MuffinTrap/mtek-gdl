@@ -9,6 +9,12 @@
 #include <mgdl/mgdl-scene.h>
 #include <mgdl/mgdl-sprite.h>
 
+/**
+ * @file mgdl-main.h
+ * @ingroup core
+ * @brief Main functions to start and use the library
+ */
+
 struct Font;
 
 #ifdef __cplusplus

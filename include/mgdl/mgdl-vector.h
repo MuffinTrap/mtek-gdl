@@ -1,9 +1,10 @@
 #pragma once
 
 /**
- * @file mgdl-vector.h Header for including the vector library.
- *
- * The default Vector library is ccVector but it can be changed
+ * @file mgdl-vector.h
+ * @ingroup core
+ * @brief Header for including the ccvector library.
+ * @details The default Vector library is ccVector but it can be changed
  * by providing macro definitions.
  */
 

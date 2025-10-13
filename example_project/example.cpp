@@ -70,10 +70,10 @@ void Example::Init()
 
 
     menu = Menu_CreateWindowed(ibmFont, 1.0f, 1.0f, 128, 256, "MTEK GDL");
-    cameraMenu = Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 128, 256, "Camera");
+    cameraMenu = Menu_CreateWindowed(debugFont, 2.0f, 1.0f, 128, 256, "Camera");
     controllerMenu = Menu_CreateWindowed(ibmFont, 1.0f, 1.0f, 128, 356, "Controls");
-    performanceMenu = Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 256, 64, "Performance");
-    audioMenu = Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 128, 256, "Audio");
+    performanceMenu = Menu_CreateWindowed(debugFont, 2.0f, 1.0f, 256, 64, "Performance");
+    audioMenu = Menu_CreateWindowed(debugFont, 2.0f, 1.0f, 256, 256, "Audio");
 
     musicLooping = Music_GetLooping(sampleMusic);
     sceneRotation = V3f_Create(0.0f, 1.0f,0.0f);
@@ -135,6 +135,8 @@ void Example::Update()
     cursorPos = WiiController_GetCursorPosition(Platform_GetController(0));
     mouseClick = WiiController_ButtonPress(Platform_GetController(0), ButtonA);
     mouseDown = WiiController_ButtonHeld(Platform_GetController(0), ButtonA);
+
+    Music_UpdatePlay(sampleMusic);
     /*
     static const char* babyName = "cuboid";
     Node* baby = Scene_GetNode(wiiScene, babyName);
@@ -381,58 +383,6 @@ void Example::DrawTimingInfo()
     Menu_TextF(performanceMenu, "Deltatime %.4f", deltaTime);
     Menu_TextF(performanceMenu, "Elapsed seconds: %.2f", elapsedSeconds);
 
-    if (sampleMusic != nullptr)
-    {
-        Menu_TextF(performanceMenu, "Music elapsed: %.2f", Music_GetElapsedSeconds(sampleMusic));
-        SoundStatus musicStatus = Music_GetStatus(sampleMusic);
-        Color4f* musicColor = Color_GetDefaultColor(Color_Red);
-        IconSymbol icon = IconSymbol::Icon_Dot;
-
-        switch(musicStatus)
-        {
-            case SoundStatus::Playing:
-                musicColor = Color_GetDefaultColor(Color_Green);
-                icon = IconSymbol::Icon_TriangleUp;
-                break;
-            case SoundStatus::Paused:
-                musicColor = Color_GetDefaultColor(Color_White);
-                icon = IconSymbol::Icon_Clock;
-                break;
-            case SoundStatus::Stopped:
-                musicColor = Color_GetDefaultColor(Color_Red);
-                icon = IconSymbol::Icon_Skull;
-                break;
-            case SoundStatus::Initial:
-                musicColor = Color_GetDefaultColor(Color_Black);
-            break;
-        };
-        Menu_Icon(performanceMenu, icon, musicColor);
-    }
-
-    float blipElapsed = Sound_GetElapsedSeconds(blip);
-    Menu_TextF(performanceMenu, "Sound elapsed: %.2f", blipElapsed);
-    SoundStatus musicStatus = Sound_GetStatus(blip);
-    Color4f* musicColor = Color_GetDefaultColor(Color_Red);
-    IconSymbol icon = IconSymbol::Icon_Dot;
-    switch(musicStatus)
-    {
-        case SoundStatus::Playing:
-            musicColor = Color_GetDefaultColor(Color_Green);
-            icon = IconSymbol::Icon_TriangleUp;
-            break;
-        case SoundStatus::Paused:
-            musicColor = Color_GetDefaultColor(Color_White);
-            icon = IconSymbol::Icon_Clock;
-            break;
-        case SoundStatus::Stopped:
-            musicColor = Color_GetDefaultColor(Color_Red);
-            icon = IconSymbol::Icon_Skull;
-            break;
-        case SoundStatus::Initial:
-            musicColor = Color_GetDefaultColor(Color_Black);
-            break;
-    };
-    Menu_Icon(performanceMenu, icon, musicColor);
 }
 
 void Example::DrawMenu()
@@ -460,17 +410,55 @@ void Example::DrawMenu()
     Menu_DrawCursor(menu);
 }
 
+void Example::DrawSoundStatus(SoundStatus status)
+{
+
+    Color4f* musicColor = Color_GetDefaultColor(Color_Red);
+    IconSymbol icon = IconSymbol::Icon_Dot;
+    switch(status)
+    {
+        case SoundStatus::SoundPlaying:
+            musicColor = Color_GetDefaultColor(Color_Green);
+            icon = IconSymbol::Icon_TriangleUp;
+            Menu_Text(audioMenu, "Playing");
+            break;
+        case SoundStatus::SoundPaused:
+            musicColor = Color_GetDefaultColor(Color_White);
+            icon = IconSymbol::Icon_Clock;
+            Menu_Text(audioMenu, "Paused");
+            break;
+        case SoundStatus::SoundStopped:
+            musicColor = Color_GetDefaultColor(Color_Red);
+            icon = IconSymbol::Icon_Skull;
+            Menu_Text(audioMenu, "Stopped");
+            break;
+        case SoundStatus::SoundInitial:
+            musicColor = Color_GetDefaultColor(Color_Black);
+            Menu_Text(audioMenu, "Ready");
+        break;
+        case SoundStatus::SoundLoopFailed:
+            musicColor = Color_GetDefaultColor(Color_Black);
+            Menu_Text(audioMenu, "Failed to loop");
+        break;
+        case SoundStatus::SoundError:
+            musicColor = Color_GetDefaultColor(Color_Black);
+            Menu_Text(audioMenu, "Playback error");
+        break;
+    };
+    Menu_Icon(audioMenu, icon, musicColor);
+}
+
 void Example::DrawAudio()
 {
-    Menu_Start(audioMenu, 10, mgdl_GetScreenHeight()-10, 64);
+    Menu_Start(audioMenu, 10, mgdl_GetScreenHeight()-10, 256);
 
     if (Menu_Button(audioMenu, "Play Ogg"))
     {
-        Music_Play(sampleMusic, false);
+        Music_Play(sampleMusic, musicLooping);
     }
     if (Menu_Button(audioMenu, "Pause Ogg"))
     {
-        bool ispaused = Music_GetStatus(sampleMusic) == SoundStatus::Paused;
+        bool ispaused = Music_GetStatus(sampleMusic) == SoundStatus::SoundPaused;
         Music_SetPaused(sampleMusic, !ispaused);
     }
     if (Menu_Button(audioMenu, "Stop Ogg"))
@@ -485,6 +473,18 @@ void Example::DrawAudio()
     {
         Sound_Play(blip);
     }
+    if (sampleMusic != nullptr)
+    {
+        Menu_TextF(audioMenu, "Music elapsed: %.2f", Music_GetElapsedSeconds(sampleMusic));
+        SoundStatus musicStatus = Music_GetStatus(sampleMusic);
+        DrawSoundStatus(musicStatus);
+
+    }
+
+    float blipElapsed = Sound_GetElapsedSeconds(blip);
+    Menu_TextF(audioMenu, "Sound elapsed: %.2f", blipElapsed);
+    SoundStatus soundStatus = Sound_GetStatus(blip);
+    DrawSoundStatus(soundStatus);
 }
 #if 0
 #endif

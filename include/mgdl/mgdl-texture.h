@@ -5,10 +5,16 @@
 #include "mgdl-opengl.h"
 #include "mgdl-png.h"
 
+/**
+ * @file mgdl-texture.h
+ * @ingroup asset draw2d draw3d
+ * @brief Texture class and functions
+ */
+
 
 /**
-	* @brief Abstract class for cross platform PNG image loading.
-	*/
+* @brief Holds pixels data and allows using them for drawing operations
+*/
 struct Texture
 {
 	PNGFile* pngFile;

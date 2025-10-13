@@ -3,12 +3,12 @@
 // PI and other constants
 // Does not work on windows
 #ifdef __cplusplus
-#include <cmath>
-#include <cstdint>
+#   include <cmath>
+#   include <cstdint>
 #else
-#include <math.h>
-#include <stdint.h>
-#include <stdbool.h>
+#   include <math.h>
+#   include <stdint.h>
+#   include <stdbool.h>
 #endif
 
 // Vector types
@@ -20,10 +20,14 @@
 #include <stddef.h>
 
 #ifdef GEKKO
-
-#include <gctypes.h>
-
+#   include <gctypes.h>
 #else
+
+/**
+ * @file mgdl-types.h
+ * @ingroup core
+ * @brief Variable types and constants
+ */
 
 // Mimic ogc type names on PC platforms
 typedef uint8_t u8;

@@ -3,6 +3,12 @@
 #include "mgdl-types.h"
 #include "mgdl-controller.h"
 
+/**
+ * @file mgdl-platform.h
+ * @ingroup core
+ * @brief Virtual functions to be defined by each platform
+ */
+
 struct Platform
 {
 	const char* windowName;

@@ -3,7 +3,9 @@
 #include <mgdl/mgdl-opengl.h>
 #include <mgdl/mgdl-types.h>
 
+
 /** @file mgdl-color.h
+ * @ingroup core draw2d
 * @brief Color struct and functions
 */
 

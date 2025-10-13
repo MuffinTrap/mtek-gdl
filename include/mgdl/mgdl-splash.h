@@ -2,6 +2,12 @@
 
 #include <mgdl/mgdl-color.h>
 
+/**
+ * @file mgdl-splash.h
+ * @ingroup core draw2d
+ * @brief Functions to draw and set colors of the splash screen
+ */
+
 
 #ifdef __cplusplus
 extern "C"

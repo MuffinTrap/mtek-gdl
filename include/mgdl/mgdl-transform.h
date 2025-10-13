@@ -2,6 +2,11 @@
 
 #include <mgdl/mgdl-types.h>
 
+/**
+ * @file mgdl-transform.h
+ * @ingroup scene
+ * @brief Transform class for scene graph
+
 struct Transform
 {
 	V3f position;

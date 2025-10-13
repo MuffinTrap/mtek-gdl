@@ -2,7 +2,9 @@
 
 /**
  * @file mgdl-joystick.h
+ * @ingroup input win linux macos
  * @brief Interface to read joystick input on different PC platforms
+ *
  */
 
 #include <mgdl/mgdl-controller.h>

@@ -2,6 +2,7 @@
 
 /**
  * @file mgdl-fbx.h
+ * @ingroup asset
  * @brief Class for loading FBX files.
  */
 

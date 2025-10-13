@@ -184,7 +184,7 @@ void Node_Draw(Node* node)
 				mat4x4Identity(inverseView);
 				mat4x4Identity(normalMatrix);
 
-				// Target is on the left
+				// Destination matrix is on the left, source on right
 				mat4x4Inverse(inverseView, modelView);
 				mat4x4Transpose(normalMatrix, inverseView);
 

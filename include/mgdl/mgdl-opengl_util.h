@@ -4,6 +4,12 @@
 #include <mgdl/mgdl-vector.h>
 #include <mgdl/mgdl-color.h>
 
+/**
+ * @file mgdl-opengl_util.h
+ * @ingroup draw2d draw3d
+ * @brief Utility functions to make using OpenGL easier
+ */
+
 #ifdef __cplusplus
 extern "C"
 {

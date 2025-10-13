@@ -1,6 +1,12 @@
 #pragma once
 #include <mgdl/mgdl-vector.h>
 
+/**
+ * @file mgdl-vectorfunctions.h
+ * @ingroup core
+ * @brief Macro definitions for vector and matrix operations
+ */
+
 #if defined(MGDL_USE_CCVECTOR)
 
 	// Vector 2

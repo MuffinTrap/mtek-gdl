@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file mgdl-camera.h
+ * @ingroup draw3d
+ * @brief Camera class
+ */
+
 #include <mgdl/mgdl-vector.h>
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-color.h>

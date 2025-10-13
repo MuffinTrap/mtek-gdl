@@ -1,5 +1,6 @@
-/*!	\file mgdl-input.h
- *	\brief Keyboard and mouse input module header
+/**	@file mgdl-input.h
+ *  @ingroup input wii
+ *	@brief Keyboard and mouse input module header
  */
 
 #ifndef _GDL_INPUT_H

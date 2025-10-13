@@ -3,7 +3,11 @@
 #include "mgdl-types.h"
 #include "mgdl-color.h"
 
-// A palette that can be filled with custom colors
+/**
+ * @file mgdl-palette.h
+ * @ingroup draw2d draw3d
+ * @brief A palette that can be filled with custom colors
+ */
 
 struct Palette
 {

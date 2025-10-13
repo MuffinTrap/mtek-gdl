@@ -2,6 +2,7 @@
 
 /**
  * @file mgdl-audio.h
+ * @ingroup audio
  * @brief Functions to control global audio parameters
  */
 

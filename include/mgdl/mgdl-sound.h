@@ -13,12 +13,20 @@
 #include <sndfile.h>
 #endif
 
+/**
+ * @file mgdl-sound.h
+ * @ingroup audio
+ * @brief Sound struct and functions for loading wav files
+ */
+
 enum SoundStatus
 {
-	Stopped,
-	Playing,
-	Paused,
-	Initial
+	SoundError,
+	SoundLoopFailed,
+	SoundStopped,
+	SoundPlaying,
+	SoundPaused,
+	SoundInitial
 };
 
 typedef enum SoundStatus SoundStatus;

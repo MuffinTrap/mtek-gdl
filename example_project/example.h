@@ -53,6 +53,7 @@ class Example
         void DrawInputInfo();
         void DrawTimingInfo();
         void DrawAudio();
+        void DrawSoundStatus(SoundStatus status);
 
         void DrawVersion();
         void DrawScene(Scene* scene, V3f scale);

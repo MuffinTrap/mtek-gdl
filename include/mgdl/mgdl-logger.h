@@ -1,7 +1,10 @@
 #pragma once
 
 /**
- * @file mgdl-logger.h Functions for printing log messages.
+ * @file mgdl-logger.h
+ * @ingroup core
+ * @brief Functions for printing log messages.
+ *
  */
 
 enum LogLevel

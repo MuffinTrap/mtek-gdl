@@ -2,6 +2,7 @@
 
 /**
 * @file mgdl-console.h
+* @ingroup core
 * @brief Functions to use the Wii/Linux/Win/etc console
 */
 

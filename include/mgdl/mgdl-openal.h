@@ -11,7 +11,12 @@
 #include <stdio.h>
 #endif
 
-// includes the OpenAL needed by platform
+/**
+ * @file mgdl-openal.h
+ * @ingroup audio
+ * @brief Includes the OpenAL needed by platform
+ */
+
 #ifdef GEKKO
 
 /* Wii does not have OpenAL */
