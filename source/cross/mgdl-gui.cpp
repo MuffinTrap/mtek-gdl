@@ -240,6 +240,63 @@ bool Menu_Button(Menu* menu, const char* text)
     return (inside && menu->buttonPress);
 }
 
+bool Menu_Slider(Menu* menu, const char* text, float minValue, float maxValue, float* valueRef)
+{
+    if (menu == nullptr) return false;
+
+    const short x = menu->drawx;
+    const short y = menu->drawy;
+    const short w = menu->menuWidth;
+    const short h = menu->textSize * menu->rowHeightEm;
+
+    const short cx = V2f_X(menu->cursorPosition);
+    const short cy = V2f_Y(menu->cursorPosition);
+
+    bool inside = ((cx >= x) &&
+                (cx <= x + w) &&
+                (cy <= y) &&
+                (cy >= y - h));
+
+    Color4f* background = &menu->bg;
+    Color4f* pen = &menu->text;
+    Color4f* bar = &menu->highlight;
+    if (inside)
+    {
+        background = &menu->highlight;
+        bar = &menu->bg;
+        pen = &menu->text;
+    }
+    Draw2D_RectLines(x, y, x + w, y - h, background);
+    float range = maxValue-minValue; // 100 - (-100) -> 200
+    float fill = ((*valueRef)-minValue)/range;
+    // value - min
+    // 0-(-100) -> 100 /200 -> 0.5f
+    // 50 --100 -> 150 / 200  -> 0.75f
+    // -100 --100 -> 0 / 200 -> 0.0f
+    Draw2D_Rect(x, y, x + w * fill , y - h, bar);
+
+    Font_PrintfAligned(menu->font, pen, x, y, menu->textSize, LJustify, LJustify, "%s:%.1f", text, *valueRef);
+
+    float drawh = h * menu->rowHeightEm;
+    menu->largestHeightOnRow = maxF(menu->largestHeightOnRow, drawh);
+    switch(menu->drawDirection)
+    {
+        case MenuDownward: menu->drawy -= h; break;
+        case MenuRightward: menu->drawx += w; break;
+    }
+    if (inside && menu->buttonPress)
+    {
+        float into_x = cx - x;
+        float fill_x = into_x / w;
+        float new_value = minValue + (maxValue-minValue) * fill_x;
+        *valueRef = new_value;
+        return true;
+    }
+
+    return false;
+
+}
+
 bool Menu_TexturedButton(Menu* menu, Texture* texture, TextureFlipModes flipflags)
 {
     if (menu == nullptr) return false;

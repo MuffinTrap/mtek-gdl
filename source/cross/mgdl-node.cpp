@@ -136,6 +136,20 @@ Node* Node_FindChildByName (Node* node, const char* nodeName )
 	return nullptr;
 }
 
+void Node_ApplyTransform(Node* node)
+{
+	const V3f t = node->transform->position;
+	glTranslatef(t.x, t.y, t.z);
+
+	const V3f r = node->transform->rotationDegrees;
+	glRotatef(r.x, 1.0f, 0.0f, 0.0f);
+	glRotatef(r.y, 0.0f, 1.0f, 0.0f);
+	glRotatef(r.z, 0.0f, 0.0f, 1.0f);
+
+	const V3f& s = node->transform->scale;
+	glScalef(s.x, s.y, s.z);
+}
+
 void Node_Draw(Node* node)
 {
 	if (Flag_IsSet(node->enabledElements, NodeTransform) )

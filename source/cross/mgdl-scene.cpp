@@ -52,10 +52,23 @@ void Scene_DebugDrawNode_( Node* node, Menu* menu, short depth, short* index, u3
 	{
 		Menu_TextF(menu, "%d: %s", drawIndex, node->name);
 	}
-	if ((debugFlags & Scene_DebugFlag::Position) > 0)
+	else if (drawIndex == 0)
+	{
+		Menu_TextF(menu, "%d: %s", drawIndex, "ROOT");
+	}
+	if (Flag_IsSet(debugFlags, Scene_DebugFlag::Position))
 	{
 		V3f &p = node->transform->position;
 		Menu_TextF(menu, "P(%.1f,%.1f,%.1f)", drawIndex, p.x, p.y, p.z);
+	}
+	// What does this node have?
+	if (node->mesh != nullptr)
+	{
+		Menu_Text(menu, "- Mesh");
+	}
+	if (node->light != nullptr)
+	{
+		Menu_Text(menu, "- Light");
 	}
 
 	for(sizetype i = 0; i < DynamicArray_CountNode(node->children); i++)

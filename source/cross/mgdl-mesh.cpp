@@ -3,6 +3,7 @@
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-opengl_util.h>
+#include <mgdl/mgdl-assert.h>
 
 
 Mesh* Mesh_CreateEmpty(void)
@@ -114,6 +115,7 @@ void Mesh_DrawElements(Mesh* mesh)
 
 void Mesh_DrawPoints(Mesh* mesh)
 {
+	mgdl_assert_print(mesh->indexCount > 0, "No indices on Mesh_DrawLines");
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glVertexPointer(3, GL_FLOAT, 0, mesh->positions);
 	glDrawElements(GL_POINTS, mesh->indexCount, GL_UNSIGNED_SHORT, mesh->indices);
@@ -121,6 +123,7 @@ void Mesh_DrawPoints(Mesh* mesh)
 
 void Mesh_DrawLines(Mesh* mesh)
 {
+	mgdl_assert_print(mesh->indexCount > 0, "No indices on Mesh_DrawLines");
 	glDisableClientState(GL_VERTEX_ARRAY);
 	for (GLsizei i = 0; i < mesh->indexCount; i+=3)
 	{

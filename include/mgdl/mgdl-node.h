@@ -50,6 +50,7 @@ extern "C"
 	void Node_SetTransform(Node* node, const char* name, V3f position, V3f rotationAngles);
 	void Node_SetContent(Node* node, const char* name, Mesh* meshParam, Material* materialParam);
 	void Node_Draw(Node* node);
+	void Node_ApplyTransform(Node* node);
 
 #ifdef __cplusplus
 }
