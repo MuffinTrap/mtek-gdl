@@ -65,7 +65,7 @@ After that are the different platforms. If you only ever want to make your demo/
 - Add the folder <code>C:\msys64\ucrt64\bin</code> to System PATH on windows. That way windows will look there for the dll files when running your executable.
 
 #### These are the dll files that the program needs to run.
-You need to include these files when you release your executable.
+You need to include these files when you release your executable. There is a ready made copy_dll_files.bat file that does this in example_project/windows_release/
 - libgcc_s_seh-1.dll
 - libfreeglut.dll
 - libopenal-1.dll
@@ -81,6 +81,7 @@ You need to include these files when you release your executable.
 - libvorbis-0.dll
 - libopus-0.dll
 - libvorbisenc-2.dll
+- libvorbisfile-3.dll
 
 ### Compiling the framework
 1. Navigate to the github repository.
