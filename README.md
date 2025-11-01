@@ -109,6 +109,16 @@ Libogg and libvorbis need to be built. They include Visual Studio projects. Libv
 
 The included Visual Studio project expects to find these libraries in C:\Dev. If you place them somewhere else you need to modify the project.
 
+Preprocessor defines for Windows build:
+```
+MGDL_PLATFORM_WINDOWS
+MGDL_PLATFORM="Windows Native"
+MGDL_WINDOWS_NATIVE
+MGDL_USE_CCVECTOR
+UFBX_REAL_IS_FLOAT
+_XKEYCHECK_H
+```
+
 ## How to install the framework and create executables on Ubuntu/Debian Linux:
 ### List of needed packages:
 

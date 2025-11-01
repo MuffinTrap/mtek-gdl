@@ -33,7 +33,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -46,7 +46,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -93,6 +93,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Dev\Wii\mtek-gdl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -105,7 +106,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;MGDL_USE_CCVECTOR;MGDL_PLATFORM_WINDOWS;MGDL_WINDOWS_NATIVE;MGDL_PLATFORM="Windows Native";_XKEYCHECK_H;UFBX_REAL_IS_FLOAT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Dev\libogg-1.3.6\include;C:\Dev\libvorbis-1.3.7\include;..\include;C:\Program Files %28x86%29\OpenAL 1.1 SDK\include;C:\Dev\freeglut\include;C:\Dev\libsndfile-1.2.2-win64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\libogg-1.3.6\include;C:\Dev\libvorbis-1.3.7\include;C:\Dev\Wii\mtek-gdl\include;C:\Program Files %28x86%29\OpenAL 1.1 SDK\include;C:\Dev\freeglut\include;C:\Dev\libsndfile-1.2.2-win64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/w34005 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -122,8 +123,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MGDL_PLATFORM_WINDOWS;MGDL_PLATFORM="Windows Native";MGDL_WINDOWS_NATIVE;MGDL_USE_CCVECTOR;UFBX_REAL_IS_FLOAT;_XKEYCHECK_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Dev\libogg-1.3.6\include;C:\Dev\libvorbis-1.3.7\include;C:\Dev\libsndfile-1.2.2-win64\include;C:\Dev\freeglut\include;C:\Dev\Wii\mtek-gdl\include;C:\Program Files %28x86%29\OpenAL 1.1 SDK\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
