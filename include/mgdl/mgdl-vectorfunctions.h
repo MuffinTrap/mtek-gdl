@@ -17,6 +17,8 @@
 	#define V2f_Add(Va, Vb, dest) dest = vec2Add(Va, Vb)
 	#define V2f_Sub(Va, Vb, dest) dest = vec2Subtract(Va, Vb)
 
+#   define V2f_Normalize(Va, dest) dest = vec2Normalize(Va);
+
 	// Vector3
 
 	#define V3f_Create(x,y,z) vec3New(x,y,z)

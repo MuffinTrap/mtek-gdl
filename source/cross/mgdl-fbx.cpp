@@ -91,6 +91,10 @@ bool _FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short d
 		{
 			Log_InfoF(",%zu uvs", mesh->vertex_uv.values.count);
 		}
+		if (mesh->num_indices > 0)
+		{
+			Log_InfoF(",%zu indices", mesh->num_indices);
+		}
 		Log_Info("\n");
 
 		// Is this mesh loaded already?
