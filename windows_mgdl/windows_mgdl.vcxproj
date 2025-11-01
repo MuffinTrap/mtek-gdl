@@ -17,7 +17,6 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -41,7 +40,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -53,27 +52,24 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
-
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Label="Shared" >
+  <ImportGroup Label="Shared">
   </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    </ImportGroup>
-    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    </ImportGroup>
-
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -83,7 +79,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -97,19 +93,20 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;MGDL_USE_CCVECTOR;MGDL_PLATFORM_WINDOWS;MGDL_WINDOWS_NATIVE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -123,11 +120,49 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-
-  <ItemGroup></ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\cross\mgdl-alloc.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-assetmanager.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-audio.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-cache.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-camera.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-color.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-console.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-controller.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-defaultfont.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-draw2d.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-draw3d.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-dynamic_array.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-fbx.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-file.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-font.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-gui.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-light.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-logger.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-main.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-material.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-mesh.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-node.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-openal.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-opengl_util.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-palette.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-png.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-scene.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-splash.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-sprite.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-texture.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-transform.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-util.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-vectorfunctions.cpp" />
+    <ClCompile Include="..\source\pc\pc-assert.cpp" />
+    <ClCompile Include="..\source\pc\pc-glut-input.cpp" />
+    <ClCompile Include="..\source\pc\pc-music.cpp" />
+    <ClCompile Include="..\source\pc\pc-platform.cpp" />
+    <ClCompile Include="..\source\pc\pc-sound.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
