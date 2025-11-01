@@ -32,8 +32,7 @@ void quit()
     example.Quit();
 }
 
-
-int main()
+void init_system()
 {
     mgdl_InitSystem("mgdl example project",
         ScreenAspect::Screen4x3,
@@ -46,3 +45,30 @@ int main()
         // | FlagPauseUntilA
     );
 }
+
+// Linux, Mac, MSYS2(Windows) and Wii all use gcc or clang, and that looks for int main
+// Windows native build looks for WinMain
+
+#if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC) || defined(MGDL_PLATFORM_WII) || defined(MGDL_PLATFORM_WINDOWS)
+
+int main()
+{
+    init_system();
+    return 0;
+}
+#else
+
+#include <windows.h>
+
+int CALLBACK
+WinMain( HINSTANCE hInstance,
+    HINSTANCE hPrevInstance,
+    LPSTR lpCmdLine,
+    int nCmdShow )
+{
+    init_system();
+    return(0);
+}
+
+
+#endif
