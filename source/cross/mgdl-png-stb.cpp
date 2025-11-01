@@ -21,11 +21,34 @@ PNGFile* PNG_ReadFile(const char* filename)
 {
 	int width, height, channels;
 	unsigned char* texelPtr = stbi_load(filename, &width, &height, &channels, 0);
-	if (texelPtr != NULL)
+	if (texelPtr == NULL)
 	{
 		Log_ErrorF("Could not read PNG file %s\n", filename);
 		return nullptr;
 	}
+	Log_InfoF("Loaded Png file w:%d h:%d channels:%d\n", width, height, channels);
+
+	// Flip picture on X axis
+	unsigned char* tmpRow = (unsigned char*)malloc(width * channels);
+	for (int r = 0; r < height/2; r++)
+	{
+		// First row to temp
+		// last row to first
+		// tmp to last
+		for (int c = 0; c < width; c++)
+		{
+
+			for (int b = 0; b < channels; b++)
+			{
+				int byteFromStart = (r * width + c) * channels + b;
+				int byteFromEnd = ((height - r - 1) * width + c)* channels + b;
+				tmpRow[c * channels + b] = texelPtr[byteFromStart];
+				texelPtr[byteFromStart] = texelPtr[byteFromEnd];
+				texelPtr[byteFromEnd] = tmpRow[c * channels + b];
+			}
+		}
+	}
+	free(tmpRow);
 
 	PNGFile* png = (PNGFile*)malloc(sizeof(PNGFile));
 	png->width = width;

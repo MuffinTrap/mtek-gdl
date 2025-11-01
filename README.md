@@ -118,6 +118,10 @@ MGDL_USE_CCVECTOR
 UFBX_REAL_IS_FLOAT
 _XKEYCHECK_H
 ```
+These .dll files need to be in the same folder with the executable when giving it to someone else to play:
+- freeglut.dll
+- OpenAL32.dll  ( C:\Windows\SysWOW64 )
+- sndfile.dll
 
 ## How to install the framework and create executables on Ubuntu/Debian Linux:
 ### List of needed packages:

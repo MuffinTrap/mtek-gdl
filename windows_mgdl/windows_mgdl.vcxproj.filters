@@ -132,6 +132,12 @@
     <ClCompile Include="..\source\cross\mgdl-png-stb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\pc\windows-joystick.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\mgdl\ufbx\ufbx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\mgdl\mgdl-alloc.h">

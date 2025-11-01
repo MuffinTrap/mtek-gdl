@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\include\mgdl\ufbx\ufbx.cpp" />
     <ClCompile Include="..\source\cross\mgdl-alloc.cpp" />
     <ClCompile Include="..\source\cross\mgdl-assetmanager.cpp" />
     <ClCompile Include="..\source\cross\mgdl-audio.cpp" />
@@ -172,6 +173,7 @@
     <ClCompile Include="..\source\pc\pc-music.cpp" />
     <ClCompile Include="..\source\pc\pc-platform.cpp" />
     <ClCompile Include="..\source\pc\pc-sound.cpp" />
+    <ClCompile Include="..\source\pc\windows-joystick.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\mgdl\mgdl-alloc.h" />

@@ -27,6 +27,9 @@ extern "C"
 #endif
 
 #ifdef MGDL_PLATFORM_WINDOWS
+#	if defined(MGDL_WINDOWS_NATIVE)
+		void mgdl_CacheFlushRange(void* rangeStart, sizetype size);
+#	else
 	// If the function is defined in the .cpp file
 	// the clang compiler leaves it out and then the 
 	// linker complains that it cannot find the definition...
@@ -37,6 +40,7 @@ extern "C"
 		// nop
 	}
 	#pragma clang diagnostic pop
+#	endif
 #else
 	void mgdl_CacheFlushRange(void* rangeStart, sizetype size);
 #endif
