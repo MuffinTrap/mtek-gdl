@@ -1,0 +1,8 @@
+# Ignore all visual studio stuff
+v17/
+.vs/
+# Ignore build and output
+x64/
+[dD]ebug/
+[rR]elease/
+*.obj
