@@ -111,7 +111,7 @@ GLint TextureFilterToGLFilter(TextureFilterModes filterMode)
 	};
 }
 
-static char printfBuffer[256];
+static char printfBuffer[MGDL_PRINTF_BUFFER_SIZE];
 
 char* mgdl_GetPrintfBuffer()
 {

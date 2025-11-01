@@ -6,6 +6,7 @@
  * @file mgdl-transform.h
  * @ingroup scene
  * @brief Transform class for scene graph
+ */
 
 struct Transform
 {

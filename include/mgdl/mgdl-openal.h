@@ -33,8 +33,13 @@
         #else
                 #include <stdint.h>
         #endif
-        #include <AL/al.h>
-        #include <AL/alc.h>
+#       if defined(MGDL_WINDOWS_NATIVE)
+#           include <al.h>
+#           include <alc.h>
+#       else
+            #include <AL/al.h>
+            #include <AL/alc.h>
+#       endif
     #endif
 
 // Error checking functions

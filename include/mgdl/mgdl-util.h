@@ -97,15 +97,16 @@ char* mgdl_GetPrintfBuffer(void);
 }
 #endif
 
+#define MGDL_PRINTF_BUFFER_SIZE 256
 /**
  * @brief Writes the formatted text to a buffer.
  * @param format Format string.
  */
 #define MGDL_PRINTF_TO_BUFFER(format) \
-	memset(mgdl_GetPrintfBuffer(), '\0', 256);\
+	memset(mgdl_GetPrintfBuffer(), '\0', MGDL_PRINTF_BUFFER_SIZE);\
 	va_list args;\
 	va_start(args, format); \
-	vsprintf(mgdl_GetPrintfBuffer(), format, args); \
+	vsprintf_s(mgdl_GetPrintfBuffer(), MGDL_PRINTF_BUFFER_SIZE, format, args); \
 	va_end(args);\
 
 

@@ -15,7 +15,12 @@
         #include <OpenGL/gl.h>
         #include <OpenGL/glu.h>
         #include <GLUT/glut.h>
-    #else
+    #elif defined(MGDL_WINDOWS_NATIVE)
+#       include <Windows.h>
+#       include <gL/GL.h>
+#       include <gL/GLU.h>
+#       include <GL/freeglut.h>
+#   else
         #include <GL/gl.h>
         #include <GL/glu.h>
         #include <GL/glut.h>

@@ -5,8 +5,8 @@
 FILE* BufferOpen(u8* buffer, size_t size, const char* mode)
 {
     #ifdef MGDL_PLATFORM_WINDOWS
-        FILE* fp = tmpfile();
-        if (fp == nullptr)
+        FILE* fp = nullptr; ;
+        if (tmpfile_s(&fp) != 0)
         {
             perror("Could not open temp file for buffer reading");
             return nullptr;

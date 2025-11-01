@@ -70,6 +70,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LibraryPath>C:\Dev\libsndfile-1.2.2-win64\lib;C:\Program Files %28x86%29\OpenAL 1.1 SDK\libs\Win64;C:\Dev\freeglut\lib\x64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -100,14 +103,18 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;MGDL_USE_CCVECTOR;MGDL_PLATFORM_WINDOWS;MGDL_WINDOWS_NATIVE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;MGDL_USE_CCVECTOR;MGDL_PLATFORM_WINDOWS;MGDL_WINDOWS_NATIVE;MGDL_PLATFORM="Windows Native";_XKEYCHECK_H;UFBX_REAL_IS_FLOAT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\libogg-1.3.6\include;C:\Dev\libvorbis-1.3.7\include;..\include;C:\Program Files %28x86%29\OpenAL 1.1 SDK\include;C:\Dev\freeglut\include;C:\Dev\libsndfile-1.2.2-win64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/w34005 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>C:\Dev\libvorbis-1.3.7\win32\VS2010\x64\Release;C:\Dev\libsndfile-1.2.2-win64\lib;C:\Program Files %28x86%29\OpenAL 1.1 SDK\libs\Win64;C:\Dev\freeglut\lib\x64</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -149,6 +156,7 @@
     <ClCompile Include="..\source\cross\mgdl-openal.cpp" />
     <ClCompile Include="..\source\cross\mgdl-opengl_util.cpp" />
     <ClCompile Include="..\source\cross\mgdl-palette.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-png-stb.cpp" />
     <ClCompile Include="..\source\cross\mgdl-png.cpp" />
     <ClCompile Include="..\source\cross\mgdl-scene.cpp" />
     <ClCompile Include="..\source\cross\mgdl-splash.cpp" />
@@ -162,6 +170,57 @@
     <ClCompile Include="..\source\pc\pc-music.cpp" />
     <ClCompile Include="..\source\pc\pc-platform.cpp" />
     <ClCompile Include="..\source\pc\pc-sound.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\mgdl\mgdl-alloc.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-assert.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-assetmanager.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-audio.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-cache.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-camera.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-color.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-config.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-console.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-controller.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-defaultfont.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-doxygen.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-draw2d.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-draw3d.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-dynamic_array.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-fbx.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-file.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-font.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-gui.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-light.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-logger.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-main.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-material.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-mesh.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-music.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-node.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-openal.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-opengl.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-opengl_util.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-palette.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-platform.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-png.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-rocket.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-scene.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-sound.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-splash.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-sprite.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-texture.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-transform.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-types.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-util.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-vector.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-vectorfunctions.h" />
+    <ClInclude Include="..\include\mgdl\pc\mgdl-joystick.h" />
+    <ClInclude Include="..\include\mgdl\pc\mgdl-pc-input.h" />
+    <ClInclude Include="..\include\mgdl\pc\mgdl-pc-sound.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\freeglut\bin\x64\freeglut.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -4,6 +4,7 @@
  * @file mgdl-light.h
  * @ingroup draw3d
  * @brief Light struct and functions
+ */
 
 #include "mgdl-types.h"
 #include "mgdl-color.h"

@@ -9,7 +9,7 @@ Material* Material_Load (const char* name, Texture* texture, MaterialType type)
 	Material* material = (Material*)malloc(sizeof(Material));
 	sizetype nameSize = strlen(name);
 	material->name = new char[nameSize+1];
-	strcpy(material->name, name);
+	strcpy_s(material->name, nameSize+1, name);
 	material->texture = texture;
 	material->shininess = 1.0f;
 	material->type = type;

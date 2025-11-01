@@ -52,7 +52,7 @@ After that are the different platforms. If you only ever want to make your demo/
 * Select File > Open... and select the file **boot.dol**
 
 
-## How to compile and install tools to make Windows executables
+## How to compile and install tools to make Windows executables using MSYS2
 ### Development environment and libraries
 1. Install [MSYS2](https://www.msys2.org/) (This is a different version from the one that comes with DevkitPro) [Detailed instructions for install](https://www.freecodecamp.org/news/how-to-install-c-and-cpp-compiler-on-windows/)
 2. Launch the UCRT64 variant and update the packages as explained in the Detailed instructions above.
@@ -97,6 +97,17 @@ Now you should be able to compile the example project also to Windows by giving 
 make win
 ```
 in the mtek-gdl/example_project directory
+
+## How to compile and install tools to make Windows executables without MSYS2
+You need the following libraries:
+    - [FreeGLUT](https://www.transmissionzero.co.uk/software/freeglut-devel/)
+    - [OpenAL](https://openal.org/downloads/)
+    - [libsndfile](https://github.com/libsndfile/libsndfile)
+    - [libogg & libvorbis](https://xiph.org/downloads/)
+
+Libogg and libvorbis need to be built. They include Visual Studio projects. Libvorbis requires libogg.
+
+The included Visual Studio project expects to find these libraries in C:\Dev. If you place them somewhere else you need to modify the project.
 
 ## How to install the framework and create executables on Ubuntu/Debian Linux:
 ### List of needed packages:
@@ -194,6 +205,7 @@ This library contains code from the following libraries under these licenses:
 * [ufbx](ufbx.github.io) MIT license 
 * [rocket](https://github.com/rocket/rocket) Zlib license
 * [ccVector](https://github.com/jobtalle/ccVector) Public Domain
+* [stb](https://github.com/nothings/stb) Public Domain
 
 This library contains the following font:
 * [Toshiba Satellite 8x8](https://int10h.org/oldschool-pc-fonts/fontlist/font?toshibasat_8x8)
