@@ -117,13 +117,7 @@
     <ClCompile Include="..\source\pc\pc-assert.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\pc\pc-glut-input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\pc\pc-music.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\pc\pc-platform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\pc\pc-sound.cpp">
@@ -132,10 +126,31 @@
     <ClCompile Include="..\source\cross\mgdl-png-stb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\pc\windows-joystick.cpp">
+    <ClCompile Include="..\include\mgdl\ufbx\ufbx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\include\mgdl\ufbx\ufbx.cpp">
+    <ClCompile Include="..\source\pc\pc-joystick-linux.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\pc\pc-joystick-win32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\pc\pc-platform-glut.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\pc\pc-platform-win32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\pc\pc-input-glut.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\pc\pc-platform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\pc\pc-joystick.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\pc\pc-joystick-mac.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

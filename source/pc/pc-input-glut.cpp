@@ -74,12 +74,12 @@ void mouseKey(int button, int state, int x, int y)
 }
 
 void mouseMove(int x, int y) {
-	glutController._cursorX = x;
+	glutController.m_cursorX = x;
 
 	// In OpenGL the Y increases up
 	// but these coordinates the y increses down
     y = mgdl_GetScreenHeight() - y;
-	glutController._cursorY = y;
+	glutController.m_cursorY = y;
 }
 
 void keyboardDown(unsigned char key, int x, int y) {
@@ -89,16 +89,16 @@ void keyboardDown(unsigned char key, int x, int y) {
 			_WiiController_SetButtonDown(&glutController, WiiButtons::ButtonHome);
 			break;
 		case ascii_w:
-			glutController._nunchukJoystickDirectionY = -1.0f;
+			glutController.m_nunchukJoystickDirectionY = -1.0f;
 			break;
 		case ascii_s:
-			glutController._nunchukJoystickDirectionY = 1.0f;
+			glutController.m_nunchukJoystickDirectionY = 1.0f;
 			break;
 		case ascii_a:
-			glutController._nunchukJoystickDirectionX = -1.0f;
+			glutController.m_nunchukJoystickDirectionX = -1.0f;
 			break;
 		case ascii_d:
-			glutController._nunchukJoystickDirectionX = 1.0f;
+			glutController.m_nunchukJoystickDirectionX = 1.0f;
 			break;
 		case ascii_1:
 			_WiiController_SetButtonDown(&glutController, WiiButtons::Button1);
@@ -121,22 +121,22 @@ void keyboardDown(unsigned char key, int x, int y) {
 			break;
 
 		case ascii_u:
-			glutController._roll = -M_PI;
+			glutController.m_roll = -M_PI;
 			break;
 		case ascii_o:
-			glutController._roll = M_PI;
+			glutController.m_roll = M_PI;
 			break;
 		case ascii_i:
-			glutController._pitch = -M_PI;
+			glutController.m_pitch = -M_PI;
 			break;
 		case ascii_k:
-			glutController._pitch = M_PI;
+			glutController.m_pitch = M_PI;
 			break;
 		case ascii_j:
-			glutController._yaw = -M_PI;
+			glutController.m_yaw = -M_PI;
 			break;
 		case ascii_l:
-			glutController._yaw = M_PI;
+			glutController.m_yaw = M_PI;
 			break;
 		};
 	}
@@ -148,16 +148,16 @@ void keyboardUp(unsigned char key, int x, int y) {
 			_WiiController_SetButtonUp(&glutController, WiiButtons::ButtonHome);
 			break;
 		case ascii_w:
-			glutController._nunchukJoystickDirectionY = 0.0f;
+			glutController.m_nunchukJoystickDirectionY = 0.0f;
 			break;
 		case ascii_s:
-			glutController._nunchukJoystickDirectionY = 0.0f;
+			glutController.m_nunchukJoystickDirectionY = 0.0f;
 			break;
 		case ascii_a:
-			glutController._nunchukJoystickDirectionX = 0.0f;
+			glutController.m_nunchukJoystickDirectionX = 0.0f;
 			break;
 		case ascii_d:
-			glutController._nunchukJoystickDirectionX = 0.0f;
+			glutController.m_nunchukJoystickDirectionX = 0.0f;
 			break;
 		case ascii_1:
 			_WiiController_SetButtonUp(&glutController, WiiButtons::Button1);
@@ -178,22 +178,22 @@ void keyboardUp(unsigned char key, int x, int y) {
 			_WiiController_SetButtonUp(&glutController, WiiButtons::ButtonC);
 			break;
 		case ascii_u:
-			glutController._roll = 0.0f;
+			glutController.m_roll = 0.0f;
 			break;
 		case ascii_o:
-			glutController._roll = 0.0f;
+			glutController.m_roll = 0.0f;
 			break;
 		case ascii_i:
-			glutController._pitch = 0.0f;
+			glutController.m_pitch = 0.0f;
 			break;
 		case ascii_k:
-			glutController._pitch = 0.0f;
+			glutController.m_pitch = 0.0f;
 			break;
 		case ascii_j:
-			glutController._yaw = 0.0f;
+			glutController.m_yaw = 0.0f;
 			break;
 		case ascii_l:
-			glutController._yaw = 0.0f;
+			glutController.m_yaw = 0.0f;
 			break;
 	};
 }

@@ -169,11 +169,16 @@
     <ClCompile Include="..\source\cross\mgdl-util.cpp" />
     <ClCompile Include="..\source\cross\mgdl-vectorfunctions.cpp" />
     <ClCompile Include="..\source\pc\pc-assert.cpp" />
-    <ClCompile Include="..\source\pc\pc-glut-input.cpp" />
+    <ClCompile Include="..\source\pc\pc-input-glut.cpp" />
+    <ClCompile Include="..\source\pc\pc-joystick-linux.cpp" />
+    <ClCompile Include="..\source\pc\pc-joystick-mac.cpp" />
+    <ClCompile Include="..\source\pc\pc-joystick-win32.cpp" />
+    <ClCompile Include="..\source\pc\pc-joystick.cpp" />
     <ClCompile Include="..\source\pc\pc-music.cpp" />
+    <ClCompile Include="..\source\pc\pc-platform-glut.cpp" />
+    <ClCompile Include="..\source\pc\pc-platform-win32.cpp" />
     <ClCompile Include="..\source\pc\pc-platform.cpp" />
     <ClCompile Include="..\source\pc\pc-sound.cpp" />
-    <ClCompile Include="..\source\pc\windows-joystick.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\mgdl\mgdl-alloc.h" />

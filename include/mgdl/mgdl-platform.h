@@ -2,6 +2,7 @@
 
 #include "mgdl-types.h"
 #include "mgdl-controller.h"
+#include <mgdl/pc/mgdl-joystick.h>
 
 /**
  * @file mgdl-platform.h
@@ -12,15 +13,37 @@
 struct Platform
 {
 	const char* windowName;
+	// Screen size is the rendering size
 	short screenWidth;
 	short screenHeight;
+
+	// Window size is the size of the window
+	// the contents can be scaled and letterboxed
+	short windowWidth;
+	short windowHeight;
 	float aspectRatio;
 	ScreenAspect aspect;
-	float _deltaTimeS;
-	float _elapsedTimeS;
-	u32 _elapsedUpdates;
+	float deltaTimeS;
+	float elapsedTimeS;
+	u32 elapsedUpdates;
+
+	// Joysticks and controllers
+	Joystick* gamepad_0;
+
+	// Splash screen variables
+	int waitElapsedMS;
+	bool showHoldAMessage;
+	float splashProgress;
+
+	// For holding until a is held for 1 second
+	float aHoldTimer;
 };
 typedef struct Platform Platform;
+
+void Platform_SetWindowNameAndSize(Platform* platform, const char* windowName, ScreenAspect aspect);
+
+const int MGDL_WII_WIDTH = 640;
+const int MGDL_WII_HEIGHT = 480;
 
 // These functions are implemented in pc-platform.cpp or wii-platform.cpp
 #ifdef __cplusplus
@@ -42,6 +65,16 @@ struct Platform* Platform_GetSingleton(void);
 float Platform_GetDeltaTime(void);
 float Platform_GetElapsedSeconds(void);
 u32 Platform_GetElapsedUpdates(void);
+
+void Platform_UpdateSplash(int value);
+void Platform_RenderSplash(Platform* platform);
+
+void Platform_UpdateAHold(int value);
+void Platform_RenderAHold(Platform* platform);
+
+void Platform_RenderEnd(Platform* platform);
+
+bool Platform_IncreaseAHoldAndTest(Platform* platform);
 
 #ifdef __cplusplus
 }
