@@ -36,3 +36,4 @@ build
 *.lo
 *.wo
 *.mo
+*.zip

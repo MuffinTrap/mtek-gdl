@@ -1,6 +1,6 @@
 
 
-#ifndef GEKKO
+#if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC)
 #include <mgdl/pc/mgdl-pc-input.h>
 #include <mgdl/mgdl-opengl.h>
 #include <mgdl/mgdl-main.h>

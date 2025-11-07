@@ -170,6 +170,7 @@
     <ClCompile Include="..\source\cross\mgdl-vectorfunctions.cpp" />
     <ClCompile Include="..\source\pc\pc-assert.cpp" />
     <ClCompile Include="..\source\pc\pc-input-glut.cpp" />
+    <ClCompile Include="..\source\pc\pc-input-win32.cpp" />
     <ClCompile Include="..\source\pc\pc-joystick-linux.cpp" />
     <ClCompile Include="..\source\pc\pc-joystick-mac.cpp" />
     <ClCompile Include="..\source\pc\pc-joystick-win32.cpp" />

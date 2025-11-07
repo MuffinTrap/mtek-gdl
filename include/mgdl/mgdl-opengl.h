@@ -19,7 +19,6 @@
 #       include <Windows.h>
 #       include <gL/GL.h>
 #       include <gL/GLU.h>
-#       include <GL/freeglut.h>
 #   else
         #include <GL/gl.h>
         #include <GL/glu.h>
