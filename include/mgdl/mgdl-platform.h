@@ -75,6 +75,7 @@ void Platform_RenderAHold(Platform* platform);
 void Platform_RenderEnd(Platform* platform);
 
 bool Platform_IncreaseAHoldAndTest(Platform* platform);
+void Platform_ResetTime(Platform* platform);
 
 #ifdef __cplusplus
 }

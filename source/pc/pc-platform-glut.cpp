@@ -300,9 +300,7 @@ void Platform_Init(const char* windowName,
     const bool SplashFlag = Flag_IsSet(initFlags, PlatformInitFlag::FlagSplashScreen);
     const bool HoldAFlag = Flag_IsSet(initFlags, PlatformInitFlag::FlagPauseUntilA);
     // Set up A hold variables
-    platformPC.waitElapsedMS = 0;
-    platformPC.aHoldTimer = 0.0f;
-    platformPC.splashProgress = 0.0f;
+    Platform_ResetTime(&platformPC);
 
     if (HoldAFlag||SplashFlag)
     {

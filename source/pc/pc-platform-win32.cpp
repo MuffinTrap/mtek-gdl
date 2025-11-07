@@ -69,7 +69,7 @@ void RenderLoop()
 
     if (WiiController_ButtonPress(controller, ButtonHome))
     {
-		DestroyWindow(windowHandle);
+		Platform_DoProgramExit();
     }
     // Reset controller for next frame
     WiiController_StartFrame(controller);
@@ -81,6 +81,66 @@ void RenderLoop()
         controller->m_cursorX = win32Controller.m_cursorX;
         controller->m_cursorY = win32Controller.m_cursorY;
     }
+}
+
+void SetupOpenGL(HWND target_windowHandle)
+{
+	deviceContextHandle = GetDC(target_windowHandle);
+	if (deviceContextHandle == NULL)
+	{
+		OutputDebugStringA("Could not get device context\n");
+		Log_Error("Could not get device context handle\n");
+		ErrorExit();
+	}
+	// Set up requested pizel format
+	pixelFormatDesc = {
+		sizeof(PIXELFORMATDESCRIPTOR),   // size of this pfd  
+		1,                     // version number  
+		PFD_DRAW_TO_WINDOW |   // support window  
+		PFD_SUPPORT_OPENGL |   // support OpenGL  
+		PFD_DOUBLEBUFFER,      // double buffered  
+		PFD_TYPE_RGBA,         // RGBA type  
+		24,                    // 24-bit color depth  
+		0, 0, 0, 0, 0, 0,      // color bits ignored  
+		0,                     // no alpha buffer  
+		0,                     // shift bit ignored  
+		0,                     // no accumulation buffer  
+		0, 0, 0, 0,            // accum bits ignored  
+		32,                    // 32-bit z-buffer  
+		0,                     // no stencil buffer  
+		0,                     // no auxiliary buffer  
+		PFD_MAIN_PLANE,        // main layer  
+		0,                     // reserved  
+		0, 0, 0                // layer masks ignored  
+	};
+	// Try set up OpenGL context
+	pixelFormatEnum = ChoosePixelFormat(deviceContextHandle, &pixelFormatDesc);
+	if (pixelFormatEnum == 0)
+	{
+		OutputDebugStringA("Failed to Choose pixel format\n");
+		ErrorExit();
+	}
+	BOOL formatSet = SetPixelFormat(deviceContextHandle, pixelFormatEnum, &pixelFormatDesc);
+	if (formatSet == FALSE)
+	{
+		OutputDebugStringA("Failed to set pixel format\n");
+		ErrorExit();
+	}
+
+	openGLContext = wglCreateContext(deviceContextHandle);
+	if (openGLContext == NULL)
+	{
+		OutputDebugStringA("Failed to get openGL context\n");
+		ErrorExit();
+	}
+	BOOL currentSet = wglMakeCurrent(deviceContextHandle, openGLContext);
+	if (currentSet == FALSE)
+	{
+		OutputDebugStringA("Failed to set openGL context\n");
+		ErrorExit();
+	}
+	OutputDebugStringA("Created OpenGL context\n");
+	Log_InfoF("OpenGL %s %s %s\n", glGetString(GL_VENDOR), glGetString(GL_RENDERER), glGetString(GL_VERSION));
 }
 
 // This the function that windows will call when something happens
@@ -101,14 +161,8 @@ LRESULT CALLBACK WindowCallback(HWND target_windowHandle, UINT message, WPARAM w
 		case WM_CREATE:
 		{
 			Log_Info("WM_CREATE\n");
-			// Windows has created the window and we
-			// can set up OpenGL context
-			/*
-			pixelFormatEnum = ChoosePixelFormat(deviceContextHandle, &pixelFormatDesc);
-			SetPixelFormat(deviceContextHandle, pixelFormatEnum, &pixelFormatDesc);
-			openGLContext = wglCreateContext(deviceContextHandle);
-			wglMakeCurrent(deviceContextHandle, openGLContext);
-			*/
+			// Windows has created the window and we can OpenGL
+			SetupOpenGL(target_windowHandle);
 		}
 		break;
 		case WM_ACTIVATEAPP: 
@@ -126,8 +180,13 @@ LRESULT CALLBACK WindowCallback(HWND target_windowHandle, UINT message, WPARAM w
 		break;
 		case WM_TIMER:
 		{
+			//Log_Info("WM_TIMER\n");
 			// Windows calls this when timer is up
-			// RenderLoop();
+			// TODO Use high resolution timer
+			platformPC.deltaTimeS = 0.016f;
+			platformPC.elapsedTimeS += platformPC.deltaTimeS;
+			platformPC.elapsedUpdates += 1;
+			RenderLoop();
 		}
 		break;
 		case WM_ERASEBKGND:
@@ -140,9 +199,8 @@ LRESULT CALLBACK WindowCallback(HWND target_windowHandle, UINT message, WPARAM w
 		case WM_CLOSE: 
 		{
 			Log_Info("WM_CLOSE\n");
-			//KillTimer(windowHandle, m_timerId); // Stop calling the render loop
+			KillTimer(windowHandle, m_timerId); // Stop calling the render loop
 			Platform_DoProgramExit();
-			DestroyWindow(target_windowHandle);
 		}
 		break;
 		case WM_DESTROY: 
@@ -202,7 +260,7 @@ void Platform_Init(const char* windowName,
 		0, // ext style
 		WindowClass.lpszClassName,
 		windowName,
-		WS_OVERLAPPEDWINDOW | WS_VISIBLE, // WS_CLIPCHILDREN needed for OpenGL
+		WS_OVERLAPPEDWINDOW | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, // needed for OpenGL
 		CW_USEDEFAULT, CW_USEDEFAULT, // X and Y
 		MGDL_WII_WIDTH,
 		MGDL_WII_HEIGHT,
@@ -222,46 +280,24 @@ void Platform_Init(const char* windowName,
 
 	// Get the Device Context for our window
 	// client area : Must be released
-	/*
-	deviceContextHandle = GetDC(windowHandle);
-	if (deviceContextHandle == NULL)
-	{
-		Log_Error("Could not get device context handle\n");
-		return;
-	}
-	*/
+	
 
-	// Set up requested pizel format
-	pixelFormatDesc = {
-		sizeof(PIXELFORMATDESCRIPTOR),   // size of this pfd  
-		1,                     // version number  
-		PFD_DRAW_TO_WINDOW |   // support window  
-		PFD_SUPPORT_OPENGL |   // support OpenGL  
-		PFD_DOUBLEBUFFER,      // double buffered  
-		PFD_TYPE_RGBA,         // RGBA type  
-		24,                    // 24-bit color depth  
-		0, 0, 0, 0, 0, 0,      // color bits ignored  
-		0,                     // no alpha buffer  
-		0,                     // shift bit ignored  
-		0,                     // no accumulation buffer  
-		0, 0, 0, 0,            // accum bits ignored  
-		32,                    // 32-bit z-buffer  
-		0,                     // no stencil buffer  
-		0,                     // no auxiliary buffer  
-		PFD_MAIN_PLANE,        // main layer  
-		0,                     // reserved  
-		0, 0, 0                // layer masks ignored  
-	};
 
 	// Set up 60fps timer.
 	// Setting NULL as lpTimerFunc makes windows send WM_TIMER
 	// messages
 	//SetUserObjectInformationW(GetCurrentProcess(), UOI_TIMERPROC_EXCEPTION_SUPPRESSION, FALSE, 1);
-	//m_timerId = SetTimer(windowHandle, NULL, 16, NULL);
+	m_timerId = SetTimer(windowHandle, NULL, 16, NULL);
 
 	// Main loop gets messages from Windows
 	OutputDebugStringA("Start Message Loop\n");
 
+	// Call the game/demo init
+	initCall();
+	// Setup timing
+	Platform_ResetTime(&platformPC);
+	ShowWindow(windowHandle, SW_SHOW);
+	UpdateWindow(windowHandle);
 	while (true)
 	{
 		MSG message;
@@ -299,9 +335,10 @@ void Platform_DoProgramExit(void)
 	{
 		quitCall();
 	}
-	//wglMakeCurrent(NULL, NULL); // Detach context from window
-	//wglDeleteContext(openGLContext);
-	//ReleaseDC(windowHandle, deviceContextHandle);
+	wglMakeCurrent(deviceContextHandle, NULL); // Detach context from window
+	wglDeleteContext(openGLContext);
+	ReleaseDC(windowHandle, deviceContextHandle);
+	DestroyWindow(windowHandle);
 }
 
 struct Platform* Platform_GetSingleton(void)

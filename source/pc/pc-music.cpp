@@ -280,6 +280,7 @@ Music* Music_LoadOgg(const char* filename)
     }
     else
     {
+		Log_ErrorF("Failed to load music %s\n", filename);
         delete music;
         return nullptr;
     }

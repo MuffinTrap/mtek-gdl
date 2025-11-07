@@ -75,7 +75,10 @@ void Example::Init()
     performanceMenu = Menu_CreateWindowed(debugFont, 2.0f, 1.0f, 256, 64, "Performance");
     audioMenu = Menu_CreateWindowed(debugFont, 2.0f, 1.0f, 256, 256, "Audio");
 
-    musicLooping = Music_GetLooping(sampleMusic);
+    if (sampleMusic)
+    {
+        musicLooping = Music_GetLooping(sampleMusic);
+    }
     sceneRotation = V3f_Create(0.0f, 1.0f,0.0f);
     //quad->DebugPrint();
 
@@ -136,7 +139,7 @@ void Example::Update()
     mouseClick = WiiController_ButtonPress(Platform_GetController(0), ButtonA);
     mouseDown = WiiController_ButtonHeld(Platform_GetController(0), ButtonA);
 
-    Music_UpdatePlay(sampleMusic);
+    //Music_UpdatePlay(sampleMusic);
     /*
     static const char* babyName = "cuboid";
     Node* baby = Scene_GetNode(wiiScene, babyName);

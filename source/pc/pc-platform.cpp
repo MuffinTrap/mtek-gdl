@@ -62,3 +62,10 @@ bool Platform_IncreaseAHoldAndTest(Platform* platform)
     }
     return false;
 }
+void Platform_ResetTime(Platform* platform)
+{
+    platform->waitElapsedMS = 0;
+    platform->aHoldTimer = 0.0f;
+    platform->splashProgress = 0.0f;
+
+}
