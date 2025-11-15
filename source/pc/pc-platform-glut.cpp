@@ -5,6 +5,7 @@
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-splash.h>
 #include <mgdl/mgdl-logger.h>
+#include <mgdl/mgdl-util.h>
 
 #include <mgdl/pc/mgdl-pc-input.h>
 #include <mgdl/pc/mgdl-joystick.h>
@@ -59,28 +60,29 @@ static void UpdateDeltaTime()
     // glutElapsedMS = glutElapsedMS - waitElapsedMS;
 
     // Calculate elapsed time
-    platformPC._elapsedTimeS = float(glutElapsedMS)/1000.0f;
+    platformPC.elapsedTimeS = float(glutElapsedMS)/1000.0f;
 
     // Calculate delta time
     glutDeltaMS = glutElapsedMS - glutElapsedStartMS;
-    platformPC._deltaTimeS = float(glutDeltaMS) / 1000.0f;
+    platformPC.deltaTimeS = float(glutDeltaMS) / 1000.0f;
 
 }
 
 
 
-static void Platform_UpdateSplash(int value)
+// Needs the int parameter to work with glutTimerFunc
+void Platform_UpdateSplash(int value)
 {
     // Calculate how much time rendering took
     UpdateDeltaTime();
     bool waitIsOver = false;
-    if (showHoldAMessage)
+    if (platformPC.showHoldAMessage)
     {
-        waitIsOver = IncreaseAHoldAndTest();
+        waitIsOver = Platform_IncreaseAHoldAndTest(&platformPC);
     }
     else
     {
-        waitIsOver = (splashProgress > 1.0f);
+        waitIsOver = (platformPC.splashProgress > 1.0f);
     }
 
     if (waitIsOver)
@@ -94,16 +96,16 @@ static void Platform_UpdateSplash(int value)
     else
     {
         // Keep waiting
-        glutTimerFunc(16, UpdateSplash, value);
+        glutTimerFunc(16, Platform_UpdateSplash, value);
     }
     UpdateEnd();
 }
 
-static void Platform_UpdateAHold(int value)
+void Platform_UpdateAHold(int value)
 {
     // Calculate how much time rendering took
     UpdateDeltaTime();
-    if (Platform_IncreaseAHoldAndTest())
+    if (Platform_IncreaseAHoldAndTest(&platformPC))
     {
         // Record waiting time
         platformPC.waitElapsedMS = glutElapsedMS;
@@ -114,7 +116,7 @@ static void Platform_UpdateAHold(int value)
     else
     {
         // Keep waiting
-        glutTimerFunc(16, UpdateAHold, value);
+        glutTimerFunc(16, Platform_UpdateAHold, value);
     }
     UpdateEnd();
 }
@@ -129,7 +131,7 @@ static void UpdateLoop(int value)
 
 static void UpdateEnd()
 {
-    platformPC._elapsedUpdates += 1;
+    platformPC.elapsedUpdates += 1;
     // Tell glut that the window needs to be
     // redrawn.
     glutPostRedisplay();
@@ -141,7 +143,7 @@ void RenderLoop()
 {
 	frameCall();
 
-    RenderEnd();
+    Platform_RenderEnd();
 
     WiiController* controller = Platform_GetController(0);
 
@@ -160,12 +162,12 @@ void RenderLoop()
     {
         Joystick_ReadInputs(gamepad_0);
         // Always read cursor from glut
-        controller->_cursorX = glutController._cursorX;
-        controller->_cursorY = glutController._cursorY;
+        controller->m_cursorX = glutController.m_cursorX;
+        controller->m_cursorY = glutController.m_cursorY;
     }
 }
 
-void Platform_RenderEnd(Platform* platform)
+void Platform_RenderEnd()
 {
     // End drawing and process all commands
     // Wait for v sync and swap
@@ -286,15 +288,15 @@ void Platform_Init(const char* windowName,
     WiiController_StartFrame(&glutController);
 
     // Init Joystick
-    platformPc->gamepad_0 = Joystick_Create(0);
-    if (Joystick_IsConnected(platformPc->gamepad_0))
+    platformPC.gamepad_0 = Joystick_Create(0);
+    if (Joystick_IsConnected(platformPC.gamepad_0))
     {
-        Joystick_ZeroInputs(platformPc->gamepad_0);
+        Joystick_ZeroInputs(platformPC.gamepad_0);
     }
 
     initCall();
     glutElapsedStartMS = 0;
-    platformPC._elapsedUpdates = 0;
+    platformPC.elapsedUpdates = 0;
 
 
     const bool SplashFlag = Flag_IsSet(initFlags, PlatformInitFlag::FlagSplashScreen);
@@ -310,15 +312,15 @@ void Platform_Init(const char* windowName,
     // Select display and update functions
     if (SplashFlag)
     {
-        glutDisplayFunc(RenderSplash);
-        glutTimerFunc(16, UpdateSplash, 0);
+        glutDisplayFunc(Platform_RenderSplash);
+        glutTimerFunc(16, Platform_UpdateSplash, 0);
     }
     else if (HoldAFlag)
     {
-        glutDisplayFunc(RenderAHold);
+        glutDisplayFunc(Platform_RenderAHold);
         printf("\n>> MGDL INIT COMPLETE\n");
         printf(">> Hold A button to continue\n");
-        glutTimerFunc(16, UpdateAHold, 0);
+        glutTimerFunc(16, Platform_UpdateAHold, 0);
     }
     else
     {
@@ -331,7 +333,7 @@ void Platform_Init(const char* windowName,
 
 struct WiiController* Platform_GetController(int controllerNumber)
 {
-    Joystic* gamepad_0 = platformPC.gamepad_0;
+    Joystick* gamepad_0 = platformPC.gamepad_0;
     if (Joystick_IsConnected(gamepad_0) && gamepad_0->index == controllerNumber)
     {
         return Joystick_GetController(gamepad_0);
@@ -361,17 +363,17 @@ struct Platform* Platform_GetSingleton() { return &platformPC; }
 
 float Platform_GetDeltaTime()
 {
-    return platformPC._deltaTimeS;
+    return platformPC.deltaTimeS;
 }
 
 float Platform_GetElapsedSeconds()
 {
-    return platformPC._elapsedTimeS;
+    return platformPC.elapsedTimeS;
 }
 
 u32 Platform_GetElapsedUpdates()
 {
-    return platformPC._elapsedUpdates;
+    return platformPC.elapsedUpdates;
 }
 #endif
 

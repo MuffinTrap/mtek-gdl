@@ -119,23 +119,23 @@ void SplashHoldLoop(bool SplashFlag, bool HoldAFlag)
 	while(waiting)
 	{
 		u64 now = gettime();
-		platformWii._deltaTimeS = (float)(now - deltaTimeStart) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
+		platformWii.deltaTimeS = (float)(now - deltaTimeStart) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
 		deltaTimeStart = now;
-		platformWii._elapsedTimeS += platformWii._deltaTimeS;
+		platformWii.elapsedTimeS += platformWii.deltaTimeS;
 		WiiController_StartFrame(&controller);
 		ReadControllers();
 
 		if (SplashFlag)
 		{
 			gdl::PrepDisplay();
-			splashProgress = DrawSplashScreen(platformWii._deltaTimeS, showHoldAMessage, aHoldTimer);
+			splashProgress = DrawSplashScreen(platformWii.deltaTimeS, showHoldAMessage, aHoldTimer);
 		}
 
 		if (showHoldAMessage)
 		{
 			if (WiiController_ButtonHeld(&controller, WiiButtons::ButtonA))
 			{
-				aHoldTimer += platformWii._deltaTimeS;
+				aHoldTimer += platformWii.deltaTimeS;
 				if (aHoldTimer >= 1.0f)
 				{
 					waiting = false;
@@ -162,7 +162,7 @@ void SplashHoldLoop(bool SplashFlag, bool HoldAFlag)
 		}
 	}
 	// Reset elapsed time so game gets correct timing
-	platformWii._elapsedTimeS = 0.0f;
+	platformWii.elapsedTimeS = 0.0f;
 }
 
 
@@ -174,9 +174,9 @@ void MainLoop()
 		// Timing
 		// TODO how is gdl::Delta different from this?
 		u64 now = gettime();
-		platformWii._deltaTimeS = (float)(now - deltaTimeStart) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
+		platformWii.deltaTimeS = (float)(now - deltaTimeStart) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
 		deltaTimeStart = now;
-		platformWii._elapsedTimeS += platformWii._deltaTimeS;
+		platformWii.elapsedTimeS += platformWii.deltaTimeS;
 
 		WiiController_StartFrame(&controller);
 		ReadControllers();
@@ -212,26 +212,26 @@ void ReadControllers()
 {
 	// TODO This might have to be in a macro
 	WPAD_ScanPads();  // Scan the Wiimotes
-	WPADData *data1 = WPAD_Data(controller._channel);
+	WPADData *data1 = WPAD_Data(controller.m_channel);
 
 	const ir_t &ir = data1->ir;
-	controller._cursorX = ir.x;
+	controller.m_cursorX = ir.x;
     float y = platformWii.screenHeight - ir.y;
-	controller._cursorY = y;
+	controller.m_cursorY = y;
 
 	if(platformWii.aspect == Screen16x9)
 	{
 		// Multiply x and y to match them to 16:9 screen
-		controller._cursorX *= 1.67f - 16.f;
-		controller._cursorY *= 1.2f - 16.f;
+		controller.m_cursorX *= 1.67f - 16.f;
+		controller.m_cursorY *= 1.2f - 16.f;
 	}
 
-	controller._pressedButtons = WPAD_ButtonsDown(0);
-	controller._releasedButtons = WPAD_ButtonsUp(0);
-	controller._heldButtons = WPAD_ButtonsHeld(0);
+	controller.m_pressedButtons = WPAD_ButtonsDown(0);
+	controller.m_releasedButtons = WPAD_ButtonsUp(0);
+	controller.m_heldButtons = WPAD_ButtonsHeld(0);
 
-	controller._nunchukJoystickDirectionX=0.0f;
-	controller._nunchukJoystickDirectionY=0.0f;
+	controller.m_nunchukJoystickDirectionX=0.0f;
+	controller.m_nunchukJoystickDirectionY=0.0f;
 	const expansion_t &ex = data1->exp;
 	if (ex.type == WPAD_EXP_NUNCHUK)
 	{
@@ -245,19 +245,19 @@ void ReadControllers()
 		float y = -1.0f;
 		float dirx = cos(rad) * x - sin(rad) * y;
 		float diry = sin(rad) * x + cos(rad) * y;
-		controller._nunchukJoystickDirectionX = dirx * n.mag;
-		controller._nunchukJoystickDirectionY = diry * n.mag;
+		controller.m_nunchukJoystickDirectionX = dirx * n.mag;
+		controller.m_nunchukJoystickDirectionY = diry * n.mag;
 	}
 
-	controller._roll = DegToRad(data1->orient.roll);
-	controller._pitch = DegToRad(data1->orient.pitch);
-	controller._yaw = DegToRad(data1->orient.yaw);
+	controller.m_roll = DegToRad(data1->orient.roll);
+	controller.m_pitch = DegToRad(data1->orient.pitch);
+	controller.m_yaw = DegToRad(data1->orient.yaw);
 }
 
 Platform* Platform_GetSingleton() { return &platformWii; }
 
-float Platform_GetDeltaTime() { return platformWii._deltaTimeS; }
-float Platform_GetElapsedSeconds() { return platformWii._elapsedTimeS; }
+float Platform_GetDeltaTime() { return platformWii.deltaTimeS; }
+float Platform_GetElapsedSeconds() { return platformWii.elapsedTimeS; }
 u32 Platform_GetElapsedUpdates() { return frameCount;}
 
 void Platform_DoProgramExit()

@@ -313,7 +313,8 @@ bool LoadAudioDataFilePtr ( const char* filename )
 {
     audioData.filename = filename;
     audioData.filePointer = nullptr;
-    if (fopen_s(&audioData.filePointer, filename, "rb") != 0)
+    audioData.filePointer = fopen(filename, "rb");
+    if (audioData.filePointer == NULL)
     {
 		mgdl_assert_printf(false, "Music_Load did not find %s\n", filename);
         return false;

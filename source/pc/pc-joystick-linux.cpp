@@ -118,30 +118,30 @@ static void ReadAxis(Joystick* stick, sizetype axis)
     {
         case 0: // Left thumbstick
             // Nunchaku
-			stick->controller._nunchukJoystickDirectionX = NormalizeAxis(state.x);
-			stick->controller._nunchukJoystickDirectionY = NormalizeAxis(state.y);
+			stick->controller.m_nunchukJoystickDirectionX = NormalizeAxis(state.x);
+			stick->controller.m_nunchukJoystickDirectionY = NormalizeAxis(state.y);
             break;
         case 1:
         {
             // Right stick left - right
-			stick->controller._roll = NormalizeAxis(state.y) * M_PI;
+			stick->controller.m_roll = NormalizeAxis(state.y) * M_PI;
 
             float leftTrigger = (NormalizeAxis(state.x) + 1.0f) /2.0f; // To [0, 1]
             // TODO Figure how to make this better
             float radians = leftTrigger * -M_PI;
-            float newYaw = minF(stick->controller._yaw, radians);
-            stick->controller._yaw = newYaw;
+            float newYaw = minF(stick->controller.m_yaw, radians);
+            stick->controller.m_yaw = newYaw;
         }
         break;
         case 2:
         {
             // Right stick up-down
-			stick->controller._pitch = NormalizeAxis(state.x) * M_PI;
+			stick->controller.m_pitch = NormalizeAxis(state.x) * M_PI;
 
             float rightTrigger = (NormalizeAxis(state.y) + 1.0f) /2.0f; // To [0, 1]
             float radians = rightTrigger * M_PI;
-            float newYaw = maxF(stick->controller._yaw, radians);
-            stick->controller._yaw = newYaw;
+            float newYaw = maxF(stick->controller.m_yaw, radians);
+            stick->controller.m_yaw = newYaw;
         }
         break;
         case 3:

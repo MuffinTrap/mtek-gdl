@@ -15,7 +15,7 @@ void AssertFunctionPrintf(const char* filename, int lineNumber, const char* mess
 	printf("Assert failed! %s:%d:%s\n", filename, lineNumber, buff);
 	printf("Press enter to proceed to assert handler\n");
 	char answer = '\0';
-	scanf_s("%c", &answer, 1);
+	scanf("%c1", &answer);
 	assert(false);
 }
 
@@ -24,7 +24,7 @@ void AssertFunctionPrint(const char* filename, int lineNumber, const char* messa
 	printf("Assert failed! %s:%d:%s\n", filename, lineNumber, message);
 	printf("Press enter to proceed to assert handler\n");
 	char answer = '\0';
-	scanf_s("%c", &answer, 1);
+	scanf("%c1", &answer);
 	assert(false);
 }
 

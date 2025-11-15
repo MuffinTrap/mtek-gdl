@@ -67,12 +67,12 @@ float Platform_GetElapsedSeconds(void);
 u32 Platform_GetElapsedUpdates(void);
 
 void Platform_UpdateSplash(int value);
-void Platform_RenderSplash(Platform* platform);
+void Platform_RenderSplash();
 
 void Platform_UpdateAHold(int value);
-void Platform_RenderAHold(Platform* platform);
+void Platform_RenderAHold(); // Cannot have parameter to comply with glutDisplayFunc
 
-void Platform_RenderEnd(Platform* platform);
+void Platform_RenderEnd();
 
 bool Platform_IncreaseAHoldAndTest(Platform* platform);
 void Platform_ResetTime(Platform* platform);

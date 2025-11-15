@@ -1,5 +1,6 @@
 #include <mgdl/mgdl-scene.h>
 #include <mgdl/mgdl-opengl_util.h>
+#include <cstring>
 
 static GLfloat whiteSpecular[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 static GLfloat blackEmissive[4] = {0.0f, 0.0f, 0.0f, 1.0f};
@@ -9,7 +10,7 @@ Material* Material_Load (const char* name, Texture* texture, MaterialType type)
 	Material* material = (Material*)malloc(sizeof(Material));
 	sizetype nameSize = strlen(name);
 	material->name = new char[nameSize+1];
-	strcpy_s(material->name, nameSize+1, name);
+	strncpy(material->name,  name, nameSize+1);
 	material->texture = texture;
 	material->shininess = 1.0f;
 	material->type = type;
