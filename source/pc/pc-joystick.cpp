@@ -15,6 +15,7 @@ Joystick* Joystick_Create(short index)
     stick->index = index;
     stick->axisCount = 0;
     stick->buttonCount = 0;
+    stick->isConnected = false;
     Joystick_Init(stick);
     return stick;
 }
@@ -26,7 +27,7 @@ void Joystick_ZeroInputs(Joystick* joystick)
 
 bool Joystick_IsConnected(Joystick* stick)
 {
-    return stick->index >= 0;
+    return stick->isConnected;
 }
 
 WiiController* Joystick_GetController(Joystick* stick)
@@ -34,3 +35,7 @@ WiiController* Joystick_GetController(Joystick* stick)
     return &stick->controller;
 }
 
+float Joystick_NormalizeAxis(short value)
+{
+    return (float)value / 32767.0f;
+}

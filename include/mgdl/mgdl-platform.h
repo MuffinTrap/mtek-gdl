@@ -28,7 +28,7 @@ struct Platform
 	u32 elapsedUpdates;
 
 	// Joysticks and controllers
-	Joystick* gamepad_0;
+	Joystick* gamepads[4];
 
 	// Splash screen variables
 	int waitElapsedMS;
@@ -66,8 +66,10 @@ float Platform_GetDeltaTime(void);
 float Platform_GetElapsedSeconds(void);
 u32 Platform_GetElapsedUpdates(void);
 
+void Platform_InitControllers();
+void Platform_UpdateControllers();
 void Platform_UpdateSplash(int value);
-void Platform_RenderSplash();
+void Platform_RenderSplash(Platform* platform);
 
 void Platform_UpdateAHold(int value);
 void Platform_RenderAHold(); // Cannot have parameter to comply with glutDisplayFunc
@@ -76,6 +78,8 @@ void Platform_RenderEnd();
 
 bool Platform_IncreaseAHoldAndTest(Platform* platform);
 void Platform_ResetTime(Platform* platform);
+
+void Platform_ResizeWindow(int newWidth, int newHeight);
 
 #ifdef __cplusplus
 }
