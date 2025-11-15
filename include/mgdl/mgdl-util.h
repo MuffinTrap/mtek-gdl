@@ -105,7 +105,7 @@ char* mgdl_GetPrintfBuffer(void);
 	memset(mgdl_GetPrintfBuffer(), '\0', 256);\
 	va_list args;\
 	va_start(args, format); \
-	vsprintf(mgdl_GetPrintfBuffer(), format, args); \
+	vsprintf_s(mgdl_GetPrintfBuffer(), format, args); \
 	va_end(args);\
 
 
