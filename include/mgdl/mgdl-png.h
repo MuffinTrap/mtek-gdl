@@ -42,7 +42,7 @@ GLenum PNG_PNGtoGLFormat(int pngFormat);
 GLenum PNG_PNGtoGLInternalFormat(int pngFormat);
 
 PNGFile* _PNG_ReadFilePointer(FILE* fp);
-bool _PNG_ReadTextureInfo(int color_type);
+// bool _PNG_ReadTextureInfo(int color_type);
 
 #ifdef __cplusplus
 }

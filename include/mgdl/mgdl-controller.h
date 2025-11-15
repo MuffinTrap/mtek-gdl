@@ -43,19 +43,19 @@ typedef enum WiiButtons WiiButtons;
  */
 struct WiiController
 {
-	u32 _pressedButtons;
-	u32 _releasedButtons;
-	u32 _heldButtons;
-	float _nunchukJoystickDirectionX;
-	float _nunchukJoystickDirectionY;
-	float _cursorX;
-	float _cursorY;
-	float _roll;
-	float _pitch;
-	float _yaw;
+	u32 m_pressedButtons;
+	u32 m_releasedButtons;
+	u32 m_heldButtons;
+	float m_nunchukJoystickDirectionX;
+	float m_nunchukJoystickDirectionY;
+	float m_cursorX;
+	float m_cursorY;
+	float m_roll;
+	float m_pitch;
+	float m_yaw;
 
 	// Which controller number this is: 0-3
-	u8 _channel;
+	u8 m_channel;
 };
 typedef struct WiiController WiiController;
 

@@ -3,6 +3,7 @@
 #include "mgdl/mgdl-config.h"
 #include "mgdl/mgdl-types.h"
 #include "mgdl/mgdl-color.h"
+#include "mgdl/mgdl-opengl.h"
 #include "mgdl/mgdl-opengl_util.h"
 #include "mgdl/mgdl-util.h"
 #include "mgdl/mgdl-alloc.h"

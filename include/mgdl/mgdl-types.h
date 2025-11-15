@@ -38,7 +38,11 @@ typedef uint32_t u32;
 #endif
 
 #ifdef MGDL_PLATFORM_WINDOWS
-typedef ssize_t sizetype;
+#   if defined(MGDL_WINDOWS_NATIVE)
+        typedef size_t sizetype;
+#   else
+        typedef ssize_t sizetype;
+#   endif 
 const double M_PI = 3.14159265358979323846;
 const double M_PI_2 = 1.57079632679489661923;
 #else

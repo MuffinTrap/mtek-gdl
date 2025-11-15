@@ -23,19 +23,29 @@
 
 #else // PC platform
 
-    #ifdef __APPLE__
+    #if defined(__APPLE__)
         #include <OpenAL/al.h>
         #include <OpenAL/alc.h>
-    #else
+    #elif defined(MGDL_PLATFORM_WINDOWS)
         // Needed on windows
         #ifdef __cplusplus
                 #include <cstdint>
         #else
                 #include <stdint.h>
         #endif
+
+#       if defined(MGDL_WINDOWS_NATIVE) || defined(_WIN64)
+#             include <al.h>
+#             include <alc.h>
+#       else
+            #include <AL/al.h>
+            #include <AL/alc.h>
+#       endif
+#  elif defined(MGDL_PLATFORM_LINUX)
         #include <AL/al.h>
         #include <AL/alc.h>
-    #endif
+#   endif
+// PC platform #endif at end of file
 
 // Error checking functions
 

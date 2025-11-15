@@ -3,77 +3,77 @@
 
 void WiiController_Init(WiiController* controller, u8 channel)
 {
-	controller->_channel = channel;
+	controller->m_channel = channel;
 	WiiController_ZeroAllInputs(controller);
 }
 
 void WiiController_ZeroAllInputs(WiiController* controller)
 {
-	controller->_pressedButtons = 0;
-	controller->_releasedButtons = 0;
-	controller->_heldButtons = 0;
-	controller->_nunchukJoystickDirectionX = 0.0f;
-	controller->_nunchukJoystickDirectionY = 0.0f;
-	controller->_cursorX = 0.0f;
-	controller->_cursorY = 0.0f;
-	controller->_roll = 0.0f;
+	controller->m_pressedButtons = 0;
+	controller->m_releasedButtons = 0;
+	controller->m_heldButtons = 0;
+	controller->m_nunchukJoystickDirectionX = 0.0f;
+	controller->m_nunchukJoystickDirectionY = 0.0f;
+	controller->m_cursorX = 0.0f;
+	controller->m_cursorY = 0.0f;
+	controller->m_roll = 0.0f;
 }
 
 void WiiController_StartFrame(WiiController* controller)
 {
-	controller->_pressedButtons = 0;
-	controller->_releasedButtons = 0;
+	controller->m_pressedButtons = 0;
+	controller->m_releasedButtons = 0;
 }
 
 bool WiiController_ButtonPress(WiiController* controller, u32 buttonEnum) {
-	return Flag_IsSet(controller->_pressedButtons, buttonEnum);
+	return Flag_IsSet(controller->m_pressedButtons, buttonEnum);
 }
 
 bool WiiController_ButtonRelease(WiiController* controller, u32 buttonEnum) {
-	return Flag_IsSet(controller->_releasedButtons, buttonEnum);
+	return Flag_IsSet(controller->m_releasedButtons, buttonEnum);
 }
 
 bool WiiController_ButtonHeld(WiiController* controller, u32 buttonEnum) {
-	return Flag_IsSet(controller->_heldButtons, buttonEnum);
+	return Flag_IsSet(controller->m_heldButtons, buttonEnum);
 }
 
 vec2 WiiController_GetCursorPosition(WiiController* controller) {
 
 	vec2 d;
-	d.x = controller->_cursorX;
-	d.y = controller->_cursorY;
+	d.x = controller->m_cursorX;
+	d.y = controller->m_cursorY;
 	return d;
 }
 
 vec2 WiiController_GetNunchukJoystickDirection(WiiController* controller)
 {
 	vec2 d;
-	d.x = controller->_nunchukJoystickDirectionX;
-	d.y = controller->_nunchukJoystickDirectionY;
+	d.x = controller->m_nunchukJoystickDirectionX;
+	d.y = controller->m_nunchukJoystickDirectionY;
 	return d;
 }
 
 float WiiController_GetPitch(WiiController* controller) {
-	return controller->_pitch;
+	return controller->m_pitch;
 }
 
 float WiiController_GetYaw(WiiController* controller) {
-	return controller->_yaw;
+	return controller->m_yaw;
 }
 
 float WiiController_GetRoll(WiiController* controller) {
-	return controller->_roll;
+	return controller->m_roll;
 }
 
 void _WiiController_SetButtonDown (WiiController* controller, u32 buttonEnum )
 {
-	controller->_pressedButtons = Flag_Set(controller->_pressedButtons, buttonEnum);
-	controller->_heldButtons = Flag_Set(controller->_heldButtons, buttonEnum);
+	controller->m_pressedButtons = Flag_Set(controller->m_pressedButtons, buttonEnum);
+	controller->m_heldButtons = Flag_Set(controller->m_heldButtons, buttonEnum);
 }
 void _WiiController_SetButtonUp (WiiController* controller, u32 buttonEnum )
 {
-	controller->_heldButtons = Flag_Unset(controller->_heldButtons,buttonEnum);
-	controller->_releasedButtons = Flag_Set(controller->_releasedButtons, buttonEnum);
+	controller->m_heldButtons = Flag_Unset(controller->m_heldButtons,buttonEnum);
+	controller->m_releasedButtons = Flag_Set(controller->m_releasedButtons, buttonEnum);
 }
 
 const char* WiiController_GetButtonSymbol(int buttonEnum)

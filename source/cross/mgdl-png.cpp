@@ -6,21 +6,13 @@
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-logger.h>
 
+#ifndef MGDL_WINDOWS_NATIVE
+
 #include <png.h>
 #include <stdio.h>
 #include <cstring>
 #include <cstdlib>
 #include <csetjmp>
-
-
-void PNG_DeleteData(PNGFile* png)
-{
-	if (png->_texels != nullptr)
-	{
-		free(png->_texels);
-		png->_texels = nullptr;
-	}
-}
 
 GLint PNG_ColorTypeToBPP(int color_type)
 {
@@ -48,15 +40,6 @@ GLint PNG_ColorTypeToBPP(int color_type)
 		break;
 	};
 	return bytesPerPixel;
-}
-
-GLenum PNG_GetGLFormat(PNGFile* png)
-{
-	return PNG_PNGtoGLFormat(png->_pngFormat);
-}
-GLenum PNG_GetGLInternalFormat(PNGFile* png)
-{
-	return PNG_PNGtoGLInternalFormat(png->_pngFormat);
 }
 
 GLenum PNG_PNGtoGLFormat(int pngFormat)
@@ -354,6 +337,26 @@ PNGFile* PNG_ReadFile(const char* filename)
 	return png;
 }
 
+#endif
+
+GLenum PNG_GetGLFormat(PNGFile* png)
+{
+	return PNG_PNGtoGLFormat(png->_pngFormat);
+}
+GLenum PNG_GetGLInternalFormat(PNGFile* png)
+{
+	return PNG_PNGtoGLInternalFormat(png->_pngFormat);
+}
+
+void PNG_DeleteData(PNGFile* png)
+{
+	if (png->_texels != nullptr)
+	{
+		free(png->_texels);
+		png->_texels = nullptr;
+	}
+}
+
 Color4b PNG_GetRGBA(PNGFile* png, int x, int y)
 {
 	size_t index = x + y * png->width;
@@ -376,7 +379,9 @@ float PNG_GetGrayscale(PNGFile* png, int x, int y)
 	size_t byteIndex = index * png->bytesPerPixel;
 	GLubyte value = png->_texels[byteIndex];
 
-	return (float)value/256.0f;
+	return (float)value/255.0f;
 }
 
 GLubyte* PNG_GetTexels(PNGFile* png) { return png->_texels; }
+
+

@@ -280,6 +280,7 @@ Music* Music_LoadOgg(const char* filename)
     }
     else
     {
+		Log_ErrorF("Failed to load music %s\n", filename);
         delete music;
         return nullptr;
     }
@@ -311,8 +312,8 @@ Music* Music_Create(void)
 bool LoadAudioDataFilePtr ( const char* filename )
 {
     audioData.filename = filename;
-    audioData.filePointer = fopen(filename, "rb");
-    if (audioData.filePointer == nullptr)
+    audioData.filePointer = nullptr;
+    if (fopen_s(&audioData.filePointer, filename, "rb") != 0)
     {
 		mgdl_assert_printf(false, "Music_Load did not find %s\n", filename);
         return false;

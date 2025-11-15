@@ -1,51 +1,8 @@
+#ifdef MGDL_PLATFORM_LINUX
+
 #include <mgdl/pc/mgdl-joystick.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-util.h>
-
-Joystick* Joystick_Create(short index)
-{
-    Joystick* stick = (Joystick*)malloc(sizeof(Joystick));
-    stick->index = index;
-    stick->axisCount = 0;
-    stick->buttonCount = 0;
-    Joystick_Init(stick);
-    return stick;
-}
-
-#ifdef MGDL_PLATFORM_WINDOWS
-void Joystick_Init(Joystick* joystick)
-{
-    joystick->index = -1;
-}
-void Joystick_ReadInputs(Joystick* joystick)
-{
-    // Nop
-}
-void Joystick_Disconnect(Joystick* joystick)
-{
-    // nop
-}
-
-#endif
-
-#ifdef MGDL_PLATFORM_MAC
-void Joystick_Init(Joystick* joystick)
-{
-    joystick->index = -1;
-}
-void Joystick_ReadInputs(Joystick* joystick)
-{
-    // Nop
-}
-
-void Joystick_Disconnect(Joystick* joystick)
-{
-    // nop
-}
-
-#endif
-
-#ifdef MGDL_PLATFORM_LINUX
 
 #include <fcntl.h>
 #include <stdio.h>
@@ -264,20 +221,4 @@ void Joystick_Disconnect(Joystick* joystick)
     joystick->index = -1;
 }
 #endif
-
-void Joystick_ZeroInputs(Joystick* joystick)
-{
-    WiiController_ZeroAllInputs(&joystick->controller);
-}
-
-bool Joystick_IsConnected(Joystick* stick)
-{
-    return stick->index >= 0;
-}
-
-WiiController* Joystick_GetController(Joystick* stick)
-{
-    return &stick->controller;
-}
-
 
