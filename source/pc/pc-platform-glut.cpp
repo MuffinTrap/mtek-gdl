@@ -238,7 +238,7 @@ void Platform_Init(const char* windowName,
     glutInit(&argumentCount, &argumentVector);
     Log_Info("glutInitDisplayMode\n");
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize(windowWidth, windowHeight);
+    glutInitWindowSize(MGDL_WII_WIDTH, MGDL_WII_HEIGHT);
     glutWindowId = glutCreateWindow(windowName);
     if ((initFlags & PlatformInitFlag::FlagFullScreen) != 0)
     {

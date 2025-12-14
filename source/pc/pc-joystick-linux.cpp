@@ -42,7 +42,7 @@ void Joystick_Init(Joystick* stick)
     stick->linux_device_index = open(device, O_NONBLOCK);
     if (stick->linux_device_index == -1)
     {
-        Log_Error("Could not open joystick %d\n", stick->index);
+        Log_ErrorF("Could not open joystick %d\n", stick->index);
         stick->isConnected = false;
         return;
     }
