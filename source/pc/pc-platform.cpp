@@ -36,14 +36,14 @@ void Platform_SetWindowNameAndSize(Platform* platform, const char* windowName, S
 void Platform_RenderSplash(Platform* platform)
 {
     platform->splashProgress = DrawSplashScreen(platform->deltaTimeS, platform->showHoldAMessage, platform->aHoldTimer);
-    Platform_RenderEnd(platform);
+    Platform_RenderEnd();
 }
 
 
 // Nothing is shown but program waits for A button to be held down
 void Platform_RenderAHold(Platform* platform)
 {
-    Platform_RenderEnd(platform);
+    Platform_RenderEnd();
 }
 
 bool Platform_IncreaseAHoldAndTest(Platform* platform)
