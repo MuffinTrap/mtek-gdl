@@ -42,12 +42,13 @@ void Joystick_Init(Joystick* stick)
     stick->linux_device_index = open(device, O_NONBLOCK);
     if (stick->linux_device_index == -1)
     {
-        Log_Error("Could not open joystick");
-        stick->index = -1;
+        Log_Error("Could not open joystick %d\n", stick->index);
+        stick->isConnected = false;
         return;
     }
     else
     {
+        stick->isConnected = true;
         stick->axisCount = get_axis_count(stick->linux_device_index);
         stick->buttonCount = get_button_count(stick->linux_device_index);
 
@@ -57,7 +58,7 @@ void Joystick_Init(Joystick* stick)
         {
             strncpy(name, "Unknown", sizeof(name));
         }
-        Log_InfoF("Joystick Init %s : %zu axii %zu buttons", name, stick->axisCount, stick->buttonCount);
+        Log_InfoF("Joystick Init %d %s : %zu axii %zu buttons", stick->index, name, stick->axisCount, stick->buttonCount);
         stick->axes = (struct axis_state*)malloc(sizeof(struct axis_state) * stick->axisCount);
     }
 }
@@ -105,10 +106,6 @@ static WiiButtons ButtonToWiiButton(int number)
     return ButtonNone;
 }
 
-static float NormalizeAxis(short value)
-{
-    return (float)value / 32767.0f;
-}
 
 static void ReadAxis(Joystick* stick, sizetype axis)
 {
@@ -118,15 +115,15 @@ static void ReadAxis(Joystick* stick, sizetype axis)
     {
         case 0: // Left thumbstick
             // Nunchaku
-			stick->controller.m_nunchukJoystickDirectionX = NormalizeAxis(state.x);
-			stick->controller.m_nunchukJoystickDirectionY = NormalizeAxis(state.y);
+			stick->controller.m_nunchukJoystickDirectionX = Joystick_NormalizeAxis(state.x);
+			stick->controller.m_nunchukJoystickDirectionY = Joystick_NormalizeAxis(state.y);
             break;
         case 1:
         {
             // Right stick left - right
-			stick->controller.m_roll = NormalizeAxis(state.y) * M_PI;
+			stick->controller.m_roll = Joystick_NormalizeAxis(state.y) * M_PI;
 
-            float leftTrigger = (NormalizeAxis(state.x) + 1.0f) /2.0f; // To [0, 1]
+            float leftTrigger = (Joystick_NormalizeAxis(state.x) + 1.0f) /2.0f; // To [0, 1]
             // TODO Figure how to make this better
             float radians = leftTrigger * -M_PI;
             float newYaw = minF(stick->controller.m_yaw, radians);
@@ -136,9 +133,9 @@ static void ReadAxis(Joystick* stick, sizetype axis)
         case 2:
         {
             // Right stick up-down
-			stick->controller.m_pitch = NormalizeAxis(state.x) * M_PI;
+			stick->controller.m_pitch = Joystick_NormalizeAxis(state.x) * M_PI;
 
-            float rightTrigger = (NormalizeAxis(state.y) + 1.0f) /2.0f; // To [0, 1]
+            float rightTrigger = (Joystick_NormalizeAxis(state.y) + 1.0f) /2.0f; // To [0, 1]
             float radians = rightTrigger * M_PI;
             float newYaw = maxF(stick->controller.m_yaw, radians);
             stick->controller.m_yaw = newYaw;
@@ -148,29 +145,29 @@ static void ReadAxis(Joystick* stick, sizetype axis)
             // Direction pad : always returns max values
             if (state.x == AXIS_MAX)
             {
-                _WiiController_SetButtonDown(&stick->controller, ButtonRight);
+                WiiController_SetButtonDown(&stick->controller, ButtonRight);
             }
             else if (state.x == -AXIS_MAX)
             {
-                _WiiController_SetButtonDown(&stick->controller, ButtonLeft);
+                WiiController_SetButtonDown(&stick->controller, ButtonLeft);
             }
             else
             {
-                _WiiController_SetButtonUp(&stick->controller, ButtonLeft);
-                _WiiController_SetButtonUp(&stick->controller, ButtonRight);
+                WiiController_SetButtonUp(&stick->controller, ButtonLeft);
+                WiiController_SetButtonUp(&stick->controller, ButtonRight);
             }
             if (state.y == -AXIS_MAX)
             {
-                _WiiController_SetButtonDown(&stick->controller, ButtonUp);
+                WiiController_SetButtonDown(&stick->controller, ButtonUp);
             }
             else if (state.y == AXIS_MAX)
             {
-                _WiiController_SetButtonDown(&stick->controller, ButtonDown);
+                WiiController_SetButtonDown(&stick->controller, ButtonDown);
             }
             else
             {
-                _WiiController_SetButtonUp(&stick->controller, ButtonDown);
-                _WiiController_SetButtonUp(&stick->controller, ButtonUp);
+                WiiController_SetButtonUp(&stick->controller, ButtonDown);
+                WiiController_SetButtonUp(&stick->controller, ButtonUp);
             }
             break;
     }
@@ -190,11 +187,11 @@ void Joystick_ReadInputs(Joystick* stick)
                 Log_InfoF("Button %u %s\n", event.number, event.value ? "pressed" : "released");
                 if (event.value)
                 {
-                    _WiiController_SetButtonDown(&stick->controller, ButtonToWiiButton(event.number));
+                    WiiController_SetButtonDown(&stick->controller, ButtonToWiiButton(event.number));
                 }
                 else
                 {
-                    _WiiController_SetButtonUp(&stick->controller, ButtonToWiiButton(event.number));
+                    WiiController_SetButtonUp(&stick->controller, ButtonToWiiButton(event.number));
                 }
                 break;
             case JS_EVENT_AXIS:
@@ -218,7 +215,7 @@ void Joystick_ReadInputs(Joystick* stick)
 void Joystick_Disconnect(Joystick* joystick)
 {
     close(joystick->linux_device_index);
-    joystick->index = -1;
+    joystick->isConnected = false;
 }
 #endif
 

@@ -135,8 +135,8 @@ float WiiController_GetYaw(WiiController* controller);
 
 const char* WiiController_GetButtonSymbol(int buttonEnum);
 
-void _WiiController_SetButtonDown(WiiController* controller, u32 buttonEnum);
-void _WiiController_SetButtonUp(WiiController* controller, u32 buttonEnum);
+void WiiController_SetButtonDown(WiiController* controller, u32 buttonEnum);
+void WiiController_SetButtonUp(WiiController* controller, u32 buttonEnum);
 
 #ifdef __cplusplus
 }

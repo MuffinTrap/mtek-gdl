@@ -65,12 +65,12 @@ float WiiController_GetRoll(WiiController* controller) {
 	return controller->m_roll;
 }
 
-void _WiiController_SetButtonDown (WiiController* controller, u32 buttonEnum )
+void WiiController_SetButtonDown (WiiController* controller, u32 buttonEnum )
 {
 	controller->m_pressedButtons = Flag_Set(controller->m_pressedButtons, buttonEnum);
 	controller->m_heldButtons = Flag_Set(controller->m_heldButtons, buttonEnum);
 }
-void _WiiController_SetButtonUp (WiiController* controller, u32 buttonEnum )
+void WiiController_SetButtonUp (WiiController* controller, u32 buttonEnum )
 {
 	controller->m_heldButtons = Flag_Unset(controller->m_heldButtons,buttonEnum);
 	controller->m_releasedButtons = Flag_Set(controller->m_releasedButtons, buttonEnum);

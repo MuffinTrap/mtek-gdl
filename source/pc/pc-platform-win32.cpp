@@ -3,10 +3,15 @@
 #include <mgdl/mgdl-platform.h>
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-logger.h>
+#include <mgdl/mgdl-util.h>
 #include <mgdl/pc/mgdl-joystick.h>
-#include "Windows.h"
+#include <mgdl/pc/mgdl-pc-input.h>
+
+#include <Windows.h>
+#include <windowsx.h> // Macro for extracting mouse position
 
 static Platform platformPC;
+static USHORT keybuffer; // Ascii input for later textinput
 
 static CallbackFunction initCall = nullptr;
 static CallbackFunction frameCall = nullptr;
@@ -23,12 +28,14 @@ static PIXELFORMATDESCRIPTOR pixelFormatDesc;
 static int pixelFormatEnum;
 
 // Timer
-static UINT_PTR m_timerId;
+static UINT_PTR m_renderTimerId;
+static UINT_PTR m_splashTimerId;
 static BOOL windowIsVisible;
+static DWORD applicationStartTimeMS;
+static DWORD applicationElapsedMS;
 
 // Controller(s)
-static WiiController win32Controller;
-void ErrorExit()
+static void ErrorExit()
 {
 	// Retrieve the system error message for the last-error code
 
@@ -54,34 +61,133 @@ void ErrorExit()
 	ExitProcess(dw);
 }
 
-void Platform_RenderEnd(Platform* platform)
+/*
+	STATIC UPDATE AND RENDER
+*/
+static void UpdateDeltaTime(DWORD newElapsedMs)
 {
-	SwapBuffers(deviceContextHandle);
+	// If system elapsed is 100
+	// new elapsed is 116
+	// application elapsed is 0
+	DWORD lastElapsed = applicationElapsedMS;
+	applicationElapsedMS = newElapsedMs - applicationStartTimeMS;
+	DWORD elapsedMS = applicationElapsedMS - lastElapsed;
+
+	platformPC.elapsedTimeS = (float)applicationElapsedMS/ 1000.0f;
+	platformPC.deltaTimeS = (float(elapsedMS) / 1000.0f);
 }
 
-void RenderLoop()
+static void RenderAHold(
+	HWND target_window,
+	UINT message,
+	UINT_PTR timer_id,
+	DWORD systemElapsedMs)
+{ 
+	UpdateDeltaTime(systemElapsedMs);
+	Platform_UpdateControllers();
+	Platform_UpdateAHold(0);
+	Platform_RenderAHold();
+}
+
+
+void Platform_UpdateControllers()
 {
-	frameCall();
-
-    Platform_RenderEnd(&platformPC);
-
     WiiController* controller = Platform_GetController(0);
 
     if (WiiController_ButtonPress(controller, ButtonHome))
     {
-		Platform_DoProgramExit();
+        if (quitCall != NULL)
+        {
+            quitCall();
+        }
+        Platform_DoProgramExit();
     }
     // Reset controller for next frame
     WiiController_StartFrame(controller);
-	Joystick* gamepad_0 = platformPC.gamepad_0;
+    Joystick* gamepad_0 = platformPC.gamepads[0];
     if (Joystick_IsConnected(gamepad_0))
     {
         Joystick_ReadInputs(gamepad_0);
         // Always read cursor from glut
-        controller->m_cursorX = win32Controller.m_cursorX;
-        controller->m_cursorY = win32Controller.m_cursorY;
+        controller->m_cursorX = kbmController.m_cursorX;
+        controller->m_cursorY = kbmController.m_cursorY;
     }
 }
+
+static void RenderLoop(
+	HWND target_window,
+	UINT message,
+	UINT_PTR timer_id,
+	DWORD systemElapsedMs)
+{
+	UpdateDeltaTime(systemElapsedMs);
+	frameCall();
+
+    Platform_RenderEnd();
+
+	Platform_UpdateControllers();
+}
+
+void UpdateEnd()
+{
+	platformPC.elapsedUpdates += 1;
+}
+
+void Platform_RenderEnd()
+{
+	SwapBuffers(deviceContextHandle);
+}
+
+
+void Platform_UpdateSplash(int value)
+{
+    bool waitIsOver = false;
+    if (platformPC.showHoldAMessage)
+    {
+        waitIsOver = Platform_IncreaseAHoldAndTest(&platformPC);
+    }
+    else
+    {
+        waitIsOver = (platformPC.splashProgress > 1.0f);
+    }
+
+    if (waitIsOver)
+    {
+        // Record waiting time
+        platformPC.waitElapsedMS = applicationElapsedMS;
+        // Change to main Update function and render
+		KillTimer(windowHandle, m_splashTimerId);
+		m_renderTimerId = SetTimer(windowHandle, NULL, 16, RenderLoop);
+    }
+    UpdateEnd();
+}
+
+void Platform_UpdateAHold(int value)
+{
+    if (Platform_IncreaseAHoldAndTest(&platformPC))
+    {
+        // Record waiting time
+        platformPC.waitElapsedMS = applicationElapsedMS;
+        // Change to main update and render
+		KillTimer(windowHandle, m_splashTimerId);
+		m_renderTimerId = SetTimer(windowHandle, NULL, 16, RenderLoop);
+    }
+    UpdateEnd();
+}
+
+static void RenderSplash(
+	HWND target_window,
+	UINT message,
+	UINT_PTR timer_id,
+	DWORD systemElapsedMs
+)
+{
+	UpdateDeltaTime(systemElapsedMs);
+	Platform_UpdateControllers();
+	Platform_UpdateSplash(0);
+	Platform_RenderSplash(&platformPC);
+}
+
 
 void SetupOpenGL(HWND target_windowHandle)
 {
@@ -158,64 +264,111 @@ LRESULT CALLBACK WindowCallback(HWND target_windowHandle, UINT message, WPARAM w
 	LRESULT result = 0;
 	switch (message)
 	{
-		case WM_CREATE:
+	case WM_CREATE:
+	{
+		Log_Info("WM_CREATE\n");
+		// Windows has created the window and we can OpenGL
+		SetupOpenGL(target_windowHandle);
+	}
+	break;
+	case WM_ACTIVATEAPP:
+	{
+		// If the window is visible and active : wParam : BOOL
+		Log_Info("WM_ACTIVATEAPP\n");
+		windowIsVisible = wParam;
+	}
+	break;
+	case WM_SIZE:
+	{
+		// Size is changed
+		Log_Info("WM_SIZE\n");
+	}
+	break;
+	case WM_TIMER:
+	{
+		Log_Info("WM_TIMER\n");
+		// Windows calls this when timer is up
+		// TODO Use high resolution timer
+	}
+	break;
+
+	// Input from keyboard
+	case WM_KEYDOWN:
+	{
+		UINT keycode = wParam;
+		bool isRepeat = (lParam & (1 << 30)) > 0;
+		if (isRepeat == false)
 		{
-			Log_Info("WM_CREATE\n");
-			// Windows has created the window and we can OpenGL
-			SetupOpenGL(target_windowHandle);
+			keyboardDown(keycode);
 		}
+		Log_InfoF("Key down %x\n", keycode);
+	}
+	break;
+	case WM_KEYUP:
+	{
+		UINT keycode = wParam;
+		keyboardUp(keycode);
+		Log_InfoF("Key up %x\n", keycode);
+	}
+	break;
+
+	// Input from mouse
+	case WM_LBUTTONDOWN:
+
+		OutputDebugStringA("Mouse left down");
+		mouseDown(MGDL_VK_MOUSE_LEFT);
 		break;
-		case WM_ACTIVATEAPP: 
-		{
-			// If the window is visible and active : wParam : BOOL
-			Log_Info("WM_ACTIVATEAPP\n");
-			windowIsVisible = wParam;
-		}
+	case WM_RBUTTONDOWN:
+		mouseDown(MGDL_VK_MOUSE_RIGHT);
 		break;
-		case WM_SIZE:
-		{
-			// Size is changed
-			Log_Info("WM_SIZE\n");
-		}
+	case WM_LBUTTONUP:
+		OutputDebugStringA("Mouse left up");
+		mouseUp(MGDL_VK_MOUSE_LEFT);
 		break;
-		case WM_TIMER:
-		{
-			//Log_Info("WM_TIMER\n");
-			// Windows calls this when timer is up
-			// TODO Use high resolution timer
-			platformPC.deltaTimeS = 0.016f;
-			platformPC.elapsedTimeS += platformPC.deltaTimeS;
-			platformPC.elapsedUpdates += 1;
-			RenderLoop();
-		}
+	case WM_RBUTTONUP:
+		mouseUp(MGDL_VK_MOUSE_RIGHT);
 		break;
-		case WM_ERASEBKGND:
-		{
-			// Windows wants to clear the window
-			// lie to it 
-			result = TRUE;
-		}
-		break;
-		case WM_CLOSE: 
-		{
-			Log_Info("WM_CLOSE\n");
-			KillTimer(windowHandle, m_timerId); // Stop calling the render loop
-			Platform_DoProgramExit();
-		}
-		break;
-		case WM_DESTROY: 
-		{
-			Log_Info("WM_DESTROY\n");
-			// The window has been destroyed, bye bye
-			PostQuitMessage(0); // Will send WM_QUIT message
-		}
-		break;
-		default: 
-		{
-			// Call the default
-			result = DefWindowProcA(target_windowHandle, message, wParam, lParam);
-		}
-		break;
+
+	case WM_MOUSEMOVE:
+	{
+		SHORT xPos = GET_X_LPARAM(lParam);
+		SHORT yPos = GET_Y_LPARAM(lParam);
+
+		// Y coordinate starts from bottom
+		// TODO calculate to Wii resolution
+		mouseMove(xPos, platformPC.windowHeight - yPos);
+
+		// Log_InfoF("mouse move %d,%d\n", xPos, yPos );
+	}
+	break;
+
+	case WM_ERASEBKGND:
+	{
+		// Windows wants to clear the window
+		// lie to it 
+		result = TRUE;
+	}
+	break;
+	case WM_CLOSE:
+	{
+		Log_Info("WM_CLOSE\n");
+		KillTimer(windowHandle, m_renderTimerId); // Stop calling the render loop
+		Platform_DoProgramExit();
+	}
+	break;
+	case WM_DESTROY:
+	{
+		Log_Info("WM_DESTROY\n");
+		// The window has been destroyed, bye bye
+		PostQuitMessage(0); // Will send WM_QUIT message
+	}
+	break;
+	default:
+	{
+		// Call the default
+		result = DefWindowProcA(target_windowHandle, message, wParam, lParam);
+	}
+	break;
 	}
 	return(result);
 
@@ -278,16 +431,33 @@ void Platform_Init(const char* windowName,
 		return;
 	}
 
-	// Get the Device Context for our window
-	// client area : Must be released
+	// Change the window size so that the Client
+	// area matches the WII resolution
+	RECT wrect;
+	GetWindowRect(windowHandle, &wrect);
+	RECT crect;
+	GetClientRect(windowHandle, &crect);
+	POINT lefttop = { crect.left, crect.top }; // Practically both are 0
+	ClientToScreen(windowHandle, &lefttop);
+	POINT rightbottom = { crect.right, crect.bottom };
+	ClientToScreen(windowHandle, &rightbottom);
+
+	int left_border = lefttop.x - wrect.left; // Windows 10: includes transparent part
+	int right_border = wrect.right - rightbottom.x; // As above
+	int bottom_border = wrect.bottom - rightbottom.y; // As above
+	int top_border_with_title_bar = lefttop.y - wrect.top; // There is no transparent par
+	MoveWindow(windowHandle, wrect.left, wrect.top, MGDL_WII_WIDTH + left_border + right_border, MGDL_WII_HEIGHT + top_border_with_title_bar + bottom_border, TRUE);
 	
+	// Set up controllers
+	Platform_InitControllers();
+	// Hide cursor
+	ShowCursor(FALSE);
 
 
 	// Set up 60fps timer.
 	// Setting NULL as lpTimerFunc makes windows send WM_TIMER
 	// messages
 	//SetUserObjectInformationW(GetCurrentProcess(), UOI_TIMERPROC_EXCEPTION_SUPPRESSION, FALSE, 1);
-	m_timerId = SetTimer(windowHandle, NULL, 16, NULL);
 
 	// Main loop gets messages from Windows
 	OutputDebugStringA("Start Message Loop\n");
@@ -296,8 +466,40 @@ void Platform_Init(const char* windowName,
 	initCall();
 	// Setup timing
 	Platform_ResetTime(&platformPC);
+
 	ShowWindow(windowHandle, SW_SHOW);
 	UpdateWindow(windowHandle);
+
+	// Set up splash screen
+ const bool SplashFlag = Flag_IsSet(initFlags, PlatformInitFlag::FlagSplashScreen);
+    const bool HoldAFlag = Flag_IsSet(initFlags, PlatformInitFlag::FlagPauseUntilA);
+    // Set up A hold variables
+    Platform_ResetTime(&platformPC);
+
+    if (HoldAFlag||SplashFlag)
+    {
+        platformPC.showHoldAMessage = HoldAFlag;
+    }
+
+	applicationStartTimeMS = GetTickCount();
+	applicationElapsedMS = 0;
+
+    // Select display and update functions
+    if (SplashFlag)
+    {
+		m_splashTimerId = SetTimer(windowHandle, NULL, 16, RenderSplash);
+    }
+    else if (HoldAFlag)
+    {
+		m_splashTimerId = SetTimer(windowHandle, NULL, 16, RenderAHold);
+        Log_Info("\n>> MGDL INIT COMPLETE\n");
+        Log_Info(">> Hold A button to continue\n");
+    }
+    else
+    {
+		m_renderTimerId = SetTimer(windowHandle, NULL, 16, RenderLoop);
+    }
+
 	while (true)
 	{
 		MSG message;
@@ -323,7 +525,28 @@ void Platform_Init(const char* windowName,
 		}
 	}
 
+	ShowCursor(TRUE);
 	OutputDebugStringA("InitSystem over\n");
+}
+
+void Platform_InitControllers()
+{
+	InitPCInput();
+
+    WiiController_Init(&kbmController, 0);
+
+    WiiController_ZeroAllInputs(&kbmController);
+    WiiController_StartFrame(&kbmController);
+
+    // Init Joystick
+    platformPC.gamepads[0] = Joystick_Create(0);
+    platformPC.gamepads[1] = Joystick_Create(1);
+    platformPC.gamepads[2] = Joystick_Create(2);
+    platformPC.gamepads[3] = Joystick_Create(3);
+    if (Joystick_IsConnected(platformPC.gamepads[0]))
+    {
+        Joystick_ZeroInputs(platformPC.gamepads[0]);
+    }
 }
 
 // This is called in response to WM_CLOSE
@@ -362,7 +585,16 @@ u32 Platform_GetElapsedUpdates()
 
 struct WiiController* Platform_GetController(int controllerNumber)
 {
-	return &win32Controller;
+    Joystick* gamepad = platformPC.gamepads[controllerNumber];
+    if (Joystick_IsConnected(gamepad) && gamepad->index == controllerNumber)
+    {
+        return Joystick_GetController(gamepad);
+    }
+    else if (controllerNumber == 0)
+    {
+        return &kbmController;
+    }
+    return &kbmController;
 }
 
 #endif 

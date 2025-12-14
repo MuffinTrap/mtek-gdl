@@ -15,9 +15,6 @@
 static Platform platformPC;
 // Declarations
 
-static int windowWidth = 0;
-static int windowHeight = 0;
-
 static int glutElapsedStartMS;
 static int glutElapsedMS;
 static int glutDeltaMS;
@@ -69,6 +66,10 @@ static void UpdateDeltaTime()
 }
 
 
+static void RenderSplash()
+{
+    Platform_RenderSplash(&platformPC);
+}
 
 // Needs the int parameter to work with glutTimerFunc
 void Platform_UpdateSplash(int value)
@@ -139,12 +140,8 @@ static void UpdateEnd()
     glutElapsedStartMS = glutElapsedMS;
 }
 
-void RenderLoop()
+void Platform_UpdateControllers()
 {
-	frameCall();
-
-    Platform_RenderEnd();
-
     WiiController* controller = Platform_GetController(0);
 
     if (WiiController_ButtonPress(controller, ButtonHome))
@@ -157,14 +154,23 @@ void RenderLoop()
     }
     // Reset controller for next frame
     WiiController_StartFrame(controller);
-    Joystick* gamepad_0 = platformPC.gamepad_0;
+    Joystick* gamepad_0 = platformPC.gamepads[0];
     if (Joystick_IsConnected(gamepad_0))
     {
         Joystick_ReadInputs(gamepad_0);
         // Always read cursor from glut
-        controller->m_cursorX = glutController.m_cursorX;
-        controller->m_cursorY = glutController.m_cursorY;
+        controller->m_cursorX = kbmController.m_cursorX;
+        controller->m_cursorY = kbmController.m_cursorY;
     }
+}
+
+void RenderLoop()
+{
+	frameCall();
+
+    Platform_RenderEnd();
+
+    Platform_UpdateControllers();
 }
 
 void Platform_RenderEnd()
@@ -176,34 +182,6 @@ void Platform_RenderEnd()
 
 }
 
-void onWindowSizeChange(int newWidth, int newHeight)
-{
-    // Keep aspect ratio
-    float width = (float)newWidth/(float)windowWidth;
-    float height = (float)newHeight/(float)windowHeight;
-    float scale = width < height ? width : height;
-
-    // Use the scale to center the graphics
-    float scaledWidth = scale*(float)windowWidth;
-    float scaledHeight = scale*(float)windowHeight;
-
-    int left = 0;
-    int top = 0;
-
-    if (scaledWidth < newWidth)
-    {
-        // Black bars on sides
-        left = (newWidth - scaledWidth)/2;
-    }
-    if (scaledHeight < newHeight)
-    {
-        // Black bars on top and bottom
-        top = (newHeight - scaledHeight)/2;
-    }
-
-    // But keep showing the internal resolution scaled
-    glViewport(left, top, scaledWidth, scaledHeight);
-}
 
 void Platform_InitAudio()
 {
@@ -267,32 +245,11 @@ void Platform_Init(const char* windowName,
         glutFullScreen();
     }
 
-    // Input callbacks and init
-    glutKeyboardFunc(keyboardDown); // Register the keyboard callback
-    glutKeyboardUpFunc(keyboardUp); // Register the keyboard release
 
-    glutSpecialFunc(specialKeyDown); // Register the keyboard callback
-    glutSpecialUpFunc(specialKeyUp); // Register the keyboard release
+    glutReshapeFunc(Platform_ResizeWindow);
 
-    glutMouseFunc(mouseKey);        // Register mouse buttons and movement
-    glutMotionFunc(mouseMove);
-    glutPassiveMotionFunc(mouseMove);
-    glutSetCursor(GLUT_CURSOR_NONE);
-
-    glutReshapeFunc(onWindowSizeChange);
-
-
-    WiiController_Init(&glutController, 0);
-
-    WiiController_ZeroAllInputs(&glutController);
-    WiiController_StartFrame(&glutController);
-
-    // Init Joystick
-    platformPC.gamepad_0 = Joystick_Create(0);
-    if (Joystick_IsConnected(platformPC.gamepad_0))
-    {
-        Joystick_ZeroInputs(platformPC.gamepad_0);
-    }
+    InitPCInput();
+    Platform_InitControllers();
 
     initCall();
     glutElapsedStartMS = 0;
@@ -312,7 +269,7 @@ void Platform_Init(const char* windowName,
     // Select display and update functions
     if (SplashFlag)
     {
-        glutDisplayFunc(Platform_RenderSplash);
+        glutDisplayFunc(RenderSplash);
         glutTimerFunc(16, Platform_UpdateSplash, 0);
     }
     else if (HoldAFlag)
@@ -331,18 +288,33 @@ void Platform_Init(const char* windowName,
 	glutMainLoop();
 }
 
+void Platform_InitControllers()
+{
+    WiiController_Init(&kbmController, 0);
+
+    WiiController_ZeroAllInputs(&kbmController);
+    WiiController_StartFrame(&kbmController);
+
+    // Init Joystick
+    platformPC.gamepads[0] = Joystick_Create(0);
+    if (Joystick_IsConnected(platformPC.gamepads[0]))
+    {
+        Joystick_ZeroInputs(platformPC.gamepads[0]);
+    }
+}
+
 struct WiiController* Platform_GetController(int controllerNumber)
 {
-    Joystick* gamepad_0 = platformPC.gamepad_0;
-    if (Joystick_IsConnected(gamepad_0) && gamepad_0->index == controllerNumber)
+    Joystick* gamepad = platformPC.gamepads[controllerNumber];
+    if (Joystick_IsConnected(gamepad) && gamepad->index == controllerNumber)
     {
-        return Joystick_GetController(gamepad_0);
+        return Joystick_GetController(gamepad);
     }
     else if (controllerNumber == 0)
     {
-        return &glutController;
+        return &kbmController;
     }
-    return &glutController;
+    return &kbmController;
 }
 
 void Platform_DoProgramExit()
