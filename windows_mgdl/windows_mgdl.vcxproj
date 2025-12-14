@@ -169,6 +169,8 @@
     <ClCompile Include="..\source\cross\mgdl-util.cpp" />
     <ClCompile Include="..\source\cross\mgdl-vectorfunctions.cpp" />
     <ClCompile Include="..\source\pc\pc-assert.cpp" />
+    <ClCompile Include="..\source\pc\pc-audio-directsound.cpp" />
+    <ClCompile Include="..\source\pc\pc-audio-openal.cpp" />
     <ClCompile Include="..\source\pc\pc-input-glut.cpp" />
     <ClCompile Include="..\source\pc\pc-input-win32.cpp" />
     <ClCompile Include="..\source\pc\pc-joystick-linux.cpp" />

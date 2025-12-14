@@ -4,6 +4,7 @@
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-util.h>
+#include <mgdl/mgdl-audio.h>
 #include <mgdl/pc/mgdl-joystick.h>
 #include <mgdl/pc/mgdl-pc-input.h>
 
@@ -89,6 +90,10 @@ static void RenderAHold(
 	Platform_RenderAHold();
 }
 
+void Platform_InitAudio()
+{
+	Audio_Init(&windowHandle);
+}
 
 void Platform_UpdateControllers()
 {
@@ -121,6 +126,8 @@ static void RenderLoop(
 	DWORD systemElapsedMs)
 {
 	UpdateDeltaTime(systemElapsedMs);
+	Audio_Update();
+
 	frameCall();
 
     Platform_RenderEnd();
@@ -450,6 +457,7 @@ void Platform_Init(const char* windowName,
 	
 	// Set up controllers
 	Platform_InitControllers();
+	Platform_InitAudio();
 	// Hide cursor
 	ShowCursor(FALSE);
 
