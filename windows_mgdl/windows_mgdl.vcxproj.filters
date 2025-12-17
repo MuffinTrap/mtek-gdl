@@ -162,6 +162,12 @@
     <ClCompile Include="..\source\pc\pc-audio-openal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\cross\mgdl-sound.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\wii\wii-sound.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\mgdl\mgdl-alloc.h">
@@ -299,7 +305,13 @@
     <ClInclude Include="..\include\mgdl\pc\mgdl-pc-input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\mgdl\pc\mgdl-pc-sound.h">
+    <ClInclude Include="..\include\mgdl\pc\mgdl-sound-openal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mgdl\pc\mgdl-sound-directsound.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mgdl\wii\mgdl-sound-asnd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

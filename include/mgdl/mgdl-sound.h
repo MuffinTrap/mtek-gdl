@@ -1,16 +1,11 @@
 #pragma once
 
 #include "mgdl-types.h"
-#include <mgdl/mgdl-openal.h>
 
 #ifdef __cplusplus
 #include <cstdlib>
 #else
 #include <stdlib.h>
-#endif
-
-#ifndef GEKKO
-#include <sndfile.h>
 #endif
 
 /**
@@ -37,21 +32,8 @@ typedef enum SoundStatus SoundStatus;
  */
 struct Sound
 {
-	#ifdef GEKKO
-
-	short	format;
-	u16		freq;
-	void	*sData;
-	short	voiceNumber; // ASND voice number
-
-	#else // PC Platform
-
-	SNDFILE* sndfile;
-	ALuint buffer, source;
-
-	#endif
-
-	sizetype		sSize; // Size in bytes
+	s32 voiceNumber; // index to array in each platform, -1 if invalid
+	sizetype sizeBytes; // Size in bytes
 
 	float secondsOffset; // This is mainly to allow chaning the play position on Ogg on Wii for debug purposes
 	bool isLooping;
@@ -68,6 +50,8 @@ extern "C"
  * @return New Sound
  */
 Sound* Sound_Create(void);
+
+void Sound_InitEmpty(Sound* sound);
 
 //! Loads a sound file.
 /*!

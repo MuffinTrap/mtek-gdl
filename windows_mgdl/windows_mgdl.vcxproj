@@ -162,6 +162,7 @@
     <ClCompile Include="..\source\cross\mgdl-png-stb.cpp" />
     <ClCompile Include="..\source\cross\mgdl-png.cpp" />
     <ClCompile Include="..\source\cross\mgdl-scene.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-sound.cpp" />
     <ClCompile Include="..\source\cross\mgdl-splash.cpp" />
     <ClCompile Include="..\source\cross\mgdl-sprite.cpp" />
     <ClCompile Include="..\source\cross\mgdl-texture.cpp" />
@@ -182,6 +183,7 @@
     <ClCompile Include="..\source\pc\pc-platform-win32.cpp" />
     <ClCompile Include="..\source\pc\pc-platform.cpp" />
     <ClCompile Include="..\source\pc\pc-sound.cpp" />
+    <ClCompile Include="..\source\wii\wii-sound.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\mgdl\mgdl-alloc.h" />
@@ -229,7 +231,9 @@
     <ClInclude Include="..\include\mgdl\mgdl-vectorfunctions.h" />
     <ClInclude Include="..\include\mgdl\pc\mgdl-joystick.h" />
     <ClInclude Include="..\include\mgdl\pc\mgdl-pc-input.h" />
-    <ClInclude Include="..\include\mgdl\pc\mgdl-pc-sound.h" />
+    <ClInclude Include="..\include\mgdl\pc\mgdl-sound-directsound.h" />
+    <ClInclude Include="..\include\mgdl\pc\mgdl-sound-openal.h" />
+    <ClInclude Include="..\include\mgdl\wii\mgdl-sound-asnd.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\freeglut\bin\x64\freeglut.dll" />

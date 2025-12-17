@@ -1,6 +1,7 @@
 #pragma once
 
 #include <mgdl/mgdl-types.h>
+#include <mgdl/mgdl-sound.h>
 
 /**
  * @file mgdl-audio.h
@@ -39,10 +40,16 @@ extern "C"
 
 
 	/**
-	* @brief Initializes the audio system
+	* @brief Initializes the common audio system
 	* @param Pointer to platform specific data that the audio system needs. On windows this is the Window handle: HWND
 	*/
 	void Audio_Init(void* platformSpecificData);
+
+	/**
+	* @brief Initializes the platform specific audio system
+	* @param Pointer to platform specific data that the audio system needs. On windows this is the Window handle: HWND
+	*/
+	void Audio_Platform_Init(void* platformSpecificData);
 
 	/**
 	* @brief Sets the audio callback function
@@ -70,11 +77,6 @@ extern "C"
 	*/
 	bool Audio_IsPaused(void);
 
-	/**
-	@brief Tells the audio system to start a new voice
-	@return The voice number for the started voice, this will be sent to the callback function when more audio system needs more samples. If the return value is -1 it means a new voice could not be started
-	*/
-	s32 Audio_StartNewVoice(void);
 
 	/**
 	@brief Stops the given voice
@@ -108,7 +110,6 @@ extern "C"
 	*/
 	u32 Audio_GetVoiceElapsedMs(s32 voiceNumber);
 
-
 	/**
 	 * @brief Set global maximum volume of sounds
 	 * @param normalizedVolume Volume from 0 to 1.0
@@ -124,6 +125,18 @@ void Audio_SetMusicMasterVolume(float normalizedVolume);
 	 * @param normalizedVolume Volume from 0 to 1.0
 	 */
 void Audio_SetMasterAudioVolume(float normalizedVolume);
+
+	/**
+	 * @brief Loads a sound from given file
+	 * @param Name of the wav file
+	 */
+Sound* Audio_LoadSound(const char* filename);
+
+Sound Audio_Platform_LoadSound(const char* filename, s32 voiceNumber);
+void Audio_Platform_UnloadSound(Sound s);
+
+void Audio_PlaySound(Sound* s);
+void Audio_Platform_PlaySound(s32 voiceNumber);
 
 
 #ifdef __cplusplus

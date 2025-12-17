@@ -66,3 +66,8 @@
 	std::int32_t ReadOggToPCMBuffer(char* buffer, std::int32_t bufferSize);
 
 
+	struct SoundOpenAL
+	{
+		SNDFILE* sndfile;
+		ALuint buffer, source;
+	}; typedef struct SoundOpenAL SoundOpenAL;

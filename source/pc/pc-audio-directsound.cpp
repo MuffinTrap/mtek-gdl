@@ -1,7 +1,11 @@
 #include <mgdl/mgdl-audio.h>
 #if defined(MGDL_WINDOWS_NATIVE)
 
+#include <mgdl/pc/mgdl-sound-directsound.h>
+
+#include <sndfile.h>
 #include <mgdl/mgdl-logger.h>
+#include <mgdl/mgdl-assert.h>
 #include <Dsound.h>
 
 // Pointer to Object created by DirectSoundCreate
@@ -9,15 +13,18 @@ static LPDIRECTSOUND DirectSoundObject = nullptr;
 // Pointer to Buffer created by direct sound
 static LPDIRECTSOUNDBUFFER DirectSoundPrimaryBuffer = nullptr;
 
+// Main buffer format
+static WAVEFORMATEX waveFormatPrimary = { 0 };
+
 // One buffer for music
 static LPDIRECTSOUNDBUFFER DirectSoundWriteBuffer = nullptr;
 static DWORD writeBufferSize = 0;
 static DWORD lastWriteCursorPosition = 0;
 static DWORD lastPlayCursorPosition = 0;
 
-static LPDIRECTSOUNDBUFFER* soundBuffers;
-
-// Multiple buffers for sound effects
+// Multiple buffers for music and sound effects
+static SoundDirectSound* soundDatas;
+static bool Create_Buffer(u32 sizeBytes, WORD channels, u32 index);
 
 AudioCallbackFunction audioCallback = nullptr;
 // static HANDLE soundBufferEmptyEvent;
@@ -43,12 +50,12 @@ void Audio_SetCallback(AudioCallbackFunction callbackFunction)
 
 }
 
-void Audio_Init(void* platformData)
+void Audio_Platform_Init(void* platformData)
 {
 	HWND windowHandle = *(HWND*)platformData;
 	OutputDebugStringA("Initializing DirectSound\n");
 
-	soundBuffers = (LPDIRECTSOUNDBUFFER*)malloc(sizeof(LPDIRECTSOUNDBUFFER) * MGDL_AUDIO_MAX_VOICES);
+	soundDatas = (SoundDirectSound*)malloc(sizeof(SoundDirectSound) * MGDL_AUDIO_MAX_VOICES);
 
 	// Init windows Multimedia audio system
 	// Load the library for DirectSound audio
@@ -100,10 +107,10 @@ void Audio_Init(void* platformData)
 
 			return;
 		}
-		WAVEFORMATEX waveFormatPrimary = { 0 };
+		waveFormatPrimary = { 0 };
 		waveFormatPrimary.wFormatTag = WAVE_FORMAT_PCM;
 		waveFormatPrimary.nChannels = 2;
-		waveFormatPrimary.nSamplesPerSec = 44100;
+		waveFormatPrimary.nSamplesPerSec = MGDL_AUDIO_SAMPLE_RATE;
 		waveFormatPrimary.wBitsPerSample = 16; // 16 bit audio
 		waveFormatPrimary.nBlockAlign = (waveFormatPrimary.nChannels * waveFormatPrimary.wBitsPerSample) / 8; // 8 is bits per byte
 		waveFormatPrimary.nAvgBytesPerSec = waveFormatPrimary.nSamplesPerSec * waveFormatPrimary.nBlockAlign;
@@ -118,27 +125,8 @@ void Audio_Init(void* platformData)
 			Log_Error("Failed to set primary buffer format");
 		}
 
-		// Create a write buffer  for music playback
-		writeBufferSize= waveFormatPrimary.nAvgBytesPerSec * 2;
+		Create_Buffer(waveFormatPrimary.nAvgBytesPerSec * 2, 2, 0);
 
-		DSBUFFERDESC writeBufferDescription = { 0 };
-		writeBufferDescription.dwSize = sizeof(DSBUFFERDESC); // Size of the structure
-		writeBufferDescription.dwFlags = 0;
-		// Audio for 2 seconds
-		writeBufferDescription.dwBufferBytes = writeBufferSize;
-		writeBufferDescription.dwReserved = 0; // Must be 0
-		writeBufferDescription.lpwfxFormat = &waveFormatPrimary; // Format, NULL for write
-		writeBufferDescription.guid3DAlgorithm = DS3DALG_DEFAULT; // Virtualization algo
-
-		// Create a write buffer
-		HRESULT createWriteBufferResult = DirectSoundObject->CreateSoundBuffer(&writeBufferDescription, &DirectSoundWriteBuffer, NULL);
-		if (createWriteBufferResult != DS_OK)
-		{
-			// Failed to create write buffer
-			Log_Error("Failed to create write buffer");
-			OutputDebugStringA("Failed to create write buffer");
-			return;
-		}
 
 		// Set notification callback that DirectSound calls
 		// when buffer needs to be filled
@@ -166,6 +154,87 @@ void Audio_Init(void* platformData)
 		}
 		*/
 	}
+}
+
+Sound Audio_Platform_LoadSound(const char* filename, s32 voiceNumber)
+{
+	Sound s;
+	s.sizeBytes = 0;
+	s.voiceNumber = -1;
+
+	// Open the WAV file
+    SF_INFO sfinfo;
+    SNDFILE* sndfile = sf_open(filename, SFM_READ, &sfinfo);
+    if (!sndfile) {
+		return s;
+    }
+
+    sizetype dataSize = sfinfo.frames * sfinfo.channels * sizeof(s16);
+	u32 sizeBytes = dataSize;
+	if (Create_Buffer(sizeBytes, sfinfo.channels, voiceNumber))
+	{
+		// Lock, Fill and Unlock buffer
+		LPVOID lpWrite;
+		DWORD dwLength;
+		if (DS_OK == soundDatas[voiceNumber].buffer->Lock(
+			0,
+			0,
+			&lpWrite,
+			&dwLength,
+			NULL,
+			NULL,
+			DSBLOCK_ENTIREBUFFER))
+		{
+			sf_read_raw(sndfile, lpWrite, dwLength);
+			soundDatas[voiceNumber].buffer->Unlock(lpWrite, dwLength, 0, 0);
+
+			// Set common values and return
+			s.voiceNumber = voiceNumber;
+			s.sizeBytes = sizeBytes;
+		}
+
+		// TODO : if fails, try to Restore buffer
+	}
+	sf_close(sndfile);
+	return s;
+}
+
+void Audio_Platform_PlaySound(s32 voiceNumber)
+{
+	// TODO : if fails, try to Restore buffer
+	soundDatas[voiceNumber].buffer->Play(0, 0, 0);
+}
+
+void Audio_Platform_UnloadSound(Sound s)
+{
+	// ... TODO free buffer
+}
+
+bool Create_Buffer(u32 sizeBytes, WORD channels, u32 index)
+{
+		// Create a write buffer  for music playback
+		writeBufferSize= waveFormatPrimary.nAvgBytesPerSec * 2;
+		WAVEFORMATEX format = waveFormatPrimary;
+		format.nChannels = channels;
+
+		DSBUFFERDESC writeBufferDescription = { 0 };
+		writeBufferDescription.dwSize = sizeof(DSBUFFERDESC); // Size of the structure
+		writeBufferDescription.dwFlags = 0;
+		writeBufferDescription.dwBufferBytes = sizeBytes;
+		writeBufferDescription.dwReserved = 0; // Must be 0
+		writeBufferDescription.lpwfxFormat = &format; // Format, NULL for write
+		writeBufferDescription.guid3DAlgorithm = DS3DALG_DEFAULT; // Virtualization algo
+
+		// Create a write buffer
+		HRESULT createWriteBufferResult = DirectSoundObject->CreateSoundBuffer(&writeBufferDescription, &soundDatas[index].buffer, NULL);
+		if (createWriteBufferResult != DS_OK)
+		{
+			// Failed to create write buffer
+			Log_Error("Failed to create write buffer");
+			OutputDebugStringA("Failed to create write buffer");
+			return false;
+		}
+		return true;
 }
 
 
@@ -259,15 +328,6 @@ void Audio_SetPaused(bool paused)
 }
 bool Audio_IsPaused(void)
 {
-}
-
-/**
-@brief Tells the audio system to start a new voice
-@return The voice number for the started voice, this will be sent to the callback function when more audio system needs more samples. If the return value is -1 it means a new voice could not be started
-*/
-s32 Audio_StartNewVoice(void)
-{
-
 }
 
 /**

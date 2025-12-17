@@ -1,10 +1,14 @@
 #ifndef GEKKO
 #include <mgdl/mgdl-music.h>
 
-#include <mgdl/pc/mgdl-pc-sound.h>
+#include <mgdl/mgdl-sound.h>
 #include <mgdl/mgdl-music.h>
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-logger.h>
+#include <mgdl/mgdl-openal.h>
+#include <mgdl/pc/mgdl-sound-openal.h>
+
+#include <vorbis/vorbisfile.h>
 
 #include <stdio.h>
 #include <ostream>
@@ -12,11 +16,9 @@
 #include <cstring>
 #include <limits>
 
-static char* pcmBuffer; // Used to transfer data from Ogg file to OpenAL
-
-static StreamingAudioData audioData;
-
 // Disabled for now since the whole ogg is loaded into OpenAL
+static StreamingAudioData audioData;
+static char* pcmBuffer; // Used to transfer data from Ogg file to OpenAL
 #if 0
 
 // ////////////////////////////////////////////////
@@ -295,7 +297,8 @@ Music* Music_LoadWav(const char* filename)
         Music* music = Music_Create();
         music->type = MusicWav;
         music->wav = snd;
-        music->source = music->wav->source;
+
+        // music->source = music->wav->source; // TODO
         return music;
     }
     return nullptr;
