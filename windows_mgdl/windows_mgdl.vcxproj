@@ -186,6 +186,7 @@
     <ClCompile Include="..\source\wii\wii-sound.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\mgdl.h" />
     <ClInclude Include="..\include\mgdl\mgdl-alloc.h" />
     <ClInclude Include="..\include\mgdl\mgdl-assert.h" />
     <ClInclude Include="..\include\mgdl\mgdl-assetmanager.h" />

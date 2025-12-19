@@ -282,7 +282,7 @@ LRESULT CALLBACK WindowCallback(HWND target_windowHandle, UINT message, WPARAM w
 	{
 		// If the window is visible and active : wParam : BOOL
 		Log_Info("WM_ACTIVATEAPP\n");
-		windowIsVisible = wParam;
+		windowIsVisible = (BOOL)wParam;
 	}
 	break;
 	case WM_SIZE:

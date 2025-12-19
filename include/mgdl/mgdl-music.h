@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mgdl/mgdl-sound.h>
+#include <mgdl/mgdl-audio.h>
 
 #ifndef GEKKO
 #include <mgdl/mgdl-openal.h>
@@ -83,7 +83,7 @@ void Music_Stop(Music* music);
 bool Music_GetLooping(Music* music);
 void Music_SetLooping(Music* music, bool looping);
 
-SoundStatus Music_GetStatus(Music* music);
+mgdlAudioStateEnum Music_GetStatus(Music* music);
 
 #ifdef __cplusplus
 }

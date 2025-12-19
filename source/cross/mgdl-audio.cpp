@@ -24,7 +24,7 @@ Sound* Audio_LoadSound(const char* filename)
 {
     if (filename != "")
     {
-        for (int i = 0; i < MGDL_AUDIO_MAX_VOICES; i++)
+        for (int i = MGDL_AUDIO_MUSIC_NUMBER+1; i < MGDL_AUDIO_MAX_VOICES; i++)
         {
             if (sounds[i].sizeBytes <= 0)
             {
@@ -42,13 +42,14 @@ Sound* Audio_LoadSound(const char* filename)
                 }
             }
         }
+        Log_Error("Cannot load any more sounds, all voices in use");
     }
     return nullptr;
 }
 
 void Audio_PlaySound(Sound* s)
 {
-    if (s != nullptr && s->voiceNumber >= 1); // 0 is music voice
+    if (s != nullptr && s->voiceNumber > MGDL_AUDIO_MUSIC_NUMBER) // 0 is music voice
     {
         Audio_Platform_PlaySound(s->voiceNumber);
     }

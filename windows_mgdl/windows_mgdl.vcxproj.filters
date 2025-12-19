@@ -314,6 +314,9 @@
     <ClInclude Include="..\include\mgdl\wii\mgdl-sound-asnd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\mgdl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\freeglut\bin\x64\freeglut.dll" />

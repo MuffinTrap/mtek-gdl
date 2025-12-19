@@ -5,6 +5,7 @@
 
 #include <mgdl/mgdl-font.h>
 #include <mgdl/mgdl-sound.h>
+#include <mgdl/mgdl-audio.h>
 
 static AssetManager assetManager;
 
@@ -64,16 +65,12 @@ Texture* mgdl_LoadTexturePNG(PNGFile* png, TextureFilterModes filterMode)
 
 Sound* mgdl_LoadSound(const char* filename)
 {
-	Sound* snd = Sound_Load(filename);
+	Sound* snd = Audio_LoadSound(filename);
 	if(snd != nullptr)
 	{
 		AssetManager_LoadSound(&assetManager, snd);
-		return snd;
 	}
-	else
-	{
-		return nullptr;
-	}
+	return snd;
 }
 
 

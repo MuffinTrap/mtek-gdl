@@ -33,7 +33,7 @@ void Example::Init()
 
     // Audio
     blip = mgdl_LoadSound("assets/blipSelect.wav");
-    sampleMusic = mgdl_LoadOgg("assets/sample3.ogg");
+    //sampleMusic = mgdl_LoadOgg("assets/sample3.ogg");
 
     // Wii model scene
     wiiScene = mgdl_LoadFBX("assets/wii_et_baby.fbx");
@@ -413,39 +413,31 @@ void Example::DrawMenu()
     Menu_DrawCursor(menu);
 }
 
-void Example::DrawSoundStatus(SoundStatus status)
+void Example::DrawSoundStatus(mgdlAudioStateEnum status)
 {
 
     Color4f* musicColor = Color_GetDefaultColor(Color_Red);
     IconSymbol icon = IconSymbol::Icon_Dot;
     switch(status)
     {
-        case SoundStatus::SoundPlaying:
+        case Audio_StatePlaying:
             musicColor = Color_GetDefaultColor(Color_Green);
             icon = IconSymbol::Icon_TriangleUp;
             Menu_Text(audioMenu, "Playing");
             break;
-        case SoundStatus::SoundPaused:
+        case Audio_StatePaused:
             musicColor = Color_GetDefaultColor(Color_White);
             icon = IconSymbol::Icon_Clock;
             Menu_Text(audioMenu, "Paused");
             break;
-        case SoundStatus::SoundStopped:
+        case Audio_StateStopped:
             musicColor = Color_GetDefaultColor(Color_Red);
             icon = IconSymbol::Icon_Skull;
             Menu_Text(audioMenu, "Stopped");
             break;
-        case SoundStatus::SoundInitial:
+        case Audio_StateInvalid:
             musicColor = Color_GetDefaultColor(Color_Black);
-            Menu_Text(audioMenu, "Ready");
-        break;
-        case SoundStatus::SoundLoopFailed:
-            musicColor = Color_GetDefaultColor(Color_Black);
-            Menu_Text(audioMenu, "Failed to loop");
-        break;
-        case SoundStatus::SoundError:
-            musicColor = Color_GetDefaultColor(Color_Black);
-            Menu_Text(audioMenu, "Playback error");
+            Menu_Text(audioMenu, "Invalid");
         break;
     };
     Menu_Icon(audioMenu, icon, musicColor);
@@ -461,7 +453,7 @@ void Example::DrawAudio()
     }
     if (Menu_Button(audioMenu, "Pause Ogg"))
     {
-        bool ispaused = Music_GetStatus(sampleMusic) == SoundStatus::SoundPaused;
+        bool ispaused = Music_GetStatus(sampleMusic) == Audio_StatePaused;
         Music_SetPaused(sampleMusic, !ispaused);
     }
     if (Menu_Button(audioMenu, "Stop Ogg"))
@@ -474,19 +466,19 @@ void Example::DrawAudio()
     }
     if (Menu_Button(audioMenu, "Play Sound"))
     {
-        Sound_Play(blip);
+        Audio_PlaySound(blip);
     }
     if (sampleMusic != nullptr)
     {
         Menu_TextF(audioMenu, "Music elapsed: %.2f", Music_GetElapsedSeconds(sampleMusic));
-        SoundStatus musicStatus = Music_GetStatus(sampleMusic);
+        mgdlAudioStateEnum musicStatus = Music_GetStatus(sampleMusic);
         DrawSoundStatus(musicStatus);
 
     }
 
-    float blipElapsed = Sound_GetElapsedSeconds(blip);
-    Menu_TextF(audioMenu, "Sound elapsed: %.2f", blipElapsed);
-    SoundStatus soundStatus = Sound_GetStatus(blip);
+    u32 blipElapsed = Audio_GetSoundElapsedMs(blip);
+    Menu_TextF(audioMenu, "Sound elapsed: %.2f", blipElapsed/1000.0f);
+    mgdlAudioStateEnum soundStatus = Audio_GetSoundStatus(blip);
     DrawSoundStatus(soundStatus);
 }
 #if 0

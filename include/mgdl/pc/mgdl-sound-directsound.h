@@ -6,8 +6,8 @@
 
 struct SoundDirectSound
 {
-
 	LPDIRECTSOUNDBUFFER buffer;
+	DWORD channels;
 };
 typedef struct SoundDirectSound SoundDirectSound;
 

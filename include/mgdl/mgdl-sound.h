@@ -14,18 +14,6 @@
  * @brief Sound struct and functions for loading wav files
  */
 
-enum SoundStatus
-{
-	SoundError,
-	SoundLoopFailed,
-	SoundStopped,
-	SoundPlaying,
-	SoundPaused,
-	SoundInitial
-};
-
-typedef enum SoundStatus SoundStatus;
-
 //! Sound handling struct
 /*!
  *	\details Class object for loading and playing back sound effects with pitch control and stereo panning.
@@ -53,20 +41,6 @@ Sound* Sound_Create(void);
 
 void Sound_InitEmpty(Sound* sound);
 
-//! Loads a sound file.
-/*!
- *	\details This function loads a sound file
- *  which can then be played with Play() or Play2D().
- *
- *	\note This port of the library only supports
- * uncompressed Microsoft WAV sound files with a sample
- * format of 8 or 16-bit and a sample frequency
- * of up to 48KHz, Mono or Stereo.
- *
- *	\param[in]	*fileName	File name of sound file to load.
- *
- *	\returns Pointer if the sound file was successfully loaded, otherwise a null pointer
- */
 Sound* Sound_Load(const char* filename);
 
 //! Deletes the sound data stored in the object
@@ -76,12 +50,6 @@ Sound* Sound_Load(const char* filename);
 
 void Sound_DeleteData(Sound* sound);
 
-//! Plays a sound.
-/*!
- *  \details Plays a sound
- */
-void Sound_Play(Sound* sound);
-
 //! Plays a sound with extended paramters.
 /*!
  *  \details Plays a sound with pitch control and its own volume level.
@@ -90,14 +58,6 @@ void Sound_Play(Sound* sound);
  *	\param[in]	volume	Volume of sound (100 is full volume).
  */
 void Sound_PlayEx(Sound* sound, float pitchOffset, float volumePercent) ;
-
-//! Stops the playback of the sound
-/*!
- *	\details This function stops the sound if it is playing
- */
-
-void Sound_Stop(Sound* sound ) ;
-
 
 //! Pauses the playback of the sound
 /*!
@@ -115,15 +75,6 @@ bool Sound_GetLooping(Sound* sound );
  */
 float Sound_GetElapsedSeconds(Sound* sound ) ;
 void Sound_SetElapsedSeconds(Sound* sound, float elapsed) ;
-
-
-//! Get if the voice is playing or not
-/*!
- * \details This function can be used to know if the voice is currently playing
- *
- * \returns True if voice is playing, false if not playing
- */
-SoundStatus Sound_GetStatus(Sound* sound ) ;
 
 #ifdef __cplusplus
 }

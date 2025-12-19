@@ -25,4 +25,9 @@
   <ItemGroup>
     <None Include="..\..\..\..\freeglut\bin\x64\freeglut.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\example.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>

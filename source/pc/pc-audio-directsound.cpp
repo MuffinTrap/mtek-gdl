@@ -6,6 +6,7 @@
 #include <sndfile.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-assert.h>
+#include <mgdl/mgdl-util.h>
 #include <Dsound.h>
 
 // Pointer to Object created by DirectSoundCreate
@@ -62,8 +63,8 @@ void Audio_Platform_Init(void* platformData)
 	HMODULE DirectSoundLibrary = LoadLibraryA("dsound.dll");;
 	if (DirectSoundLibrary == NULL)
 	{
-		Log_Error("Failed load dsound.dll");
-		OutputDebugStringA("Failed load dsound.dll");
+		Log_Error("Failed load dsound.dll\n");
+		OutputDebugStringA("Failed load dsound.dll\n");
 		return;
 	}
 	DirectSound_Create_FuncP = (dsound_create*)GetProcAddress(DirectSoundLibrary, "DirectSoundCreate");
@@ -80,6 +81,9 @@ void Audio_Platform_Init(void* platformData)
 
 			return;
 		}
+		OutputDebugStringA("Created direct sound object\n");
+		// Initialize Direct sound object
+
 		HRESULT cooperativeResult = DirectSoundObject->SetCooperativeLevel(windowHandle, DSSCL_PRIORITY);
 		if (cooperativeResult != DS_OK)
 		{
@@ -89,6 +93,10 @@ void Audio_Platform_Init(void* platformData)
 
 			return;
 		}
+
+
+		// Creates primary hardware buffer
+		// for DirectSound.
 		DSBUFFERDESC primaryBufferDescription = { 0 };
 		primaryBufferDescription.dwSize = sizeof(DSBUFFERDESC); // Size of the structure
 		primaryBufferDescription.dwFlags = DSBCAPS_PRIMARYBUFFER; // Capabilities
@@ -102,8 +110,8 @@ void Audio_Platform_Init(void* platformData)
 		if (createBufferResult != DS_OK)
 		{
 			// Failed to create buffer
-			Log_Error("Failed to create primary buffer");
-			OutputDebugStringA("Failed to create primary buffer");
+			Log_Error("Failed to create primary buffer\n");
+			OutputDebugStringA("Failed to create primary buffer\n");
 
 			return;
 		}
@@ -115,8 +123,8 @@ void Audio_Platform_Init(void* platformData)
 		waveFormatPrimary.nBlockAlign = (waveFormatPrimary.nChannels * waveFormatPrimary.wBitsPerSample) / 8; // 8 is bits per byte
 		waveFormatPrimary.nAvgBytesPerSec = waveFormatPrimary.nSamplesPerSec * waveFormatPrimary.nBlockAlign;
 		waveFormatPrimary.cbSize = 0; // Ignored in PCM
-		HRESULT setPrimaryFormatResult = DirectSoundPrimaryBuffer->SetFormat(&waveFormatPrimary);
 
+		HRESULT setPrimaryFormatResult = DirectSoundPrimaryBuffer->SetFormat(&waveFormatPrimary);
 		if (setPrimaryFormatResult != DS_OK)
 		{
 			// Failed to set buffer format
@@ -125,8 +133,10 @@ void Audio_Platform_Init(void* platformData)
 			Log_Error("Failed to set primary buffer format");
 		}
 
-		Create_Buffer(waveFormatPrimary.nAvgBytesPerSec * 2, 2, 0);
-
+		// Create streaming buffer for voice number 0 that is the music.
+		OutputDebugStringA("Creating streaming buffer\n");
+		writeBufferSize = waveFormatPrimary.nAvgBytesPerSec * 2;
+		Create_Buffer(writeBufferSize, 2, MGDL_AUDIO_MUSIC_NUMBER);
 
 		// Set notification callback that DirectSound calls
 		// when buffer needs to be filled
@@ -162,14 +172,22 @@ Sound Audio_Platform_LoadSound(const char* filename, s32 voiceNumber)
 	s.sizeBytes = 0;
 	s.voiceNumber = -1;
 
-	// Open the WAV file
-    SF_INFO sfinfo;
-    SNDFILE* sndfile = sf_open(filename, SFM_READ, &sfinfo);
-    if (!sndfile) {
+	if (voiceNumber <= MGDL_AUDIO_MUSIC_NUMBER)
+	{
 		return s;
-    }
+	}
+	Log_InfoF("Loading Sound to DirectSound from %s to voice %d\n", filename, voiceNumber);
 
-    sizetype dataSize = sfinfo.frames * sfinfo.channels * sizeof(s16);
+
+	// Open the WAV file
+	SF_INFO sfinfo;
+	SNDFILE* sndfile = sf_open(filename, SFM_READ, &sfinfo);
+	if (!sndfile) {
+		OutputDebugStringA("SNDFile failed to open file\n");
+		return s;
+	}
+
+	sizetype dataSize = sfinfo.frames * sfinfo.channels * sizeof(s16);
 	u32 sizeBytes = dataSize;
 	if (Create_Buffer(sizeBytes, sfinfo.channels, voiceNumber))
 	{
@@ -188,12 +206,22 @@ Sound Audio_Platform_LoadSound(const char* filename, s32 voiceNumber)
 			sf_read_raw(sndfile, lpWrite, dwLength);
 			soundDatas[voiceNumber].buffer->Unlock(lpWrite, dwLength, 0, 0);
 
+			soundDatas[voiceNumber].channels = sfinfo.channels;
+
 			// Set common values and return
 			s.voiceNumber = voiceNumber;
 			s.sizeBytes = sizeBytes;
 		}
+		else
+		{
+			OutputDebugStringA("Failed to lock buffer\n");
+		}
 
 		// TODO : if fails, try to Restore buffer
+	}
+	else
+	{
+		OutputDebugStringA("Failed to create buffer\n");
 	}
 	sf_close(sndfile);
 	return s;
@@ -212,34 +240,64 @@ void Audio_Platform_UnloadSound(Sound s)
 
 bool Create_Buffer(u32 sizeBytes, WORD channels, u32 index)
 {
-		// Create a write buffer  for music playback
-		writeBufferSize= waveFormatPrimary.nAvgBytesPerSec * 2;
-		WAVEFORMATEX format = waveFormatPrimary;
-		format.nChannels = channels;
+	Log_InfoF("Create buffer bytes %u, channels %d, index %d\n", sizeBytes, channels, index);
+	// Create a write buffer  for music playback
+	WAVEFORMATEX format = waveFormatPrimary;
+	format.nChannels = channels;
+	format.nBlockAlign = (format.nChannels * format.wBitsPerSample) / 8; // 8 is bits per byte
+	format.nAvgBytesPerSec = format.nSamplesPerSec * format.nBlockAlign;
 
-		DSBUFFERDESC writeBufferDescription = { 0 };
-		writeBufferDescription.dwSize = sizeof(DSBUFFERDESC); // Size of the structure
-		writeBufferDescription.dwFlags = 0;
-		writeBufferDescription.dwBufferBytes = sizeBytes;
-		writeBufferDescription.dwReserved = 0; // Must be 0
-		writeBufferDescription.lpwfxFormat = &format; // Format, NULL for write
-		writeBufferDescription.guid3DAlgorithm = DS3DALG_DEFAULT; // Virtualization algo
+	DSBUFFERDESC writeBufferDescription = { 0 };
+	writeBufferDescription.dwSize = sizeof(DSBUFFERDESC); // Size of the structure
+	writeBufferDescription.dwFlags = 0;
+	writeBufferDescription.dwBufferBytes = sizeBytes;
+	writeBufferDescription.dwReserved = 0; // Must be 0
+	writeBufferDescription.lpwfxFormat = &format; // Format, NULL for write
+	writeBufferDescription.guid3DAlgorithm = DS3DALG_DEFAULT; // Virtualization algo
 
-		// Create a write buffer
-		HRESULT createWriteBufferResult = DirectSoundObject->CreateSoundBuffer(&writeBufferDescription, &soundDatas[index].buffer, NULL);
-		if (createWriteBufferResult != DS_OK)
+	// Create a write buffer
+	HRESULT createWriteBufferResult = DirectSoundObject->CreateSoundBuffer(&writeBufferDescription, &soundDatas[index].buffer, NULL);
+	if (createWriteBufferResult != DS_OK)
+	{
+		// Failed to create write buffer
+		Log_Error("Failed to create write buffer");
+		OutputDebugStringA("Failed to create write buffer\n");
+		switch (createWriteBufferResult)
 		{
-			// Failed to create write buffer
-			Log_Error("Failed to create write buffer");
-			OutputDebugStringA("Failed to create write buffer");
-			return false;
-		}
-		return true;
+		case	DSERR_ALLOCATED:
+			OutputDebugStringA("ALLOCATED\n"); break;
+		case	DSERR_CONTROLUNAVAIL:
+			OutputDebugStringA("CONTROLUNAVAIL\n"); break;
+		case	DSERR_BADFORMAT:
+			OutputDebugStringA("BADFORMAT\n"); break;
+		case	DSERR_INVALIDPARAM:
+			OutputDebugStringA("INVALIDPARAM\n"); break;
+		case	DSERR_NOAGGREGATION:
+			OutputDebugStringA("NOAGGREGATION\n"); break;
+		case	DSERR_OUTOFMEMORY:
+			OutputDebugStringA("OUTOFMEMORY\n"); break;
+		case	DSERR_UNINITIALIZED:
+			OutputDebugStringA("UNINITIALIZED\n"); break;
+		case	DSERR_UNSUPPORTED:
+			OutputDebugStringA("UNSUPPORTED\n"); break;
+		};
+
+		return false;
+	}
+	return true;
 }
 
 
 void Audio_Update(void)
 {
+	// Check if voice 0 is playing
+	DWORD statusFlagsOut;
+	soundDatas[MGDL_AUDIO_MUSIC_NUMBER].buffer->GetStatus(&statusFlagsOut);
+	if (Flag_IsSet(statusFlagsOut, DSBSTATUS_PLAYING) == false)
+	{
+		// Not playing
+		return;
+	}
 
 	// Check if there is enough space in the buffer to write
 	DWORD playposition;
@@ -352,9 +410,22 @@ bool Audio_PauseVoice(s32 voiceNumber)
 @param Number of the voice
 @return Status of the voice, or Invalid if the voice number is not in use
 */
-mgdlAudioStateEnum Audio_GetVoiceStatus(s32 voiceNumber)
+mgdlAudioStateEnum Audio_GetSoundStatus(Sound* snd)
 {
-
+	if (snd != nullptr && snd->voiceNumber > MGDL_AUDIO_MUSIC_NUMBER)
+	{
+		DWORD statusFlagsOut;
+		soundDatas[MGDL_AUDIO_MUSIC_NUMBER].buffer->GetStatus(&statusFlagsOut);
+		if (Flag_IsSet(statusFlagsOut,DSBSTATUS_PLAYING))
+		{
+			return Audio_StatePlaying;
+		}
+		else
+		{
+			return Audio_StateStopped;
+		}
+	}
+	return Audio_StateInvalid;
 }
 
 /**
@@ -371,8 +442,21 @@ mgdlAudioStateEnum Audio_SetVoiceVolume(s32 voiceNumber, float normalizedVolume)
 @param Number of the voice
 @return Elapsed playback duration in milliseconds
 */
-u32 Audio_GetVoiceElapsedMs(s32 voiceNumber)
+u32 Audio_GetSoundElapsedMs(Sound* snd)
 {
-
+	if (snd != nullptr && snd->voiceNumber > MGDL_AUDIO_MUSIC_NUMBER)
+	{
+		DWORD playposition;
+		DWORD writeposition;
+		HRESULT positionResult = soundDatas[snd->voiceNumber].buffer->GetCurrentPosition(&playposition, &writeposition);
+		if (positionResult == DS_OK)
+		{
+			// calculate to ms      bytes /  ms in second * samples per second * (bytes per sample)
+			DWORD samplesElapsed = playposition / (soundDatas[snd->voiceNumber].channels);
+			DWORD msElapsed = (playposition * 1000) / MGDL_AUDIO_SAMPLE_RATE;
+			return msElapsed;
+		}
+	}
+	return 0;
 }
 #endif

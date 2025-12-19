@@ -291,7 +291,7 @@ Music* Music_LoadWav(const char* filename)
 {
     Log_InfoF("Loading music from %s\n", filename);
 
-    Sound* snd = Sound_Load(filename);
+    Sound* snd = Audio_LoadSound(filename);
     if (snd)
     {
         Music* music = Music_Create();
@@ -509,22 +509,22 @@ void Music_SetElapsedSeconds(Music* music, float elapsed) {
 	alCall(alSourcef, music->source, AL_SEC_OFFSET,elapsed);
 }
 
-SoundStatus Music_GetStatus(Music* music) {
+mgdlAudioStateEnum Music_GetStatus(Music* music) {
 	    // Get the play state of the audio source
     ALint sourceState;
     alGetSourcei(music->source, AL_SOURCE_STATE, &sourceState);
 
     if (sourceState == AL_PLAYING) {
-        return SoundStatus::SoundPlaying;
+        return Audio_StatePlaying;
     } else if (sourceState == AL_PAUSED) {
-        return SoundStatus::SoundPaused;
+        return Audio_StatePaused;
     } else if (sourceState == AL_STOPPED) {
-        return SoundStatus::SoundStopped;
+        return Audio_StateStopped;
     } else if (sourceState == AL_INITIAL) {
-        return SoundStatus::SoundInitial;
+        return Audio_StateStopped;
     }
 
-    return SoundStatus::SoundInitial;
+    return Audio_StateInvalid;
 }
 
 // Returns how many bytes read
@@ -602,7 +602,7 @@ std::int32_t ReadOggToPCMBuffer ( char* buffer, std::int32_t bufferSize)
 
 void Music_UpdatePlay(Music* music)
 {
-    if (Music_GetStatus(music) == SoundStopped)
+    if (Music_GetStatus(music) == Audio_StateStopped)
     {
         return;
     }

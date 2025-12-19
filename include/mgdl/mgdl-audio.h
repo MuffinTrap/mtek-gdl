@@ -37,7 +37,7 @@ extern "C"
 #	define MGDL_AUDIO_SAMPLE_RATE 48000
 #	define MGDL_AUDIO_CALLBACK_BUFFER_SIZE 4096
 #	define MGDL_AUDIO_MAX_VOICES 256 // How many voices can be loaded at the same time
-
+#	define MGDL_AUDIO_MUSIC_NUMBER 0
 
 	/**
 	* @brief Initializes the common audio system
@@ -95,7 +95,7 @@ extern "C"
 	@param Number of the voice
 	@return Status of the voice, or Invalid if the voice number is not in use
 	*/
-	mgdlAudioStateEnum Audio_GetVoiceStatus(s32 voiceNumber);
+	mgdlAudioStateEnum Audio_GetSoundStatus(Sound* snd);
 
 	/**
 	@brief Sets volume for given voice
@@ -108,7 +108,7 @@ extern "C"
 	@param Number of the voice
 	@return Elapsed playback duration in milliseconds
 	*/
-	u32 Audio_GetVoiceElapsedMs(s32 voiceNumber);
+	u32 Audio_GetSoundElapsedMs(Sound* snd);
 
 	/**
 	 * @brief Set global maximum volume of sounds
@@ -126,10 +126,20 @@ void Audio_SetMusicMasterVolume(float normalizedVolume);
 	 */
 void Audio_SetMasterAudioVolume(float normalizedVolume);
 
-	/**
-	 * @brief Loads a sound from given file
-	 * @param Name of the wav file
-	 */
+/** 
+ *	@brief Loads a sound file.
+ *	@details This function loads a sound file
+ *  which can then be played with Play() or Play2D().
+ *
+ *	@note This port of the library only supports
+ * uncompressed Microsoft WAV sound files with a sample
+ * format of 8 or 16-bit and a sample frequency
+ * of up to 48KHz, Mono or Stereo.
+ *
+ *	@param[in]	*fileName	File name of sound file to load.
+ *
+ *	@returns Pointer if the sound file was successfully loaded, otherwise a null pointer
+ */
 Sound* Audio_LoadSound(const char* filename);
 
 Sound Audio_Platform_LoadSound(const char* filename, s32 voiceNumber);
