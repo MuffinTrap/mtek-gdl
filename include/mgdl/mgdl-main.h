@@ -45,9 +45,8 @@ PNGFile* mgdl_LoadPNG(const char* filename);
 Texture* mgdl_LoadTexture(const char* filename, TextureFilterModes filterMode);
 Texture* mgdl_LoadTexturePNG(PNGFile* png, TextureFilterModes filterMode);
 
-Sound* mgdl_LoadSound(const char* filename);
-Music* mgdl_LoadOgg(const char* filename);
-Music* mgdl_LoadWav(const char* filename);
+Sound* mgdl_LoadSoundWav(const char* filename);
+Sound* mgdl_LoadSoundOgg(const char* filename);
 
 Scene* mgdl_LoadFBX(const char* filename);
 Sprite* mgdl_LoadSprite(const char* filename, short spriteWidth, short spriteHeight);

@@ -10,7 +10,7 @@ class Example
     Texture* pointerTexture;
     Font* ibmFont;
     Font* debugFont;
-    Music* sampleMusic;
+    Sound* sampleMusic;
     Sound* blip;
     Menu* menu;
     Menu* cameraMenu;

@@ -16,10 +16,10 @@
 #include <cstring>
 #include <limits>
 
+#if 0
 // Disabled for now since the whole ogg is loaded into OpenAL
 static StreamingAudioData audioData;
 static char* pcmBuffer; // Used to transfer data from Ogg file to OpenAL
-#if 0
 
 // ////////////////////////////////////////////////
 // Ogg Vorbis library callbacks
@@ -203,7 +203,6 @@ bool OpenOggCallbacks()
 	return true;
 }
 
-#endif
 
 bool OpenOggNoCallbacks()
 {
@@ -658,4 +657,5 @@ void Music_UpdatePlay(Music* music)
 }
 #endif
 
+#endif
 #endif // not GEKKO

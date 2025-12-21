@@ -9,6 +9,7 @@
 #include <mgdl/mgdl-util.h>
 #include <Dsound.h>
 
+
 // Pointer to Object created by DirectSoundCreate
 static LPDIRECTSOUND DirectSoundObject = nullptr;
 // Pointer to Buffer created by direct sound
@@ -17,17 +18,19 @@ static LPDIRECTSOUNDBUFFER DirectSoundPrimaryBuffer = nullptr;
 // Main buffer format
 static WAVEFORMATEX waveFormatPrimary = { 0 };
 
-// One buffer for music
-static LPDIRECTSOUNDBUFFER DirectSoundWriteBuffer = nullptr;
-static DWORD writeBufferSize = 0;
-static DWORD lastWriteCursorPosition = 0;
+// One streaming buffer for music
+AudioCallbackFunction audioCallback = nullptr;
+static LPDIRECTSOUNDBUFFER streamingBuffer = nullptr;
+static DWORD streamingBufferSize = 0;
+static DWORD lastWriteCursorPosition = -MGDL_AUDIO_CALLBACK_BUFFER_SIZE;
 static DWORD lastPlayCursorPosition = 0;
+static DWORD lastWritePosition = 0; // Make sure to always continue writing from the last point
+static void WriteToStream(DWORD bytesToWrite);
 
 // Multiple buffers for music and sound effects
 static SoundDirectSound* soundDatas;
-static bool Create_Buffer(u32 sizeBytes, WORD channels, u32 index);
+static bool Create_Buffer(u32 sizeBytes, WORD channels, LPDIRECTSOUNDBUFFER* bufferPtr);
 
-AudioCallbackFunction audioCallback = nullptr;
 // static HANDLE soundBufferEmptyEvent;
 
 #define DIRECT_SOUND_CREATE(name) HRESULT WINAPI name(LPGUID deviceGUID, LPDIRECTSOUND* objectAddress, LPUNKNOWN aggregate)
@@ -44,11 +47,13 @@ static HRESULT(*DirectSound_Create_FuncP)(LPGUID deviceGUID, LPDIRECTSOUND* obje
 
 // Playback and audio state
 
+static s32 activeStreamingSound = -1;
+
 static DWORD ringBufferWritePoint;
 
-void Audio_SetCallback(AudioCallbackFunction callbackFunction)
+void Audio_Platform_SetCallback(AudioCallbackFunction callbackFunction)
 {
-
+	audioCallback = callbackFunction;
 }
 
 void Audio_Platform_Init(void* platformData)
@@ -57,6 +62,12 @@ void Audio_Platform_Init(void* platformData)
 	OutputDebugStringA("Initializing DirectSound\n");
 
 	soundDatas = (SoundDirectSound*)malloc(sizeof(SoundDirectSound) * MGDL_AUDIO_MAX_VOICES);
+	for (int i = 0; i < MGDL_AUDIO_MAX_VOICES; i++)
+	{
+		soundDatas[i].channels = 0;
+		soundDatas[i].buffer = nullptr;
+		soundDatas[i].inUse = false;
+	}
 
 	// Init windows Multimedia audio system
 	// Load the library for DirectSound audio
@@ -135,8 +146,8 @@ void Audio_Platform_Init(void* platformData)
 
 		// Create streaming buffer for voice number 0 that is the music.
 		OutputDebugStringA("Creating streaming buffer\n");
-		writeBufferSize = waveFormatPrimary.nAvgBytesPerSec * 2;
-		Create_Buffer(writeBufferSize, 2, MGDL_AUDIO_MUSIC_NUMBER);
+		streamingBufferSize = waveFormatPrimary.nAvgBytesPerSec * 2;
+		Create_Buffer(streamingBufferSize, 2, &streamingBuffer);
 
 		// Set notification callback that DirectSound calls
 		// when buffer needs to be filled
@@ -166,18 +177,10 @@ void Audio_Platform_Init(void* platformData)
 	}
 }
 
-Sound Audio_Platform_LoadSound(const char* filename, s32 voiceNumber)
+
+static Sound LoadWav(Sound s, const char* filename, s32 voiceNumber)
 {
-	Sound s;
-	s.sizeBytes = 0;
-	s.voiceNumber = -1;
-
-	if (voiceNumber <= MGDL_AUDIO_MUSIC_NUMBER)
-	{
-		return s;
-	}
-	Log_InfoF("Loading Sound to DirectSound from %s to voice %d\n", filename, voiceNumber);
-
+	Log_InfoF("Loading Wav Sound to DirectSound from %s\n", filename);
 
 	// Open the WAV file
 	SF_INFO sfinfo;
@@ -189,12 +192,13 @@ Sound Audio_Platform_LoadSound(const char* filename, s32 voiceNumber)
 
 	sizetype dataSize = sfinfo.frames * sfinfo.channels * sizeof(s16);
 	u32 sizeBytes = dataSize;
-	if (Create_Buffer(sizeBytes, sfinfo.channels, voiceNumber))
+	LPDIRECTSOUNDBUFFER* bufferPtr = &soundDatas[voiceNumber].buffer;
+	if (Create_Buffer(sizeBytes, sfinfo.channels, bufferPtr))
 	{
 		// Lock, Fill and Unlock buffer
 		LPVOID lpWrite;
 		DWORD dwLength;
-		if (DS_OK == soundDatas[voiceNumber].buffer->Lock(
+		if (DS_OK == (*bufferPtr)->Lock(
 			0,
 			0,
 			&lpWrite,
@@ -207,10 +211,14 @@ Sound Audio_Platform_LoadSound(const char* filename, s32 voiceNumber)
 			soundDatas[voiceNumber].buffer->Unlock(lpWrite, dwLength, 0, 0);
 
 			soundDatas[voiceNumber].channels = sfinfo.channels;
+			soundDatas[voiceNumber].inUse = true;
 
 			// Set common values and return
 			s.voiceNumber = voiceNumber;
 			s.sizeBytes = sizeBytes;
+			s.type = SoundWav;
+			s.elapsedSeconds = 0.0f;
+			
 		}
 		else
 		{
@@ -227,20 +235,71 @@ Sound Audio_Platform_LoadSound(const char* filename, s32 voiceNumber)
 	return s;
 }
 
-void Audio_Platform_PlaySound(s32 voiceNumber)
+Sound Audio_Platform_LoadSound(const char* filename, SoundFileType filetype)
+{
+	Sound s;
+	s.sizeBytes = 0;
+	s.voiceNumber = -1;
+
+	// Find first free sound
+	s32 voiceNumber = -1;
+	for (int i = 0; i < MGDL_AUDIO_MAX_VOICES; i++)
+	{
+		if (soundDatas[i].inUse == false)
+		{
+			voiceNumber = i;
+			break;
+		}
+	}
+	if (voiceNumber == -1)
+	{
+		OutputDebugStringA("No more voice slots free\n");
+		return s;
+	}
+
+	if (filetype == SoundWav)
+	{
+		s = LoadWav(s, filename, voiceNumber);
+	}
+	else if (filetype == SoundOgg)
+	{
+		// Should have been loaded on Audio level
+
+	}
+	return s;
+}
+
+void Audio_Platform_PlaySound(Sound* snd)
 {
 	// TODO : if fails, try to Restore buffer
-	soundDatas[voiceNumber].buffer->Play(0, 0, 0);
+	soundDatas[snd->voiceNumber].buffer->Play(0, 0, 0);
 }
 
 void Audio_Platform_UnloadSound(Sound s)
 {
-	// ... TODO free buffer
+	if (soundDatas[s.voiceNumber].buffer != nullptr)
+	{
+		soundDatas[s.voiceNumber].buffer->Stop();
+		soundDatas[s.voiceNumber].buffer->Release();
+	}
 }
 
-bool Create_Buffer(u32 sizeBytes, WORD channels, u32 index)
+void Audio_Platform_StartStream(Sound* snd, s32 sampleRate)
 {
-	Log_InfoF("Create buffer bytes %u, channels %d, index %d\n", sizeBytes, channels, index);
+	activeStreamingSound = snd->voiceNumber;
+	streamingBuffer->SetFrequency(sampleRate);
+	WriteToStream(streamingBufferSize / 2); // Write half the buffer in advance
+	streamingBuffer->Play(0,0,DSBPLAY_LOOPING);
+}
+void Audio_Platform_StopStream(s32 voiceNumber)
+{
+	activeStreamingSound = -1;
+	streamingBuffer->Stop();
+}
+
+bool Create_Buffer(u32 sizeBytes, WORD channels, LPDIRECTSOUNDBUFFER* bufferPtr)
+{
+	Log_InfoF("Create buffer bytes %u, channels %d\n", sizeBytes, channels);
 	// Create a write buffer  for music playback
 	WAVEFORMATEX format = waveFormatPrimary;
 	format.nChannels = channels;
@@ -256,7 +315,7 @@ bool Create_Buffer(u32 sizeBytes, WORD channels, u32 index)
 	writeBufferDescription.guid3DAlgorithm = DS3DALG_DEFAULT; // Virtualization algo
 
 	// Create a write buffer
-	HRESULT createWriteBufferResult = DirectSoundObject->CreateSoundBuffer(&writeBufferDescription, &soundDatas[index].buffer, NULL);
+	HRESULT createWriteBufferResult = DirectSoundObject->CreateSoundBuffer(&writeBufferDescription, bufferPtr, NULL);
 	if (createWriteBufferResult != DS_OK)
 	{
 		// Failed to create write buffer
@@ -290,62 +349,87 @@ bool Create_Buffer(u32 sizeBytes, WORD channels, u32 index)
 
 void Audio_Update(void)
 {
-	// Check if voice 0 is playing
-	DWORD statusFlagsOut;
-	soundDatas[MGDL_AUDIO_MUSIC_NUMBER].buffer->GetStatus(&statusFlagsOut);
-	if (Flag_IsSet(statusFlagsOut, DSBSTATUS_PLAYING) == false)
+	// Check if streaming is active
+	if (activeStreamingSound < 0)
 	{
-		// Not playing
 		return;
 	}
 
-	// Check if there is enough space in the buffer to write
+	DWORD statusFlagsOut;
+	streamingBuffer->GetStatus(&statusFlagsOut);
+	if (Flag_IsSet(statusFlagsOut, DSBSTATUS_PLAYING) == false)
+	{
+		// Streaming sound is not playing
+		return;
+	}
+
+	// Check if the play cursor has advanced from last time
+	// that means we can write more audio
 	DWORD playposition;
 	DWORD writeposition;
-	HRESULT positionResult = DirectSoundWriteBuffer->GetCurrentPosition(&playposition, &writeposition);
+	HRESULT positionResult = streamingBuffer->GetCurrentPosition(&playposition, &writeposition);
 
-	DWORD spaceBytes = 0;
+	//Log_InfoF("PlayCursor %d, last play %d / size %d\n", playposition, lastPlayCursorPosition, streamingBufferSize);
+	//Log_InfoF("WriteCursors: system %d, own %d\n", writeposition, lastWritePosition);
+	DWORD playMoveBytes = 0;
 	if (playposition > lastPlayCursorPosition)
 	{
 		// The play cursor has moved ahead from last time
-		spaceBytes = playposition - lastPlayCursorPosition;
+		playMoveBytes = playposition - lastPlayCursorPosition;
 	}
 	else if (playposition < lastPlayCursorPosition)
 	{
 		// The play cursor has moved ahead and looped around
 		// From last position to end of buffer
-		spaceBytes = writeBufferSize - lastPlayCursorPosition;
+		playMoveBytes = streamingBufferSize - lastPlayCursorPosition;
 		// From start of buffer to play position
-		spaceBytes += playposition;
+		playMoveBytes += playposition;
 	}
-	if (spaceBytes < MGDL_AUDIO_CALLBACK_BUFFER_SIZE)
+
+	/*
+	DWORD writeMoveBytes = 0;
+	if (writeposition > lastWriteCursorPosition)
 	{
-		// Not enough space
-		return;
+		// The play cursor has moved ahead from last time
+		writeMoveBytes = writeposition - lastWriteCursorPosition;
 	}
+	else if (writeposition < lastWriteCursorPosition)
+	{
+		// The play cursor has moved ahead and looped around
+		// From last position to end of buffer
+		writeMoveBytes = streamingBufferSize - lastWriteCursorPosition;
+		// From start of buffer to play position
+		writeMoveBytes += writeposition;
+	}
+	*/
+	if (playMoveBytes > 0)
+	{
+		lastPlayCursorPosition = playposition;
+		lastWriteCursorPosition = writeposition;
+		DWORD bytesToWrite = playMoveBytes;
+		WriteToStream(bytesToWrite);
+	}
+}
 
+static void WriteToStream(DWORD bytesToWrite)
+{
 	// Start writing to buffer
-
-	DWORD bytesToWrite = spaceBytes;
 	VOID* writeLocation1;
 	VOID* writeLocation2;
-	LPVOID* write1Ptr = &writeLocation1;
-	LPVOID* write2Ptr = &writeLocation2;
 	DWORD location1Size;
 	DWORD location2Size;
-	DWORD flags = DSBLOCK_FROMWRITECURSOR;
+	DWORD flags = 0;// DSBLOCK_FROMWRITECURSOR;
 	// Lock the buffer before copying data to it
 	// This functions returns 1 or 2 locations for writing
 
-	HRESULT lockResult = DirectSoundWriteBuffer->Lock(
-		0, // The Lock is set automatically to write cursor position
+	HRESULT lockResult = streamingBuffer->Lock(
+		lastWritePosition, 
 		bytesToWrite,
-		write1Ptr,
+		&writeLocation1,
 		&location1Size,
-		write2Ptr,
+		&writeLocation2,
 		&location2Size,
 		flags);
-
 
 	if (lockResult != DS_OK)
 	{
@@ -353,32 +437,54 @@ void Audio_Update(void)
 	}
 
 	// Call the callback function
-	s16* sampleOut = (s16*)write1Ptr;
+	s16* sampleOut = (s16*)writeLocation1;
 	u32 bytesWritten1 = 0;
 	u32 bytesWritten2 = 0;
-	audioCallback(0, sampleOut, location1Size, &bytesWritten1);
-
+	//Log_InfoF("Streaming callback asks for %d bytes\n", location1Size);
+	audioCallback(activeStreamingSound, sampleOut, location1Size, &bytesWritten1);
+	//Log_InfoF("Streaming callback got %d bytes\n", bytesWritten1);
 	if (bytesWritten1 < location1Size)
 	{
 		location1Size = bytesWritten1;
 	}
+	lastWritePosition += bytesWritten1;
 
-	if (location1Size < bytesToWrite)
+	if (writeLocation2 != NULL && location2Size > 0)
 	{
 		// 2 locations
-		sampleOut = (s16*)write2Ptr;
-		audioCallback(0, sampleOut, location2Size, &bytesWritten2);
+		sampleOut = (s16*)writeLocation2;
+		// Log_InfoF("Streaming callback asks for %d bytes\n", location2Size);
+		audioCallback(activeStreamingSound, sampleOut, location2Size, &bytesWritten2);
+		//Log_InfoF("Streaming callback got %d bytes\n", bytesWritten2);
 		if (bytesWritten2 < location2Size)
 		{
 			location2Size = bytesWritten2;
 		}
+		lastWritePosition += bytesWritten1;
 	}
 	// Write done, unlock
-	HRESULT unlockResult = DirectSoundWriteBuffer->Unlock(write1Ptr, location1Size, write2Ptr, location2Size);
+	HRESULT unlockResult = streamingBuffer->Unlock(writeLocation1, location1Size, writeLocation2, location2Size);
 
+	lastWritePosition = lastWritePosition % streamingBufferSize;
 }
-void Audio_Deinit(void)
+
+void Audio_Platform_Deinit(void)
 {
+	for (int i = 0; i < MGDL_AUDIO_MAX_VOICES; i++)
+	{
+		if (soundDatas[i].buffer != nullptr)
+		{
+			soundDatas[i].buffer->Stop();
+			soundDatas[i].buffer->Release();
+		}
+	}
+	streamingBuffer->Stop();
+	streamingBuffer->Release();
+
+	DirectSoundPrimaryBuffer->Stop();
+	DirectSoundPrimaryBuffer->Release();
+	
+	DirectSoundObject->Release();
 
 }
 void Audio_SetPaused(bool paused)
@@ -393,16 +499,27 @@ bool Audio_IsPaused(void)
 @param Number of the voice
 @return True if voice was stopped
 */
-bool Audio_StopVoice(s32 voiceNumber) {
+bool Audio_StopSound(Sound* snd) 
+{
+	if (snd->type == SoundWav)
+	{
+		soundDatas[snd->voiceNumber].buffer->Stop();
+	}
+	else if (snd->type == SoundOgg && snd->voiceNumber == activeStreamingSound)
+	{
+		streamingBuffer->Stop();
+	}
 
+	return true;
 }
 /**
 @brief Pauses the given voice
 @param Number of the voice
 @return True if voice was paused
 */
-bool Audio_PauseVoice(s32 voiceNumber)
+bool Audio_PauseSound(Sound* snd)
 {
+	return true;
 
 }
 /**
@@ -412,10 +529,10 @@ bool Audio_PauseVoice(s32 voiceNumber)
 */
 mgdlAudioStateEnum Audio_GetSoundStatus(Sound* snd)
 {
-	if (snd != nullptr && snd->voiceNumber > MGDL_AUDIO_MUSIC_NUMBER)
+	if (snd != nullptr && snd->voiceNumber >= 0 && snd->voiceNumber < MGDL_AUDIO_MAX_VOICES)
 	{
 		DWORD statusFlagsOut;
-		soundDatas[MGDL_AUDIO_MUSIC_NUMBER].buffer->GetStatus(&statusFlagsOut);
+		soundDatas[snd->voiceNumber].buffer->GetStatus(&statusFlagsOut);
 		if (Flag_IsSet(statusFlagsOut,DSBSTATUS_PLAYING))
 		{
 			return Audio_StatePlaying;
@@ -444,7 +561,7 @@ mgdlAudioStateEnum Audio_SetVoiceVolume(s32 voiceNumber, float normalizedVolume)
 */
 u32 Audio_GetSoundElapsedMs(Sound* snd)
 {
-	if (snd != nullptr && snd->voiceNumber > MGDL_AUDIO_MUSIC_NUMBER)
+	if (snd != nullptr && snd->voiceNumber > 0 && snd->voiceNumber < MGDL_AUDIO_MAX_VOICES)
 	{
 		DWORD playposition;
 		DWORD writeposition;

@@ -1,4 +1,6 @@
 #pragma once
+
+#if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC)
 #include <sndfile.h>
 
 #include <mgdl/mgdl-types.h>
@@ -71,3 +73,5 @@
 		SNDFILE* sndfile;
 		ALuint buffer, source;
 	}; typedef struct SoundOpenAL SoundOpenAL;
+
+#endif 

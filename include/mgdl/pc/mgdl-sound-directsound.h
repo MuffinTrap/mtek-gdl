@@ -4,10 +4,12 @@
 
 #include <dsound.h>
 
+
 struct SoundDirectSound
 {
 	LPDIRECTSOUNDBUFFER buffer;
 	DWORD channels;
+	bool inUse;
 };
 typedef struct SoundDirectSound SoundDirectSound;
 

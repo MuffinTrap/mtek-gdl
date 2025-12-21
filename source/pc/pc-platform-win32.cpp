@@ -34,6 +34,7 @@ static UINT_PTR m_splashTimerId;
 static BOOL windowIsVisible;
 static DWORD applicationStartTimeMS;
 static DWORD applicationElapsedMS;
+static const int targetDeltaMS = 15;
 
 // Controller(s)
 static void ErrorExit()
@@ -164,7 +165,7 @@ void Platform_UpdateSplash(int value)
         platformPC.waitElapsedMS = applicationElapsedMS;
         // Change to main Update function and render
 		KillTimer(windowHandle, m_splashTimerId);
-		m_renderTimerId = SetTimer(windowHandle, NULL, 16, RenderLoop);
+		m_renderTimerId = SetTimer(windowHandle, NULL, targetDeltaMS, RenderLoop);
     }
     UpdateEnd();
 }
@@ -177,7 +178,7 @@ void Platform_UpdateAHold(int value)
         platformPC.waitElapsedMS = applicationElapsedMS;
         // Change to main update and render
 		KillTimer(windowHandle, m_splashTimerId);
-		m_renderTimerId = SetTimer(windowHandle, NULL, 16, RenderLoop);
+		m_renderTimerId = SetTimer(windowHandle, NULL, targetDeltaMS, RenderLoop);
     }
     UpdateEnd();
 }
@@ -495,17 +496,17 @@ void Platform_Init(const char* windowName,
     // Select display and update functions
     if (SplashFlag)
     {
-		m_splashTimerId = SetTimer(windowHandle, NULL, 16, RenderSplash);
+		m_splashTimerId = SetTimer(windowHandle, NULL, targetDeltaMS, RenderSplash);
     }
     else if (HoldAFlag)
     {
-		m_splashTimerId = SetTimer(windowHandle, NULL, 16, RenderAHold);
+		m_splashTimerId = SetTimer(windowHandle, NULL, targetDeltaMS, RenderAHold);
         Log_Info("\n>> MGDL INIT COMPLETE\n");
         Log_Info(">> Hold A button to continue\n");
     }
     else
     {
-		m_renderTimerId = SetTimer(windowHandle, NULL, 16, RenderLoop);
+		m_renderTimerId = SetTimer(windowHandle, NULL, targetDeltaMS, RenderLoop);
     }
 
 	while (true)
@@ -566,6 +567,7 @@ void Platform_DoProgramExit(void)
 	{
 		quitCall();
 	}
+	Audio_Deinit();
 	wglMakeCurrent(deviceContextHandle, NULL); // Detach context from window
 	wglDeleteContext(openGLContext);
 	ReleaseDC(windowHandle, deviceContextHandle);

@@ -63,9 +63,9 @@ Texture* mgdl_LoadTexturePNG(PNGFile* png, TextureFilterModes filterMode)
 	}
 }
 
-Sound* mgdl_LoadSound(const char* filename)
+Sound* mgdl_LoadSoundWav(const char* filename)
 {
-	Sound* snd = Audio_LoadSound(filename);
+	Sound* snd = Audio_LoadSound(filename, SoundWav);
 	if(snd != nullptr)
 	{
 		AssetManager_LoadSound(&assetManager, snd);
@@ -74,33 +74,14 @@ Sound* mgdl_LoadSound(const char* filename)
 }
 
 
-Music* mgdl_LoadOgg(const char* filename)
+Sound* mgdl_LoadSoundOgg(const char* filename)
 {
-	Music* music = Music_LoadOgg(filename);
-	if(music != nullptr)
+	Sound* snd = Audio_LoadSound(filename, SoundOgg);
+	if(snd != nullptr)
 	{
-		AssetManager_LoadMusic(&assetManager, music);
-		return music;
+		AssetManager_LoadSound(&assetManager, snd);
 	}
-	else
-	{
-		return nullptr;
-	}
-}
-
-Music* mgdl_LoadWav(const char* filename)
-{
-	Music* music = Music_LoadWav(filename);
-	if(music != nullptr)
-	{
-		AssetManager_LoadMusic(&assetManager, music);
-		return music;
-	}
-	else
-	{
-		return nullptr;
-	}
-
+	return snd;
 }
 
 Font* mgdl_LoadFont(const char* filename, short characterWidth, short characterHeight, char firstCharacter)

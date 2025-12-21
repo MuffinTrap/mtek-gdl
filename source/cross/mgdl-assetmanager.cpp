@@ -24,18 +24,14 @@ void AssetManager_LoadPNG(AssetManager* manager, PNGFile* image)
 
 void AssetManager_LoadSound(AssetManager* manager, Sound* snd)
 {
-	manager->_memoryInUse += snd->sizeBytes;
-}
-
-void AssetManager_LoadMusic(AssetManager* manager, Music* music)
-{
-	switch(music->type)
+	switch (snd->type)
 	{
-		case MusicOgg:
+		case SoundOgg:
 			manager->_memoryInUse += 1024; // TODO What is the buffer size?
 			break;
-		case MusicWav:
-			manager->_memoryInUse += music->wav->sizeBytes;
+		case SoundWav:
+			manager->_memoryInUse += snd->sizeBytes;
 			break;
 	}
 }
+

@@ -24,6 +24,11 @@ struct SoundASND
 	short	voiceNumber; // ASND voice number
 }; typedef struct SoundASND;
 
+struct MusicASND
+{
+	FILE* oggFile;
+};
+
 namespace gdl {
 	//! Plays a sound with 2D stereo panning.
 	/*!

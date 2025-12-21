@@ -32,8 +32,8 @@ void Example::Init()
     debugFont = DefaultFont_GetDefaultFont();
 
     // Audio
-    blip = mgdl_LoadSound("assets/blipSelect.wav");
-    //sampleMusic = mgdl_LoadOgg("assets/sample3.ogg");
+    blip = mgdl_LoadSoundWav("assets/blipSelect.wav");
+    sampleMusic = mgdl_LoadSoundOgg("assets/sample3.ogg");
 
     // Wii model scene
     wiiScene = mgdl_LoadFBX("assets/wii_et_baby.fbx");
@@ -72,12 +72,12 @@ void Example::Init()
     menu = Menu_CreateWindowed(ibmFont, 1.0f, 1.0f, 128, 256, "MTEK GDL");
     cameraMenu = Menu_CreateWindowed(debugFont, 2.0f, 1.0f, 128, 256, "Camera");
     controllerMenu = Menu_CreateWindowed(ibmFont, 1.0f, 1.0f, 128, 356, "Controls");
-    performanceMenu = Menu_CreateWindowed(debugFont, 2.0f, 1.0f, 256, 64, "Performance");
+    performanceMenu = Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 256, 64, "Performance");
     audioMenu = Menu_CreateWindowed(debugFont, 2.0f, 1.0f, 256, 256, "Audio");
 
     if (sampleMusic)
     {
-        musicLooping = Music_GetLooping(sampleMusic);
+        musicLooping = Sound_GetLooping(sampleMusic);
     }
     sceneRotation = V3f_Create(0.0f, 1.0f,0.0f);
     //quad->DebugPrint();
@@ -449,20 +449,20 @@ void Example::DrawAudio()
 
     if (Menu_Button(audioMenu, "Play Ogg"))
     {
-        Music_Play(sampleMusic, musicLooping);
+        Audio_PlaySound(sampleMusic);
     }
     if (Menu_Button(audioMenu, "Pause Ogg"))
     {
-        bool ispaused = Music_GetStatus(sampleMusic) == Audio_StatePaused;
-        Music_SetPaused(sampleMusic, !ispaused);
+        bool ispaused = Audio_GetSoundStatus(sampleMusic) == Audio_StatePaused;
+        Audio_PauseSound(sampleMusic);
     }
     if (Menu_Button(audioMenu, "Stop Ogg"))
     {
-        Music_Stop(sampleMusic);
+        Audio_StopSound(sampleMusic);
     }
     if (Menu_Toggle(audioMenu, "Loop Ogg", &musicLooping ))
     {
-        Music_SetLooping(sampleMusic, musicLooping);
+        // Music_SetLooping(sampleMusic, musicLooping);
     }
     if (Menu_Button(audioMenu, "Play Sound"))
     {
@@ -470,8 +470,8 @@ void Example::DrawAudio()
     }
     if (sampleMusic != nullptr)
     {
-        Menu_TextF(audioMenu, "Music elapsed: %.2f", Music_GetElapsedSeconds(sampleMusic));
-        mgdlAudioStateEnum musicStatus = Music_GetStatus(sampleMusic);
+        Menu_TextF(audioMenu, "Music elapsed: %.2f", Sound_GetElapsedSeconds(sampleMusic));
+        mgdlAudioStateEnum musicStatus = Audio_GetSoundStatus(sampleMusic);
         DrawSoundStatus(musicStatus);
 
     }

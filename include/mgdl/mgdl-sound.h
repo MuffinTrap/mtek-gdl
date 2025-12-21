@@ -14,6 +14,12 @@
  * @brief Sound struct and functions for loading wav files
  */
 
+	enum SoundFileType
+	{
+		SoundOgg,
+		SoundWav
+	};
+	typedef enum SoundFileType SoundFileType;
 //! Sound handling struct
 /*!
  *	\details Class object for loading and playing back sound effects with pitch control and stereo panning.
@@ -21,9 +27,12 @@
 struct Sound
 {
 	s32 voiceNumber; // index to array in each platform, -1 if invalid
+	s32 channels;
 	sizetype sizeBytes; // Size in bytes
+	SoundFileType type;
 
-	float secondsOffset; // This is mainly to allow chaning the play position on Ogg on Wii for debug purposes
+
+	float elapsedSeconds; // How long the sound has been playing. Used when streaming
 	bool isLooping;
 };
 typedef struct Sound Sound;
@@ -40,6 +49,7 @@ extern "C"
 Sound* Sound_Create(void);
 
 void Sound_InitEmpty(Sound* sound);
+void Sound_Init(Sound* snd, s32 voiceNumber, s32 channels, sizetype sizeBytes, SoundFileType filetype);
 
 Sound* Sound_Load(const char* filename);
 
@@ -74,7 +84,6 @@ bool Sound_GetLooping(Sound* sound );
  *	\returns Elapsed playback time in seconds
  */
 float Sound_GetElapsedSeconds(Sound* sound ) ;
-void Sound_SetElapsedSeconds(Sound* sound, float elapsed) ;
 
 #ifdef __cplusplus
 }
