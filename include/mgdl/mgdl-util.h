@@ -93,6 +93,15 @@ u32 Flag_UnsetAll(u32 bitfield, u32 flag);
  */
 char* mgdl_GetPrintfBuffer(void);
 
+/**
+ * @brief Reverses the byte order of a variable.
+ * @details Reverses the byte order of 16-bit and 32-bit variables useful when handling little-endian binary data.
+ *
+ * @param[in,out]	*var    Pointer to variable to reverse byte order.
+ * @param[in]		size    Size of variable in bytes (for convenience, use sizeof()).
+ */
+void RevBytes(void *var, int size);
+
 #ifdef __cplusplus
 }
 #endif

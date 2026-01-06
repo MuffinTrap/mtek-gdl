@@ -1,4 +1,5 @@
 #include <mgdl/mgdl-util.h>
+#include <mgdl/mgdl-assert.h>
 #include <cstdlib>
 #include <mgdl/wflcg/WFLCG_c.h>
 #define _USE_MATH_DEFINES
@@ -146,4 +147,17 @@ u32 Flag_Unset(u32 bitfield, u32 flag)
 u32 Flag_UnsetAll(u32 bitfield, u32 flags)
 {
 	return (bitfield & ~flags);
+}
+
+void RevBytes(void *var, int size) {
+
+	mgdl_assert_print(size <= sizeof(s64), "Cannot reverse more than 8 bytes");
+
+	static u8 temp[sizeof(s64)];
+
+	memcpy(temp, var, size);
+	for(short i=0; i<size; i++) {
+		((u8*)var)[i] = temp[(size-1)-i];
+	}
+
 }

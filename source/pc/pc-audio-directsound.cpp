@@ -178,69 +178,8 @@ void Audio_Platform_Init(void* platformData)
 }
 
 
-static Sound LoadWav(Sound s, const char* filename, s32 voiceNumber)
+void* Audio_OpenStaticBuffer(Sound* inout_snd, sizetype byteCount, u16 samplerate, SoundSampleFormat format)
 {
-	Log_InfoF("Loading Wav Sound to DirectSound from %s\n", filename);
-
-	// Open the WAV file
-	SF_INFO sfinfo;
-	SNDFILE* sndfile = sf_open(filename, SFM_READ, &sfinfo);
-	if (!sndfile) {
-		OutputDebugStringA("SNDFile failed to open file\n");
-		return s;
-	}
-
-	sizetype dataSize = sfinfo.frames * sfinfo.channels * sizeof(s16);
-	u32 sizeBytes = dataSize;
-	LPDIRECTSOUNDBUFFER* bufferPtr = &soundDatas[voiceNumber].buffer;
-	if (Create_Buffer(sizeBytes, sfinfo.channels, bufferPtr))
-	{
-		// Lock, Fill and Unlock buffer
-		LPVOID lpWrite;
-		DWORD dwLength;
-		if (DS_OK == (*bufferPtr)->Lock(
-			0,
-			0,
-			&lpWrite,
-			&dwLength,
-			NULL,
-			NULL,
-			DSBLOCK_ENTIREBUFFER))
-		{
-			sf_read_raw(sndfile, lpWrite, dwLength);
-			soundDatas[voiceNumber].buffer->Unlock(lpWrite, dwLength, 0, 0);
-
-			soundDatas[voiceNumber].channels = sfinfo.channels;
-			soundDatas[voiceNumber].inUse = true;
-
-			// Set common values and return
-			s.voiceNumber = voiceNumber;
-			s.sizeBytes = sizeBytes;
-			s.type = SoundWav;
-			s.elapsedSeconds = 0.0f;
-			
-		}
-		else
-		{
-			OutputDebugStringA("Failed to lock buffer\n");
-		}
-
-		// TODO : if fails, try to Restore buffer
-	}
-	else
-	{
-		OutputDebugStringA("Failed to create buffer\n");
-	}
-	sf_close(sndfile);
-	return s;
-}
-
-Sound Audio_Platform_LoadSound(const char* filename, SoundFileType filetype)
-{
-	Sound s;
-	s.sizeBytes = 0;
-	s.voiceNumber = -1;
-
 	// Find first free sound
 	s32 voiceNumber = -1;
 	for (int i = 0; i < MGDL_AUDIO_MAX_VOICES; i++)
@@ -254,18 +193,83 @@ Sound Audio_Platform_LoadSound(const char* filename, SoundFileType filetype)
 	if (voiceNumber == -1)
 	{
 		OutputDebugStringA("No more voice slots free\n");
+		return nullptr;
+	}
+
+	u32 sizeBytes = byteCount;
+	short channels = Sound_FormatToChannels(format);
+	LPDIRECTSOUNDBUFFER* bufferPtr = &soundDatas[voiceNumber].buffer;
+	if (Create_Buffer(sizeBytes, channels, bufferPtr))
+	{
+		// Lock, Fill and Unlock buffer
+		LPVOID lpWrite;
+		DWORD dwLength;
+		if (DS_OK == (*bufferPtr)->Lock(
+			0,
+			0,
+			&lpWrite,
+			&dwLength,
+			NULL,
+			NULL,
+			DSBLOCK_ENTIREBUFFER))
+		{
+			soundDatas[voiceNumber].buffer->Unlock(lpWrite, dwLength, 0, 0);
+			soundDatas[voiceNumber].channels = channels;
+			soundDatas[voiceNumber].inUse = true;
+			soundDatas[voiceNumber].sizeBytes = sizeBytes;
+			soundDatas[voiceNumber].elapsedSeconds = 0.0f;
+
+			// Set common values and return
+			inout_snd->voiceNumber = voiceNumber;
+
+			return lpWrite;
+		}
+		else
+		{
+			OutputDebugStringA("Failed to lock buffer\n");
+		}
+
+		// TODO : if fails, try to Restore buffer
+	}
+	else
+	{
+		OutputDebugStringA("Failed to create buffer\n");
+	}
+	return nullptr;
+
+}
+
+void Audio_CloseStaticBuffer(Sound* snd, void* buffer, sizetype bytesWritten)
+{
+	if (snd->voiceNumber < 0)
+	{
+		return;
+	}
+	LPDIRECTSOUNDBUFFER* bufferPtr = &soundDatas[snd->voiceNumber].buffer;
+	if (DS_OK == (*bufferPtr)->Unlock(buffer, bytesWritten, NULL, 0))
+	{
+		// ok
+	}
+	// TODO try to Restore
+}
+static Sound LoadWav(Sound s, const char* filename)
+{
+	Log_InfoF("Loading Wav Sound to DirectSound from %s\n", filename);
+
+	// Open the WAV file
+	SF_INFO sfinfo;
+	SNDFILE* sndfile = sf_open(filename, SFM_READ, &sfinfo);
+	if (!sndfile) {
+		OutputDebugStringA("SNDFile failed to open file\n");
 		return s;
 	}
 
-	if (filetype == SoundWav)
-	{
-		s = LoadWav(s, filename, voiceNumber);
-	}
-	else if (filetype == SoundOgg)
-	{
-		// Should have been loaded on Audio level
+	sizetype dataSize = sfinfo.frames * sfinfo.channels * sizeof(s16);
+	void* buffer = Audio_OpenStaticBuffer(&s, dataSize, sfinfo.samplerate, Sound_Stereo_s16);
+	sf_read_raw(sndfile, buffer, dataSize);
+	Audio_CloseStaticBuffer(&s, buffer, dataSize);
+	sf_close(sndfile);
 
-	}
 	return s;
 }
 
@@ -273,6 +277,10 @@ void Audio_Platform_PlaySound(Sound* snd)
 {
 	// TODO : if fails, try to Restore buffer
 	soundDatas[snd->voiceNumber].buffer->Play(0, 0, 0);
+}
+sizetype Audio_GetStaticBufferSize(Sound* snd)
+{
+	return soundDatas[snd->voiceNumber].sizeBytes;
 }
 
 void Audio_Platform_UnloadSound(Sound s)
@@ -519,7 +527,17 @@ bool Audio_StopSound(Sound* snd)
 */
 bool Audio_PauseSound(Sound* snd)
 {
-	return true;
+	if (snd != nullptr && snd->voiceNumber >= 0 && snd->voiceNumber < MGDL_AUDIO_MAX_VOICES)
+	{
+		DWORD statusFlagsOut;
+		soundDatas[snd->voiceNumber].buffer->GetStatus(&statusFlagsOut);
+		if (Flag_IsSet(statusFlagsOut,DSBSTATUS_PLAYING))
+		{
+			soundDatas[snd->voiceNumber].buffer->Stop();
+			return true;
+		}
+	}
+	return false;
 
 }
 /**
@@ -575,5 +593,30 @@ u32 Audio_GetSoundElapsedMs(Sound* snd)
 		}
 	}
 	return 0;
+}
+
+void Audio_SetSoundElapsedMs(Sound* snd, s32 milliseconds)
+{
+	if (snd->type == SoundWav)
+	{
+		if (snd != nullptr && snd->voiceNumber > 0 && snd->voiceNumber < MGDL_AUDIO_MAX_VOICES)
+		{
+			// Milliseconds to bytes
+			// TODO What if different sample rate?
+			DWORD bytesSecond = (soundDatas[snd->voiceNumber].channels) * sizeof(s16) * MGDL_AUDIO_SAMPLE_RATE;
+			float secondsElapsed = ((float)milliseconds / 1000.0f);
+			DWORD bytesElapsed = secondsElapsed * bytesSecond;
+
+			HRESULT positionResult = soundDatas[snd->voiceNumber].buffer->SetCurrentPosition(bytesElapsed);
+		}
+	}
+	else if (snd->type == SoundOgg)
+	{
+		if (snd != nullptr && snd->voiceNumber > 0 && snd->voiceNumber < MGDL_AUDIO_MAX_MUSIC)
+		{
+			
+
+		}
+	}
 }
 #endif

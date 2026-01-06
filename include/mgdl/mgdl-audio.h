@@ -153,7 +153,17 @@ void Audio_SetMasterAudioVolume(float normalizedVolume);
  */
 Sound* Audio_LoadSound(const char* filename, SoundFileType filetype);
 
-Sound Audio_Platform_LoadSound(const char* filename, SoundFileType filetype);
+void* Audio_OpenStaticBuffer(Sound* inout_snd, sizetype byteCount, u16 samplerate, SoundSampleFormat format);
+sizetype Audio_GetStaticBufferSize(Sound* snd);
+
+void Audio_CloseStaticBuffer(Sound* snd, void* buffer, sizetype bytesWritten);
+
+void Audio_PlayStaticBuffer(Sound* snd);
+void Audio_Platform_PlayStaticBuffer(Sound* snd);
+void Audio_Platform_StopStaticBuffer(Sound* snd);
+
+sizetype Audio_GetSoundSizeBytes(Sound* snd);
+
 void Audio_Platform_UnloadSound(Sound* s);
 
 void Audio_PlaySound(Sound* s);

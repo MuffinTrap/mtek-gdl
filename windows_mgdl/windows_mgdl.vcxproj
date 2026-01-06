@@ -156,6 +156,7 @@
     <ClCompile Include="..\source\cross\mgdl-material.cpp" />
     <ClCompile Include="..\source\cross\mgdl-mesh.cpp" />
     <ClCompile Include="..\source\cross\mgdl-node.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-ogg-player.cpp" />
     <ClCompile Include="..\source\cross\mgdl-openal.cpp" />
     <ClCompile Include="..\source\cross\mgdl-opengl_util.cpp" />
     <ClCompile Include="..\source\cross\mgdl-palette.cpp" />
@@ -169,6 +170,7 @@
     <ClCompile Include="..\source\cross\mgdl-transform.cpp" />
     <ClCompile Include="..\source\cross\mgdl-util.cpp" />
     <ClCompile Include="..\source\cross\mgdl-vectorfunctions.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-wav-player.cpp" />
     <ClCompile Include="..\source\pc\pc-assert.cpp" />
     <ClCompile Include="..\source\pc\pc-audio-directsound.cpp" />
     <ClCompile Include="..\source\pc\pc-audio-openal.cpp" />
@@ -213,6 +215,7 @@
     <ClInclude Include="..\include\mgdl\mgdl-mesh.h" />
     <ClInclude Include="..\include\mgdl\mgdl-music.h" />
     <ClInclude Include="..\include\mgdl\mgdl-node.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-ogg-player.h" />
     <ClInclude Include="..\include\mgdl\mgdl-openal.h" />
     <ClInclude Include="..\include\mgdl\mgdl-opengl.h" />
     <ClInclude Include="..\include\mgdl\mgdl-opengl_util.h" />
@@ -230,6 +233,7 @@
     <ClInclude Include="..\include\mgdl\mgdl-util.h" />
     <ClInclude Include="..\include\mgdl\mgdl-vector.h" />
     <ClInclude Include="..\include\mgdl\mgdl-vectorfunctions.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-wav-player.h" />
     <ClInclude Include="..\include\mgdl\pc\mgdl-joystick.h" />
     <ClInclude Include="..\include\mgdl\pc\mgdl-pc-input.h" />
     <ClInclude Include="..\include\mgdl\pc\mgdl-sound-directsound.h" />

@@ -15,13 +15,22 @@
 #include <mgdl/mgdl-sound.h>
 #include <mgdl/wii/mgdl-wii-config.h>
 
+void Audio_Platform_Init();
+
+void Audio_Platform_Deinit();
+
+void* Audio_Platform_OpenStaticBuffer(Sound* inout_snd, sizetype byteAmount);
+void Audio_Platform_CloseStaticBuffer(Sound* snd, void* buffer, sizetype bytesWritten);
+
 
 struct SoundASND
 {
 	short	format;
 	u16		freq;
-	void	*sData;
+	void	*buffer;
 	short	voiceNumber; // ASND voice number
+	int		sSize;
+	int		channels;
 }; typedef struct SoundASND;
 
 struct MusicASND

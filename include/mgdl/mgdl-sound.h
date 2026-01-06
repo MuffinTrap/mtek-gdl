@@ -3,8 +3,12 @@
 #include "mgdl-types.h"
 
 #ifdef __cplusplus
+
 #include <cstdlib>
+extern "C" {
+
 #else
+
 #include <stdlib.h>
 #endif
 
@@ -20,6 +24,17 @@
 		SoundWav
 	};
 	typedef enum SoundFileType SoundFileType;
+
+	enum SoundSampleFormat
+	{
+		Sound_Mono_s8,
+		Sound_Mono_s16,
+		Sound_Stereo_s8,
+		Sound_Stereo_s16
+	};
+	typedef enum SoundSampleFormat SoundSampleFormat;
+
+	short Sound_FormatToChannels(SoundSampleFormat);
 //! Sound handling struct
 /*!
  *	\details Class object for loading and playing back sound effects with pitch control and stereo panning.
@@ -27,12 +42,7 @@
 struct Sound
 {
 	s32 voiceNumber; // index to array in each platform, -1 if invalid
-	s32 channels;
-	sizetype sizeBytes; // Size in bytes
 	SoundFileType type;
-
-
-	float elapsedSeconds; // How long the sound has been playing. Used when streaming
 	bool isLooping;
 };
 typedef struct Sound Sound;
@@ -77,13 +87,6 @@ void Sound_SetPaused(Sound* sound, bool pause) ;
 void Sound_SetLooping(Sound* sound, bool looping) ;
 bool Sound_GetLooping(Sound* sound );
 
-//! Get elapsed playback time in seconds
-/*!
- *	\details This function returns how long the sound has been playing in seconds
- *
- *	\returns Elapsed playback time in seconds
- */
-float Sound_GetElapsedSeconds(Sound* sound ) ;
 
 #ifdef __cplusplus
 }

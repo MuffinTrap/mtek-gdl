@@ -168,6 +168,12 @@
     <ClCompile Include="..\source\wii\wii-sound.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\cross\mgdl-ogg-player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\cross\mgdl-wav-player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\mgdl\mgdl-alloc.h">
@@ -315,6 +321,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\mgdl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mgdl\mgdl-ogg-player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mgdl\mgdl-wav-player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -782,16 +782,6 @@ void gdl::wii::_PowerOffExit()
 	SYS_ResetSystem(SYS_POWEROFF, 0, 0);
 }
 
-void gdl::wii::RevBytes(void *var, int size) {
-
-	u8 temp[size];
-
-	memcpy(temp, var, size);
-	for(short i=0; i<size; i++) {
-		((u8*)var)[i] = temp[(size-1)-i];
-	}
-
-}
 
 bool gdl::wii::IsComponentCableUsed() {
 
