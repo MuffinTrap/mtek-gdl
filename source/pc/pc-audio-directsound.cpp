@@ -29,7 +29,7 @@ static void WriteToStream(DWORD bytesToWrite);
 
 // Multiple buffers for music and sound effects
 static SoundDirectSound* soundDatas;
-static bool Create_Buffer(u32 sizeBytes, WORD channels, LPDIRECTSOUNDBUFFER* bufferPtr);
+static bool Create_Buffer(u32 sizeBytes, WORD channels, u32 sampleRate, LPDIRECTSOUNDBUFFER* bufferPtr);
 
 // static HANDLE soundBufferEmptyEvent;
 
@@ -43,6 +43,30 @@ DIRECT_SOUND_CREATE(DirectSoundCreateStub)
 }
 
 static HRESULT(*DirectSound_Create_FuncP)(LPGUID deviceGUID, LPDIRECTSOUND* objectAddress, LPUNKNOWN aggregate) = DirectSoundCreateStub;
+
+static void PrintDirectSoundError(HRESULT error)
+{
+		switch (error)
+		{
+		case	DSERR_ALLOCATED:
+			Log_Error("ALLOCATED\n"); break;
+		case	DSERR_CONTROLUNAVAIL:
+			Log_Error("CONTROLUNAVAIL\n"); break;
+		case	DSERR_BADFORMAT:
+			Log_Error("BADFORMAT\n"); break;
+		case	DSERR_INVALIDPARAM:
+			Log_Error("INVALIDPARAM\n"); break;
+		case	DSERR_NOAGGREGATION:
+			Log_Error("NOAGGREGATION\n"); break;
+		case	DSERR_OUTOFMEMORY:
+			Log_Error("OUTOFMEMORY\n"); break;
+		case	DSERR_UNINITIALIZED:
+			Log_Error("UNINITIALIZED\n"); break;
+		case	DSERR_UNSUPPORTED:
+			Log_Error("UNSUPPORTED\n"); break;
+		};
+
+}
 
 
 // Playback and audio state
@@ -89,6 +113,7 @@ void Audio_Platform_Init(void* platformData)
 			// Failed to create Direct Sound object
 			Log_Error("Failed to create direct sound object");
 			OutputDebugStringA("Failed to create direct sound object");
+			PrintDirectSoundError(DCreateResult);
 
 			return;
 		}
@@ -101,6 +126,7 @@ void Audio_Platform_Init(void* platformData)
 			// Failed to set cooperative level
 			Log_Error("Failed to set cooperative level");
 			OutputDebugStringA("Failed to set cooperative level");
+			PrintDirectSoundError(cooperativeResult);
 
 			return;
 		}
@@ -123,6 +149,7 @@ void Audio_Platform_Init(void* platformData)
 			// Failed to create buffer
 			Log_Error("Failed to create primary buffer\n");
 			OutputDebugStringA("Failed to create primary buffer\n");
+			PrintDirectSoundError(createBufferResult);
 
 			return;
 		}
@@ -142,12 +169,13 @@ void Audio_Platform_Init(void* platformData)
 			OutputDebugStringA("Failed to set primary buffer format");
 
 			Log_Error("Failed to set primary buffer format");
+			PrintDirectSoundError(setPrimaryFormatResult);
 		}
 
 		// Create streaming buffer for voice number 0 that is the music.
 		OutputDebugStringA("Creating streaming buffer\n");
 		streamingBufferSize = waveFormatPrimary.nAvgBytesPerSec * 2;
-		Create_Buffer(streamingBufferSize, 2, &streamingBuffer);
+		Create_Buffer(streamingBufferSize, 2, MGDL_AUDIO_SAMPLE_RATE, &streamingBuffer);
 
 		// Set notification callback that DirectSound calls
 		// when buffer needs to be filled
@@ -177,9 +205,12 @@ void Audio_Platform_Init(void* platformData)
 	}
 }
 
+static LPVOID static_lpWrite2;
+static DWORD static_dwLength2;
 
 void* Audio_OpenStaticBuffer(Sound* inout_snd, sizetype byteCount, u16 samplerate, SoundSampleFormat format)
 {
+	Log_InfoF("Open Buffer byteCount %zu, samplerate %d\n", byteCount, samplerate);
 	// Find first free sound
 	s32 voiceNumber = -1;
 	for (int i = 0; i < MGDL_AUDIO_MAX_VOICES; i++)
@@ -193,27 +224,29 @@ void* Audio_OpenStaticBuffer(Sound* inout_snd, sizetype byteCount, u16 samplerat
 	if (voiceNumber == -1)
 	{
 		OutputDebugStringA("No more voice slots free\n");
+		Log_Error("No more voice slots free\n");
 		return nullptr;
 	}
 
 	u32 sizeBytes = byteCount;
 	short channels = Sound_FormatToChannels(format);
 	LPDIRECTSOUNDBUFFER* bufferPtr = &soundDatas[voiceNumber].buffer;
-	if (Create_Buffer(sizeBytes, channels, bufferPtr))
+	if (Create_Buffer(sizeBytes, channels, samplerate, bufferPtr))
 	{
 		// Lock, Fill and Unlock buffer
 		LPVOID lpWrite;
 		DWORD dwLength;
-		if (DS_OK == (*bufferPtr)->Lock(
+		HRESULT lockResult = (*bufferPtr)->Lock(
 			0,
 			0,
 			&lpWrite,
 			&dwLength,
-			NULL,
-			NULL,
-			DSBLOCK_ENTIREBUFFER))
+			&static_lpWrite2,
+			&static_dwLength2,
+			DSBLOCK_ENTIREBUFFER);
+		if (lockResult == DS_OK)
 		{
-			soundDatas[voiceNumber].buffer->Unlock(lpWrite, dwLength, 0, 0);
+			//soundDatas[voiceNumber].buffer->Unlock(lpWrite, dwLength, static_lpWrite2, static_dwLength2);
 			soundDatas[voiceNumber].channels = channels;
 			soundDatas[voiceNumber].inUse = true;
 			soundDatas[voiceNumber].sizeBytes = sizeBytes;
@@ -222,11 +255,14 @@ void* Audio_OpenStaticBuffer(Sound* inout_snd, sizetype byteCount, u16 samplerat
 			// Set common values and return
 			inout_snd->voiceNumber = voiceNumber;
 
+			Log_InfoF("Opened buffer %d for writing %d, bytes %d\n", voiceNumber, dwLength);
 			return lpWrite;
 		}
 		else
 		{
 			OutputDebugStringA("Failed to lock buffer\n");
+			Log_Error("Failed to lock buffer\n");
+			PrintDirectSoundError(lockResult);
 		}
 
 		// TODO : if fails, try to Restore buffer
@@ -234,23 +270,31 @@ void* Audio_OpenStaticBuffer(Sound* inout_snd, sizetype byteCount, u16 samplerat
 	else
 	{
 		OutputDebugStringA("Failed to create buffer\n");
+		Log_Error("Failed to create buffer\n");
 	}
 	return nullptr;
-
 }
 
 void Audio_CloseStaticBuffer(Sound* snd, void* buffer, sizetype bytesWritten)
 {
+	Log_InfoF("Close Buffer bytesWritten %zu, pointer %p\n", bytesWritten, buffer);
 	if (snd->voiceNumber < 0)
 	{
+		Log_ErrorF("Cannot close buffer, invalid id : %d\n", snd->voiceNumber);
 		return;
 	}
 	LPDIRECTSOUNDBUFFER* bufferPtr = &soundDatas[snd->voiceNumber].buffer;
-	if (DS_OK == (*bufferPtr)->Unlock(buffer, bytesWritten, NULL, 0))
+	HRESULT unlockResult = (*bufferPtr)->Unlock(buffer, bytesWritten, static_lpWrite2, static_dwLength2);
+	if (unlockResult == DS_OK)
 	{
 		// ok
+		Log_InfoF("Closed buffer %d for writing\n", snd->voiceNumber);
 	}
-	// TODO try to Restore
+	else
+	{
+		Log_ErrorF("Failed to close buffer %d for writing\n", snd->voiceNumber);
+		PrintDirectSoundError(unlockResult);
+	}
 }
 static Sound LoadWav(Sound s, const char* filename)
 {
@@ -273,7 +317,7 @@ static Sound LoadWav(Sound s, const char* filename)
 	return s;
 }
 
-void Audio_Platform_PlaySound(Sound* snd)
+void Audio_PlayStaticBuffer(Sound* snd)
 {
 	// TODO : if fails, try to Restore buffer
 	soundDatas[snd->voiceNumber].buffer->Play(0, 0, 0);
@@ -305,11 +349,12 @@ void Audio_Platform_StopStream(s32 voiceNumber)
 	streamingBuffer->Stop();
 }
 
-bool Create_Buffer(u32 sizeBytes, WORD channels, LPDIRECTSOUNDBUFFER* bufferPtr)
+bool Create_Buffer(u32 sizeBytes, WORD channels, u32 sampleRate, LPDIRECTSOUNDBUFFER* bufferPtr)
 {
 	Log_InfoF("Create buffer bytes %u, channels %d\n", sizeBytes, channels);
 	// Create a write buffer  for music playback
 	WAVEFORMATEX format = waveFormatPrimary;
+	format.nSamplesPerSec = sampleRate;
 	format.nChannels = channels;
 	format.nBlockAlign = (format.nChannels * format.wBitsPerSample) / 8; // 8 is bits per byte
 	format.nAvgBytesPerSec = format.nSamplesPerSec * format.nBlockAlign;
@@ -329,25 +374,7 @@ bool Create_Buffer(u32 sizeBytes, WORD channels, LPDIRECTSOUNDBUFFER* bufferPtr)
 		// Failed to create write buffer
 		Log_Error("Failed to create write buffer");
 		OutputDebugStringA("Failed to create write buffer\n");
-		switch (createWriteBufferResult)
-		{
-		case	DSERR_ALLOCATED:
-			OutputDebugStringA("ALLOCATED\n"); break;
-		case	DSERR_CONTROLUNAVAIL:
-			OutputDebugStringA("CONTROLUNAVAIL\n"); break;
-		case	DSERR_BADFORMAT:
-			OutputDebugStringA("BADFORMAT\n"); break;
-		case	DSERR_INVALIDPARAM:
-			OutputDebugStringA("INVALIDPARAM\n"); break;
-		case	DSERR_NOAGGREGATION:
-			OutputDebugStringA("NOAGGREGATION\n"); break;
-		case	DSERR_OUTOFMEMORY:
-			OutputDebugStringA("OUTOFMEMORY\n"); break;
-		case	DSERR_UNINITIALIZED:
-			OutputDebugStringA("UNINITIALIZED\n"); break;
-		case	DSERR_UNSUPPORTED:
-			OutputDebugStringA("UNSUPPORTED\n"); break;
-		};
+		PrintDirectSoundError(createWriteBufferResult);
 
 		return false;
 	}
@@ -545,7 +572,7 @@ bool Audio_PauseSound(Sound* snd)
 @param Number of the voice
 @return Status of the voice, or Invalid if the voice number is not in use
 */
-mgdlAudioStateEnum Audio_GetSoundStatus(Sound* snd)
+mgdlAudioStateEnum Audio_GetStaticBufferStatus(Sound* snd)
 {
 	if (snd != nullptr && snd->voiceNumber >= 0 && snd->voiceNumber < MGDL_AUDIO_MAX_VOICES)
 	{
@@ -577,12 +604,13 @@ mgdlAudioStateEnum Audio_SetVoiceVolume(s32 voiceNumber, float normalizedVolume)
 @param Number of the voice
 @return Elapsed playback duration in milliseconds
 */
-u32 Audio_GetSoundElapsedMs(Sound* snd)
+u32 Audio_GetStaticBufferElapsedMs(Sound* snd)
 {
-	if (snd != nullptr && snd->voiceNumber > 0 && snd->voiceNumber < MGDL_AUDIO_MAX_VOICES)
+	if (snd != nullptr && snd->voiceNumber >= 0 && snd->voiceNumber < MGDL_AUDIO_MAX_VOICES)
 	{
 		DWORD playposition;
 		DWORD writeposition;
+		
 		HRESULT positionResult = soundDatas[snd->voiceNumber].buffer->GetCurrentPosition(&playposition, &writeposition);
 		if (positionResult == DS_OK)
 		{

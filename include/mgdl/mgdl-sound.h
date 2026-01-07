@@ -3,13 +3,9 @@
 #include "mgdl-types.h"
 
 #ifdef __cplusplus
-
-#include <cstdlib>
-extern "C" {
-
+#	include <cstdlib>
 #else
-
-#include <stdlib.h>
+#	include <stdlib.h>
 #endif
 
 /**
@@ -59,7 +55,7 @@ extern "C"
 Sound* Sound_Create(void);
 
 void Sound_InitEmpty(Sound* sound);
-void Sound_Init(Sound* snd, s32 voiceNumber, s32 channels, sizetype sizeBytes, SoundFileType filetype);
+void Sound_Init(Sound* snd, s32 voiceNumber, SoundFileType filetype);
 
 Sound* Sound_Load(const char* filename);
 
@@ -86,6 +82,7 @@ void Sound_PlayEx(Sound* sound, float pitchOffset, float volumePercent) ;
 void Sound_SetPaused(Sound* sound, bool pause) ;
 void Sound_SetLooping(Sound* sound, bool looping) ;
 bool Sound_GetLooping(Sound* sound );
+void Sound_ToString(Sound* sound);
 
 
 #ifdef __cplusplus

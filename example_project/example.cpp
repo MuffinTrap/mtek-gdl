@@ -33,7 +33,9 @@ void Example::Init()
 
     // Audio
     blip = mgdl_LoadSoundWav("assets/blipSelect.wav");
+    Sound_ToString(blip);
     sampleMusic = mgdl_LoadSoundOgg("assets/sample3.ogg");
+    Sound_ToString(sampleMusic);
 
     // Wii model scene
     wiiScene = mgdl_LoadFBX("assets/wii_et_baby.fbx");
@@ -415,7 +417,6 @@ void Example::DrawMenu()
 
 void Example::DrawSoundStatus(mgdlAudioStateEnum status)
 {
-
     Color4f* musicColor = Color_GetDefaultColor(Color_Red);
     IconSymbol icon = IconSymbol::Icon_Dot;
     switch(status)
@@ -470,7 +471,7 @@ void Example::DrawAudio()
     }
     if (sampleMusic != nullptr)
     {
-        Menu_TextF(audioMenu, "Music elapsed: %.2f", Sound_GetElapsedSeconds(sampleMusic));
+        Menu_TextF(audioMenu, "Music elapsed: %.2f", Audio_GetSoundElapsedMs(sampleMusic)/1000.0f);
         mgdlAudioStateEnum musicStatus = Audio_GetSoundStatus(sampleMusic);
         DrawSoundStatus(musicStatus);
 

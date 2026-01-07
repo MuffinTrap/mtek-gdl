@@ -10,10 +10,10 @@
 enum LogLevel
 {
 	None = 0,
-	All = 1,
 	Info = 1,
 	Warning = 2,
-	Error = 3
+	Error = 3,
+	All = 4
 };
 typedef enum LogLevel LogLevel;
 

@@ -47,7 +47,7 @@ void Log_WarningF(const char* fmt, ...)
 
 void Log_Error(const char* text)
 {
-	if (level_ == Error)
+	if (level_ >= Error)
 	{
 		_Log_Print(text);
 	}
@@ -56,7 +56,7 @@ void Log_Error(const char* text)
 
 void Log_ErrorF(const char* fmt, ...)
 {
-	if (level_ == Error)
+	if (level_ >= Error)
 	{
 		MGDL_PRINTF_TO_BUFFER(fmt);
 		_Log_Print(mgdl_GetPrintfBuffer());

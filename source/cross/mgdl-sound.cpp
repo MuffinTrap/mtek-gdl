@@ -1,4 +1,5 @@
 #include <mgdl/mgdl-sound.h>
+#include <mgdl/mgdl-logger.h>
 
 Sound* Sound_Create(void)
 {
@@ -35,3 +36,15 @@ short Sound_FormatToChannels(SoundSampleFormat format)
     return 0;
 }
 bool Sound_GetLooping(Sound* sound) { return sound->isLooping; }
+
+static const char* soundType(SoundFileType ft)
+{
+    if (ft == SoundOgg) { return "Ogg"; }
+    if (ft == SoundWav) { return "Wav"; }
+}
+
+void Sound_ToString(Sound* sound)
+{
+    Log_InfoF("Sound: voice: %d, type %s\n", sound->voiceNumber, soundType(sound->type));
+
+}

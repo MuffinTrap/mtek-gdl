@@ -12,6 +12,7 @@ static float UserMusicVolume = 0;
 
 
 static Sound* sounds = nullptr;
+static int firstFreeVoice = 0;
 
 void Audio_Init(void* platformData)
 {
@@ -24,6 +25,7 @@ void Audio_Init(void* platformData)
     Audio_Platform_Init(platformData);
 	WavPlayer_Init();
 	OggPlayer_Init();
+	firstFreeVoice = 0;
 
 }
 
@@ -39,20 +41,14 @@ void Audio_Deinit()
     }
 	free(sounds);
 	sounds = nullptr;
+	firstFreeVoice = 0;
 }
 
 Sound* Audio_LoadSound(const char* filename, SoundFileType filetype)
 {
 	// Find first voice that is not in use
-	int soundIndex = -1;
-	for (int i = 0; i < MGDL_AUDIO_MAX_VOICES; i++)
-	{
-		if (sounds[i].voiceNumber <= 0)
-		{
-			soundIndex = i;
-		}
-	}
-	if (soundIndex < 0)
+	int loadedIndex = firstFreeVoice;
+	if (firstFreeVoice >= MGDL_AUDIO_MAX_VOICES)
 	{
 		Log_Error("Cannot load any more sounds, all voices in use");
 		return nullptr;
@@ -67,16 +63,22 @@ Sound* Audio_LoadSound(const char* filename, SoundFileType filetype)
 		s = OggPlayer_LoadSound(filename);
 	}
 
-	if (s.voiceNumber <= 0)
+	if (s.voiceNumber < 0)
 	{
 		// Failed to load
-		Log_ErrorF("Failed to load sound from file %s", filename);
+		Log_ErrorF("Failed to load sound from file %s\n", filename);
 		return nullptr;
 	}
+	else {
+		Log_InfoF("Loaded sound to voice %d\n", loadedIndex);
+	}
 
+	Sound_ToString(&s);
 	s.type = filetype;
-	sounds[soundIndex] = s;
-	return &sounds[soundIndex];
+	sounds[loadedIndex] = s;
+	firstFreeVoice += 1;
+
+	return &sounds[loadedIndex];
 }
 
 void Audio_PlaySound(Sound* s)
@@ -91,7 +93,7 @@ void Audio_PlaySound(Sound* s)
 	}
 	else if (s->type == SoundOgg)
 	{
-		return OggPlayer_PlaySound(s);
+		OggPlayer_PlaySound(s);
 	}
 }
 
@@ -106,6 +108,36 @@ sizetype Audio_GetSoundSizeBytes(Sound* snd)
 		return OggPlayer_GetSoundSizeBytes(snd);
 		break;
 	}
+	return 0;
+}
+u32 Audio_GetSoundElapsedMs(Sound* snd)
+{
+	switch (snd->type)
+	{
+	case SoundWav:
+		return WavPlayer_GetSoundElapsedMs(snd);
+		break;
+	case SoundOgg:
+		return OggPlayer_GetSoundElapsedMs(snd);
+		break;
+	}
+	return 0;
+
+}
+
+mgdlAudioStateEnum Audio_GetSoundStatus(Sound* snd)
+{
+	switch (snd->type)
+	{
+	case SoundWav:
+		return Audio_GetStaticBufferStatus(snd);
+		break;
+	case SoundOgg:
+		return OggPlayer_GetSoundStatus(snd);
+		break;
+	}
+	return Audio_StateInvalid;
+
 }
 // Sound system functions
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mgdl/mgdl-audio.h>
 #include <mgdl/mgdl-sound.h>
 
 #ifdef __cplusplus
@@ -17,6 +18,7 @@ struct MusicOgg
 	int channels;
 	float elapsedSeconds;
 	sizetype sizeBytes;
+	mgdlAudioStateEnum state;
 };
 typedef struct MusicOgg MusicOgg;
 
@@ -26,6 +28,8 @@ Sound OggPlayer_LoadSound(const char* filename);
 void OggPlayer_PlaySound(Sound* snd);
 void OggPlayer_StopSound(Sound* snd);
 sizetype OggPlayer_GetSoundSizeBytes(Sound* snd);
+u32 OggPlayer_GetSoundElapsedMs(Sound* snd);
+mgdlAudioStateEnum OggPlayer_GetSoundStatus(Sound* snd);
 
 #ifdef __cplusplus
 }

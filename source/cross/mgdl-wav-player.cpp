@@ -127,6 +127,7 @@ Sound WavPlayer_LoadSound(const char* filename)
 	sizetype byteAmount = WAV_Subchunk2.size;
 	u16 samplerate	= WAV_Subchunk1.freq;
 
+
 	void* audioBuffer = Audio_OpenStaticBuffer(&sound, byteAmount, samplerate, format);
 
 	// Load the sound data, flush it, and then close
@@ -136,13 +137,23 @@ Sound WavPlayer_LoadSound(const char* filename)
 	Audio_CloseStaticBuffer(&sound, audioBuffer, byteAmount);
 
 	Log_Info("\tSound loaded Ok!\n");
+	sound.type = SoundWav;
 
 	return sound;
 }
 
-void WavPlayer_PlaySound(Sound* snd);
+void WavPlayer_PlaySound(Sound* snd)
+{
+	Audio_PlayStaticBuffer(snd);
+}
+
 sizetype WavPlayer_GetSoundSizeBytes(Sound* snd) 
 {
 	return Audio_GetStaticBufferSize(snd);
 
+}
+
+u32 WavPlayer_GetSoundElapsedMs(Sound* snd)
+{
+	return Audio_GetStaticBufferElapsedMs(snd);
 }

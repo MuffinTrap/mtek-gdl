@@ -56,12 +56,13 @@ static MusicOgg LoadOgg(MusicOgg m, Sound* inout_snd, const char* filename, s32 
 	m.lengthSeconds = stb_vorbis_stream_length_in_seconds(vorbisFile);
 	m.lengthSamples = stb_vorbis_stream_length_in_samples(vorbisFile);
 	m.vorbisfile = vorbisFile;
-	Sound_Init(inout_snd, voiceNumber, oggInfo.channels, oggInfo.setup_memory_required, SoundOgg);
+	Sound_Init(inout_snd, voiceNumber, SoundOgg);
 
 	Log_InfoF("Opened Ogg stream: sample rate: %u, channels: %d, mem: %d + %d + %d, max frame size %d\n", oggInfo.sample_rate, oggInfo.channels, oggInfo.setup_memory_required, oggInfo.setup_temp_memory_required, oggInfo.temp_memory_required, oggInfo.max_frame_size);
 	Log_InfoF("Length %.2f seconds, %d samples\n", m.lengthSeconds, m.lengthSamples);
 	m.channels = oggInfo.channels;
 	m.elapsedSeconds = 0.0f;
+	m.state = Audio_StateStopped;
 
 	return m;
 }
@@ -107,10 +108,15 @@ Sound OggPlayer_LoadSound(const char* filename)
 		{
 			musics[i] = LoadOgg(musics[i], &snd, filename, i);
 			snd.voiceNumber = i;
+			break;
 		}
 	}
-	Log_Error("Cannot load any more ogg musics, all slots in use");
+	if (snd.voiceNumber < 0)
+	{
+		Log_Error("Cannot load any more ogg musics, all slots in use");
+	}
 	return snd;
+
 }
 
 void OggPlayer_PlaySound(Sound* snd)
@@ -118,10 +124,21 @@ void OggPlayer_PlaySound(Sound* snd)
 	//TestOgg(s->voiceNumber, 5);
 	Audio_Platform_SetCallback(Ogg_Callback);
 	Audio_Platform_StartStream(snd, musics[snd->voiceNumber].sampleRate);
+	musics[snd->voiceNumber].state = Audio_StatePlaying;
 }
 
 sizetype OggPlayer_GetSoundSizeBytes(Sound* snd)
 {
 	return musics[snd->voiceNumber].sizeBytes;
+}
+
+u32 OggPlayer_GetSoundElapsedMs(Sound* snd)
+{
+	return musics[snd->voiceNumber].elapsedSeconds * 1000;
+}
+
+mgdlAudioStateEnum OggPlayer_GetSoundStatus(Sound* snd)
+{
+	return musics[snd->voiceNumber].state;
 }
 #endif
