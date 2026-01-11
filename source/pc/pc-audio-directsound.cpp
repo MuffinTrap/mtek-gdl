@@ -85,8 +85,8 @@ void Audio_Platform_Init(void* platformData)
 	HWND windowHandle = *(HWND*)platformData;
 	OutputDebugStringA("Initializing DirectSound\n");
 
-	soundDatas = (SoundDirectSound*)malloc(sizeof(SoundDirectSound) * MGDL_AUDIO_MAX_VOICES);
-	for (int i = 0; i < MGDL_AUDIO_MAX_VOICES; i++)
+	soundDatas = (SoundDirectSound*)malloc(sizeof(SoundDirectSound) * MGDL_AUDIO_MAX_SOUNDS);
+	for (int i = 0; i < MGDL_AUDIO_MAX_SOUNDS; i++)
 	{
 		soundDatas[i].channels = 0;
 		soundDatas[i].buffer = nullptr;
@@ -213,7 +213,7 @@ void* Audio_OpenStaticBuffer(Sound* inout_snd, sizetype byteCount, u16 samplerat
 	Log_InfoF("Open Buffer byteCount %zu, samplerate %d\n", byteCount, samplerate);
 	// Find first free sound
 	s32 voiceNumber = -1;
-	for (int i = 0; i < MGDL_AUDIO_MAX_VOICES; i++)
+	for (int i = 0; i < MGDL_AUDIO_MAX_SOUNDS; i++)
 	{
 		if (soundDatas[i].inUse == false)
 		{
@@ -321,6 +321,11 @@ void Audio_PlayStaticBuffer(Sound* snd)
 {
 	// TODO : if fails, try to Restore buffer
 	soundDatas[snd->voiceNumber].buffer->Play(0, 0, 0);
+}
+void Audio_StopStaticBuffer(Sound* snd)
+{
+	// TODO : if fails, try to Restore buffer
+	soundDatas[snd->voiceNumber].buffer->Stop();
 }
 sizetype Audio_GetStaticBufferSize(Sound* snd)
 {
@@ -505,7 +510,7 @@ static void WriteToStream(DWORD bytesToWrite)
 
 void Audio_Platform_Deinit(void)
 {
-	for (int i = 0; i < MGDL_AUDIO_MAX_VOICES; i++)
+	for (int i = 0; i < MGDL_AUDIO_MAX_SOUNDS; i++)
 	{
 		if (soundDatas[i].buffer != nullptr)
 		{
@@ -530,22 +535,15 @@ bool Audio_IsPaused(void)
 }
 
 /**
-@brief Stops the given voice
-@param Number of the voice
-@return True if voice was stopped
+@brief Stops the streaming audio
+@param Sound to stop
 */
-bool Audio_StopSound(Sound* snd) 
+void Audio_Platform_StopStream(Sound* snd) 
 {
-	if (snd->type == SoundWav)
-	{
-		soundDatas[snd->voiceNumber].buffer->Stop();
-	}
-	else if (snd->type == SoundOgg && snd->voiceNumber == activeStreamingSound)
+	if (snd->type == SoundOgg && snd->voiceNumber == activeStreamingSound)
 	{
 		streamingBuffer->Stop();
 	}
-
-	return true;
 }
 /**
 @brief Pauses the given voice
@@ -554,7 +552,7 @@ bool Audio_StopSound(Sound* snd)
 */
 bool Audio_PauseSound(Sound* snd)
 {
-	if (snd != nullptr && snd->voiceNumber >= 0 && snd->voiceNumber < MGDL_AUDIO_MAX_VOICES)
+	if (snd != nullptr && snd->voiceNumber >= 0 && snd->voiceNumber < MGDL_AUDIO_MAX_SOUNDS)
 	{
 		DWORD statusFlagsOut;
 		soundDatas[snd->voiceNumber].buffer->GetStatus(&statusFlagsOut);
@@ -574,7 +572,7 @@ bool Audio_PauseSound(Sound* snd)
 */
 mgdlAudioStateEnum Audio_GetStaticBufferStatus(Sound* snd)
 {
-	if (snd != nullptr && snd->voiceNumber >= 0 && snd->voiceNumber < MGDL_AUDIO_MAX_VOICES)
+	if (snd != nullptr && snd->voiceNumber >= 0 && snd->voiceNumber < MGDL_AUDIO_MAX_SOUNDS)
 	{
 		DWORD statusFlagsOut;
 		soundDatas[snd->voiceNumber].buffer->GetStatus(&statusFlagsOut);
@@ -606,7 +604,7 @@ mgdlAudioStateEnum Audio_SetVoiceVolume(s32 voiceNumber, float normalizedVolume)
 */
 u32 Audio_GetStaticBufferElapsedMs(Sound* snd)
 {
-	if (snd != nullptr && snd->voiceNumber >= 0 && snd->voiceNumber < MGDL_AUDIO_MAX_VOICES)
+	if (snd != nullptr && snd->voiceNumber >= 0 && snd->voiceNumber < MGDL_AUDIO_MAX_SOUNDS)
 	{
 		DWORD playposition;
 		DWORD writeposition;
@@ -623,11 +621,11 @@ u32 Audio_GetStaticBufferElapsedMs(Sound* snd)
 	return 0;
 }
 
-void Audio_SetSoundElapsedMs(Sound* snd, s32 milliseconds)
+void Audio_SetStaticBufferElapsed(Sound* snd, s32 milliseconds)
 {
-	if (snd->type == SoundWav)
+	if (snd != nullptr && snd->voiceNumber > 0 && snd->voiceNumber < MGDL_AUDIO_MAX_SOUNDS)
 	{
-		if (snd != nullptr && snd->voiceNumber > 0 && snd->voiceNumber < MGDL_AUDIO_MAX_VOICES)
+		if (snd->type == SoundWav)
 		{
 			// Milliseconds to bytes
 			// TODO What if different sample rate?
@@ -636,14 +634,6 @@ void Audio_SetSoundElapsedMs(Sound* snd, s32 milliseconds)
 			DWORD bytesElapsed = secondsElapsed * bytesSecond;
 
 			HRESULT positionResult = soundDatas[snd->voiceNumber].buffer->SetCurrentPosition(bytesElapsed);
-		}
-	}
-	else if (snd->type == SoundOgg)
-	{
-		if (snd != nullptr && snd->voiceNumber > 0 && snd->voiceNumber < MGDL_AUDIO_MAX_MUSIC)
-		{
-			
-
 		}
 	}
 }

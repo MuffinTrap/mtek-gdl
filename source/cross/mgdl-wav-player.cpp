@@ -99,7 +99,7 @@ Sound WavPlayer_LoadSound(const char* filename)
 
 	}
 
-	SoundSampleFormat format;
+	SoundSampleFormat format = Sound_Stereo_s16;
 
 	// Set audio format
 	if (WAV_Subchunk1.chan == 1) {
@@ -146,14 +146,21 @@ void WavPlayer_PlaySound(Sound* snd)
 {
 	Audio_PlayStaticBuffer(snd);
 }
+void WavPlayer_StopSound(Sound* snd)
+{
+	Audio_StopStaticBuffer(snd);
+}
 
 sizetype WavPlayer_GetSoundSizeBytes(Sound* snd) 
 {
 	return Audio_GetStaticBufferSize(snd);
-
 }
 
 u32 WavPlayer_GetSoundElapsedMs(Sound* snd)
 {
 	return Audio_GetStaticBufferElapsedMs(snd);
+}
+void WavPlayer_SetSoundElapsedMs(Sound* snd, u32 milliseconds)
+{
+	Audio_SetStaticBufferElapsedMs(snd, milliseconds);
 }

@@ -16,8 +16,8 @@ static int firstFreeVoice = 0;
 
 void Audio_Init(void* platformData)
 {
-    sounds = (Sound*)malloc(sizeof(struct Sound) * MGDL_AUDIO_MAX_VOICES);
-    for (int i = 0; i < MGDL_AUDIO_MAX_VOICES; i++)
+    sounds = (Sound*)malloc(sizeof(struct Sound) * MGDL_AUDIO_MAX_SOUNDS);
+    for (int i = 0; i < MGDL_AUDIO_MAX_SOUNDS; i++)
     {
 		Sound_InitEmpty(&sounds[i]);
     }
@@ -35,7 +35,7 @@ void Audio_Deinit()
 	WavPlayer_Deinit();
 	OggPlayer_Deinit();
 
-    for (int i = 0; i < MGDL_AUDIO_MAX_VOICES; i++)
+    for (int i = 0; i < MGDL_AUDIO_MAX_SOUNDS; i++)
     {
 		Sound_InitEmpty(&sounds[i]);
     }
@@ -48,7 +48,7 @@ Sound* Audio_LoadSound(const char* filename, SoundFileType filetype)
 {
 	// Find first voice that is not in use
 	int loadedIndex = firstFreeVoice;
-	if (firstFreeVoice >= MGDL_AUDIO_MAX_VOICES)
+	if (firstFreeVoice >= MGDL_AUDIO_MAX_SOUNDS)
 	{
 		Log_Error("Cannot load any more sounds, all voices in use");
 		return nullptr;
@@ -96,6 +96,21 @@ void Audio_PlaySound(Sound* s)
 		OggPlayer_PlaySound(s);
 	}
 }
+void Audio_StopSound(Sound* s)
+{
+	if (s == nullptr)
+	{
+		return;
+	}
+	if (s->type == SoundWav)
+	{
+		WavPlayer_StopSound(s);
+	}
+	else if (s->type == SoundOgg)
+	{
+		OggPlayer_StopSound(s);
+	}
+}
 
 sizetype Audio_GetSoundSizeBytes(Sound* snd)
 {
@@ -123,6 +138,18 @@ u32 Audio_GetSoundElapsedMs(Sound* snd)
 	}
 	return 0;
 
+}
+void Audio_SetSoundElapsedMs(Sound* snd, u32 milliseconds)
+{
+	switch (snd->type)
+	{
+	case SoundWav:
+		return WavPlayer_SetSoundElapsedMs(snd, milliseconds);
+		break;
+	case SoundOgg:
+		return OggPlayer_SetSoundElapsedMs(snd, milliseconds);
+		break;
+	}
 }
 
 mgdlAudioStateEnum Audio_GetSoundStatus(Sound* snd)

@@ -5,7 +5,14 @@
 #include <mgdl/mgdl-logger.h>
 static MusicOgg* musics = nullptr;
 
+// TODO on Wii needs big endian
+#ifdef GEKKO
+#define STB_VORBIS_BIG_ENDIAN
+#endif
+
+
 #ifndef GEKKO
+#define STB_VORBIS_NO_PUSHDATA_API
 #include "../source/stb/stb_vorbis.c"
 
 
@@ -40,13 +47,33 @@ static MusicOgg LoadOgg(MusicOgg m, Sound* inout_snd, const char* filename, s32 
 {
 	Log_InfoF("Loading Ogg Sound to DirectSound from %s\n", filename);
 	int errorOut = 0;
-	stb_vorbis* vorbisFile = stb_vorbis_open_filename(filename, &errorOut, NULL);
+
+	// TODO on Wii need to supply buffer allocated with valloc
+	stb_vorbis_alloc* ogg_allocation_ptr = nullptr;
+	/*
+	stb_vorbis_alloc ogg_allocation;
+	sizetype amount = 15 * 1000;
+	ogg_allocation.alloc_buffer = valloc(amount);
+	ogg_allocation.alloc_buffer_length_in_bytes = amount;
+	ogg_allocation_ptr = &ogg_allocation;
+	*/
+	stb_vorbis* vorbisFile = stb_vorbis_open_filename(filename, &errorOut, ogg_allocation_ptr);
+
+#	ifdef GEKKO
+	if (errorOut == VORBIS_outofmem)
+	{
+		// Not enough memory supplied. Try again.
+		stb_vorbis_info oggInfo = stb_vorbis_get_info(vorbisFile);
+		sizetype needed_amount = oggInfo.setup_memory_required + oggInfo.temp_memory_required + oggInfo.setup_temp_memory_required;
+		vfree(ogg_allocation.alloc_buffer);
+		ogg_allocation.alloc_buffer = valloc(needed_amount);
+		ogg_allocation.alloc_buffer_length_in_bytes = needed_amount;
+		vorbisFile = stb_vorbis_open_filename(filename, &errorOut, NULL);
+	}
+#	endif
+
 	if (vorbisFile == nullptr)
 	{
-		switch (errorOut)
-		{
-
-		}
 		Log_ErrorF("Failed to open ogg file %s\n", filename);
 		return m;
 	}
@@ -57,8 +84,9 @@ static MusicOgg LoadOgg(MusicOgg m, Sound* inout_snd, const char* filename, s32 
 	m.lengthSamples = stb_vorbis_stream_length_in_samples(vorbisFile);
 	m.vorbisfile = vorbisFile;
 	Sound_Init(inout_snd, voiceNumber, SoundOgg);
-
-	Log_InfoF("Opened Ogg stream: sample rate: %u, channels: %d, mem: %d + %d + %d, max frame size %d\n", oggInfo.sample_rate, oggInfo.channels, oggInfo.setup_memory_required, oggInfo.setup_temp_memory_required, oggInfo.temp_memory_required, oggInfo.max_frame_size);
+	
+	m.sizeBytes = oggInfo.setup_memory_required + oggInfo.setup_temp_memory_required + oggInfo.temp_memory_required;
+	Log_InfoF("Opened Ogg stream: sample rate: %u, channels: %d, mem: %d, max frame size %d\n", oggInfo.sample_rate, oggInfo.channels, m.sizeBytes,  oggInfo.max_frame_size);
 	Log_InfoF("Length %.2f seconds, %d samples\n", m.lengthSeconds, m.lengthSamples);
 	m.channels = oggInfo.channels;
 	m.elapsedSeconds = 0.0f;
@@ -80,8 +108,8 @@ static void TestOgg(s32 voice, int cycles)
 
 void OggPlayer_Init()
 {
-    musics = (MusicOgg*)malloc(sizeof(struct MusicOgg) * MGDL_AUDIO_MAX_MUSIC);
-    for (int i = 0; i < MGDL_AUDIO_MAX_MUSIC; i++)
+    musics = (MusicOgg*)malloc(sizeof(struct MusicOgg) * MGDL_AUDIO_MAX_SOUNDS);
+    for (int i = 0; i < MGDL_AUDIO_MAX_SOUNDS; i++)
     {
 		musics[i].vorbisfile = nullptr;
     }
@@ -89,7 +117,7 @@ void OggPlayer_Init()
 
 void OggPlayer_Deinit()
 {
-    for (int i = 0; i < MGDL_AUDIO_MAX_MUSIC; i++)
+    for (int i = 0; i < MGDL_AUDIO_MAX_SOUNDS; i++)
     {
 		stb_vorbis_close(musics[i].vorbisfile);
     }
@@ -102,7 +130,7 @@ Sound OggPlayer_LoadSound(const char* filename)
 	Sound snd;
 	Sound_InitEmpty(&snd);
 	// Find first music that is not in use
-	for (int i = 0; i < MGDL_AUDIO_MAX_MUSIC; i++)
+	for (int i = 0; i < MGDL_AUDIO_MAX_SOUNDS; i++)
 	{
 		if (musics[i].vorbisfile == nullptr)
 		{
@@ -116,7 +144,6 @@ Sound OggPlayer_LoadSound(const char* filename)
 		Log_Error("Cannot load any more ogg musics, all slots in use");
 	}
 	return snd;
-
 }
 
 void OggPlayer_PlaySound(Sound* snd)
@@ -125,6 +152,11 @@ void OggPlayer_PlaySound(Sound* snd)
 	Audio_Platform_SetCallback(Ogg_Callback);
 	Audio_Platform_StartStream(snd, musics[snd->voiceNumber].sampleRate);
 	musics[snd->voiceNumber].state = Audio_StatePlaying;
+}
+void OggPlayer_StopSound(Sound* snd)
+{
+	Audio_Platform_StopStream(snd);
+	musics[snd->voiceNumber].state = Audio_StateStopped;
 }
 
 sizetype OggPlayer_GetSoundSizeBytes(Sound* snd)
@@ -135,6 +167,13 @@ sizetype OggPlayer_GetSoundSizeBytes(Sound* snd)
 u32 OggPlayer_GetSoundElapsedMs(Sound* snd)
 {
 	return musics[snd->voiceNumber].elapsedSeconds * 1000;
+}
+void OggPlayer_SetSoundElapsedMs(Sound* snd, u32 milliseconds)
+{
+	unsigned int sample = 0;
+	float secondsIn = (float)milliseconds / 1000.0f;
+	sample = (musics[snd->voiceNumber].channels * musics[snd->voiceNumber].sampleRate) * secondsIn;
+	stb_vorbis_seek(musics[snd->voiceNumber].vorbisfile, sample);
 }
 
 mgdlAudioStateEnum OggPlayer_GetSoundStatus(Sound* snd)
