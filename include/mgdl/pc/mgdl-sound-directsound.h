@@ -11,6 +11,7 @@ struct SoundDirectSound
 	DWORD channels;
 	sizetype sizeBytes;
 	float elapsedSeconds;
+	u16 samplerate;
 	bool inUse;
 };
 typedef struct SoundDirectSound SoundDirectSound;

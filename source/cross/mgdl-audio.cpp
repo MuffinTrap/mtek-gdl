@@ -139,18 +139,6 @@ u32 Audio_GetSoundElapsedMs(Sound* snd)
 	return 0;
 
 }
-void Audio_SetSoundElapsedMs(Sound* snd, u32 milliseconds)
-{
-	switch (snd->type)
-	{
-	case SoundWav:
-		return WavPlayer_SetSoundElapsedMs(snd, milliseconds);
-		break;
-	case SoundOgg:
-		return OggPlayer_SetSoundElapsedMs(snd, milliseconds);
-		break;
-	}
-}
 
 mgdlAudioStateEnum Audio_GetSoundStatus(Sound* snd)
 {
@@ -167,6 +155,19 @@ mgdlAudioStateEnum Audio_GetSoundStatus(Sound* snd)
 
 }
 // Sound system functions
+
+void Audio_SetSoundElapsedMs(Sound* snd, s32 milliseconds)
+{
+	switch (snd->type)
+	{
+	case SoundWav:
+		return WavPlayer_SetSoundElapsedMs(snd, milliseconds);
+		break;
+	case SoundOgg:
+		return OggPlayer_SetSoundElapsedMs(snd, milliseconds);
+		break;
+	}
+}
 
 void Audio_SetSoundMasterVolume(float normalizedVolume)
 {

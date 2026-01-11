@@ -39,7 +39,8 @@ extern "C"
 	/**
 	@brief Sample rate used by mgdl. This is because ASND uses 48k
 	*/
-#	define MGDL_AUDIO_SAMPLE_RATE 48000
+#	define MGDL_AUDIO_SAMPLE_RATE_48K 48000
+#	define MGDL_AUDIO_SAMPLE_RATE_44K 44100
 #	define MGDL_AUDIO_CALLBACK_BUFFER_SIZE 4096
 #	define MGDL_AUDIO_MAX_SOUNDS 256 // How many sounds can be loaded at the same time
 
@@ -123,7 +124,8 @@ extern "C"
 	@param Sound The sound to adjust
 	@param milliseconds The new playback position
 	*/
-	void Audio_SetSoundElapsedMs(Sound* sound, s32 milliseconds) ;
+	void Audio_SetSoundElapsedMs(Sound* snd, s32 milliseconds);
+
 	/**
 	 * @brief Set global maximum volume of sounds
 	 * @param normalizedVolume Volume from 0 to 1.0
@@ -206,7 +208,7 @@ u32 Audio_GetStaticBufferElapsedMs(Sound* snd);
 * @param snd The sound associated with the buffer
 * @param milliseconds New play position in milliseconds
 */
-void Audio_SetStaticBufferElapsedMs(Sound* snd, u32 milliseconds);
+void Audio_SetBufferElapsedMs(Sound* snd, u32 milliseconds);
 
 /**
 * @brief Returns size of the sound's data in bytes.

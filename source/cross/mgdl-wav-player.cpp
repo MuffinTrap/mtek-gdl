@@ -162,5 +162,5 @@ u32 WavPlayer_GetSoundElapsedMs(Sound* snd)
 }
 void WavPlayer_SetSoundElapsedMs(Sound* snd, u32 milliseconds)
 {
-	Audio_SetStaticBufferElapsedMs(snd, milliseconds);
+	Audio_SetBufferElapsedMs(snd, milliseconds);
 }

@@ -90,6 +90,7 @@ static MusicOgg LoadOgg(MusicOgg m, Sound* inout_snd, const char* filename, s32 
 	Log_InfoF("Length %.2f seconds, %d samples\n", m.lengthSeconds, m.lengthSamples);
 	m.channels = oggInfo.channels;
 	m.elapsedSeconds = 0.0f;
+	m.sampleRate = oggInfo.sample_rate;
 	m.state = Audio_StateStopped;
 
 	return m;

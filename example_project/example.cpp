@@ -71,11 +71,11 @@ void Example::Init()
     Scene_AddChildNode(icosaScene, nullptr, icosaNode);
 
 
-    menu = Menu_CreateWindowed(ibmFont, 1.0f, 1.0f, 128, 256, "MTEK GDL");
-    cameraMenu = Menu_CreateWindowed(debugFont, 2.0f, 1.0f, 128, 256, "Camera");
-    controllerMenu = Menu_CreateWindowed(ibmFont, 1.0f, 1.0f, 128, 356, "Controls");
-    performanceMenu = Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 256, 64, "Performance");
-    audioMenu = Menu_CreateWindowed(debugFont, 2.0f, 1.0f, 256, 256, "Audio");
+    menu =              Menu_CreateWindowed(ibmFont, 1.0f, 1.0f, 128, 256, "MTEK GDL");
+    cameraMenu =        Menu_CreateWindowed(debugFont, 2.0f, 1.0f, 128, 256, "Camera");
+    controllerMenu =    Menu_CreateWindowed(ibmFont, 1.0f, 1.0f, 128, 356, "Controls");
+    performanceMenu =   Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 256, 64, "Performance");
+    audioMenu =         Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 256, 256, "Audio");
 
     if (sampleMusic)
     {
