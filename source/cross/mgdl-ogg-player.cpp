@@ -15,12 +15,23 @@ static MusicOgg* musics = nullptr;
 #define STB_VORBIS_NO_PUSHDATA_API
 #include "../source/stb/stb_vorbis.c"
 
-
+/* Callbacks for testing
 static void Silent_Callback(s32 voiceNumber, s16* bufferPtr, u32 bufferSizeBytes, u32* bytesWritten)
 {
 	memset(bufferPtr, 0, bufferSizeBytes);
 	(*bytesWritten) = bufferSizeBytes;
 }
+
+static void TestOgg(s32 voice, int cycles)
+{
+	testBuffer = (s16*)malloc(MGDL_AUDIO_CALLBACK_BUFFER_SIZE);
+	u32 outb;
+	for (int i = 0; i < cycles; i++)
+	{
+		Ogg_Callback(voice, testBuffer, MGDL_AUDIO_CALLBACK_BUFFER_SIZE, &outb);
+	}
+}
+*/
 
 static void Ogg_Callback(s32 voiceNumber, s16* bufferPtr, u32 bufferSizeBytes, u32* bytesWritten)
 {
@@ -97,15 +108,6 @@ static MusicOgg LoadOgg(MusicOgg m, Sound* inout_snd, const char* filename, s32 
 }
 static s16* testBuffer = nullptr;
 
-static void TestOgg(s32 voice, int cycles)
-{
-	testBuffer = (s16*)malloc(MGDL_AUDIO_CALLBACK_BUFFER_SIZE);
-	u32 outb;
-	for (int i = 0; i < cycles; i++)
-	{
-		Ogg_Callback(voice, testBuffer, MGDL_AUDIO_CALLBACK_BUFFER_SIZE, &outb);
-	}
-}
 
 void OggPlayer_Init()
 {

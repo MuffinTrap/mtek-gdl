@@ -19,7 +19,7 @@ static WAVEFORMATEX waveFormatPrimary = { 0 };
 static WAVEFORMATEX waveFormatStreaming = { 0 };
 
 // One streaming buffer for music
-AudioCallbackFunction audioCallback = nullptr;
+static AudioCallbackFunction audioCallback = nullptr;
 static LPDIRECTSOUNDBUFFER streamingBuffer = nullptr;
 static DWORD streamingBufferSize = 0;
 static DWORD lastWriteCursorPosition = -MGDL_AUDIO_CALLBACK_BUFFER_SIZE;

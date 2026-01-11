@@ -17,6 +17,14 @@
 #include <fstream>
 #include <iostream>
 
+struct StreamBuffer
+{
+	ALuint bufferName;
+	s16* tempBuffer;
+}
+typedef struct StreamBuffer StreamBuffer;
+
+
 	// For ogg playback
 	const std::size_t NUM_BUFFERS = 2;
 	const ALsizei READ_SIZE = 4096;
@@ -55,7 +63,6 @@
 	};
 
 	bool LoadFileStreaming(const char* filename);
-	bool LoadFileNonStreaming(const char* filename, Music* music);
 	void CopyToAL();
 	void Rebuffer();
 	bool LoadAudioDataStreaming(const char* filename);
@@ -63,15 +70,19 @@
 	bool OpenOggCallbacks();
 	bool OpenOggNoCallbacks();
 	bool ReadOggProperties();
-	void SetALSourceToOrigo(Music* music);
+	//void SetALSourceToOrigo(Music* music);
 	bool VerifyALSource();
 	std::int32_t ReadOggToPCMBuffer(char* buffer, std::int32_t bufferSize);
 
 
 	struct SoundOpenAL
 	{
-		SNDFILE* sndfile;
 		ALuint buffer, source;
+		ALenum format;
+		u16 sampleRate;
+		ALvoid* tempBuffer;
+		sizetype sizeBytes;
+		bool inUse;
 	}; typedef struct SoundOpenAL SoundOpenAL;
 
 #endif 

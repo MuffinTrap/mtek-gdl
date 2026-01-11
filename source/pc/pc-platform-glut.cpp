@@ -1,7 +1,7 @@
 #if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC)
 #include <mgdl/mgdl-platform.h>
 #include <mgdl/mgdl-opengl.h>
-#include <mgdl/mgdl-openal.h>
+#include <mgdl/mgdl-audio.h>
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-splash.h>
 #include <mgdl/mgdl-logger.h>
@@ -33,13 +33,6 @@ static void UpdateLoop(int value);
 static void RenderLoop();
 
 // For measuring A hold and splash screen
-
-// For Audio
-
-static void Platform_InitAudio();
-// OpenAL sound
-static ALCdevice* device;
-static ALCcontext* context;
 
 // Used by all
 static void UpdateEnd();
@@ -183,33 +176,6 @@ void Platform_RenderEnd()
 }
 
 
-void Platform_InitAudio()
-{
-    Log_Info("Setting up OpenAL Audio Device.\n");
-    // Initialize OpenAL
-    device = alcOpenDevice(NULL);
-    if (!device) {
-        Log_Error("Failed to open OpenAL device\n");
-        return;
-    }
-    Log_Info("Setting up OpenAL Audio Contex.\n");
-    context = alcCreateContext(device, NULL);
-    if (alcGetError(device) != ALC_NO_ERROR || !context) {
-        Log_Error("Failed to create OpenAL context\n");
-        alcCloseDevice(device);
-        return;
-    }
-    ALboolean contextMadeOK = alcMakeContextCurrent(context);
-    if (contextMadeOK != AL_TRUE)
-    {
-        Log_Error("Failed to make OpenAL context current\n");
-        alcCloseDevice(device);
-        return;
-    }
-
-    Log_Info("OpenAL context created\n");
-}
-
 void Platform_Init(const char* windowName,
                    ScreenAspect screenAspect,
                    CallbackFunction initCallback,
@@ -228,7 +194,7 @@ void Platform_Init(const char* windowName,
     // Store these for the reshape callback
     Platform_SetWindowNameAndSize(&platformPC, windowName, screenAspect);
 
-	Platform_InitAudio();
+	Audio_Init(NULL);
 
     // fake command line arguments
     int argumentCount = 0;
@@ -321,9 +287,7 @@ void Platform_DoProgramExit()
 {
     Log_Info("DoProgramExit\n");
 	// Close sound
-	alcMakeContextCurrent(NULL);
-	alcDestroyContext(context);
-	alcCloseDevice(device);
+    Audio_Deinit();
 
     // Close window
     glutDestroyWindow(glutWindowId);
