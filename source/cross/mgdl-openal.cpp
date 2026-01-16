@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#ifndef GEKKO
+#if defined(MGDL_USE_OPENAL)
 
 void check_al_errors(const char* filename, const sizetype line)
 {

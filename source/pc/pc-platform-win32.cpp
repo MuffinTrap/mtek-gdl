@@ -274,7 +274,7 @@ LRESULT CALLBACK WindowCallback(HWND target_windowHandle, UINT message, WPARAM w
 	{
 	case WM_CREATE:
 	{
-		Log_Info("WM_CREATE\n");
+		OutputDebugStringA("WM_CREATE\n");
 		// Windows has created the window and we can OpenGL
 		SetupOpenGL(target_windowHandle);
 	}
@@ -282,19 +282,19 @@ LRESULT CALLBACK WindowCallback(HWND target_windowHandle, UINT message, WPARAM w
 	case WM_ACTIVATEAPP:
 	{
 		// If the window is visible and active : wParam : BOOL
-		Log_Info("WM_ACTIVATEAPP\n");
+		OutputDebugStringA("WM_ACTIVATEAPP\n");
 		windowIsVisible = (BOOL)wParam;
 	}
 	break;
 	case WM_SIZE:
 	{
 		// Size is changed
-		Log_Info("WM_SIZE\n");
+		OutputDebugStringA("WM_SIZE\n");
 	}
 	break;
 	case WM_TIMER:
 	{
-		Log_Info("WM_TIMER\n");
+		OutputDebugStringA("WM_TIMER\n");
 		// Windows calls this when timer is up
 		// TODO Use high resolution timer
 	}
@@ -303,42 +303,44 @@ LRESULT CALLBACK WindowCallback(HWND target_windowHandle, UINT message, WPARAM w
 	// Input from keyboard
 	case WM_KEYDOWN:
 	{
-		UINT keycode = wParam;
+		OutputDebugStringA("WM_KEYDOWN\n");
+		UINT keycode = (UINT)wParam;
 		bool isRepeat = (lParam & (1 << 30)) > 0;
 		if (isRepeat == false)
 		{
 			keyboardDown(keycode);
 		}
-		Log_InfoF("Key down %x\n", keycode);
 	}
 	break;
 	case WM_KEYUP:
 	{
-		UINT keycode = wParam;
+		OutputDebugStringA("WM_KEYUP\n");
+		UINT keycode = (UINT)wParam;
 		keyboardUp(keycode);
-		Log_InfoF("Key up %x\n", keycode);
 	}
 	break;
 
 	// Input from mouse
 	case WM_LBUTTONDOWN:
-
-		OutputDebugStringA("Mouse left down");
+		OutputDebugStringA("Mouse left down\n");
 		mouseDown(MGDL_VK_MOUSE_LEFT);
 		break;
 	case WM_RBUTTONDOWN:
+		OutputDebugStringA("Mouse right down\n");
 		mouseDown(MGDL_VK_MOUSE_RIGHT);
 		break;
 	case WM_LBUTTONUP:
-		OutputDebugStringA("Mouse left up");
+		OutputDebugStringA("Mouse left up\n");
 		mouseUp(MGDL_VK_MOUSE_LEFT);
 		break;
 	case WM_RBUTTONUP:
+		OutputDebugStringA("Mouse right up\n");
 		mouseUp(MGDL_VK_MOUSE_RIGHT);
 		break;
 
 	case WM_MOUSEMOVE:
 	{
+		//OutputDebugStringA("Mouse move\n");
 		SHORT xPos = GET_X_LPARAM(lParam);
 		SHORT yPos = GET_Y_LPARAM(lParam);
 
@@ -359,14 +361,15 @@ LRESULT CALLBACK WindowCallback(HWND target_windowHandle, UINT message, WPARAM w
 	break;
 	case WM_CLOSE:
 	{
-		Log_Info("WM_CLOSE\n");
+		ShowCursor(TRUE);
+		OutputDebugStringA("WM_CLOSE\n");
 		KillTimer(windowHandle, m_renderTimerId); // Stop calling the render loop
 		Platform_DoProgramExit();
 	}
 	break;
 	case WM_DESTROY:
 	{
-		Log_Info("WM_DESTROY\n");
+		OutputDebugStringA("WM_DESTROY\n");
 		// The window has been destroyed, bye bye
 		PostQuitMessage(0); // Will send WM_QUIT message
 	}
@@ -480,7 +483,7 @@ void Platform_Init(const char* windowName,
 	UpdateWindow(windowHandle);
 
 	// Set up splash screen
- const bool SplashFlag = Flag_IsSet(initFlags, PlatformInitFlag::FlagSplashScreen);
+	const bool SplashFlag = Flag_IsSet(initFlags, PlatformInitFlag::FlagSplashScreen);
     const bool HoldAFlag = Flag_IsSet(initFlags, PlatformInitFlag::FlagPauseUntilA);
     // Set up A hold variables
     Platform_ResetTime(&platformPC);
@@ -534,7 +537,6 @@ void Platform_Init(const char* windowName,
 		}
 	}
 
-	ShowCursor(TRUE);
 	OutputDebugStringA("InitSystem over\n");
 }
 
@@ -563,7 +565,7 @@ void Platform_InitControllers()
 // at that point windowHandle is invalid
 void Platform_DoProgramExit(void)
 {
-	if (quitCall != NULL)
+	if (quitCall != nullptr)
 	{
 		quitCall();
 	}

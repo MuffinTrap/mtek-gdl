@@ -146,3 +146,12 @@ float PNG_GetGrayscale(PNGFile* png, int x, int y)
 
 GLubyte* PNG_GetTexels(PNGFile* png) { return png->_texels; }
 
+GLenum PNG_GetGLFormat(PNGFile* png)
+{
+	return PNG_PNGtoGLFormat(png->_pngFormat);
+}
+GLenum PNG_GetGLInternalFormat(PNGFile* png)
+{
+	return PNG_PNGtoGLInternalFormat(png->_pngFormat);
+}
+

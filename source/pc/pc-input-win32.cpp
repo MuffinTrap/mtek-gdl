@@ -1,4 +1,4 @@
-#if defined(MGDL_PLATFORM_MSYS2) && defined(MGDL_PLATFORM_WINDOWS)
+#if defined(MGDL_PLATFORM_WINDOWS)
 #include <mgdl/pc/mgdl-pc-input.h>
 #include <WinUser.h>
 
@@ -158,7 +158,7 @@ void keyboardUp(UINT vcode)
 		WiiController_SetButtonUp(&kbmController, WiiButtons::ButtonUp);
 		break;
 	case VK_DOWN:
-		WiiController_SetButtonUp(&kbmController, WiiButtons::ButtonUp);
+		WiiController_SetButtonUp(&kbmController, WiiButtons::ButtonDown);
 		break;
 	case VK_LEFT:
 		WiiController_SetButtonUp(&kbmController, WiiButtons::ButtonLeft);

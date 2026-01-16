@@ -45,6 +45,8 @@ typedef int64_t s64;
 
 #if defined(MGDL_PLATFORM_WINDOWS)
     typedef size_t sizetype;
+    const double M_PI = 3.14159265358979323846;
+    const double M_PI_2 = 1.57079632679489661923;
 #endif
 
 #if defined(MGDL_PLATFORM_MSYS2)

@@ -19,11 +19,13 @@
 
 # if defined(GEKKO) || defined(MGDL_PLATFORM_WINDOWS)
 
+
 /* Wii does not have OpenAL */
 /* Windows uses DirectSound */
 #else
 
 // Other platform use OpenAL
+# define MGDL_USEOPENAL
 
 # if defined(__APPLE__)
 #    include <OpenAL/al.h>

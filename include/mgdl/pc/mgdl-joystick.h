@@ -27,7 +27,7 @@ struct Joystick
 #ifdef MGDL_PLATFORM_LINUX
     int linux_device_index;
 #endif
-#ifdef MGDL_WINDOWS_NATIVE
+#ifdef MGDL_PLATFORM_WINDOWS
     int lastPacketNumber; // From XInput
 #endif
     struct axis_state* axes;

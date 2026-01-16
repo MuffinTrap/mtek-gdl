@@ -8,7 +8,8 @@ extern WiiController kbmController; /**< Represents keyboard and mouse input as 
 extern "C"
 {
 	void InitPCInput();
-#if defined(MGDL_WINDOWS_NATIVE)
+#if defined(MGDL_PLATFORM_WINDOWS)
+	// XInput
 #	define MGDL_VK_MOUSE_LEFT 0
 #	define MGDL_VK_MOUSE_RIGHT 1
 

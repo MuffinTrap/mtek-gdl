@@ -8,7 +8,7 @@ void mgdl_CacheFlushRange ( void* rangeStart, size_t size )
 }
 #endif
 
-#if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC) || defined(MGDL_WINDOWS_NATIVE)
+#if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC) || defined(MGDL_PLATFORM_WINDOWS)
 
 	#pragma clang diagnostic push
 	#pragma clang diagnostic ignored "-Wunused-parameter"
@@ -16,4 +16,5 @@ void mgdl_CacheFlushRange ( void* rangeStart, size_t size )
 	{
 		// nop
 	}
+	#pragma clang diagnostic pop
 #endif

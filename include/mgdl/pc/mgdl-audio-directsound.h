@@ -1,8 +1,9 @@
 #pragma once
 
-#if defined(MGDL_WINDOWS_NATIVE)
+#if defined(MGDL_PLATFORM_WINDOWS)
 
 #include <dsound.h>
+#include <mgdl/mgdl-types.h>
 
 
 struct SoundDirectSound

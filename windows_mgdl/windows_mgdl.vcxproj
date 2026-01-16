@@ -123,9 +123,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MGDL_PLATFORM_WINDOWS;MGDL_PLATFORM="Windows Native";MGDL_WINDOWS_NATIVE;MGDL_USE_CCVECTOR;UFBX_REAL_IS_FLOAT;_XKEYCHECK_H;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;MGDL_PLATFORM_WINDOWS;MGDL_PLATFORM="Windows Native";MGDL_USE_CCVECTOR;UFBX_REAL_IS_FLOAT;_XKEYCHECK_H;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Dev\libogg-1.3.6\include;C:\Dev\libvorbis-1.3.7\include;C:\Dev\libsndfile-1.2.2-win64\include;C:\Dev\freeglut\include;C:\Dev\Wii\mtek-gdl\include;C:\Program Files %28x86%29\OpenAL 1.1 SDK\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\freeglut\include;C:\Dev\Wii\mtek-gdl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -180,7 +180,6 @@
     <ClCompile Include="..\source\pc\pc-joystick-mac.cpp" />
     <ClCompile Include="..\source\pc\pc-joystick-win32.cpp" />
     <ClCompile Include="..\source\pc\pc-joystick.cpp" />
-    <ClCompile Include="..\source\pc\pc-music.cpp" />
     <ClCompile Include="..\source\pc\pc-platform-glut.cpp" />
     <ClCompile Include="..\source\pc\pc-platform-win32.cpp" />
     <ClCompile Include="..\source\pc\pc-platform.cpp" />
@@ -234,9 +233,10 @@
     <ClInclude Include="..\include\mgdl\mgdl-vector.h" />
     <ClInclude Include="..\include\mgdl\mgdl-vectorfunctions.h" />
     <ClInclude Include="..\include\mgdl\mgdl-wav-player.h" />
+    <ClInclude Include="..\include\mgdl\pc\mgdl-audio-directsound.h" />
+    <ClInclude Include="..\include\mgdl\pc\mgdl-audio-openal.h" />
     <ClInclude Include="..\include\mgdl\pc\mgdl-joystick.h" />
     <ClInclude Include="..\include\mgdl\pc\mgdl-pc-input.h" />
-    <ClInclude Include="..\include\mgdl\pc\mgdl-sound-directsound.h" />
     <ClInclude Include="..\include\mgdl\pc\mgdl-sound-openal.h" />
     <ClInclude Include="..\include\mgdl\wii\mgdl-sound-asnd.h" />
   </ItemGroup>

@@ -14,8 +14,9 @@
 		// On the Wii can use CCVector or gu
 		// Wii gcc does not complain about ccVector's tricks
 		#include <mgdl/ccVector/ccVector.h>
-#	elif defined(MGDLPLATFORM_WINDOWS)
+#	elif defined(MGDL_PLATFORM_WINDOWS)
 		// No problem with Visual C++
+		#include <mgdl/ccVector/ccVector.h>
 #	else
 		// ccVector is written in C and uses anonymous structs
 		// to implement vector swizzling. Anonymous structs
@@ -31,7 +32,7 @@
 			#pragma GCC diagnostic ignored "-Wgnu-anonymous-struct"
 #		endif
 
-	#include <mgdl/ccVector/ccVector.h>
+		#include <mgdl/ccVector/ccVector.h>
 
 	#pragma GCC diagnostic pop
 #	endif

@@ -341,14 +341,6 @@ PNGFile* PNG_ReadFile(const char* filename)
 }
 
 
-GLenum PNG_GetGLFormat(PNGFile* png)
-{
-	return PNG_PNGtoGLFormat(png->_pngFormat);
-}
-GLenum PNG_GetGLInternalFormat(PNGFile* png)
-{
-	return PNG_PNGtoGLInternalFormat(png->_pngFormat);
-}
 
 #endif
 

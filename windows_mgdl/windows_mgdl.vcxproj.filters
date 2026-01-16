@@ -117,9 +117,6 @@
     <ClCompile Include="..\source\pc\pc-assert.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\pc\pc-music.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\pc\pc-sound.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -314,9 +311,6 @@
     <ClInclude Include="..\include\mgdl\pc\mgdl-sound-openal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\mgdl\pc\mgdl-sound-directsound.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\mgdl\wii\mgdl-sound-asnd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -327,6 +321,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\mgdl\mgdl-wav-player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mgdl\pc\mgdl-audio-openal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mgdl\pc\mgdl-audio-directsound.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
