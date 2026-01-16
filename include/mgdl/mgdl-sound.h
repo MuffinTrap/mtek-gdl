@@ -23,10 +23,10 @@
 
 	enum SoundSampleFormat
 	{
-		Sound_Mono_s8,
-		Sound_Mono_s16,
-		Sound_Stereo_s8,
-		Sound_Stereo_s16
+		Format_Mono_8,
+		Format_Mono_16,
+		Format_Stereo_8,
+		Format_Stereo_16
 	};
 	typedef enum SoundSampleFormat SoundSampleFormat;
 

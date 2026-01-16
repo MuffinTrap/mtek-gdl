@@ -1,20 +1,18 @@
-#if defined(MGLD_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC)
+#if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC)
 
-#include <mgdl/pc/mgdl-sound-openal.h>
+#include <mgdl/pc/mgdl-audio-openal.h>
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-alloc.h>
-#include <mgdl/mgdl-openal.h>
+#include <mgdl/mgdl-audio.h>
+#include <mgdl/mgdl-sound.h>
 #include <mgdl/mgdl-logger.h>
 
-#include <sndfile.h>
-
-// OpenAL sound
+// OpenAL
 static ALCdevice* device;
 static ALCcontext* context;
-static SoundOpenAL* soundDatas
+static SoundOpenAL* soundDatas;
 
-
-/* Streaming audio */
+/* Streaming audio callback and stuff*/
 static AudioCallbackFunction audioCallback = nullptr;
 void Audio_Platform_SetCallback(AudioCallbackFunction callbackFunction)
 {
@@ -27,7 +25,7 @@ static ALuint streamingSource;
 static StreamBuffer streamingBuffers[MGDL_NUM_STREAMING_BUFFERS];
 static ALenum streamingFormat;
 static ALsizei streamingFreq;
-static u32 streamingVoiceNumber;
+static s32 streamingVoiceNumber;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -77,7 +75,7 @@ void Audio_Platform_Deinit()
 	{
         if (soundDatas[i].inUse)
         {
-            SoundOpenAL* sound = soundDatas[s->voiceNumber];
+            SoundOpenAL* sound = &soundDatas[i];
 
             alDeleteSources(1, &sound->source);
             alDeleteBuffers(1, &sound->buffer);
@@ -85,11 +83,12 @@ void Audio_Platform_Deinit()
         }
     }
     free(soundDatas);
+
+    alDeleteSources(1, &streamingSource);
 	for (int i = 0; i < MGDL_NUM_STREAMING_BUFFERS; i++)
 	{
-        free(streamingSamples[i]);
+        alDeleteBuffers(1, &streamingBuffers[i].bufferName);
     }
-    free(streamingSamples);
 
 	alcMakeContextCurrent(NULL);
 	alcDestroyContext(context);
@@ -100,10 +99,10 @@ ALenum mgdlFormatToOpenAL(SoundSampleFormat format)
 {
     switch(format)
     {
-        case Audio_Mono_8: return AL_FORMAT_MONO8;
-        case Audio_Mono_16 return AL_FORMAT_MONO16;
-        case Audio_Stereo_8 return AL_FORMAT_STEREO16;
-        case Audio_Stereo_16 return AL_FORMAT_STEREO16;
+        case Format_Mono_8: return AL_FORMAT_MONO8;
+        case Format_Mono_16: return AL_FORMAT_MONO16;
+        case Format_Stereo_8: return AL_FORMAT_STEREO16;
+        case Format_Stereo_16: return AL_FORMAT_STEREO16;
     }
     return 0;
 }
@@ -122,7 +121,6 @@ void* Audio_OpenStaticBuffer(Sound* inout_snd, sizetype byteCount, u16 samplerat
 	}
 	if (voiceNumber == -1)
 	{
-		OutputDebugStringA("No more voice slots free\n");
 		Log_Error("No more voice slots free\n");
         inout_snd->voiceNumber = voiceNumber;
 		return nullptr;
@@ -144,26 +142,29 @@ void Audio_CloseStaticBuffer(Sound* snd, void* buffer, sizetype bytesWritten)
 {
     // Fill OpenAL buffer with audio data
     SoundOpenAL* soundAL = &soundDatas[snd->voiceNumber];
+    // Just to be sure
+    mgdl_assert_print(soundAL->tempBuffer == buffer, "Audio_CloseStatic buffer got wrong buffer");
     alCall(alBufferData, soundAL->buffer, // Buffer id
            soundAL->format,
-           soundAL->tempBuffer, // data pointer
+           buffer,
            bytesWritten,
-           soundAL->samplerate);
+           soundAL->sampleRate);
 
     soundAL->sizeBytes = bytesWritten;
 
     // Set the source's buffer
     alCall(alSourcei, soundAL->source, AL_BUFFER, soundAL->buffer);
-    free(soundAL.tempBuffer);
+    free(soundAL->tempBuffer);
+    soundAL->tempBuffer = nullptr;
 }
 
 void Audio_PlayStaticBuffer(Sound* snd)
 {
-    alSourcePlay(soundDatas[snd->voiceNumber].source)
+    alSourcePlay(soundDatas[snd->voiceNumber].source);
 }
 void Audio_StopStaticBuffer(Sound* snd)
 {
-    alSourceStop(soundDatas[snd->voiceNumber].source)
+    alSourceStop(soundDatas[snd->voiceNumber].source);
 }
 sizetype Audio_GetStaticBufferSize(Sound* snd)
 {
@@ -177,27 +178,26 @@ u32 Audio_GetStaticBufferElapsedMs(Sound* snd)
 	return (u32)(secOffset * 1000);
 }
 
-void Audio_SetBufferElapsed(Sound* snd, u32 milliseconds)
+void Audio_SetStaticBufferElapsedMs(Sound* snd, u32 milliseconds)
 {
 	alSourcef(soundDatas[snd->voiceNumber].source, AL_SEC_OFFSET, (float)milliseconds/1000.0f);
-
 }
 
-void Sound_SetPaused(Sound* sound, bool pause) {
+void Audio_PauseStaticBuffer(Sound* sound, bool pause) {
 	if (pause)
     {
-    	alSourcePause(sound->source);
+    	alSourcePause(soundDatas[sound->voiceNumber].source);
     }
 	else
     {
-    	alSourcePlay(sound->source);
+    	alSourcePlay(soundDatas[sound->voiceNumber].source);
     }
 }
 
 void Sound_SetLooping(Sound* sound, bool looping)
 {
     sound->isLooping = looping;
-    alSourcei(sound->source, AL_LOOPING, looping ? AL_TRUE : AL_FALSE);
+    alSourcei(soundDatas[sound->voiceNumber].source, AL_LOOPING, looping ? AL_TRUE : AL_FALSE);
 }
 
 static mgdlAudioStateEnum GetOpenALSourceStatus(ALuint source)
@@ -215,10 +215,9 @@ static mgdlAudioStateEnum GetOpenALSourceStatus(ALuint source)
         return Audio_StateStopped;
     }
     return Audio_StateInvalid;
-
 }
 
-mgdlAudioStateEnum Audio_GetStaticBufferStatus(Sound* sound) {
+mgdlAudioStateEnum Audio_GetStaticBufferStatus(Sound* snd) {
 	// Get the play state of the audio source
     return GetOpenALSourceStatus(soundDatas[snd->voiceNumber].source);
 }
@@ -229,24 +228,24 @@ static void FillAndQueue(StreamBuffer* buffer)
     audioCallback(streamingVoiceNumber, buffer->tempBuffer, MGDL_AUDIO_CALLBACK_BUFFER_SIZE, &bytesWritten);
 
     // Copy data to OpenAL buffer
-    alBufferData(buffer->bufferName, streamingFormat,
+    alCall(alBufferData, buffer->bufferName, streamingFormat,
     (ALvoid*)buffer->tempBuffer, bytesWritten, streamingFreq);
 
     // Queue buffer
     alCall(alSourceQueueBuffers, streamingSource, 1, &buffer->bufferName);
 }
 
-void Audio_Platform_StartStream(Sound* snd, s32 sampleRate)
+void Audio_Platform_StartStream(Sound* snd, s32 sampleRate, SoundSampleFormat format)
 {
     streamingVoiceNumber = snd->voiceNumber;
     streamingFreq = sampleRate;
+    // TODO Pass the format too
+    streamingFormat = mgdlFormatToOpenAL(format);
     // Fill all buffers
     for (ALsizei i = 0; i < MGDL_NUM_STREAMING_BUFFERS; i++)
     {
         FillAndQueue(&streamingBuffers[i]);
     }
-
-    alCall(alSourceQueueBuffers, streamingSource, MGDL_NUM_STREAMING_BUFFERS, streamingBuffers);
 
     alSourcePlay(streamingSource);
 }
@@ -265,37 +264,26 @@ void Audio_Update()
     {
         return;
     }
-    ALsizei processedAmount = 0;
+    //ALsizei processedAmount = 0;
     ALuint processedNames[MGDL_NUM_STREAMING_BUFFERS];
 
     // Check if any of the buffers have been processed
-    alCall(alSourcei, streamingSource, AL_BUFFERS_PROCESSED, &processedAmount);
+    ALint processedAmount = 0;
+    alCall(alGetSourcei, streamingSource, AL_BUFFERS_PROCESSED, &processedAmount);
     if (processedAmount > 0)
     {
         // Detach all processed buffers
         alCall(alSourceUnqueueBuffers, streamingSource, processedAmount, processedNames);
 
-        // Fill each processed buffer with new data
-        u32 bytesWritten = 0;
-        for (ALsizei i = 0; i < processedAmount; i++)
+        // Find matching StreamBuffer for each processed buffer name
+        for (int nameIndex = 0; nameIndex < processedAmount; nameIndex++)
         {
-            // Find matching StreamBuffer for each processed buffer name
-            for (int p = 0; p < processedAmount; p++)
+            for (int bufferIndex = 0; bufferIndex < MGDL_NUM_STREAMING_BUFFERS; bufferIndex++)
             {
-                for (int i = 0; i < MGDL_NUM_STREAMING_BUFFERS; i++)
+                if (streamingBuffers[bufferIndex].bufferName == processedNames[nameIndex])
                 {
-                    bool found = false;
-                    if (streamingBuffers[i].bufferName == processedNames[p])
-                    {
-                        // Get data from player
-                        FillAndQueue(&streamingBuffers[i]);
-
-                        found = true;
-                        break;
-                    }
-                }
-                if(found)
-                {
+                    // Get data from player
+                    FillAndQueue(&streamingBuffers[bufferIndex]);
                     break;
                 }
             }

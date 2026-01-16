@@ -96,6 +96,17 @@ void Audio_PlaySound(Sound* s)
 		OggPlayer_PlaySound(s);
 	}
 }
+bool Audio_PauseSound(Sound* s)
+{
+	// TODO
+	return false;
+}
+bool Audio_ResumeSound(Sound* s)
+{
+
+	// TODO
+	return false;
+}
 void Audio_StopSound(Sound* s)
 {
 	if (s == nullptr)

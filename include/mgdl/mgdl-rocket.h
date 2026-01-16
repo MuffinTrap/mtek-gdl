@@ -35,7 +35,7 @@ typedef struct RocketVariable RocketVariable;
 // End CTOY
 
 
-struct Music; // Forward declare of mgdl Music
+struct Sound; // Forward declare of mgdl Sound
 
 enum SyncState
 {
@@ -57,7 +57,7 @@ typedef enum RocketTrackFormat RocketTrackFormat;
 struct Rocket
 {
 	struct sync_device *rocket_device;
-	struct Music* music;
+	struct Sound* music;
 	double bpm;
 	int rowsPerBeat;
 	double row;
@@ -86,7 +86,7 @@ extern "C" {
 
 	// Supply the rocket connection you created and the music
 	Rocket* _Rocket_GetSingleton(void);
-	bool Rocket_Connect(RocketTrackFormat trackSource, RocketTrackFormat trackDestination, struct Music* music, float bpm, int beatsPerRow);
+	bool Rocket_Connect(RocketTrackFormat trackSource, RocketTrackFormat trackDestination, struct Sound* music, float bpm, int beatsPerRow);
 	void Rocket_SetJsonFile(const char* filename);
 	void Rocket_SetBeatsPerMinute(float bpm);
 	void Rocket_SetRowsPerBeat(int rowsPerBeat);

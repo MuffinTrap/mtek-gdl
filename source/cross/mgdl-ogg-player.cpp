@@ -50,13 +50,14 @@ static void Ogg_Callback(s32 voiceNumber, s16* bufferPtr, u32 bufferSizeBytes, u
 	// Loop back to beginning when close to end
 	if (*bytesWritten < bufferSizeBytes)
 	{
+		// Log_Info("Ogg stream almost at end, seek back to start\n");
 		stb_vorbis_seek_start(vorbisfile);
 	}
 }
 
 static MusicOgg LoadOgg(MusicOgg m, Sound* inout_snd, const char* filename, s32 voiceNumber)
 {
-	Log_InfoF("Loading Ogg Sound to DirectSound from %s\n", filename);
+	Log_InfoF("Loading Ogg Sound from %s\n", filename);
 	int errorOut = 0;
 
 	// TODO on Wii need to supply buffer allocated with valloc
@@ -151,9 +152,22 @@ Sound OggPlayer_LoadSound(const char* filename)
 
 void OggPlayer_PlaySound(Sound* snd)
 {
+	SoundSampleFormat format = Format_Stereo_16;
+	if (musics[snd->voiceNumber].channels == 2)
+	{
+		format = Format_Stereo_16;
+	}
+	else if (musics[snd->voiceNumber].channels == 1)
+	{
+		format = Format_Mono_16;
+	}
+	else
+	{
+		Log_ErrorF("Cannot play Ogg files with more than 2 channels");
+	}
 	//TestOgg(s->voiceNumber, 5);
 	Audio_Platform_SetCallback(Ogg_Callback);
-	Audio_Platform_StartStream(snd, musics[snd->voiceNumber].sampleRate);
+	Audio_Platform_StartStream(snd, musics[snd->voiceNumber].sampleRate, format);
 	musics[snd->voiceNumber].state = Audio_StatePlaying;
 }
 void OggPlayer_StopSound(Sound* snd)

@@ -21,7 +21,7 @@ struct StreamBuffer
 {
 	ALuint bufferName;
 	s16* tempBuffer;
-}
+};
 typedef struct StreamBuffer StreamBuffer;
 
 

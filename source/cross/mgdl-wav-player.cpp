@@ -99,17 +99,17 @@ Sound WavPlayer_LoadSound(const char* filename)
 
 	}
 
-	SoundSampleFormat format = Sound_Stereo_s16;
+	SoundSampleFormat format = Format_Stereo_16;
 
 	// Set audio format
 	if (WAV_Subchunk1.chan == 1) {
 		// For mono sounds
 		switch (WAV_Subchunk1.bps) {
 		case 8:
-			format = Sound_Mono_s8;
+			format = Format_Mono_8;
 			break;
 		case 16:
-			format = Sound_Mono_s16;
+			format = Format_Mono_16;
 			break;
 		}
 	}
@@ -117,10 +117,10 @@ Sound WavPlayer_LoadSound(const char* filename)
 		// For stereo sounds
 		switch (WAV_Subchunk1.bps) {
 		case 8:
-			format = Sound_Stereo_s8;
+			format = Format_Stereo_8;
 			break;
 		case 16:
-			format = Sound_Stereo_s16;
+			format = Format_Stereo_16;
 			break;
 		}
 	}
@@ -162,5 +162,5 @@ u32 WavPlayer_GetSoundElapsedMs(Sound* snd)
 }
 void WavPlayer_SetSoundElapsedMs(Sound* snd, u32 milliseconds)
 {
-	Audio_SetBufferElapsedMs(snd, milliseconds);
+	Audio_SetStaticBufferElapsedMs(snd, milliseconds);
 }

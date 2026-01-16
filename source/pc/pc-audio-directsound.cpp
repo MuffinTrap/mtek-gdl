@@ -1,7 +1,7 @@
 #include <mgdl/mgdl-audio.h>
 #if defined(MGDL_WINDOWS_NATIVE)
 
-#include <mgdl/pc/mgdl-sound-directsound.h>
+#include <mgdl/pc/mgdl-audio-directsound.h>
 
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-assert.h>
@@ -29,7 +29,7 @@ static void WriteToStream(DWORD bytesToWrite);
 
 // Multiple buffers for music and sound effects
 static SoundDirectSound* soundDatas;
-static bool Create_Buffer(u32 sizeBytes, WORD channels, u32 sampleRate, DWORD flags, LPDIRECTSOUNDBUFFER* bufferPtr, bool isStreamingBuffer);
+static bool Create_Buffer(u32 sizeBytes, SoundSampleFormat format, u32 sampleRate, DWORD flags, LPDIRECTSOUNDBUFFER* bufferPtr, bool isStreamingBuffer);
 
 // static HANDLE soundBufferEmptyEvent;
 
@@ -224,9 +224,8 @@ void* Audio_OpenStaticBuffer(Sound* inout_snd, sizetype byteCount, u16 samplerat
 	}
 
 	u32 sizeBytes = byteCount;
-	short channels = Sound_FormatToChannels(format);
 	LPDIRECTSOUNDBUFFER* bufferPtr = &soundDatas[voiceNumber].buffer;
-	if (Create_Buffer(sizeBytes, channels, samplerate, 0, bufferPtr, false))
+	if (Create_Buffer(sizeBytes, format, samplerate, 0, bufferPtr, false))
 	{
 		// Lock, Fill and Unlock buffer
 		LPVOID lpWrite;
@@ -321,6 +320,18 @@ void Audio_PlayStaticBuffer(Sound* snd)
 	// TODO : if fails, try to Restore buffer
 	soundDatas[snd->voiceNumber].buffer->Play(0, 0, 0);
 }
+void Audio_PauseStaticBuffer(Sound* snd, bool paused)
+{
+	if (paused)
+	{
+		// TODO : if fails, try to Restore buffer
+		soundDatas[snd->voiceNumber].buffer->Stop(0, 0, 0);
+	}
+	else
+	{
+		soundDatas[snd->voiceNumber].buffer->Play(0, 0, 0);
+	}
+}
 void Audio_StopStaticBuffer(Sound* snd)
 {
 	// TODO : if fails, try to Restore buffer
@@ -340,7 +351,21 @@ void Audio_Platform_UnloadSound(Sound s)
 	}
 }
 
-void Audio_Platform_StartStream(Sound* snd, s32 sampleRate)
+int mgdlFormatToChannels(SoundSampleFormat format)
+{
+	switch(format)
+	{
+		case Format_Mono_8:
+		case Format_Mono_16:
+			return 1;
+		case Format_Stereo_8:
+		case Format_Stereo_16:
+			return 2;
+	}
+	return 0;
+}
+
+void Audio_Platform_StartStream(Sound* snd, s32 sampleRate, SoundSampleFormat format)
 {
 	if (streamingBuffer == nullptr)
 	{
@@ -348,7 +373,7 @@ void Audio_Platform_StartStream(Sound* snd, s32 sampleRate)
 		OutputDebugStringA("Creating streaming buffer\n");
 		Log_Info("Creating streaming buffer\n");
 		Create_Buffer(0, 
-			2, 
+			format,
 			sampleRate,
 			0, 
 			&streamingBuffer,
@@ -358,12 +383,11 @@ void Audio_Platform_StartStream(Sound* snd, s32 sampleRate)
 	{
 		streamingBuffer->Release();
 		Create_Buffer(0, 
-			2, 
+			format,
 			sampleRate,
 			0, 
 			&streamingBuffer,
 			true);
-
 	}
 
 	activeStreamingSound = snd->voiceNumber;
@@ -376,13 +400,14 @@ void Audio_Platform_StopStream(s32 voiceNumber)
 	streamingBuffer->Stop();
 }
 
-bool Create_Buffer(u32 sizeBytes, WORD channels, u32 sampleRate, DWORD flags, LPDIRECTSOUNDBUFFER* bufferPtr, bool isStreamingBuffer)
+bool Create_Buffer(u32 sizeBytes, SoundSampleFormat format, u32 sampleRate, DWORD flags, LPDIRECTSOUNDBUFFER* bufferPtr, bool isStreamingBuffer)
 {
 	Log_InfoF("Create buffer samplerate %d bytes %u, channels %d\n", sampleRate, sizeBytes, channels);
 	// Create a write buffer  for music playback
 	WAVEFORMATEX format = waveFormatPrimary;
 	format.nSamplesPerSec = sampleRate;
-	format.nChannels = channels;
+	format.nChannels = mgdlFormatToChannels(format)
+	format.wBitsPerSample = mgdlFormatToBitsPerSample(format);
 	format.nBlockAlign = (format.nChannels * format.wBitsPerSample) / 8; // 8 is bits per byte
 	format.nAvgBytesPerSec = format.nSamplesPerSec * format.nBlockAlign;
 
@@ -618,7 +643,7 @@ mgdlAudioStateEnum Audio_SetVoiceVolume(s32 voiceNumber, float normalizedVolume)
 
 }
 
-void Audio_SetBufferElapsedMs(Sound* snd, u32 milliseconds)
+void Audio_SetStaticBufferElapsedMs(Sound* snd, u32 milliseconds)
 {
 	if (snd != nullptr && snd->voiceNumber > 0 && snd->voiceNumber < MGDL_AUDIO_MAX_SOUNDS)
 	{

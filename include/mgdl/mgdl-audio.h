@@ -94,11 +94,17 @@ extern "C"
 	*/
 	void Audio_StopSound(Sound* snd);
 	/**
-	@brief Pauses the given sound
+	@brief Pauses the given sound.
 	@param Sound The sound 
 	@return True if sound was paused
 	*/
 	bool Audio_PauseSound(Sound* snd);
+	/**
+	@brief Resumes playback of paused sound
+	@param Sound The sound
+	@return True if sound was resumed
+	*/
+	bool Audio_ResumeSound(Sound* snd);
 	/**
 	@brief Gets the status of the given sound
 	@param Sound The sound 
@@ -159,7 +165,9 @@ void Audio_SetMasterAudioVolume(float normalizedVolume);
  */
 Sound* Audio_LoadSound(const char* filename, SoundFileType filetype);
 
-// Static buffers used by short sounds
+// *****************************************
+// NOTE Static buffers used by short sounds
+// *****************************************
 
 /**
 * @brief Creates and opens a static buffer for sound data.
@@ -198,6 +206,13 @@ void Audio_PlayStaticBuffer(Sound* snd);
 void Audio_StopStaticBuffer(Sound* snd);
 
 /**
+* @brief Pauses or resumes a static buffer
+* @param snd The sound associated with the buffer
+* @param paused Should it be paused or resumed
+*/
+void Audio_PauseStaticBuffer(Sound* snd, bool paused);
+
+/**
 * @brief Returns how many milliseconds a buffer has been playing.
 * @param snd The sound associated with the buffer
 * @return Elapsed play time in milliseconds
@@ -208,7 +223,7 @@ u32 Audio_GetStaticBufferElapsedMs(Sound* snd);
 * @param snd The sound associated with the buffer
 * @param milliseconds New play position in milliseconds
 */
-void Audio_SetBufferElapsedMs(Sound* snd, u32 milliseconds);
+void Audio_SetStaticBufferElapsedMs(Sound* snd, u32 milliseconds);
 
 /**
 * @brief Returns size of the sound's data in bytes.
@@ -230,7 +245,7 @@ void Audio_Platform_UnloadSound(Sound* s);
 * @param snd The sound to stream
 * @param sampleRate The samplerate of the audio.
 */
-void Audio_Platform_StartStream(Sound* s, s32 sampleRate);
+void Audio_Platform_StartStream(Sound* s, s32 sampleRate, SoundSampleFormat format);
 void Audio_Platform_StopStream(Sound* s);
 
 #ifdef __cplusplus

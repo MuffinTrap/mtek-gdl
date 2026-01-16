@@ -159,11 +159,14 @@ void Platform_UpdateControllers()
 
 void RenderLoop()
 {
+    Audio_Update();
+
 	frameCall();
 
     Platform_RenderEnd();
 
     Platform_UpdateControllers();
+
 }
 
 void Platform_RenderEnd()
