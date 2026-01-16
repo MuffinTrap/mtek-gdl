@@ -1,5 +1,5 @@
 include Makefile_pc.mk
-.PHONY: wii linux win mac cleanwii cleanlinux cleanwin cleanmac
+.PHONY: wii linux msys2 mac cleanwii cleanlinux cleanmsys2 cleanmac
 
 wii:
 	$(MAKE) -f Makefile_wii.mk
@@ -12,10 +12,10 @@ linux:
 	$(MAKE) -f Makefile_linux.mk
 cleanlinux:
 	$(MAKE) -f Makefile_linux.mk clean
-win:
-	$(MAKE) -f Makefile_win.mk
-cleanwin:
-	$(MAKE) -f Makefile_win.mk clean
+msys2:
+	$(MAKE) -f Makefile_msys2.mk
+cleanmsys2:
+	$(MAKE) -f Makefile_msys2.mk clean
 
 mac:
 	$(MAKE) -f Makefile_mac.mk
