@@ -5,7 +5,7 @@ include Makefile_pc.mk
 CXX = clang++
 LIBDIR	:= lib/win
 CXXFLAGS += -DMGDL_PLATFORM_MSYS2
-CXXFLAGS += -DMGDL_PLATFORM=\"Windows MSYS2\"
+CXXFLAGS += -DMGDL_PLATFORM=\"Windows\ MSYS2\"
 
 # Common part
 

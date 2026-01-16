@@ -2,7 +2,7 @@ include Makefile_pc.mk
 
 # ######################################
 # Windows specific settings
-CXXFLAGS += -DMGDL_PLATFORM=\"Windows MSYS2\"
+CXXFLAGS += -DMGDL_PLATFORM=\"Windows\ MSYS2\"
 CXXFLAGS += -DMGDL_PLATFORM_MSYS2
 
 # Set Compiler
@@ -49,7 +49,7 @@ LDFLAGS += -L$(MGDL_DIR)
 # platform specific postfix
 # Add numbers to the end if it crashes
 # and you need to make a new one
-TARGET	:=	$(notdir $(CURDIR))_win.exe
+TARGET	:=	$(notdir $(CURDIR))_msys2.exe
 
 # END Windows specific
 

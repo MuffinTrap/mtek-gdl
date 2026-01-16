@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#if defined(MGDL_USE_OPENAL)
+#if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC) || defined(MGDL_PLATFORM_MSYS2)
 
 void check_al_errors(const char* filename, const sizetype line)
 {

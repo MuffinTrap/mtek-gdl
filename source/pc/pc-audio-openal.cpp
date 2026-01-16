@@ -1,4 +1,4 @@
-#if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC)
+#if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC) || defined(MGDL_PLATFORM_MSYS2)
 
 #include <mgdl/pc/mgdl-audio-openal.h>
 #include <mgdl/mgdl-assert.h>
@@ -304,5 +304,5 @@ void Audio_Update()
         }
     }
 }
+#endif // Platforms
 
-#endif

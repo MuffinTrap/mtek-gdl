@@ -125,7 +125,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;MGDL_PLATFORM_WINDOWS;MGDL_PLATFORM="Windows Native";MGDL_USE_CCVECTOR;UFBX_REAL_IS_FLOAT;_XKEYCHECK_H;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Dev\Wii\mtek-gdl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -176,6 +176,7 @@
     <ClCompile Include="..\source\pc\pc-audio-openal.cpp" />
     <ClCompile Include="..\source\pc\pc-input-glut.cpp" />
     <ClCompile Include="..\source\pc\pc-input-win32.cpp" />
+    <ClCompile Include="..\source\pc\pc-joystick-glut.cpp" />
     <ClCompile Include="..\source\pc\pc-joystick-linux.cpp" />
     <ClCompile Include="..\source\pc\pc-joystick-mac.cpp" />
     <ClCompile Include="..\source\pc\pc-joystick-win32.cpp" />

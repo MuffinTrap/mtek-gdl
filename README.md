@@ -11,12 +11,12 @@ All changes made to the original are clearly commented in the code, as required 
 If you use this fork for making a Wii game or demo, I won't be available to give tech support. And naturally, there is no warranty of any kind.
 
 ## Version number
-This is version 0.100.4-muffintrap "assembly"
+This is version 0.100.5-muffintrap "ggj26"
 
 # Installation
 This library allows to use the same codebase to make executables for Wii, Windows, Mac and Linux.
-The first part is installing the environment for creating executables for the Wii.
-After that are the different platforms. If you only ever want to make your demo/game work on Wii, you don't have to install the Win/Mac/Linux tools.
+The first part of this guide is for installing the environment for creating executables for the Wii.
+After that are the different platforms. If you only ever want to make your demo/game work on Wii, you don't have to install the Win/Mac/Linux tools, but they speed up the development and debugging a lot.
 
 ## How to compile and install the library and run the example with Dolphin and Wii
 1. Install devkitpro following instructions here: [DevkitPro Getting Started](https://devkitpro.org/wiki/Getting_Started)
@@ -51,8 +51,36 @@ After that are the different platforms. If you only ever want to make your demo/
 * Pack the SD card so that the exe can see the assets
 * Select File > Open... and select the file **boot.dol**
 
+## How to compile and install tools to make Windows executables in Visual Studio
+This is the recommended way to use mtek-gdl on Windows.
+The Visual Studio 2022 solution is in folder: **windows_mgdl**
+
+Building the solution will produce "windows_mgdl.lib".
+
+### How to use the library in your game
+To use it, the simplest way is to add the windows_mgdl project to your Solution.
+In the Properties of your game's project:
+* Add the mtek-gdl include directory to: C/C++ / Additional Include Directories
+* Add the x64/Release directory of windows_mgdl to Linker / Additional Library Directories
+
+There is an example project in folder **example_project/windows_example/**
+
+Preprocessor defines for Windows. 
+```
+NDEBUG
+MGDL_PLATFORM_WINDOWS
+MGDL_PLATFORM="Windows Native"
+MGDL_USE_CCVECTOR
+UFBX_REAL_IS_FLOAT
+_XKEYCHECK_H
+_CRT_SECURE_NO_WARNINGS
+```
 
 ## How to compile and install tools to make Windows executables using MSYS2
+This is for people who don't like Microsoft and/or Visual Studio but are forced to use Windows.
+Or to hardcore Code::Blocks fans.
+This method is very slow to compile.
+
 ### Development environment and libraries
 1. Install [MSYS2](https://www.msys2.org/) (This is a different version from the one that comes with DevkitPro) [Detailed instructions for install](https://www.freecodecamp.org/news/how-to-install-c-and-cpp-compiler-on-windows/)
 2. Launch the UCRT64 variant and update the packages as explained in the Detailed instructions above.
@@ -69,19 +97,13 @@ You need to include these files when you release your executable. There is a rea
 - libgcc_s_seh-1.dll
 - libfreeglut.dll
 - libopenal-1.dll
-- libpng16-16.dll
-- libsndfile-1.dll
 - libstdc++-6.dll
 - libwinpthread-1.dll
 - zlib1.dll
 - libFLAC.dll
 - libmpg123-0.dll
 - libmp3lame-0.dll
-- libogg-0.dll
-- libvorbis-0.dll
-- libopus-0.dll
-- libvorbisenc-2.dll
-- libvorbisfile-3.dll
+
 
 ### Compiling the framework
 1. Navigate to the github repository.
@@ -98,30 +120,7 @@ make win
 ```
 in the mtek-gdl/example_project directory
 
-## How to compile and install tools to make Windows executables without MSYS2
-You need the following libraries:
-    - [FreeGLUT](https://www.transmissionzero.co.uk/software/freeglut-devel/)
-    - [OpenAL](https://openal.org/downloads/)
-    - [libsndfile](https://github.com/libsndfile/libsndfile)
-    - [libogg & libvorbis](https://xiph.org/downloads/)
 
-Libogg and libvorbis need to be built. They include Visual Studio projects. Libvorbis requires libogg.
-
-The included Visual Studio project expects to find these libraries in C:\Dev. If you place them somewhere else you need to modify the project.
-
-Preprocessor defines for Windows build:
-```
-MGDL_PLATFORM_WINDOWS
-MGDL_PLATFORM="Windows Native"
-MGDL_WINDOWS_NATIVE
-MGDL_USE_CCVECTOR
-UFBX_REAL_IS_FLOAT
-_XKEYCHECK_H
-```
-These .dll files need to be in the same folder with the executable when giving it to someone else to play:
-- freeglut.dll
-- OpenAL32.dll  ( C:\Windows\SysWOW64 )
-- sndfile.dll
 
 ## How to install the framework and create executables on Ubuntu/Debian Linux:
 ### List of needed packages:

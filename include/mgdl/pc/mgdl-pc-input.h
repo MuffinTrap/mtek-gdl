@@ -5,6 +5,10 @@
 
 extern WiiController kbmController; /**< Represents keyboard and mouse input as controller */
 
+#if defined(MGDL_PLATFORM_MSYS2) || defined(MGDL_PLATFORM_MAC)
+extern WiiController gamepadController; /**< Represents gamepad as controller (needed for glut)*/
+extern bool gamepadDetected;
+#endif
 extern "C"
 {
 	void InitPCInput();
@@ -26,5 +30,8 @@ extern "C"
 	void specialKeyDown(int key, int x, int y);
 	void mouseKey(int button, int state, int x, int y);
 	void mouseMove(int x, int y);
+#if defined(MGDL_PLATFORM_MSYS2) || defined(MGDL_PLATFORM_MAC)
+	void joystick(unsigned int buttonmask, int x, int y, int z);
+#endif
 #endif
 }

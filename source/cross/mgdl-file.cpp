@@ -4,7 +4,7 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 FILE* BufferOpen(u8* buffer, size_t size, const char* mode)
 {
-    #ifdef MGDL_PLATFORM_WINDOWS
+    #if defined(MGDL_PLATFORM_WINDOWS) || defined(MGDL_PLATFORM_MSYS2)
         FILE* fp = nullptr; ;
         if (tmpfile_s(&fp) != 0)
         {

@@ -171,6 +171,9 @@
     <ClCompile Include="..\source\cross\mgdl-wav-player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\pc\pc-joystick-glut.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\mgdl\mgdl-alloc.h">

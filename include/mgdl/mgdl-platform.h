@@ -58,6 +58,11 @@ void Platform_Init(const char* windowName,
 						CallbackFunction quitCallback,
 						u32 initFlags);
 
+/**
+* @brief Returns the controller at given index.
+* @param controllerNumber Number of controller. Keyboard and mouse is -1, Gamepads and Wiimotes are 0-3
+* @returns The controller, or null if that controller is not connected
+*/
 struct WiiController* Platform_GetController(int controllerNumber);
 void Platform_DoProgramExit(void);
 

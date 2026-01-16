@@ -1,5 +1,17 @@
 #pragma once
 
+/**
+ * @file mgdl-openal.h
+ * @ingroup audio
+ * @brief Includes the OpenAL needed by platform
+ */
+
+# if defined(GEKKO) || defined(MGDL_PLATFORM_WINDOWS)
+/* Wii does not have OpenAL */
+/* Windows uses DirectSound */
+#else
+
+// Other platforms use OpenAL
 #include <mgdl/mgdl-types.h>
 
 #if defined(__cplusplus)
@@ -10,22 +22,6 @@
 #else
 #   include <stdio.h>
 #endif
-
-/**
- * @file mgdl-openal.h
- * @ingroup audio
- * @brief Includes the OpenAL needed by platform
- */
-
-# if defined(GEKKO) || defined(MGDL_PLATFORM_WINDOWS)
-
-
-/* Wii does not have OpenAL */
-/* Windows uses DirectSound */
-#else
-
-// Other platform use OpenAL
-# define MGDL_USEOPENAL
 
 # if defined(__APPLE__)
 #    include <OpenAL/al.h>
@@ -75,6 +71,6 @@ auto alCallImpl(const char* filename, const std::uint_fast32_t line, alFunction 
 // Wrapper to always error check Open AL calls
 #define alCall(function, ...) function(__VA_ARGS__); check_al_errors(__FILE__, __LINE__);
 #define alcCall(function, device, ...) return function(__VA_ARGS__);
-#endif
+#endif // __cplusplus
 
 #endif // USES OPENAL

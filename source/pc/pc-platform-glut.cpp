@@ -1,4 +1,4 @@
-#if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC)
+#if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC) || defined(MGDL_PLATFORM_MSYS2)
 #include <mgdl/mgdl-platform.h>
 #include <mgdl/mgdl-opengl.h>
 #include <mgdl/mgdl-audio.h>
@@ -9,8 +9,7 @@
 
 #include <mgdl/pc/mgdl-pc-input.h>
 #include <mgdl/pc/mgdl-joystick.h>
-
-#include <sndfile.h>
+#include <stdio.h>
 
 static Platform platformPC;
 // Declarations
@@ -135,9 +134,9 @@ static void UpdateEnd()
 
 void Platform_UpdateControllers()
 {
-    WiiController* controller = Platform_GetController(0);
+    WiiController* keyboard_mouse = Platform_GetController(-1);
 
-    if (WiiController_ButtonPress(controller, ButtonHome))
+    if (WiiController_ButtonPress(keyboard_mouse, ButtonHome))
     {
         if (quitCall != NULL)
         {
@@ -146,14 +145,19 @@ void Platform_UpdateControllers()
         Platform_DoProgramExit();
     }
     // Reset controller for next frame
-    WiiController_StartFrame(controller);
-    Joystick* gamepad_0 = platformPC.gamepads[0];
-    if (Joystick_IsConnected(gamepad_0))
+    WiiController_StartFrame(keyboard_mouse);
+
+    // Check gamepads
+    // TODO How to do this???
+    WiiController* gamepad_0 = Platform_GetController(0);
+    if (gamepad_0 != null)
     {
+		WiiController_StartFrame(gamepad_0);
         Joystick_ReadInputs(gamepad_0);
-        // Always read cursor from glut
-        controller->m_cursorX = kbmController.m_cursorX;
-        controller->m_cursorY = kbmController.m_cursorY;
+
+        // Always read cursor from mouse
+        gamepad_0->controller.m_cursorX = kbmController.m_cursorX;
+        gamepad_0->controller.m_cursorY = kbmController.m_cursorY;
     }
 }
 
@@ -274,16 +278,23 @@ void Platform_InitControllers()
 
 struct WiiController* Platform_GetController(int controllerNumber)
 {
-    Joystick* gamepad = platformPC.gamepads[controllerNumber];
-    if (Joystick_IsConnected(gamepad) && gamepad->index == controllerNumber)
+    if (controllerNumber == -1)
     {
-        return Joystick_GetController(gamepad);
+		return &kbmController;
     }
-    else if (controllerNumber == 0)
+    else if (controllerNumber >= 0 && controllerNumber <= 3)
     {
-        return &kbmController;
+        Joystick* gamepad = platformPC.gamepads[controllerNumber];
+        if (Joystick_IsConnected(gamepad) && gamepad->index == controllerNumber)
+        {
+#       if defined(MGDL_PLATFORM_MAC) || defined(MGDL_PLATFORM_MSYS2)
+            return &gamepadController;
+#       else
+            return Joystick_GetController(gamepad);
+#           endif
+        }
     }
-    return &kbmController;
+    return nullptr;
 }
 
 void Platform_DoProgramExit()
