@@ -146,6 +146,17 @@ void WavPlayer_PlaySound(Sound* snd)
 {
 	Audio_PlayStaticBuffer(snd);
 }
+
+void WavPlayer_PauseSound(Sound* snd)
+{
+	Audio_PauseStaticBuffer(snd, true);
+}
+
+void WavPlayer_ResumeSound(Sound* snd)
+{
+	Audio_PauseStaticBuffer(snd, false);
+}
+
 void WavPlayer_StopSound(Sound* snd)
 {
 	Audio_StopStaticBuffer(snd);

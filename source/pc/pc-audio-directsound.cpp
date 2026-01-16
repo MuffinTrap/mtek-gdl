@@ -351,20 +351,6 @@ void Audio_Platform_UnloadSound(Sound s)
 	}
 }
 
-int mgdlFormatToChannels(SoundSampleFormat format)
-{
-	switch(format)
-	{
-		case Format_Mono_8:
-		case Format_Mono_16:
-			return 1;
-		case Format_Stereo_8:
-		case Format_Stereo_16:
-			return 2;
-	}
-	return 0;
-}
-
 void Audio_Platform_StartStream(Sound* snd, s32 sampleRate, SoundSampleFormat format)
 {
 	if (streamingBuffer == nullptr)
@@ -394,11 +380,8 @@ void Audio_Platform_StartStream(Sound* snd, s32 sampleRate, SoundSampleFormat fo
 	WriteToStream(streamingBufferSize / 2); // Write half the buffer in advance
 	streamingBuffer->Play(0,0,DSBPLAY_LOOPING);
 }
-void Audio_Platform_StopStream(s32 voiceNumber)
-{
-	activeStreamingSound = -1;
-	streamingBuffer->Stop();
-}
+
+
 
 bool Create_Buffer(u32 sizeBytes, SoundSampleFormat format, u32 sampleRate, DWORD flags, LPDIRECTSOUNDBUFFER* bufferPtr, bool isStreamingBuffer)
 {
@@ -406,7 +389,7 @@ bool Create_Buffer(u32 sizeBytes, SoundSampleFormat format, u32 sampleRate, DWOR
 	// Create a write buffer  for music playback
 	WAVEFORMATEX format = waveFormatPrimary;
 	format.nSamplesPerSec = sampleRate;
-	format.nChannels = mgdlFormatToChannels(format)
+	format.nChannels = Sound_FormatToChannels(format)
 	format.wBitsPerSample = mgdlFormatToBitsPerSample(format);
 	format.nBlockAlign = (format.nChannels * format.wBitsPerSample) / 8; // 8 is bits per byte
 	format.nAvgBytesPerSec = format.nSamplesPerSec * format.nBlockAlign;
@@ -596,11 +579,28 @@ bool Audio_IsPaused(void)
 {
 }
 
+void Audio_Platform_PauseStream(Sound* s)
+{
+	if (snd->type == SoundOgg && snd->voiceNumber == activeStreamingSound)
+	{
+		streamingBuffer->Stop();
+	}
+}
+
+void Audio_Platform_ResumeStream(Sound* s)
+{
+	if (snd->type == SoundOgg && snd->voiceNumber == activeStreamingSound)
+	{
+		streamingBuffer->Play(0,0,DSBPLAY_LOOPING);
+	}
+}
+
 void Audio_Platform_StopStream(Sound* snd) 
 {
 	if (snd->type == SoundOgg && snd->voiceNumber == activeStreamingSound)
 	{
 		streamingBuffer->Stop();
+		activeStreamingSound = -1;
 	}
 }
 

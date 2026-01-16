@@ -20,17 +20,17 @@ void Sound_Init(Sound* snd, s32 voiceNumber, SoundFileType filetype)
     snd->type = filetype;
 }
 
-short Sound_FormatToChannels(SoundSampleFormat format)
+int Sound_FormatToChannels(SoundSampleFormat format)
 {
     switch (format)
     {
-    case Sound_Mono_s16:
+    case Format_Mono_16:
         return 1;
-    case Sound_Mono_s8:
+    case Format_Mono_8:
         return 1;
-    case Sound_Stereo_s16:
+    case Format_Stereo_16:
         return 2;
-    case Sound_Stereo_s8:
+    case Format_Stereo_8:
         return 2;
     }
     return 0;
@@ -40,7 +40,8 @@ bool Sound_GetLooping(Sound* sound) { return sound->isLooping; }
 static const char* soundType(SoundFileType ft)
 {
     if (ft == SoundOgg) { return "Ogg"; }
-    if (ft == SoundWav) { return "Wav"; }
+    else if (ft == SoundWav) { return "Wav"; }
+    else { return "Unknown";}
 }
 
 void Sound_ToString(Sound* sound)

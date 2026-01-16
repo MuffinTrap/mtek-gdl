@@ -2,13 +2,13 @@
 
 #include <mgdl/mgdl-types.h>
 
-#ifdef __cplusplus
-#include <limits>
-#include <cstdio>
-#include <type_traits>
-#include <utility>
+#if defined(__cplusplus)
+#   include <limits>
+#   include <cstdio>
+#   include <type_traits>
+#   include <utility>
 #else
-#include <stdio.h>
+#   include <stdio.h>
 #endif
 
 /**
@@ -17,41 +17,36 @@
  * @brief Includes the OpenAL needed by platform
  */
 
-#ifdef GEKKO
+# if defined(GEKKO) || defined(MGDL_PLATFORM_WINDOWS)
 
 /* Wii does not have OpenAL */
+/* Windows uses DirectSound */
+#else
 
-#else // PC platform
+// Other platform use OpenAL
 
-    #if defined(__APPLE__)
-        #include <OpenAL/al.h>
-        #include <OpenAL/alc.h>
-    #elif defined(MGDL_PLATFORM_WINDOWS)
-        // Needed on windows
-        #ifdef __cplusplus
-                #include <cstdint>
-        #else
-                #include <stdint.h>
-        #endif
-
-#       if defined(MGDL_WINDOWS_NATIVE) || defined(_WIN64)
-#             include <al.h>
-#             include <alc.h>
-#       else
-            #include <AL/al.h>
-            #include <AL/alc.h>
-#       endif
-#  elif defined(MGDL_PLATFORM_LINUX)
-        #include <AL/al.h>
-        #include <AL/alc.h>
-#   endif
+# if defined(__APPLE__)
+#    include <OpenAL/al.h>
+#    include <OpenAL/alc.h>
+# elif defined(MGDL_PLATFORM_MSYS2)
+#    if defined(__cplusplus)
+#        include <cstdint>
+#    else
+#        include <stdint.h>
+#    endif
+#    include <AL/al.h>
+#    include <AL/alc.h>
+# elif defined(MGDL_PLATFORM_LINUX)
+#    include <AL/al.h>
+#    include <AL/alc.h>
+# endif
 // PC platform #endif at end of file
 
 // Error checking functions
 
 void check_al_errors(const char* filename, const sizetype line);
 
-#ifdef __cplusplus
+#if defined (__cplusplus)
 
 template<typename alFunction, typename... Params>
 auto alCallImpl(const char* filename, const std::uint_fast32_t line, alFunction function, Params... params)
@@ -80,4 +75,4 @@ auto alCallImpl(const char* filename, const std::uint_fast32_t line, alFunction 
 #define alcCall(function, device, ...) return function(__VA_ARGS__);
 #endif
 
-#endif // PC platform
+#endif // USES OPENAL

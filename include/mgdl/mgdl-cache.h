@@ -8,11 +8,9 @@
  */
 
 
-#ifdef __cplusplus
-
+#if defined(__cplusplus)
 extern "C"
 {
-
 #endif
 	/**
 	 * @brief Used to flus the cache after writing to memory.
@@ -26,12 +24,13 @@ extern "C"
 	void mgdl_CacheFlushRange(void* rangeStart, sizetype size);
 #endif
 
-#ifdef MGDL_PLATFORM_WINDOWS
-#	if defined(MGDL_WINDOWS_NATIVE)
-		void mgdl_CacheFlushRange(void* rangeStart, sizetype size);
-#	else
+#if defined(MGDL_PLATFORM_WINDOWS)
+	void mgdl_CacheFlushRange(void* rangeStart, sizetype size);
+#endif
+
+#if defined(MGDL_PLATFORM_MSYS2)
 	// If the function is defined in the .cpp file
-	// the clang compiler leaves it out and then the 
+	// the clang compiler leaves it out and then the
 	// linker complains that it cannot find the definition...
 	#pragma clang diagnostic push
 	#pragma clang diagnostic ignored "-Wunused-parameter"
@@ -40,8 +39,9 @@ extern "C"
 		// nop
 	}
 	#pragma clang diagnostic pop
-#	endif
-#else
+#endif
+
+#if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_APPLE)
 	void mgdl_CacheFlushRange(void* rangeStart, sizetype size);
 #endif
 

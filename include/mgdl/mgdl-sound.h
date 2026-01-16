@@ -30,7 +30,7 @@
 	};
 	typedef enum SoundSampleFormat SoundSampleFormat;
 
-	short Sound_FormatToChannels(SoundSampleFormat);
+	int Sound_FormatToChannels(SoundSampleFormat);
 //! Sound handling struct
 /*!
  *	\details Class object for loading and playing back sound effects with pitch control and stereo panning.

@@ -96,15 +96,13 @@ extern "C"
 	/**
 	@brief Pauses the given sound.
 	@param Sound The sound 
-	@return True if sound was paused
 	*/
-	bool Audio_PauseSound(Sound* snd);
+	void Audio_PauseSound(Sound* snd);
 	/**
 	@brief Resumes playback of paused sound
 	@param Sound The sound
-	@return True if sound was resumed
 	*/
-	bool Audio_ResumeSound(Sound* snd);
+	void Audio_ResumeSound(Sound* snd);
 	/**
 	@brief Gets the status of the given sound
 	@param Sound The sound 
@@ -247,6 +245,8 @@ void Audio_Platform_UnloadSound(Sound* s);
 */
 void Audio_Platform_StartStream(Sound* s, s32 sampleRate, SoundSampleFormat format);
 void Audio_Platform_StopStream(Sound* s);
+void Audio_Platform_PauseStream(Sound* s);
+void Audio_Platform_ResumeStream(Sound* s);
 
 #ifdef __cplusplus
 }

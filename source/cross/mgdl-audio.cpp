@@ -96,16 +96,27 @@ void Audio_PlaySound(Sound* s)
 		OggPlayer_PlaySound(s);
 	}
 }
-bool Audio_PauseSound(Sound* s)
+void Audio_PauseSound(Sound* s)
 {
-	// TODO
-	return false;
+	if (s->type == SoundWav)
+	{
+		WavPlayer_PauseSound(s);
+	}
+	else if (s->type == SoundOgg)
+	{
+		OggPlayer_PauseSound(s);
+	}
 }
-bool Audio_ResumeSound(Sound* s)
+void Audio_ResumeSound(Sound* s)
 {
-
-	// TODO
-	return false;
+	if (s->type == SoundWav)
+	{
+		WavPlayer_ResumeSound(s);
+	}
+	else if (s->type == SoundOgg)
+	{
+		OggPlayer_ResumeSound(s);
+	}
 }
 void Audio_StopSound(Sound* s)
 {

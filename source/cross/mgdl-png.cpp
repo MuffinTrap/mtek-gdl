@@ -6,7 +6,10 @@
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-logger.h>
 
-#ifndef MGDL_WINDOWS_NATIVE
+#if 0
+/** Old implementation that used
+ * libpng directly
+ */
 
 #include <png.h>
 #include <stdio.h>
@@ -337,7 +340,6 @@ PNGFile* PNG_ReadFile(const char* filename)
 	return png;
 }
 
-#endif
 
 GLenum PNG_GetGLFormat(PNGFile* png)
 {
@@ -348,40 +350,6 @@ GLenum PNG_GetGLInternalFormat(PNGFile* png)
 	return PNG_PNGtoGLInternalFormat(png->_pngFormat);
 }
 
-void PNG_DeleteData(PNGFile* png)
-{
-	if (png->_texels != nullptr)
-	{
-		free(png->_texels);
-		png->_texels = nullptr;
-	}
-}
-
-Color4b PNG_GetRGBA(PNGFile* png, int x, int y)
-{
-	size_t index = x + y * png->width;
-	size_t byteIndex = index * png->bytesPerPixel;
-	GLubyte red = png->_texels[byteIndex];
-	GLubyte green = png->_texels[byteIndex + 1];
-	GLubyte blue = png->_texels[byteIndex + 2];
-	GLubyte alpha  = 255;
-	if (PNG_PNGtoGLFormat(png->_pngFormat) == GL_RGBA)
-	{
-		alpha = png->_texels[byteIndex + 3];
-	}
-
-	return Color_Create4b(red, green, blue, alpha);
-}
-
-float PNG_GetGrayscale(PNGFile* png, int x, int y)
-{
-	size_t index = x + y * png->width;
-	size_t byteIndex = index * png->bytesPerPixel;
-	GLubyte value = png->_texels[byteIndex];
-
-	return (float)value/255.0f;
-}
-
-GLubyte* PNG_GetTexels(PNGFile* png) { return png->_texels; }
+#endif
 
 

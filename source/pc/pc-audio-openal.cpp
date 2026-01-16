@@ -249,6 +249,20 @@ void Audio_Platform_StartStream(Sound* snd, s32 sampleRate, SoundSampleFormat fo
 
     alSourcePlay(streamingSource);
 }
+void Audio_Platform_PauseStream(Sound* snd)
+{
+    if (snd->voiceNumber == streamingVoiceNumber)
+    {
+        alSourcePause(streamingSource);
+    }
+}
+void Audio_Platform_ResumeStream(Sound* snd)
+{
+    if (snd->voiceNumber == streamingVoiceNumber)
+    {
+        alSourcePlay(streamingSource);
+    }
+}
 
 void Audio_Platform_StopStream(Sound* snd)
 {

@@ -277,10 +277,10 @@ void Example::DrawScene ( Scene* scene, V3f scale)
 
 void DrawDPad(short x, short y, short size)
 {
-
     short box = size;
     short h=box/2;
-    y -= box + h;
+    x = x + h;
+    y = y - h;
     // Dpad
     int dpad_buttons[] = {
         WiiButtons::ButtonUp,
@@ -310,7 +310,11 @@ void DrawDPad(short x, short y, short size)
             c = Palette_GetColor4f(blessing, 5);
         }
         vec2 d=directions[i];
-        Draw2D_Rect(x+d.x*box-h, y+ d.y*box-h, x+box+d.x*box-h, y+box+d.y*box-h, &c);
+        Draw2D_RectWH(x + d.x * box-h,
+                    y + d.y * box-h,
+                    box,
+                    box,
+                    &c);
     }
 }
 

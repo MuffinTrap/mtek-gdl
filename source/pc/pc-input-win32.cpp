@@ -1,4 +1,4 @@
-#if defined(MGDL_PLATFORM_WINDOWS) && defined(MGDL_WINDOWS_NATIVE)
+#if defined(MGDL_PLATFORM_MSYS2) && defined(MGDL_PLATFORM_WINDOWS)
 #include <mgdl/pc/mgdl-pc-input.h>
 #include <WinUser.h>
 

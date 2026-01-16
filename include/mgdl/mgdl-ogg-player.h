@@ -26,6 +26,8 @@ void OggPlayer_Init();
 void OggPlayer_Deinit();
 Sound OggPlayer_LoadSound(const char* filename);
 void OggPlayer_PlaySound(Sound* snd);
+void OggPlayer_PauseSound(Sound* snd);
+void OggPlayer_ResumeSound(Sound* snd);
 void OggPlayer_StopSound(Sound* snd);
 sizetype OggPlayer_GetSoundSizeBytes(Sound* snd);
 u32 OggPlayer_GetSoundElapsedMs(Sound* snd);

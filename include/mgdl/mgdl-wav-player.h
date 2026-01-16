@@ -13,6 +13,8 @@ extern "C" {
 	Sound WavPlayer_LoadSound(const char* filename);
 	void WavPlayer_PlaySound(Sound* snd);
 	void WavPlayer_StopSound(Sound* snd);
+	void WavPlayer_PauseSound(Sound* snd);
+	void WavPlayer_ResumeSound(Sound* snd);
 
 	sizetype WavPlayer_GetSoundSizeBytes(Sound* snd);
 	u32 WavPlayer_GetSoundElapsedMs(Sound* snd);

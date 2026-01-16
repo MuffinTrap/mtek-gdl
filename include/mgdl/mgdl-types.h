@@ -43,16 +43,18 @@ typedef int64_t s64;
 
 #endif
 
-#ifdef MGDL_PLATFORM_WINDOWS
-#   if defined(MGDL_WINDOWS_NATIVE)
-        typedef size_t sizetype;
-#   else
-        typedef ssize_t sizetype;
-#   endif 
-const double M_PI = 3.14159265358979323846;
-const double M_PI_2 = 1.57079632679489661923;
-#else
-typedef size_t sizetype;
+#if defined(MGDL_PLATFORM_WINDOWS)
+    typedef size_t sizetype;
+#endif
+
+#if defined(MGDL_PLATFORM_MSYS2)
+    typedef ssize_t sizetype;
+    const double M_PI = 3.14159265358979323846;
+    const double M_PI_2 = 1.57079632679489661923;
+#endif
+
+#if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_APPLE)
+    typedef size_t sizetype;
 #endif
 
 

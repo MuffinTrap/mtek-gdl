@@ -41,9 +41,6 @@ float PNG_GetGrayscale(PNGFile* png, int x, int y);
 GLenum PNG_PNGtoGLFormat(int pngFormat);
 GLenum PNG_PNGtoGLInternalFormat(int pngFormat);
 
-PNGFile* _PNG_ReadFilePointer(FILE* fp);
-// bool _PNG_ReadTextureInfo(int color_type);
-
 #ifdef __cplusplus
 }
 #endif

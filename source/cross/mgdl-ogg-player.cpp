@@ -22,6 +22,7 @@ static void Silent_Callback(s32 voiceNumber, s16* bufferPtr, u32 bufferSizeBytes
 	(*bytesWritten) = bufferSizeBytes;
 }
 
+static s16* testBuffer = nullptr;
 static void TestOgg(s32 voice, int cycles)
 {
 	testBuffer = (s16*)malloc(MGDL_AUDIO_CALLBACK_BUFFER_SIZE);
@@ -107,7 +108,6 @@ static MusicOgg LoadOgg(MusicOgg m, Sound* inout_snd, const char* filename, s32 
 
 	return m;
 }
-static s16* testBuffer = nullptr;
 
 
 void OggPlayer_Init()
@@ -170,10 +170,31 @@ void OggPlayer_PlaySound(Sound* snd)
 	Audio_Platform_StartStream(snd, musics[snd->voiceNumber].sampleRate, format);
 	musics[snd->voiceNumber].state = Audio_StatePlaying;
 }
+
+void OggPlayer_PauseSound(Sound* snd)
+{
+	if (musics[snd->voiceNumber].state == Audio_StatePlaying)
+	{
+		Audio_Platform_PauseStream(snd);
+		musics[snd->voiceNumber].state = Audio_StatePaused;
+	}
+}
+void OggPlayer_ResumeSound(Sound* snd)
+{
+	if (musics[snd->voiceNumber].state == Audio_StatePaused)
+	{
+		Audio_Platform_ResumeStream(snd);
+		musics[snd->voiceNumber].state = Audio_StatePlaying;
+	}
+}
+
 void OggPlayer_StopSound(Sound* snd)
 {
-	Audio_Platform_StopStream(snd);
-	musics[snd->voiceNumber].state = Audio_StateStopped;
+	if (musics[snd->voiceNumber].state == Audio_StatePlaying)
+	{
+		Audio_Platform_StopStream(snd);
+		musics[snd->voiceNumber].state = Audio_StateStopped;
+	}
 }
 
 sizetype OggPlayer_GetSoundSizeBytes(Sound* snd)
