@@ -25,7 +25,7 @@
 #		if defined(MGDL_PLATFORM_MSYS2)
 			// Only MSYS UCRT64 GCC complains about -Wpedantic
 			#pragma GCC diagnostic ignored "-Wpedantic"
-#		elif defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_APPLE)
+#		elif defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC)
 			// Linux GCC complains about anon types and gnu extension
 			#pragma GCC diagnostic ignored "-Wnested-anon-types"
 			#pragma GCC diagnostic ignored "-Wgnu-anonymous-struct"

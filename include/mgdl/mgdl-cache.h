@@ -41,7 +41,7 @@ extern "C"
 	#pragma clang diagnostic pop
 #endif
 
-#if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_APPLE)
+#if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC)
 	void mgdl_CacheFlushRange(void* rangeStart, sizetype size);
 #endif
 
