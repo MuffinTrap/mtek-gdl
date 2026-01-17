@@ -183,31 +183,31 @@ make -f Makefile_mac.mk install
 These all use different versions and won't compile directly with the current version, but they can still be useful as complete examples
 on how to organize things. Newest projects first.
 
-[Turbo Smoothie] (https://github.com/MuffinTrap/turbo-smoothie)
+[Turbo Smoothie](https://github.com/MuffinTrap/turbo-smoothie)
 Fast Game About Fruit. Made during Retro Game Jam 2025. *mtek-gdl 0.100.4*
 
-[Moo Juice] (https://github.com/MuffinTrap/cow-juice)
+[Moo Juice](https://github.com/MuffinTrap/cow-juice)
 Ice Cream acquisition game made during Assembly Game Jam 2025. Gamepad support for linux was added. *mtek-gdl 0.100.4*
 
-[Neko City] (https://github.com/MuffinTrap/nova25)
+[Neko City](https://github.com/MuffinTrap/nova25)
 Demo for NOVA 2025. [Demozoo](https://demozoo.org/productions/373529/) *mtek-gdl 0.100.3*
 
-[NekoStation] (https://github.com/MuffinTrap/graffathon25)
+[NekoStation](https://github.com/MuffinTrap/graffathon25)
 Little intro for Graffathon 2025. This demo inspired the addition of random number generation. [Demozoo](https://demozoo.org/productions/373273/) *mtek-gdl 0.100.3*
 
-[Marmot Spacelines 2024] (https://github.com/MuffinTrap/wii-inercia24)
+[Marmot Spacelines 2024](https://github.com/MuffinTrap/wii-inercia24)
 Demo for Inercia 2024. FBX model loading and matcap materials. [Demozoo](https://demozoo.org/productions/362559/) *mtek-gdl 0.100.2*
 
-[A Keir for Summer's End] (https://github.com/MuffinTrap/wii-skrolli24)
+[A Keir for Summer's End](https://github.com/MuffinTrap/wii-skrolli24)
 Demo for Skrolli Party 2024. Rocket integration in the framework and callbacks. [Demozoo](https://demozoo.org/productions/357207/) *mtek-gdl 0.100.2*
 
-[NUMBERS] (https://github.com/MuffinTrap/particle-demo)
+[NUMBERS](https://github.com/MuffinTrap/particle-demo)
 Demo for Assembly 2024 by Marmot. First project to have cross platform compilation. [Demozoo](https://demozoo.org/productions/354174/) *mtek-gdl 0.100.1*
 
-[Frog Snack] (https://github.com/MuffinTrap/retro-ribbit)
+[Frog Snack](https://github.com/MuffinTrap/retro-ribbit)
 Game for Retro Game Jam 2024. *mtek-gdl 0.100.0*
 
-[Wii & Chill] (https://github.com/MuffinTrap/combochiller)
+[Wii & Chill](https://github.com/MuffinTrap/combochiller)
 First Demo I did for the Wii. [Demozoo](https://demozoo.org/productions/345939/) *mtek-gdl 0.100.0*
 
 [Pyromancer] (https://github.com/MuffinTrap/pyromancer)
