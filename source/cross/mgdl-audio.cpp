@@ -14,6 +14,8 @@ static float UserMusicVolume = 0;
 static Sound* sounds = nullptr;
 static int firstFreeVoice = 0;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 void Audio_Init(void* platformData)
 {
     sounds = (Sound*)malloc(sizeof(struct Sound) * MGDL_AUDIO_MAX_SOUNDS);
@@ -28,6 +30,7 @@ void Audio_Init(void* platformData)
 	firstFreeVoice = 0;
 
 }
+#pragma GCC diagnostic pop
 
 void Audio_Deinit()
 {
@@ -199,9 +202,6 @@ void Audio_SetSoundMasterVolume(float normalizedVolume)
 void Audio_SetMusicMasterVolume(float normalizedVolume)
 {
     MasterMusicVolume  = normalizedVolume;
-#ifdef GEKKO
-	SetVolumeOgg(255*(UserMusicVolume*MasterMusicVolume));
-#endif
 }
 
 
@@ -210,8 +210,5 @@ void Audio_SetMusicMasterVolume(float normalizedVolume)
 void Audio_SetUserMusicVolume(float normalizedVolume)
 {
 	UserMusicVolume = normalizedVolume;
-#ifdef GEKKO
-    SetVolumeOgg(255*(UserMusicVolume*MasterMusicVolume));
-#endif
 }
 

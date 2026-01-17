@@ -62,7 +62,7 @@ void Audio_Platform_Init(void* platformData)
     }
 	for (int i = 0; i < MGDL_NUM_STREAMING_BUFFERS; i++)
 	{
-        streamingBuffers[i].tempBuffer = (s16*)malloc(MGDL_AUDIO_CALLBACK_BUFFER_SIZE);
+        streamingBuffers[i].tempBuffer = malloc(MGDL_AUDIO_CALLBACK_BUFFER_SIZE);
         alGenBuffers(1, &streamingBuffers[i].bufferName);
     }
     alGenSources(1, &streamingSource);

@@ -1,5 +1,7 @@
 #ifdef GEKKO
 
+#if 0 // Wii uses stb_vorbis too
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -180,5 +182,6 @@ bool Music_GetLooping(Music* music)
 
 
 
+#endif // 0
 
 #endif // GEKKO

@@ -18,7 +18,6 @@
 #include "mgdl-wii-image.h"
 #include "mgdl-wii-sprites.h"
 #include "mgdl-wii-font.h"
-#include "mgdl-wii-sound.h"
 #include <mgdl/mgdl-assert.h>
 
 #endif // _GDL_WII_H

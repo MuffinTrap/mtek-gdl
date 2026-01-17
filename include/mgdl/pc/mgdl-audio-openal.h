@@ -16,7 +16,7 @@
 struct StreamBuffer
 {
 	ALuint bufferName;
-	s16* tempBuffer;
+	void* tempBuffer;
 }; typedef struct StreamBuffer StreamBuffer;
 
 struct SoundOpenAL

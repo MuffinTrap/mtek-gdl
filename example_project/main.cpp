@@ -41,7 +41,7 @@ int main()
             quit,
         FlagNone
         // | FlagFullScreen
-         | FlagSplashScreen
+         //| FlagSplashScreen
          | FlagPauseUntilA
     );
 

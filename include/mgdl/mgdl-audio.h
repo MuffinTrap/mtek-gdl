@@ -27,6 +27,7 @@ extern "C"
 	};
 	typedef enum mgdlAudioStateEnum mgdlAudioStateEnum;
 
+	// TODO What if the audio is not s16?
 	/**
 	@brief The callback function type for streaming music
 	@param soundNumber The number of sound that needs more data
@@ -34,7 +35,7 @@ extern "C"
 	@param bufferSizeBytes Maximum amount of bytes to write. If less bytes are left in the audio data, fill the rest of the buffer with zeroes
 	@param bytesWritten[out] Out parameter to store the actual number of bytes that was written to buffer
 	*/
-	typedef void (*AudioCallbackFunction)(s32 soundNumber, s16* bufferPtr, u32 bufferSizeBytes, u32* bytesWritten);
+	typedef void (*AudioCallbackFunction)(s32 soundNumber, void* bufferPtr, u32 bufferSizeBytes, u32* bytesWritten);
 
 	/**
 	@brief Sample rate used by mgdl. This is because ASND uses 48k
@@ -243,6 +244,7 @@ void Audio_Platform_UnloadSound(Sound* s);
 * @param snd The sound to stream
 * @param sampleRate The samplerate of the audio.
 */
+// TODO Remove Platform_
 void Audio_Platform_StartStream(Sound* s, s32 sampleRate, SoundSampleFormat format);
 void Audio_Platform_StopStream(Sound* s);
 void Audio_Platform_PauseStream(Sound* s);

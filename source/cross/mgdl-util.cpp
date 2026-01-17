@@ -157,16 +157,19 @@ u32 Flag_UnsetAll(u32 bitfield, u32 flags)
 // ******************************
 // ENDIANNES HANDLING FUNCTION
 // ******************************
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
 
-void RevBytes(void *var, u32 size) {
+void RevBytes(void *var, int size) {
 
-	mgdl_assert_print(size <= sizeof(s64), "Cannot reverse more than 8 bytes");
+	mgdl_assert_print(size <= 8, "Cannot reverse more than 8 bytes");
 
-	static u8 temp[sizeof(s64)];
+	static u8 temp[8];
 
 	memcpy(temp, var, size);
-	for(u32 i=0; i<size; i++) {
+	for(short i=0; i<size; i++) {
 		((u8*)var)[i] = temp[(size-1)-i];
 	}
-
 }
+#pragma GCC diagnostic pop

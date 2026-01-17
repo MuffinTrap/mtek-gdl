@@ -3,10 +3,43 @@
 #include <mgdl/mgdl-util.h>
 
 static LogLevel level_ = All;
+#define LINE_COUNT 256
+static char* messages[LINE_COUNT];
+static bool saveLinesOn = false;
+static int nextSaveIndex = 0;
+static int lineAmount = 0;
+static const int LINE_LENGTH  = 256;
+
+
 
 void Log_SetLevel(LogLevel lvl)
 {
-level_ = lvl;
+	level_ = lvl;
+}
+
+void Log_SaveLines(int amount)
+{
+	Log_InfoF("Log will save %d lines\n", amount);
+	lineAmount = amount;
+	for (int i = 0; i < lineAmount; i++)
+	{
+		messages[i] = (char*)malloc(sizeof(char) * LINE_LENGTH);
+		messages[i][0] = '\0';
+	}
+	saveLinesOn = true;
+}
+char* Log_GetLine(int index)
+{
+	return messages[index%lineAmount];
+}
+char* Log_GetLastLine(int index)
+{
+	int readI = nextSaveIndex-index;
+	if (readI < 0)
+	{
+		readI = 0;
+	}
+	return messages[readI];
 }
 
 void Log_Info(const char* text)
@@ -66,5 +99,10 @@ void Log_ErrorF(const char* fmt, ...)
 
 void _Log_Print(const char* text)
 {
+	if (saveLinesOn)
+	{
+		strncpy(messages[nextSaveIndex], text, LINE_LENGTH);
+		nextSaveIndex = (nextSaveIndex + 1) % lineAmount;
+	}
 	printf("%s", text);
 }

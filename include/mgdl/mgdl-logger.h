@@ -22,6 +22,9 @@ extern "C"
 {
 #endif
 	void Log_SetLevel(LogLevel lvl);
+	void Log_SaveLines(int amount);
+	char* Log_GetLine(int index);
+	char* Log_GetLastLine(int index);
 
 	void Log_Info(const char* text);
 	void Log_InfoF(const char* fmt, ...);

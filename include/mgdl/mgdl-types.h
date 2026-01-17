@@ -55,7 +55,7 @@ typedef int64_t s64;
     const double M_PI_2 = 1.57079632679489661923;
 #endif
 
-#if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC)
+#if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC) || defined(GEKKO)
     typedef size_t sizetype;
 #endif
 

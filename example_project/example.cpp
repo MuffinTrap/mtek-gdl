@@ -21,6 +21,8 @@ Example::Example()
 
 void Example::Init()
 {
+    //Log_SaveLines(256);
+
     // Sprites, images and fonts
     short spriteHeight = 64;
     barb = mgdl_LoadTexture("assets/barb.png", TextureFilterModes::Linear);
@@ -31,11 +33,6 @@ void Example::Init()
     ibmFont = mgdl_LoadFont("assets/font8x16.png", 8, 16, ' ');
     debugFont = DefaultFont_GetDefaultFont();
 
-    // Audio
-    blip = mgdl_LoadSoundWav("assets/blipSelect.wav");
-    Sound_ToString(blip);
-    sampleMusic = mgdl_LoadSoundOgg("assets/sample3.ogg");
-    Sound_ToString(sampleMusic);
 
     // Wii model scene
     wiiScene = mgdl_LoadFBX("assets/wii_et_baby.fbx");
@@ -76,6 +73,7 @@ void Example::Init()
     controllerMenu =    Menu_CreateWindowed(ibmFont, 1.0f, 1.0f, 128, 356, "Controls");
     performanceMenu =   Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 256, 64, "Performance");
     audioMenu =         Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 256, 256, "Audio");
+    logMenu =           Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 620, 256, "Log");
 
     if (sampleMusic)
     {
@@ -87,6 +85,11 @@ void Example::Init()
     cameraDistance = 30.0f;
 
 
+    // Audio
+    blip = mgdl_LoadSoundWav("assets/blipSelect.wav");
+    Sound_ToString(blip);
+    sampleMusic = mgdl_LoadSoundOgg("assets/sample3.ogg");
+    Sound_ToString(sampleMusic);
     #ifdef MGDL_ROCKET
         // Connect to editor
         RocketTrackFormat trackSource = TrackEditor;
@@ -181,6 +184,7 @@ void Example::Draw()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+    if (toggleLog) { DrawLog();}
     if ( toggleSprites) {DrawSprites();}
     if ( toggleTexture) {DrawTexture();}
     if ( toggleCamera) {DrawCameraControls();}
@@ -410,6 +414,7 @@ void Example::DrawMenu()
     Menu_Toggle(menu, "Inputs", &toggleInputs);
     Menu_Toggle(menu, "Performance", &togglePerformance);
     Menu_Toggle(menu, "Audio", &toggleAudio);
+    Menu_Toggle(menu, "Log", &toggleLog);
 #if MGDL_ROCKET
     if (Menu_Button(menu, "Write Rocket"))
     {
@@ -448,18 +453,39 @@ void Example::DrawSoundStatus(mgdlAudioStateEnum status)
     Menu_Icon(audioMenu, icon, musicColor);
 }
 
+void Example::DrawLog()
+{
+    Menu_Start(logMenu, 10, mgdl_GetScreenHeight()/2+48, 256);
+    int amount = 32;
+    for(int i = amount; i >= 0; i--)
+    {
+        Menu_Text(logMenu, Log_GetLastLine(i));
+    }
+
+}
+
 void Example::DrawAudio()
 {
-    Menu_Start(audioMenu, 10, mgdl_GetScreenHeight()-10, 256);
+    Menu_Start(audioMenu, 10, mgdl_GetScreenHeight()-10, 128);
 
     if (Menu_Button(audioMenu, "Play Ogg"))
     {
         Audio_PlaySound(sampleMusic);
     }
-    if (Menu_Button(audioMenu, "Pause Ogg"))
+    bool paused = Audio_GetSoundStatus(sampleMusic) == Audio_StatePaused;
+    if (!paused)
     {
-        bool ispaused = Audio_GetSoundStatus(sampleMusic) == Audio_StatePaused;
-        Audio_PauseSound(sampleMusic);
+        if (Menu_Button(audioMenu, "Pause Ogg"))
+        {
+            Audio_PauseSound(sampleMusic);
+        }
+    }
+    else
+    {
+        if (Menu_Button(audioMenu, "Resume Ogg"))
+        {
+            Audio_ResumeSound(sampleMusic);
+        }
     }
     if (Menu_Button(audioMenu, "Stop Ogg"))
     {

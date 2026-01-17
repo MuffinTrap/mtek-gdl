@@ -17,6 +17,7 @@ class Example
     Menu* controllerMenu;
     Menu* performanceMenu;
     Menu* audioMenu;
+    Menu* logMenu;
     Scene* wiiScene;
     Scene* shipScene;
     Texture* wiiTexture;
@@ -33,7 +34,7 @@ class Example
     float elapsedSeconds;
 
     // Toggles
-    bool toggleSprites, toggle3D, toggleTexture, toggleCamera, toggleInputs, togglePerformance, toggleAudio = false;
+    bool toggleSprites, toggle3D, toggleTexture, toggleCamera, toggleInputs, togglePerformance, toggleAudio, toggleLog = false;
 
     public:
         Example();
@@ -53,6 +54,7 @@ class Example
         void DrawInputInfo();
         void DrawTimingInfo();
         void DrawAudio();
+        void DrawLog();
         void DrawSoundStatus(mgdlAudioStateEnum status);
 
         void DrawVersion();

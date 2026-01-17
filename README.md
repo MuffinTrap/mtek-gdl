@@ -132,10 +132,8 @@ Mtek-GDL makefiles for linux use clang: (but g++ works too)
 - clang
 
 Mtek-gdl uses these libraries:
-- libsndfile1-dev
 - libopenal-dev
 - freeglut3-dev
-- libpng-dev
 
 Linux makefile is Makefile_linux.mk, use it with:
 ```sh
@@ -157,7 +155,9 @@ Open a terminal and give the following commands
 > % xcode-select --install
 This will open a pop-up asking if you want to install command line tools. Click Install.
 
-### Libraries
+### Other Libraries
+At the moment mtek-gdl does not use any extra libraries on MacOS, so no need to install these.
+
 Install homebrew or MacPorts. Homebrew might not be available if your Mac is too old :(
 
 **MacPorts**
@@ -166,13 +166,7 @@ MacPorts can be found at [www.macports.org](www.macports.org)
 **Homebrew**
 Homebrew can be found at [brew.sh](brew.sh)
 
-**Libraries**
-After installing, install these ports:
-- libpng
-- libsndfile
-- libogg
-- libopus
-- libvorbis
+### Building and installing the library
 
 MacOS makefile is Makefile_mac.mk
 ```sh
@@ -180,12 +174,20 @@ make -f Makefile_mac.mk
 make -f Makefile_mac.mk install
 ```
 
+**Note** You might need to run all make commands with sudo -E to have permission to compile and copy the files.
+
 ## Documentation and examples
 * [Doxygen generated Documentation](https://muffintrap.github.io/mtek-gdl/html/index.html)
 
 ### Demos and games done using the framework
 These all use different versions and won't compile directly with the current version, but they can still be useful as complete examples
 on how to organize things. Newest projects first.
+
+**[Turbo Smoothie] (https://github.com/MuffinTrap/turbo-smoothie)**
+Fast Game About Fruit. Made during Retro Game Jam 2025. *mtek-gdl 0.100.4*
+
+**[Moo Juice] (https://github.com/MuffinTrap/cow-juice)**
+Ice Cream acquisition game made during Assembly Game Jam 2025. Gamepad support for linux was added. *mtek-gdl 0.100.4*
 
 **[Neko City] (https://github.com/MuffinTrap/nova25)**
 Demo for NOVA 2025. [Demozoo](https://demozoo.org/productions/373529/) *mtek-gdl 0.100.3*

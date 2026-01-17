@@ -6,7 +6,6 @@
 
 #if defined(GEKKO)
 
-
 #include <gccore.h>
 #include <cstdio>
 #include <string>
@@ -14,13 +13,6 @@
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-sound.h>
 #include <mgdl/wii/mgdl-wii-config.h>
-
-void Audio_Platform_Init();
-
-void Audio_Platform_Deinit();
-
-void* Audio_Platform_OpenStaticBuffer(Sound* inout_snd, sizetype byteAmount);
-void Audio_Platform_CloseStaticBuffer(Sound* snd, void* buffer, sizetype bytesWritten);
 
 
 struct SoundASND
@@ -31,7 +23,8 @@ struct SoundASND
 	short	voiceNumber; // ASND voice number
 	int		sSize;
 	int		channels;
-}; typedef struct SoundASND;
+	bool	inUse;
+}; typedef struct SoundASND SoundASND;
 
 struct MusicASND
 {

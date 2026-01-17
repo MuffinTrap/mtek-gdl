@@ -1,6 +1,6 @@
 // Sound class module functions
 
-#ifdef GEKKO
+#if 0 // Use mgdl-audio-asnd and wav-player
 
 #include <stdio.h>
 #include <stdlib.h>

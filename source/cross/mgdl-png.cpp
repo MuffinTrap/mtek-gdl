@@ -6,7 +6,7 @@
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-logger.h>
 
-#if 0
+#if defined(GEKKO)
 /** Old implementation that used
  * libpng directly
  */

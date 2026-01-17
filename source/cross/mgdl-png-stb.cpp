@@ -7,16 +7,18 @@
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-assert.h>
 
+#if !defined(GEKKO)
+
 #define STBI_ONLY_PNG
 #define STBI_MAX_DIMENSIONS 1024
 #define STBI_NO_FAILURE_STRINGS
 #define STBI_ASSERT(x) mgdl_assert_test(x)
 #define STB_IMAGE_IMPLEMENTATION
 
-#pragma GCC diagnostics push
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-function"
 #include <mgdl/stb/stb_image.h>
-#pragma GCC diagnostics pop
+#pragma GCC diagnostic pop
 
 PNGFile* PNG_ReadFile(const char* filename)
 {
@@ -51,12 +53,15 @@ PNGFile* PNG_ReadFile(const char* filename)
 	}
 	free(tmpRow);
 
+
 	PNGFile* png = (PNGFile*)malloc(sizeof(PNGFile));
 	png->width = width;
 	png->height = height;
 	png->bytesPerPixel = channels;
 	png->_pngFormat = channels;
 	png->_texels = texelPtr;
+	sizetype imageDataSize = width * height * channels;
+	mgdl_CacheFlushRange(png->_texels, imageDataSize);
 	
 	return png;
 }
@@ -108,6 +113,7 @@ GLenum PNG_PNGtoGLInternalFormat(int stbi_format)
 	};
 	return 0;
 }
+#endif
 
 void PNG_DeleteData(PNGFile* png)
 {
@@ -154,4 +160,5 @@ GLenum PNG_GetGLInternalFormat(PNGFile* png)
 {
 	return PNG_PNGtoGLInternalFormat(png->_pngFormat);
 }
+
 

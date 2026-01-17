@@ -1,5 +1,6 @@
 #include <mgdl/mgdl-ogg-player.h>
 #include <mgdl/mgdl-audio.h>
+#include <mgdl/mgdl-alloc.h>
 #include <mgdl/mgdl-sound.h>
 #include <mgdl/mgdl-music.h>
 #include <mgdl/mgdl-logger.h>
@@ -8,38 +9,19 @@ static MusicOgg* musics = nullptr;
 // TODO on Wii needs big endian
 #ifdef GEKKO
 #define STB_VORBIS_BIG_ENDIAN
+#include <valloc.h>
 #endif
 
 
-#ifndef GEKKO
 #define STB_VORBIS_NO_PUSHDATA_API
 #include "../source/stb/stb_vorbis.c"
 
-/* Callbacks for testing
-static void Silent_Callback(s32 voiceNumber, s16* bufferPtr, u32 bufferSizeBytes, u32* bytesWritten)
-{
-	memset(bufferPtr, 0, bufferSizeBytes);
-	(*bytesWritten) = bufferSizeBytes;
-}
-
-static s16* testBuffer = nullptr;
-static void TestOgg(s32 voice, int cycles)
-{
-	testBuffer = (s16*)malloc(MGDL_AUDIO_CALLBACK_BUFFER_SIZE);
-	u32 outb;
-	for (int i = 0; i < cycles; i++)
-	{
-		Ogg_Callback(voice, testBuffer, MGDL_AUDIO_CALLBACK_BUFFER_SIZE, &outb);
-	}
-}
-*/
-
-static void Ogg_Callback(s32 voiceNumber, s16* bufferPtr, u32 bufferSizeBytes, u32* bytesWritten)
+static void Ogg_Callback(s32 voiceNumber, void* bufferPtr, u32 bufferSizeBytes, u32* bytesWritten)
 {
 	stb_vorbis* vorbisfile = musics[voiceNumber].vorbisfile;
 	int channels = musics[voiceNumber].channels;
 	int num_shorts = bufferSizeBytes / 2;
-	int samplesWritten = stb_vorbis_get_samples_short_interleaved(vorbisfile, channels, bufferPtr, num_shorts);
+	int samplesWritten = stb_vorbis_get_samples_short_interleaved(vorbisfile, channels, (short*)bufferPtr, num_shorts);
 	//Log_InfoF("Vorbis wrote %d samples per channel\n", samplesWritten);
 	*bytesWritten = samplesWritten * 2 * channels;
 
@@ -56,6 +38,32 @@ static void Ogg_Callback(s32 voiceNumber, s16* bufferPtr, u32 bufferSizeBytes, u
 	}
 }
 
+/* Callbacks for testing */
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wunused-function"
+static void Silent_Callback(s32 voiceNumber, void* bufferPtr, u32 bufferSizeBytes, u32* bytesWritten)
+{
+	Ogg_Callback(voiceNumber, bufferPtr, bufferSizeBytes, bytesWritten);
+	memset(bufferPtr, 0, bufferSizeBytes);
+	(*bytesWritten) = bufferSizeBytes;
+}
+
+static void* testBuffer = nullptr;
+static void TestOgg(s32 voice, int cycles)
+{
+	testBuffer = malloc(MGDL_AUDIO_CALLBACK_BUFFER_SIZE);
+	u32 outb;
+	for (int i = 0; i < cycles; i++)
+	{
+		Ogg_Callback(voice, testBuffer, MGDL_AUDIO_CALLBACK_BUFFER_SIZE, &outb);
+	}
+	free(testBuffer);
+}
+#pragma GCC diagnostic pop
+
+
 static MusicOgg LoadOgg(MusicOgg m, Sound* inout_snd, const char* filename, s32 voiceNumber)
 {
 	Log_InfoF("Loading Ogg Sound from %s\n", filename);
@@ -64,24 +72,32 @@ static MusicOgg LoadOgg(MusicOgg m, Sound* inout_snd, const char* filename, s32 
 	// TODO on Wii need to supply buffer allocated with valloc
 	stb_vorbis_alloc* ogg_allocation_ptr = nullptr;
 	/*
+#	ifdef GEKKO
 	stb_vorbis_alloc ogg_allocation;
-	sizetype amount = 15 * 1000;
-	ogg_allocation.alloc_buffer = valloc(amount);
+	sizetype amount = 250 * 1024;
+	//ogg_allocation.alloc_buffer = (char*)valloc(amount);
+	ogg_allocation.alloc_buffer = (char*)mgdl_AllocateAlignedMemory(amount);
 	ogg_allocation.alloc_buffer_length_in_bytes = amount;
 	ogg_allocation_ptr = &ogg_allocation;
+#	endif
 	*/
+
 	stb_vorbis* vorbisFile = stb_vorbis_open_filename(filename, &errorOut, ogg_allocation_ptr);
 
 #	ifdef GEKKO
 	if (errorOut == VORBIS_outofmem)
 	{
 		// Not enough memory supplied. Try again.
+		Log_Error("Ogg Player needs more memory to work!");
+		/*
 		stb_vorbis_info oggInfo = stb_vorbis_get_info(vorbisFile);
 		sizetype needed_amount = oggInfo.setup_memory_required + oggInfo.temp_memory_required + oggInfo.setup_temp_memory_required;
 		vfree(ogg_allocation.alloc_buffer);
-		ogg_allocation.alloc_buffer = valloc(needed_amount);
+		ogg_allocation.alloc_buffer = (char*)valloc(needed_amount);
 		ogg_allocation.alloc_buffer_length_in_bytes = needed_amount;
 		vorbisFile = stb_vorbis_open_filename(filename, &errorOut, NULL);
+		*/
+		return m;
 	}
 #	endif
 
@@ -165,8 +181,8 @@ void OggPlayer_PlaySound(Sound* snd)
 	{
 		Log_ErrorF("Cannot play Ogg files with more than 2 channels");
 	}
-	//TestOgg(s->voiceNumber, 5);
 	Audio_Platform_SetCallback(Ogg_Callback);
+	//Audio_Platform_SetCallback(Silent_Callback);
 	Audio_Platform_StartStream(snd, musics[snd->voiceNumber].sampleRate, format);
 	musics[snd->voiceNumber].state = Audio_StatePlaying;
 }
@@ -218,4 +234,4 @@ mgdlAudioStateEnum OggPlayer_GetSoundStatus(Sound* snd)
 {
 	return musics[snd->voiceNumber].state;
 }
-#endif
+
