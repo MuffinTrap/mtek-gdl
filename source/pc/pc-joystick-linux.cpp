@@ -12,6 +12,8 @@
 
 static const short AXIS_MAX = 32767;
 
+Joystick* joysticks[4];
+
 /**
  * Returns the number of axes on the controller or 0 if an error occurs.
  */
@@ -35,31 +37,53 @@ size_t get_button_count(int fd)
 
     return buttons;
 }
-void Joystick_Init(Joystick* stick)
+void Joystick_Init()
 {
-    const char *device;
-    device = "/dev/input/js0";
-    stick->linux_device_index = open(device, O_NONBLOCK);
-    if (stick->linux_device_index == -1)
+    for (int i = 0; i < 4; i++)
     {
-        Log_ErrorF("Could not open joystick %d\n", stick->index);
-        stick->isConnected = false;
-        return;
-    }
-    else
-    {
-        stick->isConnected = true;
-        stick->axisCount = get_axis_count(stick->linux_device_index);
-        stick->buttonCount = get_button_count(stick->linux_device_index);
-
-        // Get joystick name
-        char name[128];
-        if (ioctl(stick->linux_device_index, JSIOCGNAME(sizeof(name)), name) < 0)
+        joysticks[i] = Joystick_Create(i);
+        Joystick* joystick = joysticks[i];
+        const char* device;
+        switch (i)
         {
-            strncpy(name, "Unknown", sizeof(name));
+        case 0:
+            device = "/dev/input/js0";
+            break;
+
+        case 1:
+            device = "/dev/input/js1";
+            break;
+
+        case 2:
+            device = "/dev/input/js2";
+            break;
+
+        case 3:
+            device = "/dev/input/js3";
+            break;
         }
-        Log_InfoF("Joystick Init %d %s : %zu axii %zu buttons", stick->index, name, stick->axisCount, stick->buttonCount);
-        stick->axes = (struct axis_state*)malloc(sizeof(struct axis_state) * stick->axisCount);
+        joystick->linux_device_index = open(device, O_NONBLOCK);
+        if (joystick->linux_device_index == -1)
+        {
+            Log_ErrorF("Could not open joystick %d\n", joystick->index);
+            joystick->isConnected = false;
+            continue;
+        }
+        else
+        {
+            joystick->isConnected = true;
+            joystick->axisCount = get_axis_count(joystick->linux_device_index);
+            joystick->buttonCount = get_button_count(joystick->linux_device_index);
+
+            // Get joystick name
+            char name[128];
+            if (ioctl(joystick->linux_device_index, JSIOCGNAME(sizeof(name)), name) < 0)
+            {
+                strncpy(name, "Unknown", sizeof(name));
+            }
+            Log_InfoF("Joystick Init %d %s : %zu axii %zu buttons", joystick->index, name, joystick->axisCount, joystick->buttonCount);
+            joystick->axes = (struct axis_state*)malloc(sizeof(struct axis_state) * joystick->axisCount);
+        }
     }
 }
 
@@ -173,49 +197,78 @@ static void ReadAxis(Joystick* stick, sizetype axis)
     }
 }
 
-void Joystick_ReadInputs(Joystick* stick)
+void Joystick_StartFrame()
 {
-    struct js_event event;
-    size_t axis;
-
-    // Read until queue is empty
-    while ( read(stick->linux_device_index, &event, sizeof(js_event)) > 0)
+    for (int i = 0; i < 4; i++)
     {
-        switch (event.type)
+        Joystick* joystick = joysticks[i];
+        if (joystick->isConnected == false)
         {
-            case JS_EVENT_BUTTON:
-                Log_InfoF("Button %u %s\n", event.number, event.value ? "pressed" : "released");
-                if (event.value)
-                {
-                    WiiController_SetButtonDown(&stick->controller, ButtonToWiiButton(event.number));
-                }
-                else
-                {
-                    WiiController_SetButtonUp(&stick->controller, ButtonToWiiButton(event.number));
-                }
-                break;
-            case JS_EVENT_AXIS:
-                axis = get_axis_state(stick, &event);
-                if (axis < stick->axisCount)
-                {
-                    if (axis == 3)
-                    {
-                        Log_InfoF("Axis %zu at (%6d, %6d)\n", axis, stick->axes[axis].x, stick->axes[axis].y);
-                    }
-                    ReadAxis(stick, axis);
-                }
-                break;
-            default:
-                /* Ignore init events. */
-                break;
+            continue;
         }
+
+        WiiController_StartFrame(&joystick->controller);
     }
 }
 
-void Joystick_Disconnect(Joystick* joystick)
+void Joystick_ReadInputs()
 {
-    close(joystick->linux_device_index);
-    joystick->isConnected = false;
+    struct js_event event;
+    size_t axis;
+    for (int i = 0; i < 4; i++)
+	{
+		Joystick* joystick = joysticks[i];
+		if (joystick->isConnected == false)
+		{
+			continue;
+		}
+
+		// Read until queue is empty
+		while (read(joystick->linux_device_index, &event, sizeof(js_event)) > 0)
+		{
+			switch (event.type)
+			{
+			case JS_EVENT_BUTTON:
+				Log_InfoF("Button %u %s\n", event.number, event.value ? "pressed" : "released");
+				if (event.value)
+				{
+					WiiController_SetButtonDown(&joystick->controller, ButtonToWiiButton(event.number));
+				}
+				else
+				{
+					WiiController_SetButtonUp(&joystick->controller, ButtonToWiiButton(event.number));
+				}
+				break;
+			case JS_EVENT_AXIS:
+				axis = get_axis_state(joystick, &event);
+				if (axis < joystick->axisCount)
+				{
+					if (axis == 3)
+					{
+						Log_InfoF("Axis %zu at (%6d, %6d)\n", axis, joystick->axes[axis].x, joystick->axes[axis].y);
+					}
+					ReadAxis(joystick, axis);
+				}
+				break;
+			default:
+				/* Ignore init events. */
+				break;
+			}
+		}
+	}
+}
+
+void Joystick_Deinit()
+{
+    for (int i = 0; i < 4; i++)
+    {
+        Joystick* joystick = joysticks[i];
+        if (joystick->isConnected)
+        {
+            close(joystick->linux_device_index);
+            joystick->isConnected = false;
+        }
+    }
 }
 #endif
 

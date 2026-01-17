@@ -6,6 +6,8 @@
 
 #include <xinput.h>
 
+Joystick* joysticks[4];
+
 // HACKS: Load the functions from dll
 // into our own function pointers
 
@@ -45,19 +47,24 @@ void InitPCInput()
     Win32LoadXInput();
 }
 
-void Joystick_Init(Joystick* joystick)
+void Joystick_Init()
 {
-    XINPUT_STATE stateOut = {};
-    DWORD result = XInput_GetState_FuncP(joystick->index, &stateOut);
-    if (result == ERROR_SUCCESS)
+    for (int i = 0; i < 4; i++)
     {
-        joystick->isConnected = true;
-        Log_InfoF("Joystick Init index %d\n", joystick->index);
-    }
-    else if (result == ERROR_DEVICE_NOT_CONNECTED)
-    {
-        joystick->isConnected = false;
-        Log_ErrorF("Could not open joystick %d\n", joystick->index);
+        joysticks[i] = Joystick_Create(i);
+        Joystick* joystick = joysticks[i];
+        XINPUT_STATE stateOut = {};
+        DWORD result = XInput_GetState_FuncP(joystick->index, &stateOut);
+        if (result == ERROR_SUCCESS)
+        {
+            joystick->isConnected = true;
+            Log_InfoF("Joystick Init index %d\n", joystick->index);
+        }
+        else if (result == ERROR_DEVICE_NOT_CONNECTED)
+        {
+            joystick->isConnected = false;
+            Log_ErrorF("Could not open joystick %d\n", joystick->index);
+        }
     }
 }
 
@@ -103,67 +110,83 @@ static const int GamepadButtons[] = {
     XINPUT_GAMEPAD_DPAD_RIGHT
 };
 
-void Joystick_ReadInputs(Joystick* joystick)
+void Joystick_StartFrame()
 {
-    XINPUT_STATE stateOut = {};
-    DWORD result = XInput_GetState_FuncP(joystick->index, &stateOut);
-    if (result == ERROR_SUCCESS)
-    {
-        joystick->isConnected = true;
-        // Check if state has changed
-        if (stateOut.dwPacketNumber == joystick->lastPacketNumber)
-        {
-            return;
-        }
-        joystick->lastPacketNumber = stateOut.dwPacketNumber;
-        // Read all buttons
-        WiiController* c = &joystick->controller;
-        for (int buttonIndex = 0; buttonIndex < ButtonAmount; buttonIndex += 1)
-        {
-            u32 wiiButton = ButtonToWiiButton(GamepadButtons[buttonIndex]);
-            bool isDown = WiiController_ButtonHeld(c, wiiButton);
+	for (int i = 0; i < 4; i++)
+	{
+		Joystick* joystick = joysticks[i];
+		if (joystick->isConnected)
+		{
+			WiiController_StartFrame(&joystick->controller);
+		}
+	}
+}
 
-			if (Flag_IsSet(stateOut.Gamepad.wButtons, GamepadButtons[buttonIndex]))
-			{
-				// If this button is not down, check the controller state
-				if (isDown == false)
-				{ 
-                    WiiController_SetButtonDown(c, wiiButton);
+void Joystick_ReadInputs()
+{
+    for (int i = 0; i < 4; i++)
+    {
+        Joystick* joystick = joysticks[i];
+        if (joystick->isConnected == false)
+        {
+            continue;
+        }
+
+        XINPUT_STATE stateOut = {};
+        DWORD result = XInput_GetState_FuncP(joystick->index, &stateOut);
+        if (result == ERROR_SUCCESS)
+        {
+            joystick->isConnected = true;
+            // Check if state has changed
+            if (stateOut.dwPacketNumber == joystick->lastPacketNumber)
+            {
+                return;
+            }
+            joystick->lastPacketNumber = stateOut.dwPacketNumber;
+            // Read all buttons
+            WiiController* c = &joystick->controller;
+            for (int buttonIndex = 0; buttonIndex < ButtonAmount; buttonIndex += 1)
+            {
+                u32 wiiButton = ButtonToWiiButton(GamepadButtons[buttonIndex]);
+                bool isDown = WiiController_ButtonHeld(c, wiiButton);
+
+                if (Flag_IsSet(stateOut.Gamepad.wButtons, GamepadButtons[buttonIndex]))
+                {
+                    // If this button is not down, check the controller state
+                    if (isDown == false)
+                    {
+                        WiiController_SetButtonDown(c, wiiButton);
+                    }
+                }
+                else if (isDown == true)
+                {
+                    // Button 
+                    WiiController_SetButtonUp(c, ButtonToWiiButton(GamepadButtons[buttonIndex]));
                 }
             }
-            else if (isDown == true)
+
+            // Read axis
+            c->m_nunchukJoystickDirectionX = Joystick_NormalizeAxis(stateOut.Gamepad.sThumbLX);
+            // Y axis is inverted
+            SHORT leftStickY = stateOut.Gamepad.sThumbLY;
+            if (leftStickY < 0)
             {
-                // Button 
-                WiiController_SetButtonUp(c, ButtonToWiiButton(GamepadButtons[buttonIndex]));
+                // from -32768 to 36767
+                leftStickY += 1;
             }
-        }
+            leftStickY *= -1;
+            c->m_nunchukJoystickDirectionY = Joystick_NormalizeAxis(leftStickY);
 
-        // Read axis
-        c->m_nunchukJoystickDirectionX = Joystick_NormalizeAxis(stateOut.Gamepad.sThumbLX);
-        // Y axis is inverted
-        SHORT leftStickY = stateOut.Gamepad.sThumbLY;
-        if (leftStickY < 0)
+            c->m_roll = Joystick_NormalizeAxis(stateOut.Gamepad.sThumbRX) * M_PI;
+            c->m_pitch = Joystick_NormalizeAxis(stateOut.Gamepad.sThumbRY) * M_PI;
+
+            // TODO Yaw
+        }
+        else if (result == ERROR_DEVICE_NOT_CONNECTED)
         {
-            // from -32768 to 36767
-            leftStickY += 1;
+            joystick->isConnected = false;
         }
-		leftStickY *= -1;
-        c->m_nunchukJoystickDirectionY = Joystick_NormalizeAxis(leftStickY);
-
-		c->m_roll = Joystick_NormalizeAxis(stateOut.Gamepad.sThumbRX) * M_PI;
-		c->m_pitch = Joystick_NormalizeAxis(stateOut.Gamepad.sThumbRY) * M_PI;
-
-        // TODO Yaw
     }
-    else if (result == ERROR_DEVICE_NOT_CONNECTED)
-    {
-        joystick->isConnected = false;
-    }
-    // Nop
-}
-void Joystick_Disconnect(Joystick* joystick)
-{
-    // nop
 }
 
 #endif

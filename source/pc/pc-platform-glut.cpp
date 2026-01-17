@@ -55,6 +55,7 @@ static void UpdateDeltaTime()
     glutDeltaMS = glutElapsedMS - glutElapsedStartMS;
     platformPC.deltaTimeS = float(glutDeltaMS) / 1000.0f;
 
+    Platform_ReadControllers();
 }
 
 
@@ -132,11 +133,15 @@ static void UpdateEnd()
     glutElapsedStartMS = glutElapsedMS;
 }
 
-void Platform_UpdateControllers()
+void Platform_ReadControllers()
 {
-    WiiController* keyboard_mouse = Platform_GetController(-1);
+    WiiController* firstController = Platform_GetController(0);
 
-    if (WiiController_ButtonPress(keyboard_mouse, ButtonHome))
+    // Read mouse and keyboard
+    WiiController_ReplaceWith(firstController, &kbmController);
+
+    // Test for ESC
+    if (WiiController_ButtonPress(firstController, ButtonHome))
     {
         if (quitCall != NULL)
         {
@@ -144,21 +149,38 @@ void Platform_UpdateControllers()
         }
         Platform_DoProgramExit();
     }
-    // Reset controller for next frame
-    WiiController_StartFrame(keyboard_mouse);
 
-    // Check gamepads
-    // TODO How to do this???
-    WiiController* gamepad_0 = Platform_GetController(0);
-    if (gamepad_0 != null)
+    // Update state of all joysticks
+    Joystick_ReadInputs();
+    // If first joystick is connected, add it 
+    // to controller 0
+    if (Joystick_IsConnected(0))
     {
-		WiiController_StartFrame(gamepad_0);
-        Joystick_ReadInputs(gamepad_0);
-
-        // Always read cursor from mouse
-        gamepad_0->controller.m_cursorX = kbmController.m_cursorX;
-        gamepad_0->controller.m_cursorY = kbmController.m_cursorY;
+        Joystick_AddToController(firstController, 0);
     }
+
+    // other controllers read from joysticks 1-3
+    for (int i = 1; i < 4; i++)
+    {
+        if (Joystick_IsConnected(i))
+        {
+            Joystick_ReplaceController(Platform_GetController(i), i);
+        }
+    }
+}
+
+void Platform_StartNextFrameControllers()
+{ 
+	// Start recording input for next update
+	WiiController_StartFrame(&kbmController);
+    Joystick_StartFrame();
+
+	for (int i = 0; i < 4; i++)
+	{
+		WiiController* controller = Platform_GetController(i);
+		// Reset controller for next frame
+		WiiController_StartFrame(controller);
+	}
 }
 
 void RenderLoop()
@@ -168,18 +190,15 @@ void RenderLoop()
 	frameCall();
 
     Platform_RenderEnd();
-
-    Platform_UpdateControllers();
-
 }
 
 void Platform_RenderEnd()
 {
+    Platform_StartNextFrameControllers();
     // End drawing and process all commands
     // Wait for v sync and swap
     // glutSwapBuffers() will call glFlush();
     glutSwapBuffers();
-
 }
 
 
@@ -221,7 +240,6 @@ void Platform_Init(const char* windowName,
 
     glutReshapeFunc(Platform_ResizeWindow);
 
-    InitPCInput();
     Platform_InitControllers();
 
     initCall();
@@ -263,38 +281,27 @@ void Platform_Init(const char* windowName,
 
 void Platform_InitControllers()
 {
-    WiiController_Init(&kbmController, 0);
+    Log_Info("Platform Init Controllers\n");
+	InitPCInput();
+	Joystick_Init();
+	Joystick_ZeroInputs();
 
-    WiiController_ZeroAllInputs(&kbmController);
-    WiiController_StartFrame(&kbmController);
+	for (int i = 0; i < 4; i++)
+	{
+		WiiController* c = &platformPC.controllers[i];
+		WiiController_Init(c, i);
+		WiiController_ZeroAllInputs(c);
+		WiiController_StartFrame(c);
+	}
 
-    // Init Joystick
-    platformPC.gamepads[0] = Joystick_Create(0);
-    if (Joystick_IsConnected(platformPC.gamepads[0]))
-    {
-        Joystick_ZeroInputs(platformPC.gamepads[0]);
-    }
+	WiiController_Init(&kbmController, 0);
+	WiiController_ZeroAllInputs(&kbmController);
+	WiiController_StartFrame(&kbmController);
 }
 
 struct WiiController* Platform_GetController(int controllerNumber)
 {
-    if (controllerNumber == -1)
-    {
-		return &kbmController;
-    }
-    else if (controllerNumber >= 0 && controllerNumber <= 3)
-    {
-        Joystick* gamepad = platformPC.gamepads[controllerNumber];
-        if (Joystick_IsConnected(gamepad) && gamepad->index == controllerNumber)
-        {
-#       if defined(MGDL_PLATFORM_MAC) || defined(MGDL_PLATFORM_MSYS2)
-            return &gamepadController;
-#       else
-            return Joystick_GetController(gamepad);
-#           endif
-        }
-    }
-    return nullptr;
+    return &platformPC.controllers[controllerNumber];
 }
 
 void Platform_DoProgramExit()

@@ -30,8 +30,5 @@ extern "C"
 	void specialKeyDown(int key, int x, int y);
 	void mouseKey(int button, int state, int x, int y);
 	void mouseMove(int x, int y);
-#if defined(MGDL_PLATFORM_MSYS2) || defined(MGDL_PLATFORM_MAC)
-	void joystick(unsigned int buttonmask, int x, int y, int z);
-#endif
 #endif
 }

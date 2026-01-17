@@ -17,6 +17,53 @@ void WiiController_ZeroAllInputs(WiiController* controller)
 	controller->m_cursorX = 0.0f;
 	controller->m_cursorY = 0.0f;
 	controller->m_roll = 0.0f;
+	controller->m_yaw = 0.0f;
+	controller->m_pitch = 0.0f;
+}
+
+void WiiController_AddStateFrom(WiiController* dest, WiiController* source)
+{
+	dest->m_pressedButtons = (dest->m_pressedButtons | source->m_pressedButtons);
+	dest->m_releasedButtons = (dest->m_releasedButtons | source->m_releasedButtons);
+	dest->m_heldButtons = (dest->m_heldButtons | source->m_heldButtons);
+
+	if (fabsf(dest->m_nunchukJoystickDirectionX) < fabsf(source->m_nunchukJoystickDirectionX))
+	{
+		dest->m_nunchukJoystickDirectionX = source->m_nunchukJoystickDirectionX;
+	}
+	if (fabsf(dest->m_nunchukJoystickDirectionY) < fabsf(source->m_nunchukJoystickDirectionY))
+	{
+		dest->m_nunchukJoystickDirectionY = source->m_nunchukJoystickDirectionY;
+	}
+
+	if (fabsf(dest->m_roll) < fabsf(source->m_roll))
+	{
+		dest->m_roll = source->m_roll;
+	}
+	if (fabsf(dest->m_yaw) < fabsf(source->m_yaw))
+	{
+		dest->m_yaw = source->m_yaw;
+	}
+	if (fabsf(dest->m_pitch) < fabsf(source->m_pitch))
+	{
+		dest->m_pitch = source->m_pitch;
+	}
+	dest->m_cursorX += source->m_cursorX;
+	dest->m_cursorY += source->m_cursorY;
+}
+
+void WiiController_ReplaceWith(WiiController* dest, WiiController* source)
+{
+	dest->m_pressedButtons = source->m_pressedButtons;
+	dest->m_releasedButtons = source->m_releasedButtons;
+	dest->m_heldButtons = source->m_heldButtons;
+	dest->m_nunchukJoystickDirectionX = source->m_nunchukJoystickDirectionX;
+	dest->m_nunchukJoystickDirectionY = source->m_nunchukJoystickDirectionY;
+	dest->m_roll = source->m_roll;
+	dest->m_yaw = source->m_yaw;
+	dest->m_pitch = source->m_pitch;
+	dest->m_cursorX = source->m_cursorX;
+	dest->m_cursorY = source->m_cursorY;
 }
 
 void WiiController_StartFrame(WiiController* controller)

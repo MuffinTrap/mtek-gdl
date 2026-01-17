@@ -80,6 +80,7 @@ _CRT_SECURE_NO_WARNINGS
 This is for people who don't like Microsoft and/or Visual Studio but are forced to use Windows.
 Or to hardcore Code::Blocks fans.
 This method is very slow to compile.
+This platform only supports one Xbox gamepad and only one stick and buttons A, B, X, Y, LB, RB
 
 ### Development environment and libraries
 1. Install [MSYS2](https://www.msys2.org/) (This is a different version from the one that comes with DevkitPro) [Detailed instructions for install](https://www.freecodecamp.org/news/how-to-install-c-and-cpp-compiler-on-windows/)
@@ -87,7 +88,7 @@ This method is very slow to compile.
 3. Install the compiler 
 <code>pacman -S mingw-w64-ucrt-x86_64-clang</code>
 4. Install the required libraries:
-<code>pacman -S mingw-w64-ucrt-x86_64-openal mingw-w64-ucrt-x86_64-freeglut mingw-w64-ucrt-x86_64-libpng mingw-w64-ucrt-x86_64-libsndfile make</code>
+<code>pacman -S mingw-w64-ucrt-x86_64-openal mingw-w64-ucrt-x86_64-freeglut make</code>
 
 ####  Link to DLL files
 - Add the folder <code>C:\msys64\ucrt64\bin</code> to System PATH on windows. That way windows will look there for the dll files when running your executable.
@@ -104,19 +105,18 @@ You need to include these files when you release your executable. There is a rea
 - libmpg123-0.dll
 - libmp3lame-0.dll
 
-
 ### Compiling the framework
 1. Navigate to the github repository.
 2. Run commands:
 
 ```sh
-make -f Makefile_win.mk
-make -f Makefile_win.mk install
+make -f Makefile_msys2.mk
+make -f Makefile_msys2.mk install
 ```
 
 Now you should be able to compile the example project also to Windows by giving the command
 ```sh
-make win
+make msys2
 ```
 in the mtek-gdl/example_project directory
 

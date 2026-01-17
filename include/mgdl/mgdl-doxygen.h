@@ -23,7 +23,7 @@
 
 /*!	\mainpage
  *
- *	\version	0.100.4-muffintrap "assembly"
+ *	\version	0.100.5-muffintrap "ggj26"
  *	\author		Jobert "Lameguy" Villamor (Lameguy64/TheCodingBrony)
  *	\author		muffintrap (Forked from version 0.75)
  *	\copyright	GNU General Public License

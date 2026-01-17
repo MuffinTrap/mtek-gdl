@@ -27,8 +27,7 @@ struct Platform
 	float elapsedTimeS;
 	u32 elapsedUpdates;
 
-	// Joysticks and controllers
-	Joystick* gamepads[4];
+	WiiController controllers[4];
 
 	// Splash screen variables
 	int waitElapsedMS;
@@ -60,8 +59,8 @@ void Platform_Init(const char* windowName,
 
 /**
 * @brief Returns the controller at given index.
-* @param controllerNumber Number of controller. Keyboard and mouse is -1, Gamepads and Wiimotes are 0-3
-* @returns The controller, or null if that controller is not connected
+* @param controllerNumber Number of controller. 0-3 are valid. If available, mouse and keyboard and first gamepad are combined to controller 0
+* @returns The controller if it is connected, controller 0 otherwise
 */
 struct WiiController* Platform_GetController(int controllerNumber);
 void Platform_DoProgramExit(void);
@@ -72,7 +71,8 @@ float Platform_GetElapsedSeconds(void);
 u32 Platform_GetElapsedUpdates(void);
 
 void Platform_InitControllers();
-void Platform_UpdateControllers();
+void Platform_ReadControllers();
+void Platform_StartNextFrameControllers();
 void Platform_UpdateSplash(int value);
 void Platform_RenderSplash(Platform* platform);
 
