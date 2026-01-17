@@ -43,7 +43,7 @@ After that are the different platforms. If you only ever want to make your demo/
 ```
 8. Go to mtek-gdl/example_project/ and run the command to compile it. It should produce a file called **boot.dol**
 ```sh
-	make
+	make wii
 ```
 9. Open the Dolphin emulator.
 * Open Configuration and select the Wii tab.
