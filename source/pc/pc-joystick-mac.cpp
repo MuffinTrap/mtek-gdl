@@ -1,4 +1,4 @@
-#ifdef MGDL_PLATFORM_MAC
+#if 0 // MAC uses Glut joystick too
 
 #include <mgdl/pc/mgdl-joystick.h>
 void Joystick_Init(Joystick* joystick)

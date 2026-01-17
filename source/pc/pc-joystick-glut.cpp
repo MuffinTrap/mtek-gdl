@@ -93,11 +93,19 @@ void Joystick_Init()
 
 		joystick->isConnected = true;
 	}
+	else
+	{
+		Log_Info("Glut did not find any joysticks\n");
+	}
 }
 
 void Joystick_Deinit()
 {
 	glutJoystickFunc(NULL, 0);
+	for (int i = 0; i < 4; i++)
+	{
+		free(joysticks[i]);
+	}
 }
 
 
