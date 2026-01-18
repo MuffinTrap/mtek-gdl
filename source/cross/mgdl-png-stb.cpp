@@ -2,11 +2,11 @@
 #include <mgdl/mgdl-cache.h>
 #include <mgdl/mgdl-alloc.h>
 #include <mgdl/mgdl-assert.h>
-#include <mgdl/mgdl-file.h>
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-assert.h>
 
+// NOTE Wii still uses libpng
 #if !defined(GEKKO)
 
 #define STBI_ONLY_PNG
@@ -114,6 +114,8 @@ GLenum PNG_PNGtoGLInternalFormat(int stbi_format)
 	return 0;
 }
 #endif
+
+// GENERAL PNG FUNCTIONS
 
 void PNG_DeleteData(PNGFile* png)
 {

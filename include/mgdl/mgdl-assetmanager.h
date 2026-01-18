@@ -4,7 +4,6 @@
 #include <mgdl/mgdl-texture.h>
 #include <mgdl/mgdl-png.h>
 #include <mgdl/mgdl-sound.h>
-#include <mgdl/mgdl-music.h>
 
 /**
  * @file mgdl-assetmanager.h

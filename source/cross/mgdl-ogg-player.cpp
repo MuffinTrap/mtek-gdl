@@ -2,7 +2,6 @@
 #include <mgdl/mgdl-audio.h>
 #include <mgdl/mgdl-alloc.h>
 #include <mgdl/mgdl-sound.h>
-#include <mgdl/mgdl-music.h>
 #include <mgdl/mgdl-logger.h>
 static MusicOgg* musics = nullptr;
 

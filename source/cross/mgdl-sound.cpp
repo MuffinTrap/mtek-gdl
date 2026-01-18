@@ -51,5 +51,4 @@ void Sound_ToString(Sound* sound)
     {
         Log_InfoF("Sound: voice: %d, type %s\n", sound->voiceNumber, soundType(sound->type));
     }
-
 }

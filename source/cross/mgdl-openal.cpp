@@ -5,6 +5,7 @@
 
 #if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC) || defined(MGDL_PLATFORM_MSYS2)
 
+// NOTE This does not play nice with addressSanitizer
 void check_al_errors(const char* filename, int line)
 {
     ALCenum error = alGetError();

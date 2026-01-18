@@ -238,11 +238,7 @@ static void FillAndQueue(StreamBuffer* buffer)
 
 void Audio_Platform_StartStream(Sound* snd, s32 sampleRate, SoundSampleFormat format)
 {
-    if (streamingVoiceNumber == -1)
-    {
-        // No stream is playing
-    }
-    else
+    if (streamingVoiceNumber != -1)
     {
         // Stop previous stream
         alSourceStop(streamingSource);
@@ -290,7 +286,6 @@ void Audio_Update()
     {
         return;
     }
-    //ALsizei processedAmount = 0;
     ALuint processedNames[MGDL_NUM_STREAMING_BUFFERS];
 
     // Check if any of the buffers have been processed

@@ -1,12 +1,12 @@
 #include <mgdl/mgdl-audio.h>
 #include <mgdl/mgdl-sound.h>
-#include <mgdl/mgdl-music.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-ogg-player.h>
 #include <mgdl/mgdl-wav-player.h>
 #include <mgdl/mgdl-mp3-player.h>
 
 
+// TODO these are not used
 static float MasterSfxVolume = 0;
 static float MasterMusicVolume = 0;
 static float UserMusicVolume = 0;
@@ -25,6 +25,7 @@ void Audio_Init(void* platformData)
 		Sound_InitEmpty(&sounds[i]);
     }
 
+    // TODO save memory by only initializing some players
     Audio_Platform_Init(platformData);
 	WavPlayer_Init();
 	OggPlayer_Init();

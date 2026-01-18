@@ -5,7 +5,6 @@
 #include <mgdl/mgdl-png.h>
 #include <mgdl/mgdl-texture.h>
 #include <mgdl/mgdl-sound.h>
-#include <mgdl/mgdl-music.h>
 #include <mgdl/mgdl-scene.h>
 #include <mgdl/mgdl-sprite.h>
 

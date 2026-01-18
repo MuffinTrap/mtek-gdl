@@ -229,7 +229,7 @@ void Joystick_ReadInputs()
 			switch (event.type)
 			{
 			case JS_EVENT_BUTTON:
-				Log_InfoF("Button %u %s\n", event.number, event.value ? "pressed" : "released");
+				//Log_InfoF("Button %u %s\n", event.number, event.value ? "pressed" : "released");
 				if (event.value)
 				{
 					WiiController_SetButtonDown(&joystick->controller, ButtonToWiiButton(event.number));
@@ -245,7 +245,7 @@ void Joystick_ReadInputs()
 				{
 					if (axis == 3)
 					{
-						Log_InfoF("Axis %zu at (%6d, %6d)\n", axis, joystick->axes[axis].x, joystick->axes[axis].y);
+						//Log_InfoF("Axis %zu at (%6d, %6d)\n", axis, joystick->axes[axis].x, joystick->axes[axis].y);
 					}
 					ReadAxis(joystick, axis);
 				}

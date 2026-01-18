@@ -20,16 +20,11 @@ static WiiButtons ButtonToWiiButton(int button)
 	// NOTE Cannot notice pressing the Xbox logo button
 	case 6: return ButtonMinus; break;
 	case 7: return ButtonPlus; break;
-
-	case 8: return ButtonUp; break;
-	case 9: return ButtonDown; break;
-	case 10: return ButtonLeft; break;
-	case 11: return ButtonRight; break;
 	}
 	return ButtonNone;
 }
 
-static int buttons[12] = { 0,0,0,0,0,0,0,0,0,0,0,0 };
+static int buttons[8] = { 0,0,0,0, 0,0,0,0 };
 
 // NOTE
 // This is not good enough for Xbox Gamepad, only detects 8 buttons
@@ -45,7 +40,7 @@ void joystickCallback(unsigned int buttonmask, int x, int y, int z)
 	C->m_nunchukJoystickDirectionY = (float)y / 1000.0f;
 
 	// Go through all buttons
-	for (int b = 0; b < 12; b++)
+	for (int b = 0; b < 8; b++)
 	{
 		// If this button is on the mask
 		// it is currently down
@@ -62,11 +57,9 @@ void joystickCallback(unsigned int buttonmask, int x, int y, int z)
 		else if (buttons[b] == 1)
 		{
 			// This button was down in the past
-
 			// This button went up
 			WiiController_SetButtonUp(C, ButtonToWiiButton(b));
 			//Log_InfoF("Button %d up\n", b);
-
 			buttons[b] = 0;
 		}
 	}
@@ -107,7 +100,6 @@ void Joystick_Deinit()
 		free(joysticks[i]);
 	}
 }
-
 
 void Joystick_ReadInputs()
 {

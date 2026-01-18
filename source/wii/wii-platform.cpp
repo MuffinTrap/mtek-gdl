@@ -28,8 +28,8 @@ void Platform_Init(const char* windowName,
 	CallbackFunction quitCallback,
 	u32 initFlags)
 {
-	mgdl_assert_print(initCallback != nullptr, "Need to provide init callback before system init on PC");
-	mgdl_assert_print(frameCallback != nullptr, "Need to provide update callback before system init on PC");
+	mgdl_assert_print(initCallback != nullptr, "Need to provide init callback before system init on Wii");
+	mgdl_assert_print(frameCallback != nullptr, "Need to provide update callback before system init on Wii");
 
 	initCall = initCallback;
 	frameCall = frameCallback;

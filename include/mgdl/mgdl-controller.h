@@ -141,15 +141,15 @@ void WiiController_SetButtonUp(WiiController* controller, u32 buttonEnum);
 /**
 * @brief Adds the state of another controller to this controller
 * @details OR the masks together. Replace direction if greater
-* param dest The controller to modify
-* param source The controller to read from
+* @param dest The controller to modify
+* @param source The controller to read from
 */
 void WiiController_AddStateFrom(WiiController* dest, WiiController* source);
 
 /**
 * @brief Replaces the state of this controller with state of another
-* param dest The controller to modify
-* param source The controller to read from
+* @param dest The controller to modify
+* @param source The controller to read from
 */
 void WiiController_ReplaceWith(WiiController* dest, WiiController* source);
 

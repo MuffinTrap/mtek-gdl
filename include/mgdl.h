@@ -26,7 +26,6 @@
 #include "mgdl/mgdl-gui.h"
 #include "mgdl/mgdl-sprite.h"
 #include "mgdl/mgdl-sound.h"
-#include "mgdl/mgdl-music.h"
 #include "mgdl/mgdl-controller.h"
 #include "mgdl/mgdl-platform.h"
 #include "mgdl/mgdl-draw2d.h"

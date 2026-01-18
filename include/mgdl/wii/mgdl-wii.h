@@ -13,7 +13,6 @@
 #include "mgdl-wii-types.h"
 #include "mgdl-wii-globals.h"
 #include "mgdl-wii-main.h"
-#include "mgdl-wii-basic.h"
 #include "mgdl-wii-texture.h"
 #include "mgdl-wii-image.h"
 #include "mgdl-wii-sprites.h"

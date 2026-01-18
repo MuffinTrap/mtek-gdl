@@ -4,7 +4,6 @@
 
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-sound.h>
-#include <mgdl/mgdl-music.h>
 
 #include <cstring>
 #include <istream>

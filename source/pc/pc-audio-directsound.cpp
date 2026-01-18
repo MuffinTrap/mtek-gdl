@@ -62,7 +62,6 @@ static void PrintDirectSoundError(HRESULT error)
 		case	DSERR_UNSUPPORTED:
 			Log_Error("UNSUPPORTED\n"); break;
 		};
-
 }
 
 
@@ -128,7 +127,6 @@ void Audio_Platform_Init(void* platformData)
 			return;
 		}
 
-
 		// Creates primary hardware buffer
 		// for DirectSound.
 		DSBUFFERDESC primaryBufferDescription = { 0 };
@@ -168,32 +166,6 @@ void Audio_Platform_Init(void* platformData)
 			Log_Error("Failed to set primary buffer format");
 			PrintDirectSoundError(setPrimaryFormatResult);
 		}
-
-		// Set notification callback that DirectSound calls
-		// when buffer needs to be filled
-	// Create the callback event, but how to use it?
-		// NOTE does not work on looping buffers :I
-		/*
-		soundBufferEmptyEvent = CreateEventA(NULL, FALSE, FALSE, "mgdl_DSBufferEmpty");
-		LPDIRECTSOUNDNOTIFY soundNotify;
-		DSBPOSITIONNOTIFY positionNotify;
-		// is the notify supported
-		HRESULT notifySetResult = DirectSoundWriteBuffer->QueryInterface(IID_IDirectSoundNotify, (LPVOID*)&soundNotify);
-		if (notifySetResult == DS_OK)
-		{
-			positionNotify.dwOffset = DSBPN_OFFSETSTOP;
-			positionNotify.hEventNotify = soundBufferEmptyEvent;
-			notifySetResult = soundNotify->SetNotificationPositions(1, &positionNotify);
-
-		}
-
-		// Test the event to see if more samples are needed
-		HRESULT waitResult = WaitForSingleObject(soundBufferEmptyEvent, 0);
-		if (waitResult == WAIT_OBJECT_0)
-		{
-
-		}
-		*/
 	}
 }
 
@@ -246,7 +218,6 @@ void* Audio_OpenStaticBuffer(Sound* inout_snd, sizetype byteCount, u16 samplerat
 
 			// Set common values and return
 			inout_snd->voiceNumber = voiceNumber;
-			
 
 			Log_InfoF("Opened buffer %d for writing %d, bytes %d\n", voiceNumber, dwLength);
 			return lpWrite;
@@ -257,7 +228,6 @@ void* Audio_OpenStaticBuffer(Sound* inout_snd, sizetype byteCount, u16 samplerat
 			Log_Error("Failed to lock buffer\n");
 			PrintDirectSoundError(lockResult);
 		}
-
 		// TODO : if fails, try to Restore buffer
 	}
 	else
@@ -288,28 +258,6 @@ void Audio_CloseStaticBuffer(Sound* snd, void* buffer, sizetype bytesWritten)
 		Log_ErrorF("Failed to close buffer %d for writing\n", snd->voiceNumber);
 		PrintDirectSoundError(unlockResult);
 	}
-}
-static Sound LoadWav(Sound s, const char* filename)
-{
-	Log_InfoF("Loading Wav Sound to DirectSound from %s\n", filename);
-
-	/*
-	// Open the WAV file
-	SF_INFO sfinfo;
-	SNDFILE* sndfile = sf_open(filename, SFM_READ, &sfinfo);
-	if (!sndfile) {
-		OutputDebugStringA("SNDFile failed to open file\n");
-		return s;
-	}
-
-	sizetype dataSize = sfinfo.frames * sfinfo.channels * sizeof(s16);
-	void* buffer = Audio_OpenStaticBuffer(&s, dataSize, sfinfo.samplerate, Sound_Stereo_s16);
-	sf_read_raw(sndfile, buffer, dataSize);
-	Audio_CloseStaticBuffer(&s, buffer, dataSize);
-	sf_close(sndfile);
-	*/
-
-	return s;
 }
 
 void Audio_PlayStaticBuffer(Sound* snd)
@@ -460,7 +408,6 @@ bool Create_Buffer(DWORD sizeBytes, SoundSampleFormat sampleFormat, u32 sampleRa
 	return true;
 }
 
-
 void Audio_Update(void)
 {
 	// Check if streaming is active
@@ -504,22 +451,6 @@ void Audio_Update(void)
 		playMoveBytes += playposition;
 	}
 
-	/*
-	DWORD writeMoveBytes = 0;
-	if (writeposition > lastWriteCursorPosition)
-	{
-		// The play cursor has moved ahead from last time
-		writeMoveBytes = writeposition - lastWriteCursorPosition;
-	}
-	else if (writeposition < lastWriteCursorPosition)
-	{
-		// The play cursor has moved ahead and looped around
-		// From last position to end of buffer
-		writeMoveBytes = streamingBufferSize - lastWriteCursorPosition;
-		// From start of buffer to play position
-		writeMoveBytes += writeposition;
-	}
-	*/
 	if (playMoveBytes > 0)
 	{
 		lastPlayCursorPosition = playposition;

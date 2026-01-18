@@ -2,7 +2,6 @@
 #include <mgdl/mgdl-cache.h>
 #include <mgdl/mgdl-alloc.h>
 #include <mgdl/mgdl-assert.h>
-#include <mgdl/mgdl-file.h>
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-logger.h>
 
@@ -339,9 +338,4 @@ PNGFile* PNG_ReadFile(const char* filename)
 	fclose(fp);
 	return png;
 }
-
-
-
 #endif
-
-

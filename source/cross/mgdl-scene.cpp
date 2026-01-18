@@ -3,6 +3,8 @@
 #include <mgdl/mgdl-dynamic_array.h>
 #include <mgdl/mgdl-assert.h>
 
+// TODO Move materials and meshes to AssetManager
+
 void Scene_Init(Scene* scene)
 {
 	scene->rootNode = nullptr;
