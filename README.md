@@ -54,6 +54,7 @@ After that are the different platforms. If you only ever want to make your demo/
 ## How to compile and install tools to make Windows executables in Visual Studio
 This is the recommended way to use mtek-gdl on Windows.
 The Visual Studio 2022 solution is in folder: **windows_mgdl**
+**Note** Make sure to select the Release x64 configuration when building.
 
 Building the solution will produce "windows_mgdl.lib".
 
@@ -63,7 +64,7 @@ In the Properties of your game's project:
 * Add the mtek-gdl include directory to: C/C++ / Additional Include Directories
 * Add the x64/Release directory of windows_mgdl to Linker / Additional Library Directories
 
-There is an example project in folder **example_project/windows_example/**
+There is an example project in folder **example_project/windows_example/** that is set up. Use the Release x64 configuration.
 
 Preprocessor defines for Windows. 
 ```

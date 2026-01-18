@@ -611,9 +611,12 @@ void Audio_Platform_Deinit(void)
 
 void Audio_SetPaused(bool paused)
 {
+	// TODO
 }
 bool Audio_IsPaused(void)
 {
+	// TODO
+	return false;
 }
 
 void Audio_Platform_PauseStream(Sound* snd)
@@ -661,7 +664,7 @@ mgdlAudioStateEnum Audio_GetStaticBufferStatus(Sound* snd)
 
 mgdlAudioStateEnum Audio_SetVoiceVolume(s32 voiceNumber, float normalizedVolume)
 {
-
+	return Audio_StateInvalid;
 }
 
 void Audio_SetStaticBufferElapsedMs(Sound* snd, u32 milliseconds)
