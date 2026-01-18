@@ -126,19 +126,10 @@
     <ClCompile Include="..\include\mgdl\ufbx\ufbx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\pc\pc-joystick-linux.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\pc\pc-joystick-win32.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\pc\pc-platform-glut.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\pc\pc-platform-win32.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\pc\pc-input-glut.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\pc\pc-platform.cpp">
@@ -156,13 +147,7 @@
     <ClCompile Include="..\source\pc\pc-audio-directsound.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\pc\pc-audio-openal.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\cross\mgdl-sound.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\wii\wii-sound.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\cross\mgdl-ogg-player.cpp">
@@ -171,7 +156,7 @@
     <ClCompile Include="..\source\cross\mgdl-wav-player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\pc\pc-joystick-glut.cpp">
+    <ClCompile Include="..\source\cross\mgdl-mp3-player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -254,9 +239,6 @@
     <ClInclude Include="..\include\mgdl\mgdl-node.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\mgdl\mgdl-openal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\mgdl\mgdl-opengl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -311,12 +293,6 @@
     <ClInclude Include="..\include\mgdl\pc\mgdl-pc-input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\mgdl\pc\mgdl-sound-openal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\mgdl\wii\mgdl-sound-asnd.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\mgdl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -326,14 +302,11 @@
     <ClInclude Include="..\include\mgdl\mgdl-wav-player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\mgdl\pc\mgdl-audio-openal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\mgdl\pc\mgdl-audio-directsound.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\freeglut\bin\x64\freeglut.dll" />
+    <ClInclude Include="..\include\mgdl\mgdl-mp3-player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -155,6 +155,7 @@
     <ClCompile Include="..\source\cross\mgdl-main.cpp" />
     <ClCompile Include="..\source\cross\mgdl-material.cpp" />
     <ClCompile Include="..\source\cross\mgdl-mesh.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-mp3-player.cpp" />
     <ClCompile Include="..\source\cross\mgdl-node.cpp" />
     <ClCompile Include="..\source\cross\mgdl-ogg-player.cpp" />
     <ClCompile Include="..\source\cross\mgdl-openal.cpp" />
@@ -173,19 +174,13 @@
     <ClCompile Include="..\source\cross\mgdl-wav-player.cpp" />
     <ClCompile Include="..\source\pc\pc-assert.cpp" />
     <ClCompile Include="..\source\pc\pc-audio-directsound.cpp" />
-    <ClCompile Include="..\source\pc\pc-audio-openal.cpp" />
-    <ClCompile Include="..\source\pc\pc-input-glut.cpp" />
     <ClCompile Include="..\source\pc\pc-input-win32.cpp" />
-    <ClCompile Include="..\source\pc\pc-joystick-glut.cpp" />
-    <ClCompile Include="..\source\pc\pc-joystick-linux.cpp" />
     <ClCompile Include="..\source\pc\pc-joystick-mac.cpp" />
     <ClCompile Include="..\source\pc\pc-joystick-win32.cpp" />
     <ClCompile Include="..\source\pc\pc-joystick.cpp" />
-    <ClCompile Include="..\source\pc\pc-platform-glut.cpp" />
     <ClCompile Include="..\source\pc\pc-platform-win32.cpp" />
     <ClCompile Include="..\source\pc\pc-platform.cpp" />
     <ClCompile Include="..\source\pc\pc-sound.cpp" />
-    <ClCompile Include="..\source\wii\wii-sound.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\mgdl.h" />
@@ -213,10 +208,10 @@
     <ClInclude Include="..\include\mgdl\mgdl-main.h" />
     <ClInclude Include="..\include\mgdl\mgdl-material.h" />
     <ClInclude Include="..\include\mgdl\mgdl-mesh.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-mp3-player.h" />
     <ClInclude Include="..\include\mgdl\mgdl-music.h" />
     <ClInclude Include="..\include\mgdl\mgdl-node.h" />
     <ClInclude Include="..\include\mgdl\mgdl-ogg-player.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-openal.h" />
     <ClInclude Include="..\include\mgdl\mgdl-opengl.h" />
     <ClInclude Include="..\include\mgdl\mgdl-opengl_util.h" />
     <ClInclude Include="..\include\mgdl\mgdl-palette.h" />
@@ -235,14 +230,8 @@
     <ClInclude Include="..\include\mgdl\mgdl-vectorfunctions.h" />
     <ClInclude Include="..\include\mgdl\mgdl-wav-player.h" />
     <ClInclude Include="..\include\mgdl\pc\mgdl-audio-directsound.h" />
-    <ClInclude Include="..\include\mgdl\pc\mgdl-audio-openal.h" />
     <ClInclude Include="..\include\mgdl\pc\mgdl-joystick.h" />
     <ClInclude Include="..\include\mgdl\pc\mgdl-pc-input.h" />
-    <ClInclude Include="..\include\mgdl\pc\mgdl-sound-openal.h" />
-    <ClInclude Include="..\include\mgdl\wii\mgdl-sound-asnd.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\freeglut\bin\x64\freeglut.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

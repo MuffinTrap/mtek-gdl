@@ -362,7 +362,7 @@ void Audio_Platform_StartStream(Sound* snd, s32 sampleRate, SoundSampleFormat fo
 		if (streamingBuffer != nullptr)
 		{
 			// Stop previous stream
-			streamingBuffer->Stop()
+			streamingBuffer->Stop();
 		}
 		activeStreamingSound = -1;
 	}
