@@ -3,10 +3,52 @@
 #include <mgdl/mgdl-util.h>
 
 static LogLevel level_ = All;
+#define LINE_COUNT 256
+static char* messages[LINE_COUNT];
+static bool saveLinesOn = false;
+static int nextSaveIndex = 0;
+static int lineAmount = 0;
+static const int LINE_LENGTH  = 256;
+
+static char empty[1] = "";
+
 
 void Log_SetLevel(LogLevel lvl)
 {
-level_ = lvl;
+	level_ = lvl;
+}
+
+void Log_SaveLines(int amount)
+{
+	Log_InfoF("Log will save %d lines\n", amount);
+	lineAmount = amount;
+	for (int i = 0; i < lineAmount; i++)
+	{
+		messages[i] = (char*)malloc(sizeof(char) * LINE_LENGTH);
+		messages[i][0] = '\0';
+	}
+	saveLinesOn = true;
+}
+char* Log_GetLine(int index)
+{
+	if (saveLinesOn)
+	{
+		return messages[index%lineAmount];
+	}
+	else return empty;
+}
+char* Log_GetLastLine(int index)
+{
+	if (saveLinesOn)
+	{
+		int readI = nextSaveIndex-index;
+		if (readI < 0)
+		{
+			readI = 0;
+		}
+		return messages[readI];
+	}
+	else return empty;
 }
 
 void Log_Info(const char* text)
@@ -47,7 +89,7 @@ void Log_WarningF(const char* fmt, ...)
 
 void Log_Error(const char* text)
 {
-	if (level_ == Error)
+	if (level_ >= Error)
 	{
 		_Log_Print(text);
 	}
@@ -56,7 +98,7 @@ void Log_Error(const char* text)
 
 void Log_ErrorF(const char* fmt, ...)
 {
-	if (level_ == Error)
+	if (level_ >= Error)
 	{
 		MGDL_PRINTF_TO_BUFFER(fmt);
 		_Log_Print(mgdl_GetPrintfBuffer());
@@ -66,5 +108,10 @@ void Log_ErrorF(const char* fmt, ...)
 
 void _Log_Print(const char* text)
 {
+	if (saveLinesOn)
+	{
+		strncpy(messages[nextSaveIndex], text, LINE_LENGTH);
+		nextSaveIndex = (nextSaveIndex + 1) % lineAmount;
+	}
 	printf("%s", text);
 }

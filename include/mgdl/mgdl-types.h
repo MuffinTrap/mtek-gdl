@@ -31,18 +31,32 @@
 
 // Mimic ogc type names on PC platforms
 typedef uint8_t u8;
+
 typedef uint16_t u16;
 typedef int16_t s16;
+
 typedef uint32_t u32;
+typedef int32_t s32;
+
+typedef uint64_t u64;
+typedef int64_t s64;
 
 #endif
 
-#ifdef MGDL_PLATFORM_WINDOWS
-typedef ssize_t sizetype;
-const double M_PI = 3.14159265358979323846;
-const double M_PI_2 = 1.57079632679489661923;
-#else
-typedef size_t sizetype;
+#if defined(MGDL_PLATFORM_WINDOWS)
+    typedef size_t sizetype;
+    const double M_PI = 3.14159265358979323846;
+    const double M_PI_2 = 1.57079632679489661923;
+#endif
+
+#if defined(MGDL_PLATFORM_MSYS2)
+    typedef ssize_t sizetype;
+    const double M_PI = 3.14159265358979323846;
+    const double M_PI_2 = 1.57079632679489661923;
+#endif
+
+#if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC) || defined(GEKKO)
+    typedef size_t sizetype;
 #endif
 
 

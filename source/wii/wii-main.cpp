@@ -26,8 +26,6 @@
 #include "mgdl/wii/mgdl-wii-globals.h"
 #include "mgdl/wii/mgdl-wii-globals-internal.h"
 #include "mgdl/wii/mgdl-wii-main.h"
-#include "mgdl/wii/mgdl-wii-basic.h"
-
 
 namespace gdl {
 
@@ -594,6 +592,47 @@ void gdl::PrepDisplay() {
 
 }
 
+static void DrawBoxF(short x1, short y1, short x2, short y2, u_int col) {
+
+	short tx1,tx2;
+	short ty1,ty2;
+
+	if (x1 > x2) {
+		tx1 = x2; tx2 = x1+1;
+	} else {
+		tx1 = x1; tx2 = x2+1;
+	}
+
+	if (y1 > y2) {
+		ty1 = y2; ty2 = y1+1;
+	} else {
+		ty1 = y1; ty2 = y2+1;
+	}
+
+	GX_ClearVtxDesc();
+	GX_SetVtxDesc(GX_VA_POS, GX_DIRECT);
+	GX_SetVtxDesc(GX_VA_CLR0, GX_DIRECT);
+
+	GX_SetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
+
+	GX_Begin(GX_QUADS, GX_VTXFMT0, 4);
+
+	GX_Position2s16(tx1, ty1);
+	GX_Color4u8(RED(col), GREEN(col), BLUE(col), ALPHA(col));
+
+	GX_Position2s16(tx2, ty1);
+	GX_Color4u8(RED(col), GREEN(col), BLUE(col), ALPHA(col));
+
+	GX_Position2s16(tx2, ty2);
+	GX_Color4u8(RED(col), GREEN(col), BLUE(col), ALPHA(col));
+
+	GX_Position2s16(tx1, ty2);
+	GX_Color4u8(RED(col), GREEN(col), BLUE(col), ALPHA(col));
+
+	GX_End();
+
+}
+
 void gdl::Display() {
 
 	// Fade-out sequence for power/reset button handling
@@ -604,9 +643,9 @@ void gdl::Display() {
 			GX_SetScissor(0, 0, gdl::wii::rmode->fbWidth, gdl::wii::rmode->efbHeight);
 
 			if (ceil(wii::DoExitCount)<30)
-				gdl::DrawBoxF(0, 0, gdl::ScreenXres-1, gdl::ScreenYres-1, TO_RGBA(0, 0, 0, 255*(ceil(wii::DoExitCount)/30.f)));
+				DrawBoxF(0, 0, gdl::ScreenXres-1, gdl::ScreenYres-1, TO_RGBA(0, 0, 0, 255*(ceil(wii::DoExitCount)/30.f)));
 			else
-				gdl::DrawBoxF(0, 0, gdl::ScreenXres-1, gdl::ScreenYres-1, TO_RGBA(0, 0, 0, 255));
+				DrawBoxF(0, 0, gdl::ScreenXres-1, gdl::ScreenYres-1, TO_RGBA(0, 0, 0, 255));
 		}
 
 	}
@@ -782,16 +821,6 @@ void gdl::wii::_PowerOffExit()
 	SYS_ResetSystem(SYS_POWEROFF, 0, 0);
 }
 
-void gdl::wii::RevBytes(void *var, int size) {
-
-	u8 temp[size];
-
-	memcpy(temp, var, size);
-	for(short i=0; i<size; i++) {
-		((u8*)var)[i] = temp[(size-1)-i];
-	}
-
-}
 
 bool gdl::wii::IsComponentCableUsed() {
 

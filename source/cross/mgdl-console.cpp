@@ -1,6 +1,7 @@
 #include <mgdl/mgdl-console.h>
 #include <mgdl/mgdl-util.h>
 #include <stdio.h>
+#include <string.h>
 
 void Console_Print(ConsoleTextColor color, const char* text)
 {

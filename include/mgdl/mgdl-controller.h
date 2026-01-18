@@ -43,19 +43,19 @@ typedef enum WiiButtons WiiButtons;
  */
 struct WiiController
 {
-	u32 _pressedButtons;
-	u32 _releasedButtons;
-	u32 _heldButtons;
-	float _nunchukJoystickDirectionX;
-	float _nunchukJoystickDirectionY;
-	float _cursorX;
-	float _cursorY;
-	float _roll;
-	float _pitch;
-	float _yaw;
+	u32 m_pressedButtons;
+	u32 m_releasedButtons;
+	u32 m_heldButtons;
+	float m_nunchukJoystickDirectionX;
+	float m_nunchukJoystickDirectionY;
+	float m_cursorX;
+	float m_cursorY;
+	float m_roll;
+	float m_pitch;
+	float m_yaw;
 
 	// Which controller number this is: 0-3
-	u8 _channel;
+	u8 m_channel;
 };
 typedef struct WiiController WiiController;
 
@@ -135,8 +135,23 @@ float WiiController_GetYaw(WiiController* controller);
 
 const char* WiiController_GetButtonSymbol(int buttonEnum);
 
-void _WiiController_SetButtonDown(WiiController* controller, u32 buttonEnum);
-void _WiiController_SetButtonUp(WiiController* controller, u32 buttonEnum);
+void WiiController_SetButtonDown(WiiController* controller, u32 buttonEnum);
+void WiiController_SetButtonUp(WiiController* controller, u32 buttonEnum);
+
+/**
+* @brief Adds the state of another controller to this controller
+* @details OR the masks together. Replace direction if greater
+* @param dest The controller to modify
+* @param source The controller to read from
+*/
+void WiiController_AddStateFrom(WiiController* dest, WiiController* source);
+
+/**
+* @brief Replaces the state of this controller with state of another
+* @param dest The controller to modify
+* @param source The controller to read from
+*/
+void WiiController_ReplaceWith(WiiController* dest, WiiController* source);
 
 #ifdef __cplusplus
 }

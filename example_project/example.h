@@ -10,13 +10,15 @@ class Example
     Texture* pointerTexture;
     Font* ibmFont;
     Font* debugFont;
-    Music* sampleMusic;
+    Sound* sampleMusic;
     Sound* blip;
+    Sound* testmp3Music;
     Menu* menu;
     Menu* cameraMenu;
     Menu* controllerMenu;
     Menu* performanceMenu;
     Menu* audioMenu;
+    Menu* logMenu;
     Scene* wiiScene;
     Scene* shipScene;
     Texture* wiiTexture;
@@ -33,7 +35,7 @@ class Example
     float elapsedSeconds;
 
     // Toggles
-    bool toggleSprites, toggle3D, toggleTexture, toggleCamera, toggleInputs, togglePerformance, toggleAudio = false;
+    bool toggleSprites, toggle3D, toggleTexture, toggleCamera, toggleInputs, togglePerformance, toggleAudio, toggleLog = false;
 
     public:
         Example();
@@ -53,7 +55,8 @@ class Example
         void DrawInputInfo();
         void DrawTimingInfo();
         void DrawAudio();
-        void DrawSoundStatus(SoundStatus status);
+        void DrawLog();
+        void DrawSoundStatus(mgdlAudioStateEnum status);
 
         void DrawVersion();
         void DrawScene(Scene* scene, V3f scale);

@@ -6,7 +6,7 @@ CXXFLAGS += -DMGDL_PLATFORM=\"Linux\"
 CXXFLAGS += -DMGDL_PLATFORM_LINUX
 
 # Address sanitizer reports leaks and crash reasons
-CXXFLAGS += -fsanitize=address
+##CXXFLAGS += -fsanitize=address
 
 # Set Compiler
 CXX = clang++
@@ -30,7 +30,7 @@ EXE_SUFFIX = .elf
 
 # Create a list of libraries that need to be linked
 # Link statically to mgdl
-LDFLAGS = -Wl,-Bstatic -lmgdl -Wl,-Bdynamic -lpng -lsndfile -lopenal -lGL -lGLU -lglut -lvorbisfile -logg -lm -Wno-unused-function -z muldefs
+LDFLAGS = -Wl,-Bstatic -lmgdl -Wl,-Bdynamic -lopenal -lGL -lGLU -lglut -lm -Wno-unused-function -z muldefs
 
 
 

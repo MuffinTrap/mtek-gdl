@@ -4,8 +4,8 @@ include Makefile_pc.mk
 # Windows specific settings
 CXX = clang++
 LIBDIR	:= lib/win
-CXXFLAGS += -DMGDL_PLATFORM_WINDOWS
-CXXFLAGS += -DMGDL_PLATFORM=\"Windows\"
+CXXFLAGS += -DMGDL_PLATFORM_MSYS2
+CXXFLAGS += -DMGDL_PLATFORM=\"Windows\ MSYS2\"
 
 # Common part
 

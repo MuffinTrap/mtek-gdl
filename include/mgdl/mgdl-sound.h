@@ -1,16 +1,11 @@
 #pragma once
 
 #include "mgdl-types.h"
-#include <mgdl/mgdl-openal.h>
 
 #ifdef __cplusplus
-#include <cstdlib>
+#	include <cstdlib>
 #else
-#include <stdlib.h>
-#endif
-
-#ifndef GEKKO
-#include <sndfile.h>
+#	include <stdlib.h>
 #endif
 
 /**
@@ -19,41 +14,32 @@
  * @brief Sound struct and functions for loading wav files
  */
 
-enum SoundStatus
-{
-	SoundError,
-	SoundLoopFailed,
-	SoundStopped,
-	SoundPlaying,
-	SoundPaused,
-	SoundInitial
-};
+	enum SoundFileType
+	{
+		SoundOgg,
+		SoundWav,
+		SoundMp3
+	};
+	typedef enum SoundFileType SoundFileType;
 
-typedef enum SoundStatus SoundStatus;
+	enum SoundSampleFormat
+	{
+		Format_Mono_8,
+		Format_Mono_16,
+		Format_Stereo_8,
+		Format_Stereo_16
+	};
+	typedef enum SoundSampleFormat SoundSampleFormat;
 
+	int Sound_FormatToChannels(SoundSampleFormat);
 //! Sound handling struct
 /*!
  *	\details Class object for loading and playing back sound effects with pitch control and stereo panning.
  */
 struct Sound
 {
-	#ifdef GEKKO
-
-	short	format;
-	u16		freq;
-	void	*sData;
-	short	voiceNumber; // ASND voice number
-
-	#else // PC Platform
-
-	SNDFILE* sndfile;
-	ALuint buffer, source;
-
-	#endif
-
-	sizetype		sSize; // Size in bytes
-
-	float secondsOffset; // This is mainly to allow chaning the play position on Ogg on Wii for debug purposes
+	s32 voiceNumber; // index to array in each platform, -1 if invalid
+	SoundFileType type;
 	bool isLooping;
 };
 typedef struct Sound Sound;
@@ -69,20 +55,9 @@ extern "C"
  */
 Sound* Sound_Create(void);
 
-//! Loads a sound file.
-/*!
- *	\details This function loads a sound file
- *  which can then be played with Play() or Play2D().
- *
- *	\note This port of the library only supports
- * uncompressed Microsoft WAV sound files with a sample
- * format of 8 or 16-bit and a sample frequency
- * of up to 48KHz, Mono or Stereo.
- *
- *	\param[in]	*fileName	File name of sound file to load.
- *
- *	\returns Pointer if the sound file was successfully loaded, otherwise a null pointer
- */
+void Sound_InitEmpty(Sound* sound);
+void Sound_Init(Sound* snd, s32 voiceNumber, SoundFileType filetype);
+
 Sound* Sound_Load(const char* filename);
 
 //! Deletes the sound data stored in the object
@@ -91,12 +66,6 @@ Sound* Sound_Load(const char* filename);
  */
 
 void Sound_DeleteData(Sound* sound);
-
-//! Plays a sound.
-/*!
- *  \details Plays a sound
- */
-void Sound_Play(Sound* sound);
 
 //! Plays a sound with extended paramters.
 /*!
@@ -107,14 +76,6 @@ void Sound_Play(Sound* sound);
  */
 void Sound_PlayEx(Sound* sound, float pitchOffset, float volumePercent) ;
 
-//! Stops the playback of the sound
-/*!
- *	\details This function stops the sound if it is playing
- */
-
-void Sound_Stop(Sound* sound ) ;
-
-
 //! Pauses the playback of the sound
 /*!
  *	\details This function pauses the sound if it is playing
@@ -122,24 +83,8 @@ void Sound_Stop(Sound* sound ) ;
 void Sound_SetPaused(Sound* sound, bool pause) ;
 void Sound_SetLooping(Sound* sound, bool looping) ;
 bool Sound_GetLooping(Sound* sound );
+void Sound_ToString(Sound* sound);
 
-//! Get elapsed playback time in seconds
-/*!
- *	\details This function returns how long the sound has been playing in seconds
- *
- *	\returns Elapsed playback time in seconds
- */
-float Sound_GetElapsedSeconds(Sound* sound ) ;
-void Sound_SetElapsedSeconds(Sound* sound, float elapsed) ;
-
-
-//! Get if the voice is playing or not
-/*!
- * \details This function can be used to know if the voice is currently playing
- *
- * \returns True if voice is playing, false if not playing
- */
-SoundStatus Sound_GetStatus(Sound* sound ) ;
 
 #ifdef __cplusplus
 }

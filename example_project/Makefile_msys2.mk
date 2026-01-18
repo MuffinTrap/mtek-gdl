@@ -2,8 +2,8 @@ include Makefile_pc.mk
 
 # ######################################
 # Windows specific settings
-CXXFLAGS += -DMGDL_PLATFORM=\"Windows\"
-CXXFLAGS += -DMGDL_PLATFORM_WINDOWS
+CXXFLAGS += -DMGDL_PLATFORM=\"Windows\ MSYS2\"
+CXXFLAGS += -DMGDL_PLATFORM_MSYS2
 
 # Set Compiler
 CXX = clang++
@@ -32,7 +32,7 @@ EXE_SUFFIX = .exe
 # list before it tries to link
 # So the libraries not used by other libraries need to be last
 # and mgdl needs to be first
-LDFLAGS = -lmgdl -lpng -lopenal -lsndfile -lfreeglut -lglu32 -lopengl32 -lvorbisfile -logg -lws2_32 -Wl,--allow-multiple-definition
+LDFLAGS = -lmgdl -lopenal -lfreeglut -lglu32 -lopengl32 -lws2_32 -Wl,--allow-multiple-definition
 
 
 
@@ -49,7 +49,7 @@ LDFLAGS += -L$(MGDL_DIR)
 # platform specific postfix
 # Add numbers to the end if it crashes
 # and you need to make a new one
-TARGET	:=	$(notdir $(CURDIR))_win.exe
+TARGET	:=	$(notdir $(CURDIR))_msys2.exe
 
 # END Windows specific
 

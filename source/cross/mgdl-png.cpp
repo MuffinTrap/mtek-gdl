@@ -2,25 +2,19 @@
 #include <mgdl/mgdl-cache.h>
 #include <mgdl/mgdl-alloc.h>
 #include <mgdl/mgdl-assert.h>
-#include <mgdl/mgdl-file.h>
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-logger.h>
+
+#if defined(GEKKO)
+/** Old implementation that used
+ * libpng directly
+ */
 
 #include <png.h>
 #include <stdio.h>
 #include <cstring>
 #include <cstdlib>
 #include <csetjmp>
-
-
-void PNG_DeleteData(PNGFile* png)
-{
-	if (png->_texels != nullptr)
-	{
-		free(png->_texels);
-		png->_texels = nullptr;
-	}
-}
 
 GLint PNG_ColorTypeToBPP(int color_type)
 {
@@ -48,15 +42,6 @@ GLint PNG_ColorTypeToBPP(int color_type)
 		break;
 	};
 	return bytesPerPixel;
-}
-
-GLenum PNG_GetGLFormat(PNGFile* png)
-{
-	return PNG_PNGtoGLFormat(png->_pngFormat);
-}
-GLenum PNG_GetGLInternalFormat(PNGFile* png)
-{
-	return PNG_PNGtoGLInternalFormat(png->_pngFormat);
 }
 
 GLenum PNG_PNGtoGLFormat(int pngFormat)
@@ -353,30 +338,4 @@ PNGFile* PNG_ReadFile(const char* filename)
 	fclose(fp);
 	return png;
 }
-
-Color4b PNG_GetRGBA(PNGFile* png, int x, int y)
-{
-	size_t index = x + y * png->width;
-	size_t byteIndex = index * png->bytesPerPixel;
-	GLubyte red = png->_texels[byteIndex];
-	GLubyte green = png->_texels[byteIndex + 1];
-	GLubyte blue = png->_texels[byteIndex + 2];
-	GLubyte alpha  = 255;
-	if (PNG_PNGtoGLFormat(png->_pngFormat) == GL_RGBA)
-	{
-		alpha = png->_texels[byteIndex + 3];
-	}
-
-	return Color_Create4b(red, green, blue, alpha);
-}
-
-float PNG_GetGrayscale(PNGFile* png, int x, int y)
-{
-	size_t index = x + y * png->width;
-	size_t byteIndex = index * png->bytesPerPixel;
-	GLubyte value = png->_texels[byteIndex];
-
-	return (float)value/256.0f;
-}
-
-GLubyte* PNG_GetTexels(PNGFile* png) { return png->_texels; }
+#endif

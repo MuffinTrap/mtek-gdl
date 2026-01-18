@@ -10,10 +10,10 @@
 enum LogLevel
 {
 	None = 0,
-	All = 1,
 	Info = 1,
 	Warning = 2,
-	Error = 3
+	Error = 3,
+	All = 4
 };
 typedef enum LogLevel LogLevel;
 
@@ -22,6 +22,9 @@ extern "C"
 {
 #endif
 	void Log_SetLevel(LogLevel lvl);
+	void Log_SaveLines(int amount);
+	char* Log_GetLine(int index);
+	char* Log_GetLastLine(int index);
 
 	void Log_Info(const char* text);
 	void Log_InfoF(const char* fmt, ...);

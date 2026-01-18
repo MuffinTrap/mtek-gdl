@@ -4,12 +4,8 @@
 #include <mgdl/mgdl-fbx.h>
 
 #include <mgdl/mgdl-font.h>
-
-#ifdef GEKKO
-#include <mgdl/wii/mgdl-wii-sound.h>
-#else
-#include <mgdl/pc/mgdl-pc-sound.h>
-#endif
+#include <mgdl/mgdl-sound.h>
+#include <mgdl/mgdl-audio.h>
 
 static AssetManager assetManager;
 
@@ -67,48 +63,34 @@ Texture* mgdl_LoadTexturePNG(PNGFile* png, TextureFilterModes filterMode)
 	}
 }
 
-Sound* mgdl_LoadSound(const char* filename)
+Sound* mgdl_LoadSoundWav(const char* filename)
 {
-	Sound* snd = Sound_Load(filename);
+	Sound* snd = Audio_LoadSound(filename, SoundWav);
 	if(snd != nullptr)
 	{
 		AssetManager_LoadSound(&assetManager, snd);
-		return snd;
 	}
-	else
-	{
-		return nullptr;
-	}
+	return snd;
 }
 
 
-Music* mgdl_LoadOgg(const char* filename)
+Sound* mgdl_LoadSoundOgg(const char* filename)
 {
-	Music* music = Music_LoadOgg(filename);
-	if(music != nullptr)
+	Sound* snd = Audio_LoadSound(filename, SoundOgg);
+	if(snd != nullptr)
 	{
-		AssetManager_LoadMusic(&assetManager, music);
-		return music;
+		AssetManager_LoadSound(&assetManager, snd);
 	}
-	else
-	{
-		return nullptr;
-	}
+	return snd;
 }
-
-Music* mgdl_LoadWav(const char* filename)
+Sound* mgdl_LoadSoundMp3(const char* filename)
 {
-	Music* music = Music_LoadWav(filename);
-	if(music != nullptr)
+	Sound* snd = Audio_LoadSound(filename, SoundMp3);
+	if(snd != nullptr)
 	{
-		AssetManager_LoadMusic(&assetManager, music);
-		return music;
+		AssetManager_LoadSound(&assetManager, snd);
 	}
-	else
-	{
-		return nullptr;
-	}
-
+	return snd;
 }
 
 Font* mgdl_LoadFont(const char* filename, short characterWidth, short characterHeight, char firstCharacter)

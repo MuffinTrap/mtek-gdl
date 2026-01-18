@@ -71,6 +71,17 @@ void Draw2D_RectLinesRec(Rect rect, Color4f* color);
  * @param color Color of the box.
  */
 void Draw2D_Rect(short x, short y, short x2, short y2, Color4f* color);
+
+/**
+ * @brief Draws a filled box.
+ *
+ * @param x Upper left corner x in screen units.
+ * @param y Upper left corner y in screen units.
+ * @param w Width of box
+ * @param h Height of box
+ * @param color Color of the box.
+ */
+void Draw2D_RectWH(short x, short y, short w, short h, Color4f* color);
 void Draw2D_RectR(Rect rect, Color4f* color);
 
 /**

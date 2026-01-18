@@ -21,6 +21,8 @@ Example::Example()
 
 void Example::Init()
 {
+    Log_SaveLines(256);
+
     // Sprites, images and fonts
     short spriteHeight = 64;
     barb = mgdl_LoadTexture("assets/barb.png", TextureFilterModes::Linear);
@@ -31,9 +33,6 @@ void Example::Init()
     ibmFont = mgdl_LoadFont("assets/font8x16.png", 8, 16, ' ');
     debugFont = DefaultFont_GetDefaultFont();
 
-    // Audio
-    blip = mgdl_LoadSound("assets/blipSelect.wav");
-    sampleMusic = mgdl_LoadOgg("assets/sample3.ogg");
 
     // Wii model scene
     wiiScene = mgdl_LoadFBX("assets/wii_et_baby.fbx");
@@ -69,18 +68,27 @@ void Example::Init()
     Scene_AddChildNode(icosaScene, nullptr, icosaNode);
 
 
-    menu = Menu_CreateWindowed(ibmFont, 1.0f, 1.0f, 128, 256, "MTEK GDL");
-    cameraMenu = Menu_CreateWindowed(debugFont, 2.0f, 1.0f, 128, 256, "Camera");
-    controllerMenu = Menu_CreateWindowed(ibmFont, 1.0f, 1.0f, 128, 356, "Controls");
-    performanceMenu = Menu_CreateWindowed(debugFont, 2.0f, 1.0f, 256, 64, "Performance");
-    audioMenu = Menu_CreateWindowed(debugFont, 2.0f, 1.0f, 256, 256, "Audio");
+    menu =              Menu_CreateWindowed(ibmFont, 1.0f, 1.0f, 128, 256, "MTEK GDL");
+    cameraMenu =        Menu_CreateWindowed(debugFont, 2.0f, 1.0f, 128, 256, "Camera");
+    controllerMenu =    Menu_CreateWindowed(ibmFont, 1.0f, 1.0f, 128, 356, "Controls");
+    performanceMenu =   Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 256, 64, "Performance");
+    audioMenu =         Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 256, 256, "Audio");
+    logMenu =           Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 620, 256, "Log");
 
-    musicLooping = Music_GetLooping(sampleMusic);
+    if (sampleMusic)
+    {
+        musicLooping = Sound_GetLooping(sampleMusic);
+    }
     sceneRotation = V3f_Create(0.0f, 1.0f,0.0f);
     //quad->DebugPrint();
 
     cameraDistance = 30.0f;
 
+
+    // Audio
+    blip = mgdl_LoadSoundWav("assets/blipSelect.wav");
+    sampleMusic = mgdl_LoadSoundOgg("assets/sample3.ogg");
+    testmp3Music = mgdl_LoadSoundMp3("assets/test_jam.mp3");
 
     #ifdef MGDL_ROCKET
         // Connect to editor
@@ -136,7 +144,6 @@ void Example::Update()
     mouseClick = WiiController_ButtonPress(Platform_GetController(0), ButtonA);
     mouseDown = WiiController_ButtonHeld(Platform_GetController(0), ButtonA);
 
-    Music_UpdatePlay(sampleMusic);
     /*
     static const char* babyName = "cuboid";
     Node* baby = Scene_GetNode(wiiScene, babyName);
@@ -176,6 +183,7 @@ void Example::Draw()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+    if (toggleLog) { DrawLog();}
     if ( toggleSprites) {DrawSprites();}
     if ( toggleTexture) {DrawTexture();}
     if ( toggleCamera) {DrawCameraControls();}
@@ -272,10 +280,10 @@ void Example::DrawScene ( Scene* scene, V3f scale)
 
 void DrawDPad(short x, short y, short size)
 {
-
     short box = size;
     short h=box/2;
-    y -= box + h;
+    x = x + h;
+    y = y - h;
     // Dpad
     int dpad_buttons[] = {
         WiiButtons::ButtonUp,
@@ -305,7 +313,11 @@ void DrawDPad(short x, short y, short size)
             c = Palette_GetColor4f(blessing, 5);
         }
         vec2 d=directions[i];
-        Draw2D_Rect(x+d.x*box-h, y+ d.y*box-h, x+box+d.x*box-h, y+box+d.y*box-h, &c);
+        Draw2D_RectWH(x + d.x * box-h,
+                    y + d.y * box-h,
+                    box,
+                    box,
+                    &c);
     }
 }
 
@@ -401,6 +413,7 @@ void Example::DrawMenu()
     Menu_Toggle(menu, "Inputs", &toggleInputs);
     Menu_Toggle(menu, "Performance", &togglePerformance);
     Menu_Toggle(menu, "Audio", &toggleAudio);
+    Menu_Toggle(menu, "Log", &toggleLog);
 #if MGDL_ROCKET
     if (Menu_Button(menu, "Write Rocket"))
     {
@@ -410,80 +423,124 @@ void Example::DrawMenu()
     Menu_DrawCursor(menu);
 }
 
-void Example::DrawSoundStatus(SoundStatus status)
+void Example::DrawSoundStatus(mgdlAudioStateEnum status)
 {
-
     Color4f* musicColor = Color_GetDefaultColor(Color_Red);
     IconSymbol icon = IconSymbol::Icon_Dot;
     switch(status)
     {
-        case SoundStatus::SoundPlaying:
+        case Audio_StatePlaying:
             musicColor = Color_GetDefaultColor(Color_Green);
             icon = IconSymbol::Icon_TriangleUp;
             Menu_Text(audioMenu, "Playing");
             break;
-        case SoundStatus::SoundPaused:
+        case Audio_StatePaused:
             musicColor = Color_GetDefaultColor(Color_White);
             icon = IconSymbol::Icon_Clock;
             Menu_Text(audioMenu, "Paused");
             break;
-        case SoundStatus::SoundStopped:
+        case Audio_StateStopped:
             musicColor = Color_GetDefaultColor(Color_Red);
             icon = IconSymbol::Icon_Skull;
             Menu_Text(audioMenu, "Stopped");
             break;
-        case SoundStatus::SoundInitial:
+        case Audio_StateInvalid:
             musicColor = Color_GetDefaultColor(Color_Black);
-            Menu_Text(audioMenu, "Ready");
-        break;
-        case SoundStatus::SoundLoopFailed:
-            musicColor = Color_GetDefaultColor(Color_Black);
-            Menu_Text(audioMenu, "Failed to loop");
-        break;
-        case SoundStatus::SoundError:
-            musicColor = Color_GetDefaultColor(Color_Black);
-            Menu_Text(audioMenu, "Playback error");
+            Menu_Text(audioMenu, "Invalid");
         break;
     };
     Menu_Icon(audioMenu, icon, musicColor);
 }
 
+void Example::DrawLog()
+{
+    Menu_Start(logMenu, 10, mgdl_GetScreenHeight()/2+48, 256);
+    int amount = 32;
+    for(int i = amount; i >= 0; i--)
+    {
+        Menu_Text(logMenu, Log_GetLastLine(i));
+    }
+
+}
+
 void Example::DrawAudio()
 {
-    Menu_Start(audioMenu, 10, mgdl_GetScreenHeight()-10, 256);
+    Menu_Start(audioMenu, 10, mgdl_GetScreenHeight()-10, 128);
 
-    if (Menu_Button(audioMenu, "Play Ogg"))
+    if (testmp3Music != nullptr)
     {
-        Music_Play(sampleMusic, musicLooping);
+        // MP3 music
+        if (Menu_Button(audioMenu, "Play Mp3"))
+        {
+            Audio_PlaySound(testmp3Music);
+        }
+        bool paused = Audio_GetSoundStatus(testmp3Music) == Audio_StatePaused;
+        if (!paused)
+        {
+            if (Menu_Button(audioMenu, "Pause Mp3"))
+            {
+                Audio_PauseSound(testmp3Music);
+            }
+        }
+        else
+        {
+            if (Menu_Button(audioMenu, "Resume Mp3"))
+            {
+                Audio_ResumeSound(testmp3Music);
+            }
+        }
+        if (Menu_Button(audioMenu, "Stop Mp3"))
+        {
+            Audio_StopSound(testmp3Music);
+        }
+            Menu_TextF(audioMenu, "Music elapsed: %.2f", Audio_GetSoundElapsedMs(testmp3Music)/1000.0f);
+            mgdlAudioStateEnum musicStatus = Audio_GetSoundStatus(testmp3Music);
+            DrawSoundStatus(musicStatus);
+
     }
-    if (Menu_Button(audioMenu, "Pause Ogg"))
-    {
-        bool ispaused = Music_GetStatus(sampleMusic) == SoundStatus::SoundPaused;
-        Music_SetPaused(sampleMusic, !ispaused);
+
+    if (sampleMusic != nullptr)
+    { // OGG music
+        if (Menu_Button(audioMenu, "Play Ogg"))
+        {
+            Audio_PlaySound(sampleMusic);
+        }
+        bool paused = Audio_GetSoundStatus(sampleMusic) == Audio_StatePaused;
+        if (!paused)
+        {
+            if (Menu_Button(audioMenu, "Pause Ogg"))
+            {
+                Audio_PauseSound(sampleMusic);
+            }
+        }
+        else
+        {
+            if (Menu_Button(audioMenu, "Resume Ogg"))
+            {
+                Audio_ResumeSound(sampleMusic);
+            }
+        }
+        if (Menu_Button(audioMenu, "Stop Ogg"))
+        {
+            Audio_StopSound(sampleMusic);
+        }
+        if (Menu_Toggle(audioMenu, "Loop Ogg", &musicLooping ))
+        {
+            // Music_SetLooping(sampleMusic, musicLooping);
+        }
+            Menu_TextF(audioMenu, "Music elapsed: %.2f", Audio_GetSoundElapsedMs(sampleMusic)/1000.0f);
+            mgdlAudioStateEnum musicStatus = Audio_GetSoundStatus(sampleMusic);
+            DrawSoundStatus(musicStatus);
+
     }
-    if (Menu_Button(audioMenu, "Stop Ogg"))
-    {
-        Music_Stop(sampleMusic);
-    }
-    if (Menu_Toggle(audioMenu, "Loop Ogg", &musicLooping ))
-    {
-        Music_SetLooping(sampleMusic, musicLooping);
-    }
+
     if (Menu_Button(audioMenu, "Play Sound"))
     {
-        Sound_Play(blip);
+        Audio_PlaySound(blip);
     }
-    if (sampleMusic != nullptr)
-    {
-        Menu_TextF(audioMenu, "Music elapsed: %.2f", Music_GetElapsedSeconds(sampleMusic));
-        SoundStatus musicStatus = Music_GetStatus(sampleMusic);
-        DrawSoundStatus(musicStatus);
-
-    }
-
-    float blipElapsed = Sound_GetElapsedSeconds(blip);
-    Menu_TextF(audioMenu, "Sound elapsed: %.2f", blipElapsed);
-    SoundStatus soundStatus = Sound_GetStatus(blip);
+    u32 blipElapsed = Audio_GetSoundElapsedMs(blip);
+    Menu_TextF(audioMenu, "Sound elapsed: %.2f", blipElapsed/1000.0f);
+    mgdlAudioStateEnum soundStatus = Audio_GetSoundStatus(blip);
     DrawSoundStatus(soundStatus);
 }
 #if 0

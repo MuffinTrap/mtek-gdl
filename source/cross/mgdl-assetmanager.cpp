@@ -1,4 +1,5 @@
 #include <mgdl/mgdl-assetmanager.h>
+#include <mgdl/mgdl-audio.h>
 
 void AssetManager_Init(AssetManager* manager)
 {
@@ -24,18 +25,6 @@ void AssetManager_LoadPNG(AssetManager* manager, PNGFile* image)
 
 void AssetManager_LoadSound(AssetManager* manager, Sound* snd)
 {
-	manager->_memoryInUse += snd->sSize;
+	manager->_memoryInUse += Audio_GetSoundSizeBytes(snd);
 }
 
-void AssetManager_LoadMusic(AssetManager* manager, Music* music)
-{
-	switch(music->type)
-	{
-		case MusicOgg:
-			manager->_memoryInUse += 1024; // TODO What is the buffer size?
-			break;
-		case MusicWav:
-			manager->_memoryInUse += music->wav->sSize;
-			break;
-	}
-}

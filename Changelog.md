@@ -1,5 +1,19 @@
 # Version history and a summary of changes
 
+### Version 0.100.5-muffintrap "ggj26"
+This version removes old Wii code, adds cross platform Ogg and Mp3 players.
+
+#### Changes
++ Windows version can now be built using Visual Studio. The old Windows port is now called msys2. Windows version uses XInput and DirectSound.
++ Glut joystick added for msys2.
++ Refactored how joysticks and controllers are related
++ Added dr_mp3 to play mp3 files
++ Added stb_vorbis to play ogg files
++ Removed references to libsndfile, libvorbis, libogg. Wii still uses libpng.
++ Created unified Audio API that makes it easy to add more music players in future.
++ Added allocation functions for General and Graphics, but not really used yet.
++ Xbox 360 gamepad works on Windows and Linux. Limited working on msys2. Not at all on MacOS.
+
 ### Version 0.100.4-muffintrap "assembly"
 This version changes to C and breaks all backwards compatibility.
 

@@ -11,12 +11,12 @@ All changes made to the original are clearly commented in the code, as required 
 If you use this fork for making a Wii game or demo, I won't be available to give tech support. And naturally, there is no warranty of any kind.
 
 ## Version number
-This is version 0.100.4-muffintrap "assembly"
+This is version 0.100.5-muffintrap "ggj26"
 
 # Installation
 This library allows to use the same codebase to make executables for Wii, Windows, Mac and Linux.
-The first part is installing the environment for creating executables for the Wii.
-After that are the different platforms. If you only ever want to make your demo/game work on Wii, you don't have to install the Win/Mac/Linux tools.
+The first part of this guide is for installing the environment for creating executables for the Wii.
+After that are the different platforms. If you only ever want to make your demo/game work on Wii, you don't have to install the Win/Mac/Linux tools, but they speed up the development and debugging a lot.
 
 ## How to compile and install the library and run the example with Dolphin and Wii
 1. Install devkitpro following instructions here: [DevkitPro Getting Started](https://devkitpro.org/wiki/Getting_Started)
@@ -43,7 +43,7 @@ After that are the different platforms. If you only ever want to make your demo/
 ```
 8. Go to mtek-gdl/example_project/ and run the command to compile it. It should produce a file called **boot.dol**
 ```sh
-	make
+	make wii
 ```
 9. Open the Dolphin emulator.
 * Open Configuration and select the Wii tab.
@@ -51,15 +51,45 @@ After that are the different platforms. If you only ever want to make your demo/
 * Pack the SD card so that the exe can see the assets
 * Select File > Open... and select the file **boot.dol**
 
+## How to compile and install tools to make Windows executables in Visual Studio
+This is the recommended way to use mtek-gdl on Windows.
+The Visual Studio 2022 solution is in folder: **windows_mgdl**
+**Note** Make sure to select the Release x64 configuration when building.
 
-## How to compile and install tools to make Windows executables
+Building the solution will produce "windows_mgdl.lib".
+
+### How to use the library in your game
+To use it, the simplest way is to add the windows_mgdl project to your Solution.
+In the Properties of your game's project:
+* Add the mtek-gdl include directory to: C/C++ / Additional Include Directories
+* Add the x64/Release directory of windows_mgdl to Linker / Additional Library Directories
+
+There is an example project in folder **example_project/windows_example/** that is set up. Use the Release x64 configuration.
+
+Preprocessor defines for Windows. 
+```
+NDEBUG
+MGDL_PLATFORM_WINDOWS
+MGDL_PLATFORM="Windows Native"
+MGDL_USE_CCVECTOR
+UFBX_REAL_IS_FLOAT
+_XKEYCHECK_H
+_CRT_SECURE_NO_WARNINGS
+```
+
+## How to compile and install tools to make Windows executables using MSYS2
+This is for people who don't like Microsoft and/or Visual Studio but are forced to use Windows.
+Or to hardcore Code::Blocks fans.
+This method is very slow to compile.
+This platform only supports one Xbox gamepad and only one stick and buttons A, B, X, Y, LB, RB
+
 ### Development environment and libraries
 1. Install [MSYS2](https://www.msys2.org/) (This is a different version from the one that comes with DevkitPro) [Detailed instructions for install](https://www.freecodecamp.org/news/how-to-install-c-and-cpp-compiler-on-windows/)
 2. Launch the UCRT64 variant and update the packages as explained in the Detailed instructions above.
 3. Install the compiler 
 <code>pacman -S mingw-w64-ucrt-x86_64-clang</code>
 4. Install the required libraries:
-<code>pacman -S mingw-w64-ucrt-x86_64-openal mingw-w64-ucrt-x86_64-freeglut mingw-w64-ucrt-x86_64-libpng mingw-w64-ucrt-x86_64-libsndfile make</code>
+<code>pacman -S mingw-w64-ucrt-x86_64-openal mingw-w64-ucrt-x86_64-freeglut make</code>
 
 ####  Link to DLL files
 - Add the folder <code>C:\msys64\ucrt64\bin</code> to System PATH on windows. That way windows will look there for the dll files when running your executable.
@@ -69,34 +99,29 @@ You need to include these files when you release your executable. There is a rea
 - libgcc_s_seh-1.dll
 - libfreeglut.dll
 - libopenal-1.dll
-- libpng16-16.dll
-- libsndfile-1.dll
 - libstdc++-6.dll
 - libwinpthread-1.dll
 - zlib1.dll
 - libFLAC.dll
 - libmpg123-0.dll
 - libmp3lame-0.dll
-- libogg-0.dll
-- libvorbis-0.dll
-- libopus-0.dll
-- libvorbisenc-2.dll
-- libvorbisfile-3.dll
 
 ### Compiling the framework
 1. Navigate to the github repository.
 2. Run commands:
 
 ```sh
-make -f Makefile_win.mk
-make -f Makefile_win.mk install
+make -f Makefile_msys2.mk
+make -f Makefile_msys2.mk install
 ```
 
 Now you should be able to compile the example project also to Windows by giving the command
 ```sh
-make win
+make msys2
 ```
 in the mtek-gdl/example_project directory
+
+
 
 ## How to install the framework and create executables on Ubuntu/Debian Linux:
 ### List of needed packages:
@@ -108,10 +133,8 @@ Mtek-GDL makefiles for linux use clang: (but g++ works too)
 - clang
 
 Mtek-gdl uses these libraries:
-- libsndfile1-dev
 - libopenal-dev
 - freeglut3-dev
-- libpng-dev
 
 Linux makefile is Makefile_linux.mk, use it with:
 ```sh
@@ -133,7 +156,9 @@ Open a terminal and give the following commands
 > % xcode-select --install
 This will open a pop-up asking if you want to install command line tools. Click Install.
 
-### Libraries
+### Other Libraries
+At the moment mtek-gdl does not use any extra libraries on MacOS, so no need to install these.
+
 Install homebrew or MacPorts. Homebrew might not be available if your Mac is too old :(
 
 **MacPorts**
@@ -142,19 +167,15 @@ MacPorts can be found at [www.macports.org](www.macports.org)
 **Homebrew**
 Homebrew can be found at [brew.sh](brew.sh)
 
-**Libraries**
-After installing, install these ports:
-- libpng
-- libsndfile
-- libogg
-- libopus
-- libvorbis
+### Building and installing the library
 
 MacOS makefile is Makefile_mac.mk
 ```sh
 make -f Makefile_mac.mk
 make -f Makefile_mac.mk install
 ```
+
+**Note** You might need to run all make commands with sudo -E to have permission to compile and copy the files.
 
 ## Documentation and examples
 * [Doxygen generated Documentation](https://muffintrap.github.io/mtek-gdl/html/index.html)
@@ -163,28 +184,34 @@ make -f Makefile_mac.mk install
 These all use different versions and won't compile directly with the current version, but they can still be useful as complete examples
 on how to organize things. Newest projects first.
 
-**[Neko City] (https://github.com/MuffinTrap/nova25)**
+[Turbo Smoothie](https://github.com/MuffinTrap/turbo-smoothie)
+Fast Game About Fruit. Made during Retro Game Jam 2025. *mtek-gdl 0.100.4*
+
+[Moo Juice](https://github.com/MuffinTrap/cow-juice)
+Ice Cream acquisition game made during Assembly Game Jam 2025. Gamepad support for linux was added. *mtek-gdl 0.100.4*
+
+[Neko City](https://github.com/MuffinTrap/nova25)
 Demo for NOVA 2025. [Demozoo](https://demozoo.org/productions/373529/) *mtek-gdl 0.100.3*
 
-**[NekoStation] (https://github.com/MuffinTrap/graffathon25)**
+[NekoStation](https://github.com/MuffinTrap/graffathon25)
 Little intro for Graffathon 2025. This demo inspired the addition of random number generation. [Demozoo](https://demozoo.org/productions/373273/) *mtek-gdl 0.100.3*
 
-**[Marmot Spacelines 2024] (https://github.com/MuffinTrap/wii-inercia24)**
+[Marmot Spacelines 2024](https://github.com/MuffinTrap/wii-inercia24)
 Demo for Inercia 2024. FBX model loading and matcap materials. [Demozoo](https://demozoo.org/productions/362559/) *mtek-gdl 0.100.2*
 
-**[A Keir for Summer's End] (https://github.com/MuffinTrap/wii-skrolli24)**
+[A Keir for Summer's End](https://github.com/MuffinTrap/wii-skrolli24)
 Demo for Skrolli Party 2024. Rocket integration in the framework and callbacks. [Demozoo](https://demozoo.org/productions/357207/) *mtek-gdl 0.100.2*
 
-**[NUMBERS] (https://github.com/MuffinTrap/particle-demo)**
+[NUMBERS](https://github.com/MuffinTrap/particle-demo)
 Demo for Assembly 2024 by Marmot. First project to have cross platform compilation. [Demozoo](https://demozoo.org/productions/354174/) *mtek-gdl 0.100.1*
 
-**[Frog Snack] (https://github.com/MuffinTrap/retro-ribbit)**
+[Frog Snack](https://github.com/MuffinTrap/retro-ribbit)
 Game for Retro Game Jam 2024. *mtek-gdl 0.100.0*
 
-**[Wii & Chill] (https://github.com/MuffinTrap/combochiller)**
+[Wii & Chill](https://github.com/MuffinTrap/combochiller)
 First Demo I did for the Wii. [Demozoo](https://demozoo.org/productions/345939/) *mtek-gdl 0.100.0*
 
-**[Pyromancer] (https://github.com/MuffinTrap/pyromancer)**
+[Pyromancer] (https://github.com/MuffinTrap/pyromancer)
 Incomplete game for Ludum Dare 55. *mtek-gdl 0.100.0*
 
 ## External libraries and resources
@@ -194,6 +221,8 @@ This library contains code from the following libraries under these licenses:
 * [ufbx](ufbx.github.io) MIT license 
 * [rocket](https://github.com/rocket/rocket) Zlib license
 * [ccVector](https://github.com/jobtalle/ccVector) Public Domain
+* [stb](https://github.com/nothings/stb) Public Domain
+* [dr_libs](https://github.com/mackron/dr_libs) Public Domain
 
 This library contains the following font:
 * [Toshiba Satellite 8x8](https://int10h.org/oldschool-pc-fonts/fontlist/font?toshibasat_8x8)

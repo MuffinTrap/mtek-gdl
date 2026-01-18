@@ -5,7 +5,7 @@
 #include "sync.h"
 
 #include <mgdl/mgdl-assert.h>
-#include <mgdl/mgdl-music.h>
+#include <mgdl/mgdl-audio.h>
 #ifdef __cplusplus
 #include <cmath>
 #include <cstdio>
@@ -35,10 +35,10 @@ void Rocket_Pause_CB( int flag)
 
 void Rocket_Pause(bool setPaused)
 {
-    Music_SetPaused(instance->music, setPaused);
     if (setPaused)
     {
         instance->syncState = SyncPause;
+        Audio_PauseSound(instance->music);
     }
     else
     {
@@ -46,6 +46,10 @@ void Rocket_Pause(bool setPaused)
         if (instance->syncState == SyncStop)
         {
             Rocket_Play();
+        }
+        else
+        {
+            Audio_ResumeSound(instance->music);
         }
         instance->syncState = SyncPlay;
     }
@@ -60,7 +64,7 @@ void Rocket_SetRow(int row)
 {
     instance->row = (double)row;
     double elapsed = instance->row / instance->rowRate;
-    Music_SetElapsedSeconds(instance->music, elapsed);
+    Audio_SetSoundElapsedMs(instance->music, elapsed * 1000);
 }
 
 int Rocket_IsPlaying_CB()
@@ -108,7 +112,7 @@ SyncState Rocket_GetState()
 // For use in the project
 
 bool Rocket_Connect(RocketTrackFormat trackSource, RocketTrackFormat trackDestination,
-                 Music* music, float bpm, int rowsPerBeat)
+                 Sound* music, float bpm, int rowsPerBeat)
 {
     if (music == NULL)
     {
@@ -185,7 +189,7 @@ void Rocket_PlayTracks()
 // Call this at the start of the frame
 void Rocket_UpdateRow()
 {
-    instance->musicElapsedSeconds = Music_GetElapsedSeconds(instance->music);
+    instance->musicElapsedSeconds = Audio_GetSoundElapsedMs(instance->music) / 1000.0f;
 	instance->row = instance->musicElapsedSeconds * instance->rowRate;
     #ifndef SYNC_PLAYER
     if (sync_update(instance->rocket_device, Rocket_GetRowInt(), &rocket_callbacks))
@@ -228,7 +232,7 @@ Rocket* _Rocket_GetSingleton()
 void Rocket_Play()
 {
     mgdl_assert_print(instance->music != NULL, "No music loaded");
-    Music_Play(instance->music, false);
+    Audio_PlaySound(instance->music);
     instance->syncState = SyncPlay;
 }
 

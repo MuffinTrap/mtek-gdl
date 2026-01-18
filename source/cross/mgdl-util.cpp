@@ -1,18 +1,16 @@
 #include <mgdl/mgdl-util.h>
+#include <mgdl/mgdl-assert.h>
+#include <mgdl/mgdl-types.h>
 #include <cstdlib>
 #include <mgdl/wflcg/WFLCG_c.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#ifdef MGDL_PLATFORM_WINDOWS
-    // Windows does not find M_PI in math.h
-    #ifndef M_PI
-        #define M_PI  3.14159265358979323846
-    #endif
-#endif
 
+// ****************************
+// RANDOM GENERATOR FUNCTIONS
+// ****************************
 static WFLCG_c randomGenerator;
-
 
 void Random_CreateGenerator(void)
 {
@@ -41,6 +39,10 @@ int Random_Int(int min, int max)
 	if (range == 0) { return 0;}
 	return min + WFLCG_c_get_value(&randomGenerator) % range;
 }
+
+// ******************************
+// MATH UTIL FUNCTIONS
+// ******************************
 
 u32 clampU32(u32 val, u32 minVal, u32 maxVal)
 {
@@ -111,12 +113,16 @@ GLint TextureFilterToGLFilter(TextureFilterModes filterMode)
 	};
 }
 
-static char printfBuffer[256];
+static char printfBuffer[MGDL_PRINTF_BUFFER_SIZE];
 
 char* mgdl_GetPrintfBuffer()
 {
 	return printfBuffer;
 }
+
+// **************************************
+// BITFIELD FUNCTIONS FOR FLAG PARAMETERS
+// **************************************
 
 bool Flag_IsSet(u32 bitfield, u32 flag)
 {
@@ -147,3 +153,23 @@ u32 Flag_UnsetAll(u32 bitfield, u32 flags)
 {
 	return (bitfield & ~flags);
 }
+
+// ******************************
+// ENDIANNES HANDLING FUNCTION
+// ******************************
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
+
+void RevBytes(void *var, int size) {
+
+	mgdl_assert_print(size <= 8, "Cannot reverse more than 8 bytes");
+
+	static u8 temp[8];
+
+	memcpy(temp, var, size);
+	for(short i=0; i<size; i++) {
+		((u8*)var)[i] = temp[(size-1)-i];
+	}
+}
+#pragma GCC diagnostic pop

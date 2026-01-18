@@ -76,6 +76,11 @@ void Draw2D_Rect(short x, short y, short x2, short y2, Color4f* color)
 	glEnd();
 }
 
+void Draw2D_RectWH(short x, short y, short w, short h, Color4f* color)
+{
+	Draw2D_Rect(x, y, x + w, y-h, color);
+}
+
 void Draw2D_RectR(Rect rect, Color4f* color)
 {
 	Draw2D_Rect(rect.x, rect.y, rect.x + rect.w, rect.y - rect.h, color);

@@ -7,4 +7,4 @@
  *	along those lines to minimize confusion.
  *  Forked by muffintrap: changed version from 0.75 to 0.100.0-muffintrap
  */
-#define GDL_VERSION "0.100.3-muffintrap"
+#define GDL_VERSION "0.100.5-muffintrap"

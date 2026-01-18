@@ -4,6 +4,8 @@
 #ifndef _GDL_WII_SOUND_H
 #define _GDL_WII_SOUND_H
 
+#if defined(GEKKO)
+
 #include <gccore.h>
 #include <cstdio>
 #include <string>
@@ -12,6 +14,22 @@
 #include <mgdl/mgdl-sound.h>
 #include <mgdl/wii/mgdl-wii-config.h>
 
+
+struct SoundASND
+{
+	short	format;
+	u16		freq;
+	void	*buffer;
+	short	voiceNumber; // ASND voice number
+	int		sSize;
+	int		channels;
+	bool	inUse;
+}; typedef struct SoundASND SoundASND;
+
+struct MusicASND
+{
+	FILE* oggFile;
+};
 
 namespace gdl {
 	//! Plays a sound with 2D stereo panning.
@@ -46,4 +64,5 @@ void SetMasterVolumes(float musicVol, float soundVol);
  */
 void SetMusicVolume(float volume);
 
+#endif // GEKKO
 #endif // _GDL_WII_SOUND_H

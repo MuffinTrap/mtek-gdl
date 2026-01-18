@@ -12,6 +12,7 @@
 
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-assert.h>
+#include <mgdl/mgdl-util.h>
 
 #include <mgdl/wii/mgdl-wii-types.h>
 #include <mgdl/wii/mgdl-wii-globals.h>
@@ -142,8 +143,8 @@ bool gdl::SpriteSet::LoadSprites(const char *fileName, const char *sheetsdir, u_
 	} TSM_header;
 
 	fread(&TSM_header, 1, sizeof(TSM_header), fp);
-	gdl::wii::RevBytes(&TSM_header.numSheets, sizeof(short));
-	gdl::wii::RevBytes(&TSM_header.numSprites, sizeof(short));
+	RevBytes(&TSM_header.numSheets, sizeof(short));
+	RevBytes(&TSM_header.numSprites, sizeof(short));
 
 	if (strncmp(TSM_header.id, "TSM", 3)) {
 		gdl::CallErrorCallback("%s not a TSM sprite map file.", fileName);
@@ -211,13 +212,13 @@ bool gdl::SpriteSet::LoadSprites(const char *fileName, const char *sheetsdir, u_
 
 		// Read an entry and then flip its bytes around to make it BE
 		fread(&entry, 1, sizeof(entry), fp);
-		gdl::wii::RevBytes(&entry.sheetnum, sizeof(short));
-		gdl::wii::RevBytes(&entry.tx1, sizeof(short));
-		gdl::wii::RevBytes(&entry.ty1, sizeof(short));
-		gdl::wii::RevBytes(&entry.tx2, sizeof(short));
-		gdl::wii::RevBytes(&entry.ty2, sizeof(short));
-		gdl::wii::RevBytes(&entry.px, sizeof(short));
-		gdl::wii::RevBytes(&entry.py, sizeof(short));
+		RevBytes(&entry.sheetnum, sizeof(short));
+		RevBytes(&entry.tx1, sizeof(short));
+		RevBytes(&entry.ty1, sizeof(short));
+		RevBytes(&entry.tx2, sizeof(short));
+		RevBytes(&entry.ty2, sizeof(short));
+		RevBytes(&entry.px, sizeof(short));
+		RevBytes(&entry.py, sizeof(short));
 
 
 		LoadTSM_Entry(entry, i);

@@ -93,19 +93,29 @@ u32 Flag_UnsetAll(u32 bitfield, u32 flag);
  */
 char* mgdl_GetPrintfBuffer(void);
 
+/**
+ * @brief Reverses the byte order of a variable.
+ * @details Reverses the byte order of 16-bit and 32-bit variables useful when handling little-endian binary data.
+ *
+ * @param[in,out]	*var    Pointer to variable to reverse byte order.
+ * @param[in]		size    Size of variable in bytes (for convenience, use sizeof()).
+ */
+void RevBytes(void *var, int size);
+
 #ifdef __cplusplus
 }
 #endif
 
+#define MGDL_PRINTF_BUFFER_SIZE 256
 /**
  * @brief Writes the formatted text to a buffer.
  * @param format Format string.
  */
 #define MGDL_PRINTF_TO_BUFFER(format) \
-	memset(mgdl_GetPrintfBuffer(), '\0', 256);\
+	memset(mgdl_GetPrintfBuffer(), '\0', MGDL_PRINTF_BUFFER_SIZE);\
 	va_list args;\
 	va_start(args, format); \
-	vsprintf_s(mgdl_GetPrintfBuffer(), format, args); \
+	vsnprintf(mgdl_GetPrintfBuffer(), MGDL_PRINTF_BUFFER_SIZE, format, args); \
 	va_end(args);\
 
 
