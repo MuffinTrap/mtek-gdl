@@ -4,6 +4,7 @@
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-ogg-player.h>
 #include <mgdl/mgdl-wav-player.h>
+#include <mgdl/mgdl-mp3-player.h>
 
 
 static float MasterSfxVolume = 0;
@@ -27,6 +28,7 @@ void Audio_Init(void* platformData)
     Audio_Platform_Init(platformData);
 	WavPlayer_Init();
 	OggPlayer_Init();
+	Mp3Player_Init();
 	firstFreeVoice = 0;
 
 }
@@ -37,6 +39,7 @@ void Audio_Deinit()
 	Audio_Platform_Deinit();
 	WavPlayer_Deinit();
 	OggPlayer_Deinit();
+	Mp3Player_Deinit();
 
     for (int i = 0; i < MGDL_AUDIO_MAX_SOUNDS; i++)
     {
@@ -57,13 +60,23 @@ Sound* Audio_LoadSound(const char* filename, SoundFileType filetype)
 		return nullptr;
 	}
 	Sound s;
-	if (filetype == SoundWav)
+	switch(filetype)
 	{
-		s = WavPlayer_LoadSound(filename);
-	}
-	else if (filetype == SoundOgg)
-	{
-		s = OggPlayer_LoadSound(filename);
+		case SoundWav:
+		{
+			s = WavPlayer_LoadSound(filename);
+		}
+		break;
+		case SoundOgg:
+		{
+			s = OggPlayer_LoadSound(filename);
+		}
+		break;
+		case SoundMp3:
+		{
+			s = Mp3Player_LoadSound(filename);
+		}
+		break;
 	}
 
 	if (s.voiceNumber < 0)
@@ -73,10 +86,9 @@ Sound* Audio_LoadSound(const char* filename, SoundFileType filetype)
 		return nullptr;
 	}
 	else {
-		Log_InfoF("Loaded sound to voice %d\n", loadedIndex);
+		Log_InfoF("Loaded sound to slot %d\n", loadedIndex);
 	}
 
-	Sound_ToString(&s);
 	s.type = filetype;
 	sounds[loadedIndex] = s;
 	firstFreeVoice += 1;
@@ -90,50 +102,86 @@ void Audio_PlaySound(Sound* s)
 	{
 		return;
 	}
-	if (s->type == SoundWav)
+	switch(s->type)
 	{
-		WavPlayer_PlaySound(s);
-	}
-	else if (s->type == SoundOgg)
-	{
-		OggPlayer_PlaySound(s);
+		case SoundWav:
+		{
+			WavPlayer_PlaySound(s);
+		}
+		break;
+		case SoundOgg:
+		{
+			OggPlayer_PlaySound(s);
+		}
+		break;
+		case SoundMp3:
+		{
+			Mp3Player_PlaySound(s);
+		}
+		break;
 	}
 }
 void Audio_PauseSound(Sound* s)
 {
-	if (s->type == SoundWav)
+	switch(s->type)
 	{
-		WavPlayer_PauseSound(s);
-	}
-	else if (s->type == SoundOgg)
-	{
-		OggPlayer_PauseSound(s);
+		case SoundWav:
+		{
+			WavPlayer_PauseSound(s);
+		}
+		break;
+		case SoundOgg:
+		{
+			OggPlayer_PauseSound(s);
+		}
+		break;
+		case SoundMp3:
+		{
+			Mp3Player_PauseSound(s);
+		}
+		break;
 	}
 }
 void Audio_ResumeSound(Sound* s)
 {
-	if (s->type == SoundWav)
+	switch(s->type)
 	{
-		WavPlayer_ResumeSound(s);
-	}
-	else if (s->type == SoundOgg)
-	{
-		OggPlayer_ResumeSound(s);
+		case SoundWav:
+		{
+			WavPlayer_ResumeSound(s);
+		}
+		break;
+		case SoundOgg:
+		{
+			OggPlayer_ResumeSound(s);
+		}
+		break;
+		case SoundMp3:
+		{
+			Mp3Player_ResumeSound(s);
+		}
+		break;
 	}
 }
 void Audio_StopSound(Sound* s)
 {
-	if (s == nullptr)
+	switch(s->type)
 	{
-		return;
-	}
-	if (s->type == SoundWav)
-	{
-		WavPlayer_StopSound(s);
-	}
-	else if (s->type == SoundOgg)
-	{
-		OggPlayer_StopSound(s);
+		case SoundWav:
+		{
+			WavPlayer_StopSound(s);
+		}
+		break;
+		case SoundOgg:
+		{
+			OggPlayer_StopSound(s);
+		}
+		break;
+		case SoundMp3:
+		{
+			Mp3Player_StopSound(s);
+		}
+		break;
 	}
 }
 
@@ -147,6 +195,9 @@ sizetype Audio_GetSoundSizeBytes(Sound* snd)
 	case SoundOgg:
 		return OggPlayer_GetSoundSizeBytes(snd);
 		break;
+	case SoundMp3:
+		return Mp3Player_GetSoundSizeBytes(snd);
+		break;
 	}
 	return 0;
 }
@@ -159,6 +210,9 @@ u32 Audio_GetSoundElapsedMs(Sound* snd)
 		break;
 	case SoundOgg:
 		return OggPlayer_GetSoundElapsedMs(snd);
+		break;
+	case SoundMp3:
+		return Mp3Player_GetSoundElapsedMs(snd);
 		break;
 	}
 	return 0;
@@ -175,6 +229,9 @@ mgdlAudioStateEnum Audio_GetSoundStatus(Sound* snd)
 	case SoundOgg:
 		return OggPlayer_GetSoundStatus(snd);
 		break;
+	case SoundMp3:
+		return Mp3Player_GetSoundStatus(snd);
+		break;
 	}
 	return Audio_StateInvalid;
 
@@ -190,6 +247,9 @@ void Audio_SetSoundElapsedMs(Sound* snd, s32 milliseconds)
 		break;
 	case SoundOgg:
 		return OggPlayer_SetSoundElapsedMs(snd, milliseconds);
+		break;
+	case SoundMp3:
+		return Mp3Player_SetSoundElapsedMs(snd, milliseconds);
 		break;
 	}
 }

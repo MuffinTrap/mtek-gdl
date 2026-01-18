@@ -354,9 +354,20 @@ void Audio_Platform_UnloadSound(Sound s)
 		soundDatas[s.voiceNumber].buffer->Release();
 	}
 }
-
+// TODO What if different format than before?
 void Audio_Platform_StartStream(Sound* snd, s32 sampleRate, SoundSampleFormat format)
 {
+	if (activeStreamingSound != snd->voiceNumber)
+	{
+		if (streamingBuffer != nullptr)
+		{
+			// Stop previous stream
+			streamingBuffer->Stop()
+		}
+		activeStreamingSound = -1;
+	}
+
+	// Does the buffer exist?
 	if (streamingBuffer == nullptr)
 	{
 		// Create streaming buffer for voice number 0 that is the music.
@@ -369,6 +380,7 @@ void Audio_Platform_StartStream(Sound* snd, s32 sampleRate, SoundSampleFormat fo
 			&streamingBuffer,
 			true);
 	}
+	// Can the existing buffer be used?
 	else if (waveFormatStreaming.nSamplesPerSec != sampleRate)
 	{
 		streamingBuffer->Release();
@@ -606,7 +618,7 @@ bool Audio_IsPaused(void)
 
 void Audio_Platform_PauseStream(Sound* snd)
 {
-	if (snd->type == SoundOgg && snd->voiceNumber == activeStreamingSound)
+	if (snd->voiceNumber == activeStreamingSound)
 	{
 		streamingBuffer->Stop();
 	}
@@ -614,7 +626,7 @@ void Audio_Platform_PauseStream(Sound* snd)
 
 void Audio_Platform_ResumeStream(Sound* snd)
 {
-	if (snd->type == SoundOgg && snd->voiceNumber == activeStreamingSound)
+	if (snd->voiceNumber == activeStreamingSound)
 	{
 		streamingBuffer->Play(0,0,DSBPLAY_LOOPING);
 	}
@@ -622,7 +634,7 @@ void Audio_Platform_ResumeStream(Sound* snd)
 
 void Audio_Platform_StopStream(Sound* snd) 
 {
-	if (snd->type == SoundOgg && snd->voiceNumber == activeStreamingSound)
+	if (snd->voiceNumber == activeStreamingSound)
 	{
 		streamingBuffer->Stop();
 		activeStreamingSound = -1;

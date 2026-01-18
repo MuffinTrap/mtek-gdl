@@ -66,6 +66,7 @@ void Audio_Platform_Init(void* platformData)
         alGenBuffers(1, &streamingBuffers[i].bufferName);
     }
     alGenSources(1, &streamingSource);
+    streamingVoiceNumber = -1;
 }
 #pragma GCC diagnostic pop
 
@@ -237,9 +238,20 @@ static void FillAndQueue(StreamBuffer* buffer)
 
 void Audio_Platform_StartStream(Sound* snd, s32 sampleRate, SoundSampleFormat format)
 {
+    if (streamingVoiceNumber == -1)
+    {
+        // No stream is playing
+    }
+    else
+    {
+        // Stop previous stream
+        alSourceStop(streamingSource);
+        // Detach all buffers
+        alSourcei(streamingSource, AL_BUFFER, 0);
+    }
+
     streamingVoiceNumber = snd->voiceNumber;
     streamingFreq = sampleRate;
-    // TODO Pass the format too
     streamingFormat = mgdlFormatToOpenAL(format);
     // Fill all buffers
     for (ALsizei i = 0; i < MGDL_NUM_STREAMING_BUFFERS; i++)

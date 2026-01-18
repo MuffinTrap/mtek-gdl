@@ -12,6 +12,7 @@ class Example
     Font* debugFont;
     Sound* sampleMusic;
     Sound* blip;
+    Sound* testmp3Music;
     Menu* menu;
     Menu* cameraMenu;
     Menu* controllerMenu;

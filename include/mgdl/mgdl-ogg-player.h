@@ -12,6 +12,7 @@ struct stb_vorbis;
 struct MusicOgg
 {
 	struct stb_vorbis* vorbisfile;
+	void* fileBuffer = nullptr; // Needed on Wii
 	int lengthSamples;
 	float lengthSeconds;
 	int sampleRate;

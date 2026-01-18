@@ -10,6 +10,7 @@ static int nextSaveIndex = 0;
 static int lineAmount = 0;
 static const int LINE_LENGTH  = 256;
 
+static char empty[1] = "";
 
 
 void Log_SetLevel(LogLevel lvl)
@@ -30,16 +31,24 @@ void Log_SaveLines(int amount)
 }
 char* Log_GetLine(int index)
 {
-	return messages[index%lineAmount];
+	if (saveLinesOn)
+	{
+		return messages[index%lineAmount];
+	}
+	else return empty;
 }
 char* Log_GetLastLine(int index)
 {
-	int readI = nextSaveIndex-index;
-	if (readI < 0)
+	if (saveLinesOn)
 	{
-		readI = 0;
+		int readI = nextSaveIndex-index;
+		if (readI < 0)
+		{
+			readI = 0;
+		}
+		return messages[readI];
 	}
-	return messages[readI];
+	else return empty;
 }
 
 void Log_Info(const char* text)

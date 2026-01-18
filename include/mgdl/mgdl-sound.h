@@ -17,7 +17,8 @@
 	enum SoundFileType
 	{
 		SoundOgg,
-		SoundWav
+		SoundWav,
+		SoundMp3
 	};
 	typedef enum SoundFileType SoundFileType;
 

@@ -83,6 +83,15 @@ Sound* mgdl_LoadSoundOgg(const char* filename)
 	}
 	return snd;
 }
+Sound* mgdl_LoadSoundMp3(const char* filename)
+{
+	Sound* snd = Audio_LoadSound(filename, SoundMp3);
+	if(snd != nullptr)
+	{
+		AssetManager_LoadSound(&assetManager, snd);
+	}
+	return snd;
+}
 
 Font* mgdl_LoadFont(const char* filename, short characterWidth, short characterHeight, char firstCharacter)
 {

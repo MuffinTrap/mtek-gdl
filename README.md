@@ -221,6 +221,7 @@ This library contains code from the following libraries under these licenses:
 * [rocket](https://github.com/rocket/rocket) Zlib license
 * [ccVector](https://github.com/jobtalle/ccVector) Public Domain
 * [stb](https://github.com/nothings/stb) Public Domain
+* [dr_libs](https://github.com/mackron/dr_libs) Public Domain
 
 This library contains the following font:
 * [Toshiba Satellite 8x8](https://int10h.org/oldschool-pc-fonts/fontlist/font?toshibasat_8x8)

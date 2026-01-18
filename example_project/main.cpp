@@ -40,8 +40,8 @@ int main()
             frame,
             quit,
         FlagNone
-        // | FlagFullScreen
-         //| FlagSplashScreen
+         //| FlagFullScreen
+         | FlagSplashScreen
          | FlagPauseUntilA
     );
 

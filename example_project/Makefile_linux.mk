@@ -6,7 +6,7 @@ CXXFLAGS += -DMGDL_PLATFORM=\"Linux\"
 CXXFLAGS += -DMGDL_PLATFORM_LINUX
 
 # Address sanitizer reports leaks and crash reasons
-CXXFLAGS += -fsanitize=address
+##CXXFLAGS += -fsanitize=address
 
 # Set Compiler
 CXX = clang++

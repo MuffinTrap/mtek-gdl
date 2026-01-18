@@ -41,11 +41,15 @@ static const char* soundType(SoundFileType ft)
 {
     if (ft == SoundOgg) { return "Ogg"; }
     else if (ft == SoundWav) { return "Wav"; }
+    else if (ft == SoundMp3) { return "Mp3"; }
     else { return "Unknown";}
 }
 
 void Sound_ToString(Sound* sound)
 {
-    Log_InfoF("Sound: voice: %d, type %s\n", sound->voiceNumber, soundType(sound->type));
+    if (sound != nullptr)
+    {
+        Log_InfoF("Sound: voice: %d, type %s\n", sound->voiceNumber, soundType(sound->type));
+    }
 
 }

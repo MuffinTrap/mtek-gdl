@@ -238,7 +238,7 @@ void ASND_Callback(s32 asndVoice)
 	}
 	// Switch to next buffer
 	activeStreamingBuffer = (activeStreamingBuffer + 1)%ASND_STREAMING_BUFFERS;
-	Log_InfoF("Active streaming buffer %d\n", activeStreamingBuffer);
+	//Log_InfoF("Active streaming buffer %d\n", activeStreamingBuffer);
 
 	u32 bytesWritten = 0;
 	// Ask the player for more audio with the voice number

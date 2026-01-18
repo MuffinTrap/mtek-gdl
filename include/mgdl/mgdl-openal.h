@@ -42,7 +42,7 @@
 
 // Error checking functions
 
-void check_al_errors(const char* filename, const sizetype line);
+void check_al_errors(const char* filename, int line);
 
 #if defined (__cplusplus)
 

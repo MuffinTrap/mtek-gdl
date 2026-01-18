@@ -21,7 +21,7 @@ Example::Example()
 
 void Example::Init()
 {
-    //Log_SaveLines(256);
+    Log_SaveLines(256);
 
     // Sprites, images and fonts
     short spriteHeight = 64;
@@ -87,9 +87,9 @@ void Example::Init()
 
     // Audio
     blip = mgdl_LoadSoundWav("assets/blipSelect.wav");
-    Sound_ToString(blip);
     sampleMusic = mgdl_LoadSoundOgg("assets/sample3.ogg");
-    Sound_ToString(sampleMusic);
+    testmp3Music = mgdl_LoadSoundMp3("assets/test_jam.mp3");
+
     #ifdef MGDL_ROCKET
         // Connect to editor
         RocketTrackFormat trackSource = TrackEditor;
@@ -144,7 +144,6 @@ void Example::Update()
     mouseClick = WiiController_ButtonPress(Platform_GetController(0), ButtonA);
     mouseDown = WiiController_ButtonHeld(Platform_GetController(0), ButtonA);
 
-    //Music_UpdatePlay(sampleMusic);
     /*
     static const char* babyName = "cuboid";
     Node* baby = Scene_GetNode(wiiScene, babyName);
@@ -468,45 +467,77 @@ void Example::DrawAudio()
 {
     Menu_Start(audioMenu, 10, mgdl_GetScreenHeight()-10, 128);
 
-    if (Menu_Button(audioMenu, "Play Ogg"))
+    if (testmp3Music != nullptr)
     {
-        Audio_PlaySound(sampleMusic);
-    }
-    bool paused = Audio_GetSoundStatus(sampleMusic) == Audio_StatePaused;
-    if (!paused)
-    {
-        if (Menu_Button(audioMenu, "Pause Ogg"))
+        // MP3 music
+        if (Menu_Button(audioMenu, "Play Mp3"))
         {
-            Audio_PauseSound(sampleMusic);
+            Audio_PlaySound(testmp3Music);
         }
-    }
-    else
-    {
-        if (Menu_Button(audioMenu, "Resume Ogg"))
+        bool paused = Audio_GetSoundStatus(testmp3Music) == Audio_StatePaused;
+        if (!paused)
         {
-            Audio_ResumeSound(sampleMusic);
+            if (Menu_Button(audioMenu, "Pause Mp3"))
+            {
+                Audio_PauseSound(testmp3Music);
+            }
         }
+        else
+        {
+            if (Menu_Button(audioMenu, "Resume Mp3"))
+            {
+                Audio_ResumeSound(testmp3Music);
+            }
+        }
+        if (Menu_Button(audioMenu, "Stop Mp3"))
+        {
+            Audio_StopSound(testmp3Music);
+        }
+            Menu_TextF(audioMenu, "Music elapsed: %.2f", Audio_GetSoundElapsedMs(testmp3Music)/1000.0f);
+            mgdlAudioStateEnum musicStatus = Audio_GetSoundStatus(testmp3Music);
+            DrawSoundStatus(musicStatus);
+
     }
-    if (Menu_Button(audioMenu, "Stop Ogg"))
-    {
-        Audio_StopSound(sampleMusic);
+
+    if (sampleMusic != nullptr)
+    { // OGG music
+        if (Menu_Button(audioMenu, "Play Ogg"))
+        {
+            Audio_PlaySound(sampleMusic);
+        }
+        bool paused = Audio_GetSoundStatus(sampleMusic) == Audio_StatePaused;
+        if (!paused)
+        {
+            if (Menu_Button(audioMenu, "Pause Ogg"))
+            {
+                Audio_PauseSound(sampleMusic);
+            }
+        }
+        else
+        {
+            if (Menu_Button(audioMenu, "Resume Ogg"))
+            {
+                Audio_ResumeSound(sampleMusic);
+            }
+        }
+        if (Menu_Button(audioMenu, "Stop Ogg"))
+        {
+            Audio_StopSound(sampleMusic);
+        }
+        if (Menu_Toggle(audioMenu, "Loop Ogg", &musicLooping ))
+        {
+            // Music_SetLooping(sampleMusic, musicLooping);
+        }
+            Menu_TextF(audioMenu, "Music elapsed: %.2f", Audio_GetSoundElapsedMs(sampleMusic)/1000.0f);
+            mgdlAudioStateEnum musicStatus = Audio_GetSoundStatus(sampleMusic);
+            DrawSoundStatus(musicStatus);
+
     }
-    if (Menu_Toggle(audioMenu, "Loop Ogg", &musicLooping ))
-    {
-        // Music_SetLooping(sampleMusic, musicLooping);
-    }
+
     if (Menu_Button(audioMenu, "Play Sound"))
     {
         Audio_PlaySound(blip);
     }
-    if (sampleMusic != nullptr)
-    {
-        Menu_TextF(audioMenu, "Music elapsed: %.2f", Audio_GetSoundElapsedMs(sampleMusic)/1000.0f);
-        mgdlAudioStateEnum musicStatus = Audio_GetSoundStatus(sampleMusic);
-        DrawSoundStatus(musicStatus);
-
-    }
-
     u32 blipElapsed = Audio_GetSoundElapsedMs(blip);
     Menu_TextF(audioMenu, "Sound elapsed: %.2f", blipElapsed/1000.0f);
     mgdlAudioStateEnum soundStatus = Audio_GetSoundStatus(blip);
