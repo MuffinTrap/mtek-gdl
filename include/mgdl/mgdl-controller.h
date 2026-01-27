@@ -112,7 +112,7 @@ vec2 WiiController_GetCursorPosition(WiiController* controller);
 
 /**
  * @brief Returns the direction of the nunchuck joystick.
- * @note The returned vector2 is not normalized.
+ * @note The returned vector2 is not normalized. +Y is towards player or down
  * @return Direction of the nunchuck joystick.
  */
 vec2 WiiController_GetNunchukJoystickDirection(WiiController* controller);
