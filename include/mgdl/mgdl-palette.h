@@ -33,6 +33,8 @@ extern "C"
 	u32 Palette_GetColor(Palette* palette, u8 index);
 	Color4f Palette_GetColor4f(Palette* palette, u8 index);
 
+	u8 Palette_GetColorAmount(Palette* palette);
+
 	void Palette_Delete(Palette* palette);
 #ifdef __cplusplus
 }

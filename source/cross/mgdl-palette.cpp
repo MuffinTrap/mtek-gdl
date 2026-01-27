@@ -90,3 +90,8 @@ void Palette_Delete(Palette* palette)
 		free(palette);
 	}
 }
+
+u8 Palette_GetColorAmount(Palette* palette)
+{
+	return palette->size;
+}
