@@ -602,6 +602,15 @@ void Platform_InitControllers()
 
 }
 
+void Platform_MapJoystickToController(int joystickIndex, int controllerIndex)
+{
+	if (joystickIndex >= 0 && joystickIndex < MGDL_MAX_CONTROLLERS &&
+		controllerIndex >= 0 && controllerIndex < MGDL_MAX_CONTROLLERS)
+	{
+		platformPC.joysticIndexToControllerMapping[joystickIndex] = controllerIndex;
+	}
+}
+
 bool Platform_IsControllerConnected(int controllerIndex)
 {
 	if (controllerIndex == 0)
