@@ -35,6 +35,8 @@ void Platform_Init(const char* windowName,
 	frameCall = frameCallback;
 	quitCall = quitCallback;
 
+	platformWii.initFlags = initFlags;
+
 	platformWii.windowName = windowName;
 
 	// Convert to Wii InitAspectmode for now
@@ -187,16 +189,32 @@ void MainLoop()
 		glFlush();
 		gdl::Display();
 
-		if (WiiController_ButtonPress(Platform_GetController(0), ButtonHome))
+		if (Flag_IsSet(platformWii.initFlags, FlagGameHandlesHOME) == false)
 		{
-			if (quitCall != NULL)
+			if (WiiController_ButtonPress(Platform_GetController(0), ButtonHome))
 			{
-				quitCall();
+				if (quitCall != NULL)
+				{
+					quitCall();
+				}
+				Platform_DoProgramExit();
 			}
-			Platform_DoProgramExit();
 		}
 
 		frameCount++;
+	}
+}
+
+// TODO How do we know?
+bool Platform_IsControllerConnected(int controllerIndex)
+{
+	if (controllerIndex >= 0 && controllerIndex < MGDL_MAX_CONTROLLERS)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
@@ -209,7 +227,7 @@ void ReadControllers()
 {
 	// TODO This might have to be in a macro
 	WPAD_ScanPads();  // Scan the Wiimotes
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < MGDL_MAX_CONTROLLERS; i++)
 	{
 		WiiController* controller = &platformWii.controllers[i];
 		WiiController_StartFrame(controller);

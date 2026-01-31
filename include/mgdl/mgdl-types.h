@@ -161,6 +161,7 @@ enum PlatformInitFlag
     FlagPauseUntilA = 0x01, // Enters a loop after system init and continues when A button is pressed
     FlagFullScreen = 0x02, // Start in full screen mode
     FlagSplashScreen = 0x04, // Show splash screen with logo. If FlagPauseUntilA is set will stay in splash screen
+    FlagGameHandlesHOME = 0x08 // When HOME is pressed the platform expects game to handle it
 };
 typedef enum PlatformInitFlag PlatformInitFlag;
 
@@ -222,6 +223,14 @@ enum CameraMode
     CameraDirection = 1
 };
 typedef enum CameraMode CameraMode;
+
+enum CameraProjection
+{
+    CameraNone, ///< Do not set projection from camera code
+    CameraOrtho, ///< Use orthographic projection
+    CameraPerspective ///< Use perspective projection
+};
+typedef enum CameraProjection CameraProjection;
 
 // Windows uses Rectangle
 struct Rect

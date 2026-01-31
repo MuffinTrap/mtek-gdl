@@ -18,8 +18,20 @@ Camera* Camera_CreateDefault()
 
 void Camera_Apply(Camera* camera)
 {
-	mgdl_InitPerspectiveProjection(camera->fovY, camera->nearZ, camera->farZ);
-	switch (camera->_mode)
+	switch(camera->projection)
+	{
+		case CameraNone:
+			// NOTE Presume projection is set elsewhere
+			break;
+		case CameraOrtho:
+			// TODO
+			break;
+		case CameraPerspective:
+			mgdl_InitPerspectiveProjection(camera->fovY, camera->nearZ, camera->farZ);
+			break;
+	}
+
+	switch (camera->mode)
 	{
 		case CameraTarget:
 			mgdl_InitCamera(camera->position, camera->target, camera->up);
@@ -115,5 +127,5 @@ void Camera_SetRotations(Camera* camera, float pitch, float yaw, float roll)
 
 void Camera_SetMode(Camera* camera, CameraMode mode)
 {
-	camera->_mode  = mode;
+	camera->mode  = mode;
 }

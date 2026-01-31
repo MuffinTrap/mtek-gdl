@@ -21,7 +21,8 @@ struct Camera
 	float nearZ;
 	float farZ;
 
-	CameraMode _mode;
+	CameraMode mode;
+	CameraProjection projection;
 };
 typedef struct Camera Camera;
 

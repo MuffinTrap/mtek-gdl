@@ -135,36 +135,46 @@ static void UpdateEnd()
 
 void Platform_ReadControllers()
 {
+    // First Controller is always mouse and keyboard
     WiiController* firstController = Platform_GetController(0);
 
-    // Read mouse and keyboard
+    // Read mouse and keyboard into first controller
     WiiController_ReplaceWith(firstController, &kbmController);
 
-    // Test for ESC
-    if (WiiController_ButtonPress(firstController, ButtonHome))
-    {
-        if (quitCall != NULL)
-        {
-            quitCall();
-        }
-        Platform_DoProgramExit();
-    }
+    // Test for ESC unless game handles it
+	if (Flag_IsSet(platformPC.initFlags, FlagGameHandlesHOME) == false)
+	{
+		if (WiiController_ButtonPress(firstController, ButtonHome))
+		{
+			if (quitCall != NULL)
+			{
+				quitCall();
+			}
+			Platform_DoProgramExit();
+		}
+	}
+
 
     // Update state of all joysticks
     Joystick_ReadInputs();
+
+    // Read if any of the joysticks should be
+    // fed into controller 0 in addition to mouse and keyboard
     // If first joystick is connected, add it 
     // to controller 0
-    if (Joystick_IsConnected(0))
+    int startJoystickIndex = 0;
+    if (platformPC.joysticIndexToControllerMapping[0] == 0 && Joystick_IsConnected(0))
     {
         Joystick_AddToController(firstController, 0);
+        startJoystickIndex = 1;
     }
 
-    // other controllers read from joysticks 1-3
-    for (int i = 1; i < 4; i++)
+    // other controllers reading
+    for (int i = startJoystickIndex; i < MGDL_MAX_CONTROLLERS; i++)
     {
         if (Joystick_IsConnected(i))
         {
-            Joystick_ReplaceController(Platform_GetController(i), i);
+            Joystick_ReplaceController(Platform_GetController(platformPC.joysticIndexToControllerMapping[i]), i);
         }
     }
 }
@@ -211,9 +221,12 @@ void Platform_Init(const char* windowName,
 {
 	mgdl_assert_print(initCallback != nullptr, "Need to provide init callback before system init on PC");
 	mgdl_assert_print(frameCallback != nullptr, "Need to provide frame callback before system init on PC");
+
     initCall = initCallback;
 	frameCall = frameCallback;
     quitCall = quitCallback;
+
+    platformPC.initFlags = initFlags;
 
 
 
@@ -286,7 +299,7 @@ void Platform_InitControllers()
 	Joystick_Init();
 	Joystick_ZeroInputs();
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < MGDL_MAX_CONTROLLERS; i++)
 	{
 		WiiController* c = &platformPC.controllers[i];
 		WiiController_Init(c, i);
@@ -297,6 +310,43 @@ void Platform_InitControllers()
 	WiiController_Init(&kbmController, 0);
 	WiiController_ZeroAllInputs(&kbmController);
 	WiiController_StartFrame(&kbmController);
+
+
+    for (int ji = 0; ji < MGDL_MAX_CONTROLLERS; ji++)
+    {
+        platformPC.joysticIndexToControllerMapping[ji] = 0;
+    }
+}
+
+
+bool Platform_IsControllerConnected(int controllerIndex)
+{
+	if (controllerIndex == 0)
+	{
+		return true;
+	}
+    if (controllerIndex >= 0 && controllerIndex < MGDL_MAX_CONTROLLERS)
+    {
+        for (int ji = 0; ji < MGDL_MAX_CONTROLLERS; ji++)
+        {
+            int mappedController = platformPC.joysticIndexToControllerMapping[ji];
+            if (mappedController == controllerIndex)
+            {
+                return Joystick_IsConnected(ji);
+            }
+        }
+    }
+    return false;
+}
+
+void Platform_MapJoystickToController(int joystickIndex, int controllerIndex)
+{
+    if (joystickIndex >= 0 && joystickIndex < MGDL_MAX_CONTROLLERS &&
+        controllerIndex >= 0 && controllerIndex < MGDL_MAX_CONTROLLERS)
+        {
+            platformPC.joysticIndexToControllerMapping[joystickIndex] = controllerIndex;
+        }
+
 }
 
 struct WiiController* Platform_GetController(int controllerNumber)

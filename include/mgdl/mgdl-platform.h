@@ -8,6 +8,8 @@
  * @brief Virtual functions to be defined by each platform
  */
 
+#define MGDL_MAX_CONTROLLERS 4
+
 struct Platform
 {
 	const char* windowName;
@@ -25,7 +27,10 @@ struct Platform
 	float elapsedTimeS;
 	u32 elapsedUpdates;
 
-	WiiController controllers[4];
+	WiiController controllers[MGDL_MAX_CONTROLLERS];
+	// Joystick mapping to controllers
+	// index : controller number
+	int joysticIndexToControllerMapping[MGDL_MAX_CONTROLLERS];
 
 	// Splash screen variables
 	int waitElapsedMS;
@@ -34,6 +39,8 @@ struct Platform
 
 	// For holding until a is held for 1 second
 	float aHoldTimer;
+
+	u32 initFlags;
 };
 typedef struct Platform Platform;
 
@@ -61,6 +68,11 @@ void Platform_Init(const char* windowName,
 * @returns The controller if it is connected, controller 0 otherwise
 */
 struct WiiController* Platform_GetController(int controllerNumber);
+
+/**
+ * @brief Tells if controller is connected.
+ */
+bool Platform_IsControllerConnected(int controllerIndex);
 void Platform_DoProgramExit(void);
 
 struct Platform* Platform_GetSingleton(void);
@@ -70,6 +82,7 @@ u32 Platform_GetElapsedUpdates(void);
 
 void Platform_InitControllers();
 void Platform_ReadControllers();
+void Platform_MapJoystickToController(int joystickIndex, int controllerIndex);
 void Platform_StartNextFrameControllers();
 void Platform_UpdateSplash(int value);
 void Platform_RenderSplash(Platform* platform);
