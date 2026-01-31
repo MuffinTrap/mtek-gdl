@@ -168,3 +168,12 @@ short Sprite_GetHeight(Sprite* sprite)
 	return sprite->_font->characterHeight;
 }
 
+RectF Sprite_GetTextureCoordinates(Sprite* sprite, short spriteIndex)
+{
+	return Font_GetUVRect(sprite->_font, spriteIndex);
+}
+
+short Sprite_GetFrameCount(Sprite* sprite)
+{
+	return sprite->_font->_characterCount;
+}

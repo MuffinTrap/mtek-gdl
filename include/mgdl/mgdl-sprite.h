@@ -44,6 +44,9 @@ extern "C"
 	V3f Sprite_AdjustDrawingPosition2D(Sprite* sprite, short x, short y, float scale, AlignmentModes alignX, AlignmentModes alignY);
 	V3f Sprite_AdjustDrawingPosition3D(Sprite* sprite, V3f position, float scale, AlignmentModes alignX, AlignmentModes alignY);
 
+	RectF Sprite_GetTextureCoordinates(Sprite* sprite, short spriteIndex);
+	short Sprite_GetFrameCount(Sprite* sprite);
+
 	// TODO u16 CreateAnimation(u16 start, u16 stop, float frameTime);
 	// TODO PlayAnimation(u16 index);
 	// TODO ResetAnimation(u16 index);
