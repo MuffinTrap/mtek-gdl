@@ -609,7 +609,7 @@ bool Platform_IsControllerConnected(int controllerIndex)
 		return true;
 	}
 
-    if (int controllerIndex >= 0 && controllerIndex < MGDL_MAX_CONTROLLERS)
+    if (controllerIndex >= 0 && controllerIndex < MGDL_MAX_CONTROLLERS)
     {
         for (int ji = 0; ji < MGDL_MAX_CONTROLLERS; ji++)
         {
