@@ -382,5 +382,14 @@ u32 Platform_GetElapsedUpdates()
 {
     return platformPC.elapsedUpdates;
 }
+
+int Platform_GetScreenWidth()
+{
+    return platformPC.windowWidth;
+}
+int Platform_GetScreenHeight()
+{
+    return platformPC.windowHeight;
+}
 #endif
 

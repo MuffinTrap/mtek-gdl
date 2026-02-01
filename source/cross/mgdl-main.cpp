@@ -163,8 +163,8 @@ void mgdl_DoProgramExit()
 	Platform_DoProgramExit();
 }
 
-u16 mgdl_GetScreenWidth() { return Platform_GetSingleton()->screenWidth; }
-u16 mgdl_GetScreenHeight(){ return Platform_GetSingleton()->screenHeight; }
+u16 mgdl_GetScreenWidth() { return Platform_GetScreenWidth(); }
+u16 mgdl_GetScreenHeight(){ return Platform_GetScreenHeight(); }
 float mgdl_GetAspectRatio(){ return Platform_GetSingleton()->aspectRatio; }
 float mgdl_GetElapsedSeconds(){ return Platform_GetElapsedSeconds(); };
 u32 mgdl_GetElapsedFrames(){ return Platform_GetElapsedUpdates(); };

@@ -97,6 +97,9 @@ void Platform_ResetTime(Platform* platform);
 
 void Platform_ResizeWindow(int newWidth, int newHeight);
 
+int Platform_GetScreenWidth();
+int Platform_GetScreenHeight();
+
 #ifdef __cplusplus
 }
 #endif

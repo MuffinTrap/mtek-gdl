@@ -51,8 +51,8 @@ extern "C"
 		* @brief Draws the image using 2D vertices.
 		*
 		* This function expects the ortographic projection to be set. This function preserves the aspect ratio.
-		* @param x Upper left corner x of the image.
-		* @param y Upper left corner y of the image.
+		* @param x Lower left corner x of the image.
+		* @param y Lower left corner y of the image.
 		* @param scale Scaling of the image. Scale of 1.0 does not alter the size. Negative scale does not flip the image.
 		* @param alignX Alignment on the X axis.
 		* @param alignY Alignment on the Y axis.

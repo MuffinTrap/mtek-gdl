@@ -672,4 +672,13 @@ struct WiiController* Platform_GetController(int controllerNumber)
 	return &platformPC.controllers[controllerNumber];
 }
 
+int Platform_GetScreenWidth()
+{
+	return plaformPC.windowWidth;
+}
+int Platform_GetScreenHeight()
+{
+	return plaformPC.windowHeight;
+}
+
 #endif 

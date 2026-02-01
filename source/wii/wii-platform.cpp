@@ -285,3 +285,21 @@ void Platform_DoProgramExit()
 {
 	gdl::wii::DoProgramExit();
 }
+
+void Platform_MapJoystickToController(int joystickIndex, int controllerIndex)
+{
+	if (joystickIndex > 0 && controllerIndex > 0)
+	{
+		joystickIndex = controllerIndex;
+	}
+
+}
+
+int Platform_GetScreenWidth()
+{
+	return platformWii.windowWidth;
+}
+int Platform_GetScreenHeight()
+{
+	return platformWii.windowHeight;
+}
