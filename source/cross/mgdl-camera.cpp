@@ -6,9 +6,9 @@
 Camera* Camera_CreateDefault()
 {
 	Camera* camera = (Camera*)malloc(sizeof(Camera));
-	camera->target = V3f_Create(0.0f, 0.0f, 0.0f);
-	camera->position = V3f_Create(0.0f, 0.0f, 1.0f);
-	camera->up = V3f_Create(0.0f, 1.0f, 0.0f);
+	camera->target = mgdl_GetGLWorldForward();
+	camera->position = V3f_Create(0.0f, 0.0f, 0.0f);
+	camera->up = mgdl_GetGLWorldUp();
 	camera->fovY = 90.0f;
 	camera->nearZ = 0.1f;
 	camera->farZ = 1000.0f;
@@ -38,7 +38,7 @@ void Camera_Apply(Camera* camera)
 		break;
 		case CameraDirection:
 		{
-			V3f unit = V3f_Create(0.0f, 0.0f, 1.0f);
+			V3f unit = mgdl_GetGLWorldForward();
 			V3f target;
 			MTX3x3 transform;
 			MTX3x3_Identity(transform);

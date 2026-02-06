@@ -11,6 +11,16 @@ Rect Rect_Create(short x, short y, short w, short h)
 	return {x, y, w, h};
 }
 
+RectF RectF_Create(float x, float y, float w, float h)
+{
+	RectF r;
+	r.x = x;
+	r.y = y;
+	r.w = w;
+	r.h = h;
+	return r;
+}
+
 Rect Rect_CreateV2f(vec2 position, vec2 size)
 {
 	return {(short)V2f_X(position), (short)V2f_Y(position), (short)V2f_X(size), (short)V2f_Y(size)};

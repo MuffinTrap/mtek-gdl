@@ -7,6 +7,10 @@ static bool lightingEnabled_ = false;
 static bool lightsOn_[8] = {false, false, false, false,
 							false, false, false, false};
 
+static const V3f FORWARD = V3f_Create(0, 0, -1);
+static const V3f UP = V3f_Create(0, 1, 0);
+static const V3f RIGHT = V3f_Create(1, 0, 0);
+
 void mgdl_glClear(GLbitfield flags)
 {
 #ifdef GEKKO
@@ -195,5 +199,18 @@ void mgdl_glTriangleV3F(V3f a, V3f b, V3f c)
 	mgdl_glVertexV3F(a);
 	mgdl_glVertexV3F(b);
 	mgdl_glVertexV3F(c);
+}
+
+V3f mgdl_GetGLWorldForward()
+{
+	return FORWARD;
+}
+V3f mgdl_GetGLWorldUp()
+{
+	return UP;
+}
+V3f mgdl_GetGLWorldRight()
+{
+	return RIGHT;
 }
 

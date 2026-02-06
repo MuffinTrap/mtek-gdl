@@ -84,7 +84,7 @@ void Platform_Init(const char* windowName,
 	// TODO Add init parameters for what controllers to init?
 	WPAD_Init();
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < MGDL_MAX_CONTROLLERS; i++)
 	{
 		WPAD_SetDataFormat(WPAD_CHAN_0 + i, WPAD_FMT_BTNS_ACC_IR);
 		WiiController_Init(&platformWii.controllers[i], WPAD_CHAN_0 + i);
@@ -297,9 +297,9 @@ void Platform_MapJoystickToController(int joystickIndex, int controllerIndex)
 
 int Platform_GetScreenWidth()
 {
-	return platformWii.windowWidth;
+	return platformWii.screenWidth;
 }
 int Platform_GetScreenHeight()
 {
-	return platformWii.windowHeight;
+	return platformWii.screenHeight;
 }

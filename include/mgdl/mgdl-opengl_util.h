@@ -46,6 +46,10 @@ extern "C"
 
     void mgdl_SetDepthTest(bool enabled);
 
+    V3f mgdl_GetGLWorldForward();
+    V3f mgdl_GetGLWorldUp();
+    V3f mgdl_GetGLWorldRight();
+
 
     // Light status
     void mgdl_SetLightingEnabled(bool enabled);

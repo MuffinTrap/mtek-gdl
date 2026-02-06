@@ -44,7 +44,18 @@ extern "C"
 	V3f Sprite_AdjustDrawingPosition2D(Sprite* sprite, short x, short y, float scale, AlignmentModes alignX, AlignmentModes alignY);
 	V3f Sprite_AdjustDrawingPosition3D(Sprite* sprite, V3f position, float scale, AlignmentModes alignX, AlignmentModes alignY);
 
+	/**
+	 * @brief Returns the corner texture coordinates of the sprite at index
+	 * @param sprite The Sprite
+	 * @param spriteIndex The frame or sprite index
+	 * @return Texture coordinates of bottom left and size of texture area
+	 */
 	RectF Sprite_GetTextureCoordinates(Sprite* sprite, short spriteIndex);
+	/**
+	 * @brief Returns the amount of frames in this Sprite
+	 * @param sprite The Sprite
+	 * @return Amount of frames. Minimum of 1
+	 */
 	short Sprite_GetFrameCount(Sprite* sprite);
 
 	// TODO u16 CreateAnimation(u16 start, u16 stop, float frameTime);
