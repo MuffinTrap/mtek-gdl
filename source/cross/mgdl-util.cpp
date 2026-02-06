@@ -77,12 +77,12 @@ u32 maxU32(u32 a, u32 b)
 
 float Deg2Rad(float degrees)
 {
-    return (float)M_PI * degrees/180.0f;
+    return degrees * (M_PI / 180.0f);
 }
 
 float Rad2Deg(float radians)
 {
-    return 180.0f * radians/(float)M_PI;
+    return radians * (180.0f / M_PI);
 }
 
 GLint TextureFilterToGLFilter(TextureFilterModes filterMode)
