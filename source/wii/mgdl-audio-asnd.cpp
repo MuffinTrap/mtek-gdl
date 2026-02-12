@@ -1,6 +1,7 @@
 #ifdef GEKKO
 #include <mgdl/mgdl-audio.h>
 #include <mgdl/mgdl-alloc.h>
+#include <mgdl/mgdl-cache.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/wii/mgdl-audio-asnd.h>
 #include <asndlib.h>
@@ -19,7 +20,7 @@ void Audio_Platform_Init(void* platformData)
 {
 	Log_Info("ASND Audio init\n");
 	ASND_Init();
-	soundDatas = (SoundASND*)valloc(sizeof(SoundASND) * MGDL_AUDIO_MAX_SOUNDS);
+	soundDatas = (SoundASND*)mgdl_AllocateGeneralMemory(sizeof(SoundASND) * MGDL_AUDIO_MAX_SOUNDS);
 	for (int i = 0; i < MGDL_AUDIO_MAX_SOUNDS; i++)
 	{
 		soundDatas[i].buffer = nullptr;
@@ -28,10 +29,10 @@ void Audio_Platform_Init(void* platformData)
 	}
 
 	// Prepare streaming buffers
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < ASND_STREAMING_BUFFERS; i++)
 	{
 		// The the buffers need to be aligned to 32
-		streamingBuffers[i]= mgdl_AllocateAlignedMemory(MGDL_AUDIO_CALLBACK_BUFFER_SIZE);
+		streamingBuffers[i]= mgdl_AllocateGraphicsMemory(MGDL_AUDIO_CALLBACK_BUFFER_SIZE);
 	}
 
 }
@@ -44,12 +45,16 @@ void Audio_Platform_Deinit()
 	{
 		if (soundDatas[i].buffer != nullptr)
 		{
-			free(soundDatas[i].buffer);
+			mgdl_FreeGraphicsMemory(soundDatas[i].buffer);
 		}
 		soundDatas[i].inUse = false;
 		soundDatas[i].voiceNumber = SND_INVALID;
 	}
-	vfree(soundDatas);
+	mgdl_FreeGeneralMemory(soundDatas);
+	for (int i = 0; i < ASND_STREAMING_BUFFERS; i++)
+	{
+		mgdl_FreeGraphicsMemory(streamingBuffers[i]);
+	}
 	ASND_End();
 }
 
@@ -90,10 +95,11 @@ void* Audio_OpenStaticBuffer(Sound* inout_snd, sizetype byteAmount, u16 samplera
 			if (soundDatas[i].buffer != NULL)
 			{ 
 				// If already allocated, deallocate it for reallocation
-				free(soundDatas[i].buffer);
+				mgdl_FreeGraphicsMemory(soundDatas[i].buffer);
 			} 
-			soundDatas[i].buffer = mgdl_AllocateAlignedMemory(byteAmount);
+			soundDatas[i].buffer = mgdl_AllocateGraphicsMemory(byteAmount);
 			memset(soundDatas[i].buffer, 0x00, byteAmount);
+			mgdl_CacheFlushRange(soundDatas[i].buffer, byteAmount);
 
 			// Store information needed for playback
 			soundDatas[i].format = mgdlFormatToASND(format);
@@ -137,7 +143,7 @@ void Audio_CloseStaticBuffer(Sound* snd, void* buffer, sizetype bytesWritten)
 		}
 	}
 
-	DCFlushRange(sData, sSize);
+	mgdl_CacheFlushRange(sData, sSize);
 }
 
 sizetype Audio_GetStaticBufferSize(Sound* snd)
@@ -246,7 +252,7 @@ void ASND_Callback(s32 asndVoice)
 	audioCallback(streamingVoice, streamingBuffers[activeStreamingBuffer], streamingSound.sSize, &bytesWritten);
 
 	// Make sure memory is flushed
-	DCFlushRange(streamingBuffers[activeStreamingBuffer], MGDL_AUDIO_CALLBACK_BUFFER_SIZE);
+	mgdl_CacheFlushRange(streamingBuffers[activeStreamingBuffer], MGDL_AUDIO_CALLBACK_BUFFER_SIZE);
 
 	// Send the audio to ASND using the streaming Voice number 0
 	ASND_AddVoice(streamingSound.voiceNumber, streamingBuffers[activeStreamingBuffer], bytesWritten);
@@ -277,7 +283,7 @@ void Audio_Platform_StartStream(Sound* s, s32 sampleRate, SoundSampleFormat form
 	audioCallback(streamingVoice, streamingBuffers[activeStreamingBuffer], streamingSound.sSize, &bytesWritten);
 
 	// Flush to memory
-	DCFlushRange(streamingBuffers[activeStreamingBuffer], streamingSound.sSize);
+	mgdl_CacheFlushRange(streamingBuffers[activeStreamingBuffer], streamingSound.sSize);
 
 	// TODO master volume etc.
 	s32 pitch = 1;

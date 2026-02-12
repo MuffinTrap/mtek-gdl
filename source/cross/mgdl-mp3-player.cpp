@@ -2,18 +2,17 @@
 #include <mgdl/mgdl-mp3-player.h>
 
 
+#include <mgdl/mgdl-alloc.h>
 #include <mgdl/mgdl-logger.h>
+#include <mgdl/mgdl-types.h>
 
 static MusicMp3* musics;
 
-#ifdef GEKKO
-#include <valloc.h>
 #include <stdio.h>
 #include <mgdl/mgdl-cache.h>
 static FILE* mp3FilePtr = nullptr;
 static void* mp3FileBuffer = nullptr;
 static sizetype mp3FileSize = 0;
-#endif
 
 // Called by Audio
 static void Mp3_Callback(s32 voiceNumber, void* bufferPtr, u32 bufferSizeBytes, u32* bytesWritten)
@@ -49,7 +48,7 @@ static void Mp3_Callback(s32 voiceNumber, void* bufferPtr, u32 bufferSizeBytes, 
 
 void Mp3Player_Init()
 {
-	musics = (MusicMp3*)malloc(sizeof(MusicMp3) * MGDL_AUDIO_MAX_SOUNDS);
+	musics = (MusicMp3*)mgdl_AllocateGeneralMemory(sizeof(MusicMp3) * MGDL_AUDIO_MAX_SOUNDS);
 	for(int i = 0; i < MGDL_AUDIO_MAX_SOUNDS; i++)
 	{
 		musics[i].mp3 = nullptr;
@@ -63,16 +62,14 @@ void Mp3Player_Deinit()
 		if (musics[i].mp3 != nullptr)
 		{
 			drmp3_uninit(musics[i].mp3);
-			free(musics[i].mp3);
+			mgdl_FreeGeneralMemory(musics[i].mp3);
 		}
 	}
-	free(musics);
-#	if defined(GEKKO)
+	mgdl_FreeGeneralMemory(musics);
 	if (mp3FileBuffer != nullptr)
 	{
-		vfree(mp3FileBuffer);
+		mgdl_FreeGeneralMemory(mp3FileBuffer);
 	}
-#	endif
 }
 Sound Mp3Player_LoadSound(const char* filename)
 {
@@ -89,17 +86,16 @@ Sound Mp3Player_LoadSound(const char* filename)
 		}
 	}
 	MusicMp3* music = &musics[s.voiceNumber];
-	music->mp3 = (drmp3*)malloc(sizeof(drmp3));
+	music->mp3 = (drmp3*)mgdl_AllocateGeneralMemory(sizeof(drmp3));
 	bool loadOk = false;
-#	if defined(GEKKO)
-	// On Wii, read the file in fully.
+	// Read the file in fully.
 	mp3FilePtr = fopen(filename, "r");
 	if (mp3FilePtr != nullptr)
 	{
 		// Read until you figure out how big this file is
 		fseek(mp3FilePtr, 0L, SEEK_END);
 		mp3FileSize = ftell(mp3FilePtr);
-		mp3FileBuffer = valloc(mp3FileSize);
+		mp3FileBuffer = mgdl_AllocateGeneralMemory(mp3FileSize);
 		fseek(mp3FilePtr, 0L, SEEK_SET);
 		fread(mp3FileBuffer, 1, mp3FileSize, mp3FilePtr);
 		fclose(mp3FilePtr);
@@ -108,18 +104,11 @@ Sound Mp3Player_LoadSound(const char* filename)
 
 		loadOk = drmp3_init_memory(music->mp3, mp3FileBuffer, mp3FileSize, NULL);
 	}
-#	else
-	loadOk = drmp3_init_file(music->mp3, filename, NULL);
-#	endif
 
 	if (loadOk)
 	{
-#		if defined(GEKKO)
 		music->fileBuffer = mp3FileBuffer;
 		music->sizeBytes = mp3FileSize;
-#		endif
-		// No idea how much is really allocated.
-		music->sizeBytes = 1;
 		s.type = SoundMp3;
 		drmp3_uint64 pcmFrameAmount = drmp3_get_pcm_frame_count(music->mp3);
 
