@@ -62,13 +62,13 @@ void Mp3Player_Deinit()
 		if (musics[i].mp3 != nullptr)
 		{
 			drmp3_uninit(musics[i].mp3);
-			mgdl_FreeGeneralMemory(musics[i].mp3);
+			mgdl_FreeGraphicsMemory(musics[i].mp3);
 		}
 	}
 	mgdl_FreeGeneralMemory(musics);
 	if (mp3FileBuffer != nullptr)
 	{
-		mgdl_FreeGeneralMemory(mp3FileBuffer);
+		mgdl_FreeGraphicsMemory(mp3FileBuffer);
 	}
 }
 Sound Mp3Player_LoadSound(const char* filename)
@@ -86,7 +86,7 @@ Sound Mp3Player_LoadSound(const char* filename)
 		}
 	}
 	MusicMp3* music = &musics[s.voiceNumber];
-	music->mp3 = (drmp3*)mgdl_AllocateGeneralMemory(sizeof(drmp3));
+	music->mp3 = (drmp3*)mgdl_AllocateGraphicsMemory(sizeof(drmp3));
 	bool loadOk = false;
 	// Read the file in fully.
 	mp3FilePtr = fopen(filename, "r");
@@ -95,7 +95,7 @@ Sound Mp3Player_LoadSound(const char* filename)
 		// Read until you figure out how big this file is
 		fseek(mp3FilePtr, 0L, SEEK_END);
 		mp3FileSize = ftell(mp3FilePtr);
-		mp3FileBuffer = mgdl_AllocateGeneralMemory(mp3FileSize);
+		mp3FileBuffer = mgdl_AllocateGraphicsMemory(mp3FileSize);
 		fseek(mp3FilePtr, 0L, SEEK_SET);
 		fread(mp3FileBuffer, 1, mp3FileSize, mp3FilePtr);
 		fclose(mp3FilePtr);

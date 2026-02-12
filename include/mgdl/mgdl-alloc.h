@@ -61,6 +61,9 @@ void* mgdl_AllocateGeneralMemory(sizetype size);
  */
 void mgdl_FreeGeneralMemory(void* ptr);
 
+sizetype mgdl_GetAllocatedGraphicsMemoryBytes();
+sizetype mgdl_GetAllocatedGeneralMemoryBytes();
+
 #ifdef __cplusplus
 }
 #endif
