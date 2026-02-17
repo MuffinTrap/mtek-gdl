@@ -17,7 +17,7 @@ void* mgdl_AllocateAlignedMemory(sizetype size) {
 
 void* mgdl_AllocateGraphicsMemory(sizetype size)
 {
-	return malloc(size);
+	return mgdl_AllocateAlignedMemory(size);
 }
 void mgdl_FreeGraphicsMemory(void* ptr)
 {
