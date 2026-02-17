@@ -25,6 +25,8 @@ extern "C"
 	void Log_SaveLines(int amount);
 	char* Log_GetLine(int index);
 	char* Log_GetLastLine(int index);
+	void Log_ResetLineIndexTo(int index);
+	int Log_GetLineIndex();
 
 	void Log_Info(const char* text);
 	void Log_InfoF(const char* fmt, ...);

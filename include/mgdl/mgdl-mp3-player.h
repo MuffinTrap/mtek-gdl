@@ -11,7 +11,7 @@ extern "C" {
 struct MusicMp3
 {
 	drmp3* mp3;
-	void* fileBuffer = nullptr; // Needed on Wii
+	void* fileBuffer = nullptr;
 	int framesElapsed;
 	float secondsElapsed;
 	sizetype sizeBytes;

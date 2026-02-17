@@ -2,21 +2,23 @@
 #include <mgdl/mgdl-audio.h>
 #include <mgdl/mgdl-alloc.h>
 #include <mgdl/mgdl-sound.h>
+#include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-logger.h>
-static MusicOgg* musics = nullptr;
-
-// TODO on Wii needs big endian
-#ifdef GEKKO
-#define STB_VORBIS_BIG_ENDIAN
-#include <valloc.h>
-#include <stdio.h>
 #include <mgdl/mgdl-cache.h>
+
+#include <stdio.h>
+
+
+static MusicOgg* musics = nullptr;
 static FILE* oggFilePtr = nullptr;
 static void* oggFileBuffer = nullptr;
 static sizetype oggFileSize = 0;
+
+
+// Wii uses big endian
+#ifdef GEKKO
+#	define STB_VORBIS_BIG_ENDIAN
 #endif
-
-
 #define STB_VORBIS_NO_PUSHDATA_API
 #include "../source/stb/stb_vorbis.c"
 
@@ -73,62 +75,47 @@ static MusicOgg LoadOgg(MusicOgg m, Sound* inout_snd, const char* filename, s32 
 	Log_InfoF("Loading Ogg from %s\n", filename);
 	int errorOut = 0;
 
-	stb_vorbis* vorbisFile = nullptr;
 
-	// TODO on Wii need to supply buffer allocated with valloc
+	// Can let stb_vorbis to allocate memory or give it a pre allocated pointer
 	stb_vorbis_alloc* ogg_allocation_ptr = nullptr;
-	/*
-#	ifdef GEKKO
-	stb_vorbis_alloc ogg_allocation;
-	sizetype amount = 250 * 1024;
-	//ogg_allocation.alloc_buffer = (char*)valloc(amount);
-	ogg_allocation.alloc_buffer = (char*)mgdl_AllocateAlignedMemory(amount);
-	ogg_allocation.alloc_buffer_length_in_bytes = amount;
-	ogg_allocation_ptr = &ogg_allocation;
-#	endif
-	*/
-#	if defined(GEKKO)
-	// On Wii, read the file in fully.
+	bool useCustomAllocation = false;
+	if (useCustomAllocation)
+	{
+		stb_vorbis_alloc ogg_allocation;
+		sizetype amount = 250 * 1024;
+		ogg_allocation.alloc_buffer = (char*)mgdl_AllocateGraphicsMemory(amount);
+		ogg_allocation.alloc_buffer_length_in_bytes = amount;
+		ogg_allocation_ptr = &ogg_allocation;
+	}
+
+	// Read the file in fully
+	stb_vorbis* vorbisFile = nullptr;
 	oggFilePtr = fopen(filename, "r");
 	if (oggFilePtr != nullptr)
 	{
 		// Read until you figure out how big this file is
 		fseek(oggFilePtr, 0L, SEEK_END);
 		oggFileSize = ftell(oggFilePtr);
-		oggFileBuffer = valloc(oggFileSize);
+		oggFileBuffer = mgdl_AllocateGeneralMemory(oggFileSize);
 		fseek(oggFilePtr, 0L, SEEK_SET);
 		fread(oggFileBuffer, 1, oggFileSize, oggFilePtr);
 		fclose(oggFilePtr);
 		mgdl_CacheFlushRange(oggFileBuffer, oggFileSize);
 		vorbisFile = stb_vorbis_open_memory((const unsigned char*)oggFileBuffer, oggFileSize, &errorOut, ogg_allocation_ptr);
 	}
-#	else
 
-	vorbisFile = stb_vorbis_open_filename(filename, &errorOut, ogg_allocation_ptr);
-
-#	endif
-#	ifdef GEKKO
-	if (errorOut == VORBIS_outofmem)
+	if (useCustomAllocation && errorOut == VORBIS_outofmem)
 	{
 		// Not enough memory supplied. Try again.
-		Log_Error("Ogg Player needs more memory to work!");
-		/*
-		stb_vorbis_info oggInfo = stb_vorbis_get_info(vorbisFile);
-		sizetype needed_amount = oggInfo.setup_memory_required + oggInfo.temp_memory_required + oggInfo.setup_temp_memory_required;
-		vfree(ogg_allocation.alloc_buffer);
-		ogg_allocation.alloc_buffer = (char*)valloc(needed_amount);
-		ogg_allocation.alloc_buffer_length_in_bytes = needed_amount;
-		vorbisFile = stb_vorbis_open_filename(filename, &errorOut, NULL);
-		*/
+		Log_Error("Ogg Player needs more pre allocated memory to work!");
 		return m;
 	}
-#	endif
-
 	if (vorbisFile == nullptr)
 	{
 		Log_ErrorF("Failed to open ogg file %s\n", filename);
 		return m;
 	}
+
 	stb_vorbis_info oggInfo = stb_vorbis_get_info(vorbisFile);
 	stb_vorbis_seek_start(vorbisFile);
 
@@ -137,12 +124,9 @@ static MusicOgg LoadOgg(MusicOgg m, Sound* inout_snd, const char* filename, s32 
 	m.vorbisfile = vorbisFile;
 	Sound_Init(inout_snd, voiceNumber, SoundOgg);
 	
-#if defined(GEKKO)
-	m.sizeBytes = oggFileSize;
 	m.fileBuffer = oggFileBuffer;
-#else
-	m.sizeBytes = oggInfo.setup_memory_required + oggInfo.setup_temp_memory_required + oggInfo.temp_memory_required;
-#endif
+	m.sizeBytes = oggInfo.setup_memory_required + oggInfo.setup_temp_memory_required + oggInfo.temp_memory_required + oggFileSize;
+
 	Log_InfoF("Duration:%.2fs SampleRate:%u Channels:%d\n", m.lengthSeconds, oggInfo.sample_rate, oggInfo.channels);
 	m.channels = oggInfo.channels;
 	m.elapsedSeconds = 0.0f;
@@ -167,12 +151,10 @@ void OggPlayer_Deinit()
     for (int i = 0; i < MGDL_AUDIO_MAX_SOUNDS; i++)
     {
 		stb_vorbis_close(musics[i].vorbisfile);
-#ifdef GEKKO
 		if (musics[i].fileBuffer != nullptr)
 		{
-			vfree(musics[i].fileBuffer);
+			mgdl_FreeGeneralMemory(musics[i].fileBuffer);
 		}
-#endif
     }
 	free(musics);
 	musics = nullptr;
@@ -215,7 +197,6 @@ void OggPlayer_PlaySound(Sound* snd)
 		Log_ErrorF("Cannot play Ogg files with more than 2 channels");
 	}
 	Audio_Platform_SetCallback(Ogg_Callback);
-	//Audio_Platform_SetCallback(Silent_Callback);
 	Audio_Platform_StartStream(snd, musics[snd->voiceNumber].sampleRate, format);
 	musics[snd->voiceNumber].state = Audio_StatePlaying;
 }

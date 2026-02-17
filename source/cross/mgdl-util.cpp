@@ -2,6 +2,7 @@
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-types.h>
 #include <cstdlib>
+#include <stdio.h>
 #include <mgdl/wflcg/WFLCG_c.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -118,6 +119,12 @@ static char printfBuffer[MGDL_PRINTF_BUFFER_SIZE];
 char* mgdl_GetPrintfBuffer()
 {
 	return printfBuffer;
+}
+
+char* mgdl_BufferPrintf(const char* format, ...)
+{
+	MGDL_PRINTF_TO_BUFFER(format);
+	return mgdl_GetPrintfBuffer();
 }
 
 // **************************************

@@ -222,8 +222,7 @@ bool Menu_Button(Menu* menu, const char* text)
     Color4f* pen = &menu->text;
     if (inside)
     {
-        background = &menu->highlight;
-        pen = &menu->bg;
+        pen = &menu->highlight;
     }
     Draw2D_Rect(x, y, x + w, y - h, background);
 
