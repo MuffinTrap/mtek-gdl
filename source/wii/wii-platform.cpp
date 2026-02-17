@@ -246,9 +246,9 @@ void ReadControllers()
 			controller->m_cursorY *= 1.2f - 16.f;
 		}
 
-		controller->m_pressedButtons = WPAD_ButtonsDown(0);
-		controller->m_releasedButtons = WPAD_ButtonsUp(0);
-		controller->m_heldButtons = WPAD_ButtonsHeld(0);
+		controller->m_pressedButtons = WPAD_ButtonsDown(controller->m_channel);
+		controller->m_releasedButtons = WPAD_ButtonsUp(controller->m_channel);
+		controller->m_heldButtons = WPAD_ButtonsHeld(controller->m_channel);
 
 		controller->m_nunchukJoystickDirectionX=0.0f;
 		controller->m_nunchukJoystickDirectionY=0.0f;

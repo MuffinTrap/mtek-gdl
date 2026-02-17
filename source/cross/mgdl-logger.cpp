@@ -18,6 +18,18 @@ void Log_SetLevel(LogLevel lvl)
 	level_ = lvl;
 }
 
+void Log_ResetLineIndexTo(int index)
+{
+	if (index >=0 && index < lineAmount)
+	{
+		nextSaveIndex = index;
+	}
+}
+int Log_GetLineIndex()
+{
+	return nextSaveIndex;
+}
+
 void Log_SaveLines(int amount)
 {
 	Log_InfoF("Log will save %d lines\n", amount);

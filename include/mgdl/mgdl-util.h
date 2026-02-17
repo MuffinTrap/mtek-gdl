@@ -119,5 +119,6 @@ void RevBytes(void *var, int size);
 	va_end(args);\
 
 
+char* mgdl_BufferPrintf(const char* format, ...);
 
 /*! @} */
