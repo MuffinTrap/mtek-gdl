@@ -12,8 +12,8 @@ PREFIX	:= $(DEVKITPPC)/bin/powerpc-eabi-
 CC		:=	$(PREFIX)gcc
 AR		:=	$(PREFIX)ar
 
-LIBOGC_INC	:=	$(DEVKITPRO)/libogc/include
-LIBOGC_LIB	:=	$(DEVKITPRO)/libogc/lib/wii
+INSTALL_INC	:=	$(DEVKITPRO)/../libmgdl/include/valloc
+INSTALL_LIB	:=	$(DEVKITPRO)/../libmgdl/lib
 
 INCLUDE	:= -I$(LIBOGC_INC)
 MACHDEP := -mrvl -mcpu=750 -meabi -mhard-float
@@ -32,9 +32,9 @@ clean :
 	rm -f $(OFILES) $(ARC)
 
 install :
-	mkdir -p  $(LIBOGC_LIB)  $(LIBOGC_INC)
-	cp -f $(ARC) $(LIBOGC_LIB)/
-	cp -f $(HDR) $(LIBOGC_INC)/
+	mkdir -p  $(INSTALL_LIB)  $(INSTALL_INC)
+	cp -f $(ARC) $(INSTALL_LIB)/
+	cp -f $(HDR) $(INSTALL_INC)/
 
 %.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@

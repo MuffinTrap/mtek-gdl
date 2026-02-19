@@ -8,7 +8,7 @@ SRC_DIRS = .
 CXXFLAGS = -Werror=unused-function -Wall -Wextra -Wpedantic -std=c++11
 
 # Add mgdl library search directory and include
-MGDL_INCLUDE	= -I$(MGDL_DIR)
+MGDL_INCLUDE	= -I$(MGDL_DIR)/include
 CXXFLAGS += $(MGDL_INCLUDE)
 
 # Options for ufbx and vector library selection
@@ -16,8 +16,8 @@ CXXFLAGS += -DUFBX_REAL_IS_FLOAT
 CXXFLAGS += -DMGDL_USE_CCVECTOR
 
 # Optional: Add rocket files
-SRC_DIRS += $(MGDL_DIR)/mgdl/rocket
-ROCKET_INCLUDE = -I$(MGDL_DIR)/mgdl/rocket
+SRC_DIRS += $(MGDL_DIR)/include/mgdl/rocket
+ROCKET_INCLUDE = -I$(MGDL_DIR)/include/mgdl/rocket
 CXXFLAGS += $(ROCKET_INCLUDE)
 
 # CXXFLAGS += -DMGDL_ROCKET

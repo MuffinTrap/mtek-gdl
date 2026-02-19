@@ -43,7 +43,7 @@ LDFLAGS += -L/opt/homebrew/lib
 
 
 # Add mgdl library search directory and include
-LDFLAGS += -L$(MGDL_DIR)
+LDFLAGS += -L$(MGDL_DIR)/lib
 
 # Executable is the same name as current directory +
 # platform specific postfix

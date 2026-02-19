@@ -51,7 +51,7 @@ LIBS	:=	-lmgdl -lopengx -lglut -lGLU -lvalloc -lwiiuse -lpng -lz -lfat -lbte -la
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:= 
+LIBDIRS	:= $(DEVKITPRO)/../libmgdl
 
 #---------------------------------------------------------------------------------
 # no real need to edit anything past this point unless you need to add additional
@@ -99,12 +99,14 @@ export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
 LIBOGC_INC	:=	$(DEVKITPRO)/libogc/include
 PORTLIBS_PPC_INC	:=	$(PORTLIBS_PATH)/ppc/include
 PORTLIBS_WII_INC	:=	$(PORTLIBS_PATH)/wii/include
+MGDL_INC		:=	$(DEVKITPRO)/../libmgdl/include
 export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)) \
 					-I$(CURDIR)/$(BUILD) \
 					-I$(LIBOGC_INC) \
 					-I$(PORTLIBS_PPC_INC) \
-					-I$(PORTLIBS_WII_INC)
+					-I$(PORTLIBS_WII_INC) \
+					-I$(MGDL_INC)
 #---------------------------------------------------------------------------------
 # build a list of library paths
 #---------------------------------------------------------------------------------

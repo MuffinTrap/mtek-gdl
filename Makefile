@@ -29,7 +29,6 @@ AR		:= $(PREFIX)ar
 # OGC and Portlibs includes and libraries for Wii
 LIBOGC_INC	:=	$(DEVKITPRO)/libogc/include
 LIBOGC_LIB	:=	$(DEVKITPRO)/libogc/lib/wii
-
 PORTLIBS_PPC	:=	$(DEVKITPRO)/portlibs/ppc/include
 PORTLIBS_WII	:=	$(DEVKITPRO)/portlibs/wii/include
 
@@ -52,7 +51,8 @@ CXXFLAGS += $(MGDL_INCLUDE)
 # searched first from local include/
 CXXFLAGS += $(OGC_INCLUDE)
 
-INSTALL_DIR	= $(LIBOGC_INC)
+# Install the library alongside DEVKITPRO, not to same folder
+INSTALL_DIR	= $(DEVKITPRO)/../lib$(LIB)
 # Targets
 
 .PHONY: all clean install
@@ -65,31 +65,32 @@ all : $(OFILES)
 # use the command $ sudo -E make install
 # The -E flag uses the user's enviroment variables
 install :
-	# Create lib/wii/ and include/mgdl/
-	mkdir -p $(LIBOGC_LIB) $(INSTALL_DIR)/$(LIB)
-	# Subdir wii for wii headers
-	mkdir -p $(INSTALL_DIR)/$(LIB)/wii
+	# Create lib/ and include/ inside install dir
+	mkdir -p $(INSTALL_DIR)
+	mkdir -p $(INSTALL_DIR)/lib
+	mkdir -p $(INSTALL_DIR)/include/$(LIB)
+	mkdir -p $(INSTALL_DIR)/include/$(LIB)/wii
 
-	cp -f $(LIBDIR)/$(ARC) $(LIBOGC_LIB)/
+	cp -f $(LIBDIR)/$(ARC) $(INSTALL_DIR)/lib
 	# Main header to include/
-	cp -f $(LIBHDR) $(INSTALL_DIR)
+	cp -f $(LIBHDR) $(INSTALL_DIR)/include/
 	# Cross platform headers to include/mgdl/
-	cp -f $(HDRS_X) $(INSTALL_DIR)/$(LIB)
+	cp -f $(HDRS_X) $(INSTALL_DIR)/include/$(LIB)
 	# Wii headers to include/mgdl/wii/
-	cp -f $(HDRS_WII) $(INSTALL_DIR)/$(LIB)/wii
+	cp -f $(HDRS_WII) $(INSTALL_DIR)/include/$(LIB)/wii
 
 # UFBX library
-	@mkdir -p $(INSTALL_DIR)/$(LIB)/ufbx
-	@cp $(UFBX_HDR) $(INSTALL_DIR)/$(LIB)/ufbx
+	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/ufbx
+	@cp $(UFBX_HDR) $(INSTALL_DIR)/include/$(LIB)/ufbx
 # ccVector library
-	@mkdir -p $(INSTALL_DIR)/$(LIB)/ccVector
-	@cp $(CCVEC_HDR) $(INSTALL_DIR)/$(LIB)/ccVector
+	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/ccVector
+	@cp $(CCVEC_HDR) $(INSTALL_DIR)/include/$(LIB)/ccVector
 # rocket library
-	@mkdir -p $(INSTALL_DIR)/$(LIB)/rocket
-	@cp $(ROCKET_CODE) $(INSTALL_DIR)/$(LIB)/rocket
+	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/rocket
+	@cp $(ROCKET_CODE) $(INSTALL_DIR)/include/$(LIB)/rocket
 # random generation library
-	@mkdir -p $(INSTALL_DIR)/$(LIB)/wflcg
-	@cp $(RANDOM_HDR) $(INSTALL_DIR)/$(LIB)/wflcg
+	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/wflcg
+	@cp $(RANDOM_HDR) $(INSTALL_DIR)/include/$(LIB)/wflcg
 
 	@echo Library installed
 

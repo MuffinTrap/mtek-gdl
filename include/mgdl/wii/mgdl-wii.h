@@ -7,7 +7,6 @@
 #include <malloc.h>
 #include <gccore.h>
 #include <fat.h>
-#include <oggplayer.h>
 
 #include "mgdl-wii-config.h"
 #include "mgdl-wii-types.h"
