@@ -77,34 +77,6 @@ static void CheckForQuit()
 	}
 }
 
-static void UpdateAHold(void)
-{
-    if (Platform_IncreaseAHoldAndTest())
-    {
-        // Record waiting time
-        platformWin32.waitElapsedMS = applicationElapsedMS;
-        // Change to main update and render
-		KillTimer(windowHandle, m_splashTimerId);
-		m_renderTimerId = SetTimer(windowHandle, NULL, targetDeltaMS, RenderLoop);
-    }
-    FrameEnd();
-}
-
-
-static void OnTimer_RenderAHold(
-	HWND target_window,
-	UINT message,
-	UINT_PTR timer_id,
-	DWORD systemElapsedMs)
-{ 
-	Platform_UpdateDeltaTime(systemElapsedMs);
-	Platform_ReadControllers();
-	CheckForQuit();
-	Platform_UpdateAHold();
-	Platform_RenderAHold();
-}
-
-
 static void OnTimer_RenderLoop(
 	HWND target_window,
 	UINT message,
@@ -121,6 +93,34 @@ static void OnTimer_RenderLoop(
     Platform_RenderEnd();
 }
 
+static void UpdateAHold(void)
+{
+    if (Platform_IncreaseAHoldAndTest())
+    {
+        // Record waiting time
+		platformWin32.waitElapsedMS = platformWin32.elapsedTimeMs;
+        // Change to main update and render
+		KillTimer(windowHandle, m_splashTimerId);
+		m_renderTimerId = SetTimer(windowHandle, NULL, targetDeltaMS, OnTimer_RenderLoop);
+    }
+    Platform_FrameEnd();
+}
+
+static void OnTimer_RenderAHold(
+	HWND target_window,
+	UINT message,
+	UINT_PTR timer_id,
+	DWORD systemElapsedMs)
+{ 
+	Platform_UpdateDeltaTime(systemElapsedMs);
+	Platform_ReadControllers();
+	CheckForQuit();
+	UpdateAHold();
+	Platform_RenderAHold();
+}
+
+
+
 static void UpdateSplash(void)
 {
     bool waitIsOver = false;
@@ -136,12 +136,12 @@ static void UpdateSplash(void)
     if (waitIsOver)
     {
         // Record waiting time
-        platformWin32.waitElapsedMS = applicationElapsedMS;
+		platformWin32.waitElapsedMS = platformWin32.elapsedTimeMs;
         // Change to main Update function and render
 		KillTimer(windowHandle, m_splashTimerId);
 		m_renderTimerId = SetTimer(windowHandle, NULL, targetDeltaMS, OnTimer_RenderLoop);
     }
-    FrameEnd();
+    Platform_FrameEnd();
 }
 
 
@@ -352,7 +352,7 @@ LRESULT CALLBACK WindowCallback(HWND target_windowHandle, UINT message, WPARAM w
 
 // Platform functions
 
-static void InitWindow(const char* windowName
+static void InitWindow(const char* windowName,
                    ScreenAspect screenAspect)
 {
     // Store these for the reshape callback
@@ -461,22 +461,21 @@ void Platform_Init(const char* windowName,
 	// Call the game/demo init
 	initCall();
 	// Setup timing
-	Platform_ResetTime(&platformWin32);
+	Platform_ResetTime();
 
 
 	// Set up splash screen
 	const bool SplashFlag = Flag_IsSet(initFlags, PlatformInitFlag::FlagSplashScreen);
     const bool HoldAFlag = Flag_IsSet(initFlags, PlatformInitFlag::FlagPauseUntilA);
     // Set up A hold variables
-    Platform_ResetTime(&platformWin32);
 
     if (HoldAFlag||SplashFlag)
     {
         platformWin32.showHoldAMessage = HoldAFlag;
     }
 
-	applicationStartTimeMS = GetTickCount();
-	applicationElapsedMS = 0;
+	platformWin32.applicationStartMs = GetTickCount();
+	platformWin32.elapsedTimeMs = 0;
 
     // Select display and update functions
     if (SplashFlag)
@@ -491,7 +490,7 @@ void Platform_Init(const char* windowName,
     }
     else
     {
-		m_renderTimerId = SetTimer(windowHandle, NULL, targetDeltaMS, RenderLoop);
+		m_renderTimerId = SetTimer(windowHandle, NULL, targetDeltaMS, OnTimer_RenderLoop);
     }
 
 	while (true)

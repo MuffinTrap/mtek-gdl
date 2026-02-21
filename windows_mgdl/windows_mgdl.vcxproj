@@ -160,6 +160,7 @@
     <ClCompile Include="..\source\cross\mgdl-openal.cpp" />
     <ClCompile Include="..\source\cross\mgdl-opengl_util.cpp" />
     <ClCompile Include="..\source\cross\mgdl-palette.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-platform.cpp" />
     <ClCompile Include="..\source\cross\mgdl-png-stb.cpp" />
     <ClCompile Include="..\source\cross\mgdl-png.cpp" />
     <ClCompile Include="..\source\cross\mgdl-scene.cpp" />

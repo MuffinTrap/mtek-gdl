@@ -11,7 +11,6 @@
 
 static MusicOgg* musics = nullptr;
 static FILE* oggFilePtr = nullptr;
-static void* oggFileBuffer = nullptr;
 static sizetype oggFileSize = 0;
 
 
@@ -90,6 +89,7 @@ static MusicOgg LoadOgg(MusicOgg m, Sound* inout_snd, const char* filename, s32 
 
 	// Read the file in fully
 	stb_vorbis* vorbisFile = nullptr;
+	void* oggFileBuffer = nullptr;
 	oggFilePtr = fopen(filename, "r");
 	if (oggFilePtr != nullptr)
 	{
@@ -143,6 +143,7 @@ void OggPlayer_Init()
     for (int i = 0; i < MGDL_AUDIO_MAX_SOUNDS; i++)
     {
 		musics[i].vorbisfile = nullptr;
+		musics[i].fileBuffer = nullptr;
     }
 }
 
