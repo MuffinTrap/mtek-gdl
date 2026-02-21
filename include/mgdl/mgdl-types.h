@@ -12,7 +12,7 @@
 #endif
 
 // Vector types
-#include <mgdl/mgdl-vectorfunctions.h>
+#include "mgdl-vectorfunctions.h"
 
 #include <mgdl/mgdl-opengl.h>
 
@@ -44,20 +44,15 @@ typedef int64_t s64;
 
 #endif
 
-#if defined(MGDL_PLATFORM_WINDOWS)
-    typedef size_t sizetype;
-    const double M_PI = 3.14159265358979323846;
-    const double M_PI_2 = 1.57079632679489661923;
-#endif
-
 #if defined(MGDL_PLATFORM_MSYS2)
     typedef ssize_t sizetype;
-    const double M_PI = 3.14159265358979323846;
-    const double M_PI_2 = 1.57079632679489661923;
+#else
+    typedef size_t sizetype;
 #endif
 
-#if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC) || defined(GEKKO)
-    typedef size_t sizetype;
+#if defined(MGDL_PLATFORM_WINDOWS) || defined(MGDL_PLATFORM_MSYS2)
+    const double M_PI = 3.14159265358979323846;
+    const double M_PI_2 = 1.57079632679489661923;
 #endif
 
 
@@ -251,4 +246,13 @@ struct RectF
     float h;
 };
 typedef struct RectF RectF;
+
+struct Viewport
+{
+    int left;
+    int top;
+    u32 width;
+    u32 height;
+};
+typedef struct Viewport Viewport;
 

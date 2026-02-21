@@ -13,13 +13,27 @@ static CallbackFunction initCall = nullptr;
 static CallbackFunction frameCall = nullptr;
 static CallbackFunction quitCall = nullptr;
 
-static void ReadControllers();
 static void MainLoop();
 static void SplashHoldLoop(bool SplashFlag, bool HoldAFlag);
-static u64 deltaTimeStart;
-static u32 frameCount;
 
 static Platform platformWii;
+static void CheckForQuit()
+{
+    WiiController* firstController = Platform_GetController(0);
+    // Test for ESC unless game handles it
+	if (Flag_IsSet(platformWii.initFlags, FlagGameHandlesHOME) == false)
+	{
+		if (WiiController_ButtonPress(firstController, ButtonHome))
+		{
+			if (quitCall != NULL)
+			{
+				quitCall();
+			}
+			Platform_DoProgramExit();
+		}
+	}
+}
+
 
 void Platform_Init(const char* windowName,
 	ScreenAspect screenAspect,
@@ -29,7 +43,6 @@ void Platform_Init(const char* windowName,
 	u32 initFlags)
 {
 	mgdl_assert_print(initCallback != nullptr, "Need to provide init callback before system init on Wii");
-	mgdl_assert_print(frameCallback != nullptr, "Need to provide update callback before system init on Wii");
 
 	initCall = initCallback;
 	frameCall = frameCallback;
@@ -37,25 +50,18 @@ void Platform_Init(const char* windowName,
 
 	platformWii.initFlags = initFlags;
 
-	platformWii.windowName = windowName;
-
 	// Convert to Wii InitAspectmode for now
 	gdl::InitAspectMode mode = gdl::InitAspectMode::AspectAuto;
 	switch(screenAspect)
 	{
 		case ScreenAuto:
 			mode = gdl::InitAspectMode::AspectAuto;
-			platformWii.aspect = ScreenAspect::ScreenAuto;
 			break;
 		case Screen4x3:
 			mode = gdl::InitAspectMode::Aspect4x3;
-			platformWii.aspectRatio = 4.0f/3.0f;
-			platformWii.aspect = ScreenAspect::Screen4x3;
 			break;
 		case Screen16x9:
 			mode = gdl::InitAspectMode::Aspect16x9;
-			platformWii.aspectRatio = 16.0f/9.0f;
-			platformWii.aspect = ScreenAspect::Screen16x9;
 			break;
 	};
 	fatInitDefault();
@@ -63,8 +69,8 @@ void Platform_Init(const char* windowName,
 	// TODO set aspect ratio as requested
 	gdl::InitSystem(gdl::ModeAuto, mode, gdl::HiRes, gdl::InitFlags::OpenGX);
 
-    platformWii.screenWidth = gdl::ScreenXres;
-    platformWii.screenHeight = gdl::ScreenYres;
+	Platform_SetWindowNameAndAspect(windowName, platformWii.aspect);
+	Platform_ResizeWindow(gdl::ScreenXres, gdl::ScreenYres);
 	if (screenAspect == ScreenAuto)
 	{
 		platformWii.aspectRatio = platformWii.screenWidth / platformWii.screenHeight;
@@ -98,8 +104,8 @@ void Platform_Init(const char* windowName,
 	// printf("Got resolution: %d x %d\n", screenWidth, screenHeight);
 	initCall();
 	u64 now = gettime();
-	deltaTimeStart = now;
-	frameCount = 0;
+	platformWii.applicationStartMs = ticks_to_millisecs(now);
+	platformWii.elapsedFrames = 0;
 
 	const bool SplashFlag = (initFlags & PlatformInitFlag::FlagSplashScreen)!= 0;
 	const bool HoldAFlag = (initFlags & PlatformInitFlag::FlagPauseUntilA)!= 0;
@@ -112,7 +118,10 @@ void Platform_Init(const char* windowName,
 		SplashHoldLoop(SplashFlag, HoldAFlag);
     }
 
-    MainLoop();
+    if (frameCall != nullptr)
+	{
+		MainLoop();
+	}
 }
 
 void SplashHoldLoop(bool SplashFlag, bool HoldAFlag)
@@ -124,23 +133,21 @@ void SplashHoldLoop(bool SplashFlag, bool HoldAFlag)
 
 	while(waiting)
 	{
-		u64 now = gettime();
-		platformWii.deltaTimeS = (float)(now - deltaTimeStart) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
-		deltaTimeStart = now;
-		platformWii.elapsedTimeS += platformWii.deltaTimeS;
-		ReadControllers();
+		Platform_FrameStart();
+		Platform_ReadControllers();
+		CheckForQuit();
 
 		if (SplashFlag)
 		{
-			gdl::PrepDisplay();
-			splashProgress = DrawSplashScreen(platformWii.deltaTimeS, showHoldAMessage, aHoldTimer);
+			Platform_RenderStart();
+			splashProgress = DrawSplashScreen(Platform_GetDeltaTime(), showHoldAMessage, aHoldTimer);
 		}
 
 		if (showHoldAMessage)
 		{
 			if (WiiController_ButtonHeld(Platform_GetController(0), WiiButtons::ButtonA))
 			{
-				aHoldTimer += platformWii.deltaTimeS;
+				aHoldTimer += Platform_GetDeltaTime();
 				if (aHoldTimer >= 1.0f)
 				{
 					waiting = false;
@@ -158,8 +165,7 @@ void SplashHoldLoop(bool SplashFlag, bool HoldAFlag)
 
 		if (SplashFlag)
 		{
-			glFlush();
-			gdl::Display();
+			Platform_RenderEnd();
 		}
 		else
 		{
@@ -167,50 +173,57 @@ void SplashHoldLoop(bool SplashFlag, bool HoldAFlag)
 		}
 	}
 	// Reset elapsed time so game gets correct timing
-	platformWii.elapsedTimeS = 0.0f;
+	platformWii.elapsedTimeMs = 0;
 }
 
+void Platform_FrameStart()
+{
+	u64 now = gettime();
+	/*
+	// Whatever unit this is, convert to milliseconds
+	float seconds = (float)now / (float)(TB_TIMER_CLOCK * 1000.0f);
+	Platform_UpdateDeltaTime(seconds * 1000.0f);
+	*/
+	Platform_UpdateDeltaTime(ticks_to_millisecs(now));
 
+}
+
+void Platform_RenderStart()
+{
+	gdl::PrepDisplay();
+}
+
+void Platform_RenderEnd()
+{
+	glFlush();
+	gdl::Display();
+}
+
+void Platform_FrameEnd()
+{
+	platformWii.elapsedFrames += 1;
+}
 
 void MainLoop()
 {
 	while(true)
 	{
-		// Timing
-		// TODO how is gdl::Delta different from this?
-		u64 now = gettime();
-		platformWii.deltaTimeS = (float)(now - deltaTimeStart) / (float)(TB_TIMER_CLOCK * 1000); // division is to convert from ticks to seconds
-		deltaTimeStart = now;
-		platformWii.elapsedTimeS += platformWii.deltaTimeS;
-
-		ReadControllers();
-		gdl::PrepDisplay();
+		Platform_FrameStart();
+		Platform_ReadControllers();
+		Audio_Update();
+		CheckForQuit();
+		Platform_RenderStart();
 		frameCall();
-		glFlush();
-		gdl::Display();
-
-		if (Flag_IsSet(platformWii.initFlags, FlagGameHandlesHOME) == false)
-		{
-			if (WiiController_ButtonPress(Platform_GetController(0), ButtonHome))
-			{
-				if (quitCall != NULL)
-				{
-					quitCall();
-				}
-				Platform_DoProgramExit();
-			}
-		}
-
-		frameCount++;
+		Platform_RenderEnd();
+		Platform_FrameEnd();
 	}
 }
 
-// TODO How do we know?
 bool Platform_IsControllerConnected(int controllerIndex)
 {
 	if (controllerIndex >= 0 && controllerIndex < MGDL_MAX_CONTROLLERS)
 	{
-		return true;
+		return platformWii.controllers[controllerIndex].m_isConnected;
 	}
 	else
 	{
@@ -218,12 +231,7 @@ bool Platform_IsControllerConnected(int controllerIndex)
 	}
 }
 
-WiiController* Platform_GetController(int controllerNumber)
-{
-	return &platformWii.controllers[controllerNumber];
-}
-
-void ReadControllers()
+void Platform_ReadControllers()
 {
 	// TODO This might have to be in a macro
 	WPAD_ScanPads();  // Scan the Wiimotes
@@ -233,6 +241,9 @@ void ReadControllers()
 		WiiController_StartFrame(controller);
 
 		WPADData *data1 = WPAD_Data(controller->m_channel);
+		controller->m_isConnected = (data1->err == WPAD_ERR_NONE);
+
+		// Read data anyway even when not connected
 
 		const ir_t &ir = data1->ir;
 		controller->m_cursorX = ir.x;
@@ -275,31 +286,41 @@ void ReadControllers()
 	}
 }
 
-Platform* Platform_GetSingleton() { return &platformWii; }
-
-float Platform_GetDeltaTime() { return platformWii.deltaTimeS; }
-float Platform_GetElapsedSeconds() { return platformWii.elapsedTimeS; }
-u32 Platform_GetElapsedUpdates() { return frameCount;}
-
 void Platform_DoProgramExit()
 {
 	gdl::wii::DoProgramExit();
 }
 
+void Platform_ResizeWindow(int newWidth, int newHeight)
+{
+
+	int left = 0;
+	int top = newHeight;
+	int scaledWidth = newWidth;
+	int scaledHeight = newHeight;
+
+    // But keep showing the internal resolution scaled
+    glViewport(left, top, scaledWidth, scaledHeight);
+    platformWii.viewport.left = left;
+    platformWii.viewport.top = top;
+    platformWii.viewport.width = scaledWidth;
+    platformWii.viewport.height = scaledHeight;
+
+    // Update window size
+    platformWii.windowWidth = newWidth;
+    platformWii.windowHeight = newHeight;
+}
+
 void Platform_MapJoystickToController(int joystickIndex, int controllerIndex)
 {
+	// NOTE On wii this function has no meaning. Do some code to avoid unused paramter warning
 	if (joystickIndex > 0 && controllerIndex > 0)
 	{
 		joystickIndex = controllerIndex;
 	}
-
 }
 
-int Platform_GetScreenWidth()
+Platform* Platform_GetSingleton(void)
 {
-	return platformWii.screenWidth;
-}
-int Platform_GetScreenHeight()
-{
-	return platformWii.screenHeight;
+	return &platformWii;
 }

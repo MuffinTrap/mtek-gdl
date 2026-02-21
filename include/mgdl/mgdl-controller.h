@@ -56,6 +56,7 @@ struct WiiController
 
 	// Which controller number this is: 0-3
 	u8 m_channel;
+	bool m_isConnected;
 };
 typedef struct WiiController WiiController;
 

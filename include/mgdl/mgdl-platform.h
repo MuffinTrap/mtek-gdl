@@ -10,6 +10,10 @@
 
 #define MGDL_MAX_CONTROLLERS 4
 
+/**
+ * @class Platform
+ * @brief Information about platform
+ */
 struct Platform
 {
 	const char* windowName;
@@ -23,11 +27,16 @@ struct Platform
 	short windowHeight;
 	float aspectRatio;
 	ScreenAspect aspect;
-	float deltaTimeS;
-	float elapsedTimeS;
-	u32 elapsedUpdates;
+
+	Viewport viewport; /**< The active viewport inside window */
+
+	u32 deltaTimeMs;
+	u32 elapsedTimeMs;
+	u32 elapsedFrames;
+	u32 applicationStartMs;
 
 	WiiController controllers[MGDL_MAX_CONTROLLERS];
+	WiiController kbmcontroller;
 	// Joystick mapping to controllers
 	// index : controller number
 	int joysticIndexToControllerMapping[MGDL_MAX_CONTROLLERS];
@@ -44,7 +53,6 @@ struct Platform
 };
 typedef struct Platform Platform;
 
-void Platform_SetWindowNameAndSize(Platform* platform, const char* windowName, ScreenAspect aspect);
 
 const int MGDL_WII_WIDTH = 640;
 const int MGDL_WII_HEIGHT = 480;
@@ -62,43 +70,54 @@ void Platform_Init(const char* windowName,
 						CallbackFunction quitCallback,
 						u32 initFlags);
 
-/**
-* @brief Returns the controller at given index.
-* @param controllerNumber Number of controller. 0-3 are valid. If available, mouse and keyboard and first gamepad are combined to controller 0
-* @returns The controller if it is connected, controller 0 otherwise
-*/
-struct WiiController* Platform_GetController(int controllerNumber);
+void Platform_SetWindowNameAndAspect(const char* windowName, ScreenAspect aspect);
+void Platform_InitAudio(void);
+void Platform_FrameStart(void);
+void Platform_RenderStart(void);
+void Platform_RenderEnd(void);
+void Platform_FrameEnd(void);
+void Platform_DoProgramExit(void);
+
+// Controller functions
+void Platform_InitControllers(void);
+void Platform_MapJoystickToController(int joystickIndex, int controllerIndex);
 
 /**
  * @brief Tells if controller is connected.
  */
 bool Platform_IsControllerConnected(int controllerIndex);
-void Platform_DoProgramExit(void);
 
-struct Platform* Platform_GetSingleton(void);
+void Platform_ReadControllers(void);
+void Platform_StartNextFrameControllers(void);
+
+/**
+* @brief Returns the controller at given index.
+* @param controllerNumber Number of controller. 0-3 are valid. If available, mouse and keyboard and first gamepad are combined to controller 0
+* @returns The controller if it is connected, controller 0 otherwise
+*/
+WiiController* Platform_GetController(int controllerNumber);
+
+// Timing functions
+
 float Platform_GetDeltaTime(void);
 float Platform_GetElapsedSeconds(void);
-u32 Platform_GetElapsedUpdates(void);
+u32 Platform_GetElapsedFrames(void);
 
-void Platform_InitControllers();
-void Platform_ReadControllers();
-void Platform_MapJoystickToController(int joystickIndex, int controllerIndex);
-void Platform_StartNextFrameControllers();
-void Platform_UpdateSplash(int value);
-void Platform_RenderSplash(Platform* platform);
 
-void Platform_UpdateAHold(int value);
-void Platform_RenderAHold(); // Cannot have parameter to comply with glutDisplayFunc
+void Platform_RenderAHold();
+void Platform_RenderSplash();
+void Platform_UpdateDeltaTime(u32 elapsedMilliseconds);
 
-void Platform_RenderEnd();
-
-bool Platform_IncreaseAHoldAndTest(Platform* platform);
-void Platform_ResetTime(Platform* platform);
+bool Platform_IncreaseAHoldAndTest();
+void Platform_ResetTime();
 
 void Platform_ResizeWindow(int newWidth, int newHeight);
+void Platform_SetFullscreen(bool enabled);
 
-int Platform_GetScreenWidth();
-int Platform_GetScreenHeight();
+Platform* Platform_GetSingleton(void);
+
+Viewport Platform_GetViewport(void);
+float Platform_GetAspectRatio(void);
 
 #ifdef __cplusplus
 }

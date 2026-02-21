@@ -31,6 +31,19 @@ extern "C"
  * @param frameCallback This is called once each frame. The framebuffer is swapped automatically after it returns.
  * @param quitCallback This is called when the HOME button is pressed on controller or window is closed for some other reason. Can be NULL.
  * @param initFlags Combination of initialization flags to set full screen, wait for A button hold or to show splash screen.
+ *
+ * @note On Wii it is possible to set frameCallback to nullptr. This means the main loop will not engage and you have
+ * to run the loop yourself.
+ * @code
+ * // In your main loop:
+ * Platform_FrameStart();
+ * Platform_ReadControllers();
+ * Audio_Update(); // If you use mgdl functions to play sounds
+ * Platform_RenderStart();
+ * // Your game code here
+ * Platform_RenderEnd();
+ * Platform_FrameEnd();
+ * @endcode
  */
 void mgdl_InitSystem(const char* name,
 				ScreenAspect screenAspect,
@@ -59,8 +72,9 @@ WiiController* mgdl_GetController(int controllerNumber);
 
 // TODO mgdl_GetQuitReason(void) HOME pressed, Error or Window closed
 
-u16 mgdl_GetScreenWidth(void);
-u16 mgdl_GetScreenHeight(void);
+Viewport mgdl_GetViewport(void);
+int mgdl_GetScreenWidth(void);
+int mgdl_GetScreenHeight(void);
 float mgdl_GetAspectRatio(void);
 float mgdl_GetElapsedSeconds(void);
 float mgdl_GetDeltaTime(void);

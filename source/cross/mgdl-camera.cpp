@@ -59,8 +59,9 @@ void Camera_DrawThirdsGuide(Camera* camera)
 {
 	mgdl_InitOrthoProjection();
 
-	float W = mgdl_GetScreenWidth();
-	float H = mgdl_GetScreenHeight();
+	Viewport viewport = mgdl_GetViewport();
+	float W = viewport.width;
+	float H = viewport.height;
 	float third_w = W/3.0f;
 	float third_h = H/3.0f;
 
@@ -86,8 +87,10 @@ void Camera_DrawOverlayColor(Camera* camera, Color4f* color, float opacity)
 	if (opacity > 0.0f)
 	{
 		mgdl_InitOrthoProjection();
-		float W = mgdl_GetScreenWidth();
-		float H = mgdl_GetScreenHeight();
+
+		Viewport viewport = mgdl_GetViewport();
+		float W = viewport.width;
+		float H = viewport.height;
 
         glDepthFunc(GL_ALWAYS);
 		glEnable(GL_BLEND);

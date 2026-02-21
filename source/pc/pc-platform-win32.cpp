@@ -11,7 +11,7 @@
 #include <Windows.h>
 #include <windowsx.h> // Macro for extracting mouse position
 
-static Platform platformPC;
+static Platform platformWin32;
 static USHORT keybuffer; // Ascii input for later textinput
 
 static CallbackFunction initCall = nullptr;
@@ -32,11 +32,8 @@ static int pixelFormatEnum;
 static UINT_PTR m_renderTimerId;
 static UINT_PTR m_splashTimerId;
 static BOOL windowIsVisible;
-static DWORD applicationStartTimeMS;
-static DWORD applicationElapsedMS;
 static const int targetDeltaMS = 15;
 
-// Controller(s)
 static void ErrorExit()
 {
 	// Retrieve the system error message for the last-error code
@@ -63,50 +60,11 @@ static void ErrorExit()
 	ExitProcess(dw);
 }
 
-/*
-	STATIC UPDATE AND RENDER
-*/
-static void UpdateDeltaTime(DWORD newElapsedMs)
+static void CheckForQuit()
 {
-	// If system elapsed is 100
-	// new elapsed is 116
-	// application elapsed is 0
-	DWORD lastElapsed = applicationElapsedMS;
-	applicationElapsedMS = newElapsedMs - applicationStartTimeMS;
-	DWORD elapsedMS = applicationElapsedMS - lastElapsed;
-
-	platformPC.elapsedTimeS = (float)applicationElapsedMS/ 1000.0f;
-	platformPC.deltaTimeS = (float(elapsedMS) / 1000.0f);
-
-	Platform_ReadControllers();
-}
-
-static void RenderAHold(
-	HWND target_window,
-	UINT message,
-	UINT_PTR timer_id,
-	DWORD systemElapsedMs)
-{ 
-	UpdateDeltaTime(systemElapsedMs);
-	Platform_UpdateAHold(0);
-	Platform_RenderAHold();
-}
-
-void Platform_InitAudio()
-{
-	Audio_Init(&windowHandle);
-}
-
-void Platform_ReadControllers()
-{
-    // First Controller is always mouse and keyboard
     WiiController* firstController = Platform_GetController(0);
-
-    // Read mouse and keyboard into first controller
-    WiiController_ReplaceWith(firstController, &kbmController);
-
     // Test for ESC unless game handles it
-	if (Flag_IsSet(platformPC.initFlags, FlagGameHandlesHOME) == false)
+	if (Flag_IsSet(platformWin32.initFlags, FlagGameHandlesHOME) == false)
 	{
 		if (WiiController_ButtonPress(firstController, ButtonHome))
 		{
@@ -117,118 +75,89 @@ void Platform_ReadControllers()
 			Platform_DoProgramExit();
 		}
 	}
-
-    // Update state of all joysticks
-    Joystick_ReadInputs();
-
-    // Read if any of the joysticks should be
-    // fed into controller 0 in addition to mouse and keyboard
-    // If first joystick is connected, add it
-    // to controller 0
-    int startJoystickIndex = 0;
-    if (platformPC.joysticIndexToControllerMapping[0] == 0 && Joystick_IsConnected(0))
-    {
-        Joystick_AddToController(firstController, 0);
-        startJoystickIndex = 1;
-    }
-
-    // other controllers reading
-    for (int i = startJoystickIndex; i < MGDL_MAX_CONTROLLERS; i++)
-    {
-        if (Joystick_IsConnected(i))
-        {
-            Joystick_ReplaceController(Platform_GetController(platformPC.joysticIndexToControllerMapping[i]), i);
-        }
-    }
 }
 
-void Platform_StartNextFrameControllers()
+static void UpdateAHold(void)
 {
-	// Start recording input for next update
-	WiiController_StartFrame(&kbmController);
-	Joystick_StartFrame();
-
-	for (int i = 0; i < 4; i++)
-	{
-		WiiController* controller = Platform_GetController(i);
-		// Reset controller for next frame
-		WiiController_StartFrame(controller);
-	}
+    if (Platform_IncreaseAHoldAndTest())
+    {
+        // Record waiting time
+        platformWin32.waitElapsedMS = applicationElapsedMS;
+        // Change to main update and render
+		KillTimer(windowHandle, m_splashTimerId);
+		m_renderTimerId = SetTimer(windowHandle, NULL, targetDeltaMS, RenderLoop);
+    }
+    FrameEnd();
 }
 
-static void RenderLoop(
+
+static void OnTimer_RenderAHold(
+	HWND target_window,
+	UINT message,
+	UINT_PTR timer_id,
+	DWORD systemElapsedMs)
+{ 
+	Platform_UpdateDeltaTime(systemElapsedMs);
+	Platform_ReadControllers();
+	CheckForQuit();
+	Platform_UpdateAHold();
+	Platform_RenderAHold();
+}
+
+
+static void OnTimer_RenderLoop(
 	HWND target_window,
 	UINT message,
 	UINT_PTR timer_id,
 	DWORD systemElapsedMs)
 {
-	UpdateDeltaTime(systemElapsedMs);
+	Platform_UpdateDeltaTime(systemElapsedMs);
+	Platform_ReadControllers();
+	CheckForQuit();
 	Audio_Update();
-
 
 	frameCall();
 
     Platform_RenderEnd();
 }
 
-void UpdateEnd()
-{
-	platformPC.elapsedUpdates += 1;
-}
-
-void Platform_RenderEnd()
-{
-	Platform_StartNextFrameControllers();
-	SwapBuffers(deviceContextHandle);
-}
-
-
-void Platform_UpdateSplash(int value)
+static void UpdateSplash(void)
 {
     bool waitIsOver = false;
-    if (platformPC.showHoldAMessage)
+    if (platformWin32.showHoldAMessage)
     {
-        waitIsOver = Platform_IncreaseAHoldAndTest(&platformPC);
+        waitIsOver = Platform_IncreaseAHoldAndTest();
     }
     else
     {
-        waitIsOver = (platformPC.splashProgress > 1.0f);
+        waitIsOver = (platformWin32.splashProgress > 1.0f);
     }
 
     if (waitIsOver)
     {
         // Record waiting time
-        platformPC.waitElapsedMS = applicationElapsedMS;
+        platformWin32.waitElapsedMS = applicationElapsedMS;
         // Change to main Update function and render
 		KillTimer(windowHandle, m_splashTimerId);
-		m_renderTimerId = SetTimer(windowHandle, NULL, targetDeltaMS, RenderLoop);
+		m_renderTimerId = SetTimer(windowHandle, NULL, targetDeltaMS, OnTimer_RenderLoop);
     }
-    UpdateEnd();
+    FrameEnd();
 }
 
-void Platform_UpdateAHold(int value)
-{
-    if (Platform_IncreaseAHoldAndTest(&platformPC))
-    {
-        // Record waiting time
-        platformPC.waitElapsedMS = applicationElapsedMS;
-        // Change to main update and render
-		KillTimer(windowHandle, m_splashTimerId);
-		m_renderTimerId = SetTimer(windowHandle, NULL, targetDeltaMS, RenderLoop);
-    }
-    UpdateEnd();
-}
 
-static void RenderSplash(
+static void OnTimer_RenderSplash(
 	HWND target_window,
 	UINT message,
 	UINT_PTR timer_id,
 	DWORD systemElapsedMs
 )
 {
-	UpdateDeltaTime(systemElapsedMs);
-	Platform_UpdateSplash(0);
-	Platform_RenderSplash(&platformPC);
+	Platform_UpdateDeltaTime(systemElapsedMs);
+	Platform_ReadControllers();
+	CheckForQuit();
+	UpdateSplash();
+
+	Platform_RenderSplash();
 }
 
 
@@ -381,7 +310,7 @@ LRESULT CALLBACK WindowCallback(HWND target_windowHandle, UINT message, WPARAM w
 
 		// Y coordinate starts from bottom
 		// TODO calculate to Wii resolution
-		mouseMove(xPos, platformPC.windowHeight - yPos);
+		mouseMove(xPos, platformWin32.windowHeight - yPos);
 
 		// Log_InfoF("mouse move %d,%d\n", xPos, yPos );
 	}
@@ -420,23 +349,14 @@ LRESULT CALLBACK WindowCallback(HWND target_windowHandle, UINT message, WPARAM w
 
 }
 
-void Platform_Init(const char* windowName,
-	ScreenAspect screenAspect,
-	CallbackFunction initCallback,
-	CallbackFunction frameCallback,
-	CallbackFunction quitCallback,
-	u32 initFlags)
+
+// Platform functions
+
+static void InitWindow(const char* windowName
+                   ScreenAspect screenAspect)
 {
-	mgdl_assert_print(initCallback != nullptr, "Need to provide init callback to platform")
-	mgdl_assert_print(frameCallback != nullptr, "Need to provide frame callback to platform")
-
-	initCall = initCallback;
-	frameCall = frameCallback;
-	quitCall = quitCallback;
-
-    platformPC.initFlags = initFlags;
-
-	Platform_SetWindowNameAndSize(&platformPC, windowName, screenAspect);
+    // Store these for the reshape callback
+    Platform_SetWindowNameAndAspect(windowName, screenAspect);
 
 	instanceHandle = GetModuleHandleA(NULL);
 
@@ -495,12 +415,39 @@ void Platform_Init(const char* windowName,
 	int bottom_border = wrect.bottom - rightbottom.y; // As above
 	int top_border_with_title_bar = lefttop.y - wrect.top; // There is no transparent par
 	MoveWindow(windowHandle, wrect.left, wrect.top, MGDL_WII_WIDTH + left_border + right_border, MGDL_WII_HEIGHT + top_border_with_title_bar + bottom_border, TRUE);
-	
-	// Set up controllers
-	Platform_InitControllers();
-	Platform_InitAudio();
+
 	// Hide cursor
 	ShowCursor(FALSE);
+
+	// Set up controllers
+	Platform_InitControllers();
+
+	ShowWindow(windowHandle, SW_SHOW);
+	UpdateWindow(windowHandle);
+}
+
+void Platform_Init(const char* windowName,
+	ScreenAspect screenAspect,
+	CallbackFunction initCallback,
+	CallbackFunction frameCallback,
+	CallbackFunction quitCallback,
+	u32 initFlags)
+{
+	mgdl_assert_print(initCallback != nullptr, "Need to provide init callback to platform")
+	mgdl_assert_print(frameCallback != nullptr, "Need to provide frame callback to platform")
+
+	initCall = initCallback;
+	frameCall = frameCallback;
+	quitCall = quitCallback;
+
+    platformWin32.initFlags = initFlags;
+
+	InitWindow(windowName, screenAspect);
+
+	// TODO Full screen flag
+
+
+	Platform_InitAudio();
 
 
 	// Set up 60fps timer.
@@ -514,20 +461,18 @@ void Platform_Init(const char* windowName,
 	// Call the game/demo init
 	initCall();
 	// Setup timing
-	Platform_ResetTime(&platformPC);
+	Platform_ResetTime(&platformWin32);
 
-	ShowWindow(windowHandle, SW_SHOW);
-	UpdateWindow(windowHandle);
 
 	// Set up splash screen
 	const bool SplashFlag = Flag_IsSet(initFlags, PlatformInitFlag::FlagSplashScreen);
     const bool HoldAFlag = Flag_IsSet(initFlags, PlatformInitFlag::FlagPauseUntilA);
     // Set up A hold variables
-    Platform_ResetTime(&platformPC);
+    Platform_ResetTime(&platformWin32);
 
     if (HoldAFlag||SplashFlag)
     {
-        platformPC.showHoldAMessage = HoldAFlag;
+        platformWin32.showHoldAMessage = HoldAFlag;
     }
 
 	applicationStartTimeMS = GetTickCount();
@@ -536,11 +481,11 @@ void Platform_Init(const char* windowName,
     // Select display and update functions
     if (SplashFlag)
     {
-		m_splashTimerId = SetTimer(windowHandle, NULL, targetDeltaMS, RenderSplash);
+		m_splashTimerId = SetTimer(windowHandle, NULL, targetDeltaMS, OnTimer_RenderSplash);
     }
     else if (HoldAFlag)
     {
-		m_splashTimerId = SetTimer(windowHandle, NULL, targetDeltaMS, RenderAHold);
+		m_splashTimerId = SetTimer(windowHandle, NULL, targetDeltaMS, OnTimer_RenderAHold);
         Log_Info("\n>> MGDL INIT COMPLETE\n");
         Log_Info(">> Hold A button to continue\n");
     }
@@ -577,60 +522,39 @@ void Platform_Init(const char* windowName,
 	OutputDebugStringA("InitSystem over\n");
 }
 
-void Platform_InitControllers()
+void Platform_InitAudio()
 {
-	InitPCInput();
-	Joystick_Init();
-	Joystick_ZeroInputs();
+	Audio_Init(&windowHandle);
+}
 
-	for (int i = 0; i < MGDL_MAX_CONTROLLERS; i++)
-	{
-		WiiController* c = &platformPC.controllers[i];
-		WiiController_Init(c, i);
-		WiiController_ZeroAllInputs(c);
-		WiiController_StartFrame(c);
-	}
-
-	WiiController_Init(&kbmController, 0);
-	WiiController_ZeroAllInputs(&kbmController);
-	WiiController_StartFrame(&kbmController);
-
-    for (int ji = 0; ji < MGDL_MAX_CONTROLLERS; ji++)
+void Platform_SetFullscreen(bool enabled)
+{
+    if (enabled)
     {
-        platformPC.joysticIndexToControllerMapping[ji] = 0;
+
     }
-
-}
-
-void Platform_MapJoystickToController(int joystickIndex, int controllerIndex)
-{
-	if (joystickIndex >= 0 && joystickIndex < MGDL_MAX_CONTROLLERS &&
-		controllerIndex >= 0 && controllerIndex < MGDL_MAX_CONTROLLERS)
-	{
-		platformPC.joysticIndexToControllerMapping[joystickIndex] = controllerIndex;
-	}
-}
-
-bool Platform_IsControllerConnected(int controllerIndex)
-{
-	if (controllerIndex == 0)
-	{
-		return true;
-	}
-
-    if (controllerIndex >= 0 && controllerIndex < MGDL_MAX_CONTROLLERS)
+    else
     {
-        for (int ji = 0; ji < MGDL_MAX_CONTROLLERS; ji++)
-        {
-            int mappedController = platformPC.joysticIndexToControllerMapping[ji];
-            if (mappedController == controllerIndex)
-            {
-                return Joystick_IsConnected(ji);
-            }
-        }
+
     }
-    return false;
 }
+
+void Platform_FrameStart()
+{
+
+}
+
+void Platform_FrameEnd()
+{
+	platformWin32.elapsedFrames += 1;
+}
+
+void Platform_RenderEnd()
+{
+	Platform_StartNextFrameControllers();
+	SwapBuffers(deviceContextHandle);
+}
+
 
 // This is called in response to WM_CLOSE
 // Cannot be called after WM_DESTROY because
@@ -642,43 +566,15 @@ void Platform_DoProgramExit(void)
 		quitCall();
 	}
 	Audio_Deinit();
+
 	wglMakeCurrent(deviceContextHandle, NULL); // Detach context from window
 	wglDeleteContext(openGLContext);
 	ReleaseDC(windowHandle, deviceContextHandle);
 	DestroyWindow(windowHandle);
 }
 
-struct Platform* Platform_GetSingleton(void)
+Platform* Platform_GetSingleton(void)
 {
-	return &platformPC;
+    return &platformWin32;
 }
-float Platform_GetDeltaTime()
-{
-    return platformPC.deltaTimeS;
-}
-
-float Platform_GetElapsedSeconds()
-{
-    return platformPC.elapsedTimeS;
-}
-
-u32 Platform_GetElapsedUpdates()
-{
-    return platformPC.elapsedUpdates;
-}
-
-struct WiiController* Platform_GetController(int controllerNumber)
-{
-	return &platformPC.controllers[controllerNumber];
-}
-
-int Platform_GetScreenWidth()
-{
-	return plaformPC.windowWidth;
-}
-int Platform_GetScreenHeight()
-{
-	return plaformPC.windowHeight;
-}
-
 #endif 

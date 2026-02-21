@@ -42,7 +42,8 @@ void mgdl_InitOrthoProjection()
     glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
     // Y increases up : OpenGL default
-    gluOrtho2D(0.0, (double)mgdl_GetScreenWidth(), 0.0, (double)mgdl_GetScreenHeight());
+	Viewport viewport = mgdl_GetViewport();
+    gluOrtho2D(0.0, (double)viewport.width, 0.0, (double)viewport.height);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
