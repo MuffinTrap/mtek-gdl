@@ -147,7 +147,6 @@
     <ClCompile Include="..\source\cross\mgdl-draw3d.cpp" />
     <ClCompile Include="..\source\cross\mgdl-dynamic_array.cpp" />
     <ClCompile Include="..\source\cross\mgdl-fbx.cpp" />
-    <ClCompile Include="..\source\cross\mgdl-file.cpp" />
     <ClCompile Include="..\source\cross\mgdl-font.cpp" />
     <ClCompile Include="..\source\cross\mgdl-gui.cpp" />
     <ClCompile Include="..\source\cross\mgdl-light.cpp" />
@@ -175,12 +174,10 @@
     <ClCompile Include="..\source\pc\pc-assert.cpp" />
     <ClCompile Include="..\source\pc\pc-audio-directsound.cpp" />
     <ClCompile Include="..\source\pc\pc-input-win32.cpp" />
-    <ClCompile Include="..\source\pc\pc-joystick-mac.cpp" />
     <ClCompile Include="..\source\pc\pc-joystick-win32.cpp" />
     <ClCompile Include="..\source\pc\pc-joystick.cpp" />
     <ClCompile Include="..\source\pc\pc-platform-win32.cpp" />
     <ClCompile Include="..\source\pc\pc-platform.cpp" />
-    <ClCompile Include="..\source\pc\pc-sound.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\mgdl.h" />
