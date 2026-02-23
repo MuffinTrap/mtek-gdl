@@ -93,6 +93,7 @@ enum {
 static inline int socket_poll(SOCKET socket)
 {
 #ifdef GEKKO
+	/* Just dont
 	// libogc doesn't impmelent select()...
 	struct pollsd sds[1];
 	sds[0].socket  = socket;
@@ -100,6 +101,8 @@ static inline int socket_poll(SOCKET socket)
 	sds[0].revents = 0;
 	if (net_poll(sds, 1, 0) < 0) return 0;
 	return (sds[0].revents & POLLIN) && !(sds[0].revents & (POLLERR|POLLHUP|POLLNVAL));
+	*/
+	return -1;
 #else
 	struct timeval to = { 0, 0 };
 	fd_set fds;

@@ -116,8 +116,6 @@ void Example::Update()
     #ifdef MGDL_ROCKET
 
         Rocket_UpdateRow();
-        float r = Rocket_Float(sync_value);
-
         if (WiiController_ButtonPress(mgdl_GetController(0), WiiButtons::Button2))
         {
             Rocket_SaveAllTracks();

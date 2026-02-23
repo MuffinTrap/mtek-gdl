@@ -162,16 +162,13 @@ RocketTrackFormat Rocket_Connect(RocketTrackFormat trackDestination,
     return source;
 }
 
+#ifndef GEKKO
 void Rocket_SetJsonFile(const char* filename)
 {
     Rocket* singleton = m_Rocket_GetSingleton();
-#ifdef GEKKO
-	singleton->jsonFilename = (char*)mgdl_AllocateGeneralMemory(sizeof(char) * strlen(filename) + 1);
-	strcpy(singleton->jsonFilename, filename);
-#else
 	singleton->jsonFilename = filename;
-#endif
 }
+#endif
 
 void Rocket_SetBeatsPerMinute(float bpm)
 {

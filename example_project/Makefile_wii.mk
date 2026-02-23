@@ -26,7 +26,7 @@ include $(DEVKITPPC)/wii_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	./
+SOURCES		:=	./ rocket
 DATA		:=	data
 TEXTURES	:=	
 INCLUDES	:=	include
@@ -35,8 +35,11 @@ INCLUDES	:=	include
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-CFLAGS	= -g -Werror -Wall -Wextra -DMGDL_PLATFORM_WII -DMGDL_USE_CCVECTOR -std=c++11 $(MACHDEP) $(INCLUDE)
-CXXFLAGS	= -Wwrite-strings $(CFLAGS) -DSYNC_PLAYER -DUFBX_REAL_IS_FLOAT
+CFLAGS	= -g -Wall -Wextra -DMGDL_PLATFORM_WII -DMGDL_USE_CCVECTOR -std=c++11 $(MACHDEP) $(INCLUDE)
+CXXFLAGS	= -Wwrite-strings $(CFLAGS) -DUFBX_REAL_IS_FLOAT
+
+# If you use rocket, uncomment this
+CXXFLAGS += -DMGDL_ROCKET
 # Wii specific settings
 CXXFLAGS += -DMGDL_PLATFORM=\"Wii\"
 
