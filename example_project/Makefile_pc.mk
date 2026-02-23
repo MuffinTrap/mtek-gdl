@@ -16,11 +16,11 @@ CXXFLAGS += -DUFBX_REAL_IS_FLOAT
 CXXFLAGS += -DMGDL_USE_CCVECTOR
 
 # Optional: Add rocket files
-SRC_DIRS += $(MGDL_DIR)/include/mgdl/rocket
-ROCKET_INCLUDE = -I$(MGDL_DIR)/include/mgdl/rocket
+SRC_DIRS += rocket
+ROCKET_INCLUDE = -Irocket
 CXXFLAGS += $(ROCKET_INCLUDE)
 
-# CXXFLAGS += -DMGDL_ROCKET
+ CXXFLAGS += -DMGDL_ROCKET
 # Use find to gather all .cpp and .c files in SRC_DIRS
 cpp_src := $(shell find $(SRC_DIRS) -name '*.cpp')
 

@@ -85,9 +85,6 @@ install :
 # ccVector library
 	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/ccVector
 	@cp $(CCVEC_HDR) $(INSTALL_DIR)/include/$(LIB)/ccVector
-# rocket library
-	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/rocket
-	@cp $(ROCKET_CODE) $(INSTALL_DIR)/include/$(LIB)/rocket
 # random generation library
 	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/wflcg
 	@cp $(RANDOM_HDR) $(INSTALL_DIR)/include/$(LIB)/wflcg

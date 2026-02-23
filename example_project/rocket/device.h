@@ -8,9 +8,6 @@
 #include "base.h"
 #include "sync.h"
 
-#ifndef N64
-#ifndef SYNC_PLAYER
-
 /* configure socket-stack */
 #ifdef _WIN32
  #define WIN32_LEAN_AND_MEAN
@@ -64,20 +61,15 @@
  #define closesocket(x) close(x)
 #endif
 
-#endif /* !defined(SYNC_PLAYER) */
-
 struct sync_device {
 	char *base;
 	struct sync_track **tracks;
 	size_t num_tracks;
 
-#ifndef SYNC_PLAYER
 	int row;
 	SOCKET sock;
-#endif
 	struct sync_io_cb io_cb;
 };
-#endif /* !define(N64)*/
 
 #ifdef __cplusplus
 	}

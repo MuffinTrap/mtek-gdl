@@ -1,11 +1,14 @@
-#include <mgdl/mgdl-rocket.h>
+#include <mgdl/mgdl-assert.h>
+#include <mgdl/mgdl-audio.h>
+#include <mgdl/mgdl-logger.h>
+#include <mgdl/mgdl-alloc.h>
+
+#include "mgdl-rocket.h"
 #include "base.h"
 #include "device.h"
 #include "track.h"
 #include "sync.h"
 
-#include <mgdl/mgdl-assert.h>
-#include <mgdl/mgdl-audio.h>
 #ifdef __cplusplus
 #include <cmath>
 #include <cstdio>
@@ -15,10 +18,7 @@
 #endif
 
 static Rocket* instance;
-
-#ifndef SYNC_PLAYER
 struct sync_cb rocket_callbacks;
-#endif
 
 // These are the rocket sync callback functions
 void Rocket_Pause_CB( int flag)
@@ -42,14 +42,18 @@ void Rocket_Pause(bool setPaused)
     }
     else
     {
-        // Start playing when unpaused for the first time
-        if (instance->syncState == SyncStop)
+        mgdlAudioStateEnum state =  Audio_GetSoundStatus(instance->music);
+        if (state == mgdlAudioStateEnum::Audio_StateStopped)
         {
             Rocket_Play();
         }
-        else
+        else if (state == Audio_StatePaused)
         {
             Audio_ResumeSound(instance->music);
+        }
+        else
+        {
+            // NOP
         }
         instance->syncState = SyncPlay;
     }
@@ -111,61 +115,67 @@ SyncState Rocket_GetState()
 
 // For use in the project
 
-bool Rocket_Connect(RocketTrackFormat trackSource, RocketTrackFormat trackDestination,
+RocketTrackFormat Rocket_Connect(RocketTrackFormat trackDestination,
                  Sound* music, float bpm, int rowsPerBeat)
 {
     if (music == NULL)
     {
-        perror("No music pointer given to RocketSync\n");
-        return false;
+        Log_Error("No music pointer given to RocketSync\n");
+        return TrackInvalid;
     }
 
     struct sync_device* rocket = sync_create_device("sync");
-    #ifndef SYNC_PLAYER
+    RocketTrackFormat source = TrackInvalid;
 
+    // Try to connect to editor first
     // NOTE 0 means no error == OK
-    int connectOk = -1;
-    connectOk = sync_tcp_connect(rocket, "localhost", SYNC_DEFAULT_PORT);
+    int errorCode = -1;
+    errorCode = sync_tcp_connect(rocket, "localhost", SYNC_DEFAULT_PORT);
 
-    if (connectOk != 0)
+    if (errorCode == ROCKET_NO_ERROR)
     {
-        perror("Could not connect to rocket host\n");
-        return false;
+        rocket_callbacks.pause = Rocket_Pause_CB;
+        rocket_callbacks.is_playing = Rocket_IsPlaying_CB;
+        rocket_callbacks.set_row = Rocket_SetRow_CB;
+        source = TrackEditor;
+    }
+    else
+    {
+        Log_Warning("Could not connect to rocket host\n");
+        source = TrackJSON;
     }
 
-    rocket_callbacks.pause = Rocket_Pause_CB;
-    rocket_callbacks.is_playing = Rocket_IsPlaying_CB;
-    rocket_callbacks.set_row = Rocket_SetRow_CB;
-
-    #endif
-
-
-    Rocket* singleton = _Rocket_GetSingleton();
+    Rocket* singleton = m_Rocket_GetSingleton();
     singleton->rocket_device = rocket;
     singleton->music = music;
     singleton->bpm = bpm;
     singleton->rowsPerBeat = rowsPerBeat;
     singleton->rowRate = (bpm / 60.0) * (double)rowsPerBeat;
-    singleton->jsonFilename = NULL;
+    if (singleton->jsonFilename == NULL)
+    {
+        singleton->jsonFilename = MGDL_ROCKET_FILE_JSON;
+    }
     singleton->row = 0;
-    singleton->trackSource = trackSource;
+    singleton->trackSource = source;
     singleton->trackDestination = trackDestination;
-    return true;
+
+    return source;
 }
 
 void Rocket_SetJsonFile(const char* filename)
 {
+    Rocket* singleton = m_Rocket_GetSingleton();
 #ifdef GEKKO
-	instance->jsonFilename = (char*)malloc(sizeof(char) * strlen(filename) + 1);
-	strcpy(instance->jsonFilename, filename);
+	singleton->jsonFilename = (char*)mgdl_AllocateGeneralMemory(sizeof(char) * strlen(filename) + 1);
+	strcpy(singleton->jsonFilename, filename);
 #else
-	instance->jsonFilename = filename;
+	singleton->jsonFilename = filename;
 #endif
 }
 
 void Rocket_SetBeatsPerMinute(float bpm)
 {
-    Rocket* singleton = _Rocket_GetSingleton();
+    Rocket* singleton = m_Rocket_GetSingleton();
     singleton->bpm = bpm;
     singleton->rowRate = (singleton->bpm / 60.0) * (double)singleton->rowsPerBeat;
 
@@ -173,7 +183,7 @@ void Rocket_SetBeatsPerMinute(float bpm)
 
 void Rocket_SetRowsPerBeat(int rowsPerBeat)
 {
-    Rocket* singleton = _Rocket_GetSingleton();
+    Rocket* singleton = m_Rocket_GetSingleton();
     singleton->rowsPerBeat = rowsPerBeat;
     singleton->rowRate = (singleton->bpm / 60.0) * (double)rowsPerBeat;
 }
@@ -181,7 +191,9 @@ void Rocket_SetRowsPerBeat(int rowsPerBeat)
 
 void Rocket_PlayTracks()
 {
-    mgdl_assert_print(instance!=NULL, "No RocketSync instance");
+
+    Rocket* singleton = m_Rocket_GetSingleton();
+    mgdl_assert_print(singleton!=NULL, "No RocketSync instance");
     Rocket_Play();
 }
 
@@ -191,32 +203,34 @@ void Rocket_UpdateRow()
 {
     instance->musicElapsedSeconds = Audio_GetSoundElapsedMs(instance->music) / 1000.0f;
 	instance->row = instance->musicElapsedSeconds * instance->rowRate;
-    #ifndef SYNC_PLAYER
-    if (sync_update(instance->rocket_device, Rocket_GetRowInt(), &rocket_callbacks))
+    if (instance->trackSource == TrackEditor)
     {
-        sync_tcp_connect(instance->rocket_device, "localhost", SYNC_DEFAULT_PORT);
+        if (sync_update(instance->rocket_device, Rocket_GetRowInt(), &rocket_callbacks))
+        {
+            sync_tcp_connect(instance->rocket_device, "localhost", SYNC_DEFAULT_PORT);
+        }
     }
-    #endif
 }
 
 
 // Call this when closing down
 void Rocket_Disconnect()
 {
-	sync_destroy_device(instance->rocket_device);
-    free(instance->_tracks);
-    free(instance);
+    Rocket* singleton = m_Rocket_GetSingleton();
+	sync_destroy_device(singleton->rocket_device);
+    mgdl_FreeGeneralMemory(singleton->_tracks);
+    mgdl_FreeGeneralMemory(singleton);
     instance = NULL;
 }
 
 // For internal use
 
-Rocket* _Rocket_GetSingleton()
+Rocket* m_Rocket_GetSingleton()
 {
     if (instance == NULL)
     {
-        instance = (struct Rocket*)malloc(sizeof(struct Rocket));
-        instance->_tracks = (ROCKET_TRACK*)malloc(sizeof(ROCKET_TRACK) * ROCKET_TRACK_AMOUNT);
+        instance = (struct Rocket*)mgdl_AllocateGeneralMemory(sizeof(struct Rocket));
+        instance->_tracks = (ROCKET_TRACK*)mgdl_AllocateGeneralMemory(sizeof(ROCKET_TRACK) * ROCKET_TRACK_AMOUNT);
         for (int i = 0; i < ROCKET_TRACK_AMOUNT; i++)
         {
             instance->_tracks[i] = NULL;
@@ -224,6 +238,7 @@ Rocket* _Rocket_GetSingleton()
         instance->musicElapsedSeconds = 0.0f;
         instance->syncState = SyncStop;
         instance->_trackCount = 0;
+        instance->jsonFilename = NULL;
     }
     return instance;
 }
@@ -231,20 +246,22 @@ Rocket* _Rocket_GetSingleton()
 // Call when the music should start
 void Rocket_Play()
 {
-    mgdl_assert_print(instance->music != NULL, "No music loaded");
-    Audio_PlaySound(instance->music);
-    instance->syncState = SyncPlay;
+    Rocket* singleton = m_Rocket_GetSingleton();
+    mgdl_assert_print(singleton->music != NULL, "No music loaded");
+    Audio_PlaySound(singleton->music);
+    singleton->syncState = SyncPlay;
 }
 
 
 ROCKET_TRACK Rocket_AddTrack(const char* trackName)
 {
-    if (instance == NULL)
+    Rocket* singleton = m_Rocket_GetSingleton();
+    if (singleton == NULL)
     {
         printf("Rocket: No instance\n");
         return NULL;
     }
-    if (instance->rocket_device == NULL)
+    if (singleton->rocket_device == NULL)
     {
         printf("Rocket: No device\n");
         return NULL;
@@ -254,16 +271,17 @@ ROCKET_TRACK Rocket_AddTrack(const char* trackName)
     switch(instance->trackSource)
     {
         case TrackEditor:
-            track = sync_get_track(instance->rocket_device, trackName);
+            track = sync_get_track(singleton->rocket_device, trackName);
         break;
         case TrackJSON:
-            track = sync_get_track_json(trackName, instance->jsonFilename);
+            track = sync_get_track_json(trackName, singleton->jsonFilename);
         break;
         case TrackCPP:
             // Tracks are in a header
             mgdl_assert_print(false, "If tracks are in a *.cpp file, do not call this function");
-            return track;
         break;
+        case TrackInvalid:
+            break;
     }
 
     if (track != NULL)
@@ -274,79 +292,40 @@ ROCKET_TRACK Rocket_AddTrack(const char* trackName)
 }
 
     // -----------------------------------------------------------
-    // Functions for saving tracks
-    void Rocket_SaveTrack(ROCKET_TRACK track)
-    {
-        mgdl_assert_print(track != NULL, "Rocket track was null");
-        switch(instance->trackDestination)
-        {
-            case TrackCPP:
-                save_sync(track, MGDL_ROCKET_FILE_H, MGDL_ROCKET_FILE_CPP);
-                break;
-            case TrackJSON:
-                save_sync_json(track, MGDL_ROCKET_FILE_JSON);
-                break;
-            case TrackEditor:
-                // nop : Tracks are not saved to file
-                break;
-        }
-    }
-
-    // Call to write the header files
-    void Rocket_StartSaveToHeader()
-    {
-        switch(instance->trackDestination)
-        {
-            case TrackCPP:
-                start_save_sync(MGDL_ROCKET_FILE_H, MGDL_ROCKET_FILE_CPP);
-            break;
-            case TrackJSON:
-                // TODO Copy from N64 code
-            break;
-            case TrackEditor:
-                // nop
-            break;
-        }
-    }
-
-    void Rocket_EndSaveToHeader()
-    {
-        switch(instance->trackDestination)
-        {
-            case TrackCPP:
-                end_save_sync(MGDL_ROCKET_FILE_H, MGDL_ROCKET_FILE_CPP);
-            break;
-            case TrackJSON:
-                // TODO Copy from N64 code
-            break;
-            case TrackEditor:
-                // nop
-            break;
-        }
-    }
 
     void Rocket_SetToBeSaved(ROCKET_TRACK track)
     {
-        for (int i = 0; i < instance->_trackCount; i++)
+
+        Rocket* singleton = m_Rocket_GetSingleton();
+        for (int i = 0; i < singleton->_trackCount; i++)
         {
-            if (instance->_tracks[i] == track)
+            if (singleton->_tracks[i] == track)
             {
                 return;
             }
         }
-        instance->_tracks[instance->_trackCount] = track;
-        instance->_trackCount += 1;
+        singleton->_tracks[singleton->_trackCount] = track;
+        singleton->_trackCount += 1;
     }
 
 
+    // Function for saving tracks
     void Rocket_SaveAllTracks()
     {
-        Rocket_StartSaveToHeader();
-        for(size_t i = 0; i < instance->_trackCount; i++)
+        Rocket* singleton = m_Rocket_GetSingleton();
+        switch(singleton->trackDestination)
         {
-            Rocket_SaveTrack(instance->_tracks[i]);
+            case TrackCPP:
+                save_sync_header(singleton->_tracks, singleton->_trackCount, MGDL_ROCKET_FILE_H, MGDL_ROCKET_FILE_CPP);
+                break;
+            case TrackJSON:
+                save_sync_json(singleton->_tracks, singleton->_trackCount, singleton->jsonFilename);
+                break;
+            case TrackEditor:
+                break;
+            case TrackInvalid:
+                break;
         }
-        Rocket_EndSaveToHeader();
     }
 
 // ----------------------------------------------------------
@@ -356,7 +335,8 @@ ROCKET_TRACK Rocket_GetTrack(unsigned short index)
 {
     if (index < ROCKET_TRACK_AMOUNT)
     {
-        ROCKET_TRACK t = instance->_tracks[index];
+        Rocket* singleton = m_Rocket_GetSingleton();
+        ROCKET_TRACK t = singleton->_tracks[index];
         if (t == NULL)
         {
             printf("GetTrack returning null track!\n");
@@ -365,12 +345,18 @@ ROCKET_TRACK Rocket_GetTrack(unsigned short index)
     }
     return NULL;
 }
+unsigned short Rocket_GetTrackAmount()
+{
+    Rocket* singleton = m_Rocket_GetSingleton();
+    return singleton->_trackCount;
+}
 
 unsigned short Rocket_GetTrackIndex(ROCKET_TRACK track)
 {
-    for (int i = 0; i < instance->_trackCount; i++)
+    Rocket* singleton = m_Rocket_GetSingleton();
+    for (int i = 0; i < singleton->_trackCount; i++)
     {
-        if (instance->_tracks[i] == track)
+        if (singleton->_tracks[i] == track)
         {
             return i;
         }
@@ -380,20 +366,24 @@ unsigned short Rocket_GetTrackIndex(ROCKET_TRACK track)
 
 float Rocket_Float(ROCKET_TRACK track)
 {
-    return (float)(sync_get_val(track, instance->row));
+    Rocket* singleton = m_Rocket_GetSingleton();
+    return (float)(sync_get_val(track, singleton->row));
 }
 
 double Rocket_Double(ROCKET_TRACK track)
 {
-    return sync_get_val(track, instance->row);
+    Rocket* singleton = m_Rocket_GetSingleton();
+    return sync_get_val(track, singleton->row);
 }
 
 int Rocket_Int(ROCKET_TRACK track)
 {
-    return (int)(floor(sync_get_val(track, instance->row)));
+    Rocket* singleton = m_Rocket_GetSingleton();
+    return (int)(floor(sync_get_val(track, singleton->row)));
 }
 
 bool Rocket_Bool(ROCKET_TRACK track)
 {
-    return sync_get_val(track, instance->row) > 0.0 ? true : false;
+    Rocket* singleton = m_Rocket_GetSingleton();
+    return sync_get_val(track, singleton->row) > 0.0 ? true : false;
 }

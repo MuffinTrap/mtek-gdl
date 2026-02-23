@@ -14,7 +14,3 @@ CXXFILES	+= $(wildcard include/mgdl/ufbx/*.cpp)
 UFBX_HDR	:= include/mgdl/ufbx/ufbx.h
 CCVEC_HDR	:= include/mgdl/ccVector/ccVector.h
 RANDOM_HDR	:= include/mgdl/wflcg/WFLCG_c.h
-ROCKET_CODE	= $(wildcard include/mgdl/rocket/*.cpp)
-ROCKET_CODE	+= $(wildcard include/mgdl/rocket/*.h)
-
-

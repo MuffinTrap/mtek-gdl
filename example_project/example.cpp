@@ -5,13 +5,8 @@
 #include <string>
 
 #ifdef MGDL_ROCKET
-    #include <mgdl/mgdl-rocket.h>
-
-    #ifdef SYNC_PLAYER
-        #include MGDL_ROCKET_FILE_H
-    #else
-        static ROCKET_TRACK sync_value;
-    #endif
+    #include "rocket/mgdl-rocket.h"
+    static ROCKET_TRACK sync_value;
 #endif
 
 Example::Example()
@@ -74,6 +69,7 @@ void Example::Init()
     performanceMenu =   Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 256, 64, "Performance");
     audioMenu =         Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 256, 256, "Audio");
     logMenu =           Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 620, 256, "Log");
+    rocketMenu =        Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 256, 356, "Rocket");
 
     if (sampleMusic)
     {
@@ -91,26 +87,20 @@ void Example::Init()
     testmp3Music = mgdl_LoadSoundMp3("assets/test_jam.mp3");
 
     #ifdef MGDL_ROCKET
-        // Connect to editor
-        RocketTrackFormat trackSource = TrackEditor;
-        #ifdef SYNC_PLAYER
-            // Read from CPP file
-            RocketTrackFormat trackSource = TrackCPP;
-        #endif
 
-        bool rocketInit = Rocket_Connect(trackSource, TrackCPP, sampleMusic, 120, 4);
-        if (rocketInit == false)
+        RocketTrackFormat source = Rocket_Connect(TrackJSON, sampleMusic, 120, 4);
+        if (source == TrackInvalid)
         {
             mgdl_DoProgramExit();
         }
+        // Load all tracks
+        sync_value = Rocket_AddTrack("sync_value");
 
-        #ifdef SYNC_PLAYER
-            // In release mode start the music and tracks
+        if (source != TrackEditor)
+        {
+            // Start the music if no editor was found
             Rocket_PlayTracks();
-        #else
-            // When tracks are in CPP file, this should not be called
-            sync_value = Rocket_AddTrack("sync_value");
-        #endif
+        }
     #endif
 }
 
@@ -128,13 +118,10 @@ void Example::Update()
         Rocket_UpdateRow();
         float r = Rocket_Float(sync_value);
 
-        #ifndef SYNC_PLAYER
-
-            if (WiiController_ButtonPress(mgdl_GetController(0), WiiButtons::Button2))
-            {
-                Rocket_SaveAllTracks();
-            }
-        #endif
+        if (WiiController_ButtonPress(mgdl_GetController(0), WiiButtons::Button2))
+        {
+            Rocket_SaveAllTracks();
+        }
     #endif
 
     elapsedSeconds = mgdl_GetElapsedSeconds();
@@ -190,6 +177,7 @@ void Example::Draw()
     if ( toggleInputs) {DrawInputInfo();}
     if ( togglePerformance) {DrawTimingInfo();}
     if ( toggleAudio) {DrawAudio();}
+    if ( toggleRocket) {DrawRocket();}
 
     DrawMenu();
 }
@@ -415,10 +403,8 @@ void Example::DrawMenu()
     Menu_Toggle(menu, "Audio", &toggleAudio);
     Menu_Toggle(menu, "Log", &toggleLog);
 #if MGDL_ROCKET
-    if (Menu_Button(menu, "Write Rocket"))
-    {
-        Rocket_SaveAllTracks();
-    }
+
+    Menu_Toggle(menu, "Rocket", &toggleRocket);
 #endif
     Menu_DrawCursor(menu);
 }
@@ -591,5 +577,32 @@ void Example::DrawCameraControls()
     {
         sceneRotation = V3f_Create(0,0,0);
     }
+}
+
+void Example::DrawRocket()
+{
+    Menu_Start(rocketMenu, 10, mgdl_GetScreenHeight()-10, 256);
+#ifdef MGDL_ROCKET
+    if (Menu_Button(rocketMenu, "Write Rocket"))
+    {
+        Rocket_SaveAllTracks();
+    }
+    Menu_Text(rocketMenu, "Track values:");
+    for (u16 i = 0; i < Rocket_GetTrackAmount(); i++)
+    {
+        ROCKET_TRACK t = Rocket_GetTrack(i);
+        if (t != nullptr)
+        {
+            Menu_TextF(rocketMenu, "%s: %.2f", t->name, Rocket_Float(t));
+        }
+        else
+        {
+            break;
+        }
+    }
+#else
+    Menu_Text(rocketMenu, "MGDL_ROCKET not defined");
+
+#endif
 }
 

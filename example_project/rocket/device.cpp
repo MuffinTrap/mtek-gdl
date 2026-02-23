@@ -78,8 +78,6 @@ static const char *sync_track_path(const char *base, const char *name)
 	return temp;
 }
 
-#ifndef SYNC_PLAYER
-
 #define CLIENT_GREET "hello, synctracker!"
 #define SERVER_GREET "hello, demo!"
 
@@ -108,14 +106,14 @@ static inline int socket_poll(SOCKET socket)
 
 	FD_ZERO(&fds);
 
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable: 4127)
-#endif
+#	ifdef _MSC_VER
+#		pragma warning(push)
+#		pragma warning(disable: 4127)
+#	endif
 	FD_SET(socket, &fds);
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
+#	ifdef _MSC_VER
+#		pragma warning(pop)
+#	endif
 
 	return select((int)socket + 1, &fds, NULL, NULL, &to) > 0;
 #endif
@@ -240,7 +238,6 @@ static SOCKET server_connect(const char *host, unsigned short nport)
 	return sock;
 }
 
-#else
 
 void sync_set_io_cb(struct sync_device *d, struct sync_io_cb *cb)
 {
@@ -249,7 +246,6 @@ void sync_set_io_cb(struct sync_device *d, struct sync_io_cb *cb)
 	d->io_cb.close = cb->close;
 }
 
-#endif
 
 #ifdef NEED_STRDUP
 static inline char *rocket_strdup(const char *str)
@@ -280,10 +276,8 @@ struct sync_device *sync_create_device(const char *base)
     d->tracks = NULL;
     d->num_tracks = 0;
 
-#ifndef SYNC_PLAYER
     d->row = -1;
     d->sock = INVALID_SOCKET;
-#endif
 
     d->io_cb.open = (void *(*)(const char *, const char *))fopen;
     d->io_cb.read = (size_t (*)(void *, size_t, size_t, void *))fread;
@@ -296,10 +290,8 @@ void sync_destroy_device(struct sync_device *d)
 {
 	int i;
 
-#ifndef SYNC_PLAYER
 	if (d->sock != INVALID_SOCKET)
 		closesocket(d->sock);
-#endif
 
 	for (i = 0; i < (int)d->num_tracks; ++i) {
 		// free(d->tracks[i]->name); no need to free, it is const char
@@ -310,7 +302,7 @@ void sync_destroy_device(struct sync_device *d)
 	free(d->base);
 	free(d);
 
-#if defined(USE_AMITCP) && !defined(SYNC_PLAYER)
+#if defined(USE_AMITCP)
 	if (socket_base) {
 		CloseLibrary(socket_base);
 		socket_base = NULL;
@@ -409,7 +401,6 @@ int sync_save_tracks(const struct sync_device *d)
 	return 0;
 }
 
-#ifndef SYNC_PLAYER
 
 static int fetch_track_data(struct sync_device *d, struct sync_track *t)
 {
@@ -569,7 +560,6 @@ sockerr:
 	return -1;
 }
 
-#endif /* !defined(SYNC_PLAYER) */
 
 static int create_track(struct sync_device *d, const char *name)
 {
@@ -609,11 +599,9 @@ const struct sync_track *sync_get_track(struct sync_device *d, const char *name)
 
 	t = d->tracks[idx];
 
-#ifndef SYNC_PLAYER
 	if (d->sock != INVALID_SOCKET)
 		fetch_track_data(d, t);
 	else
-#endif
 		read_track_data(d, t);
 
 	return t;

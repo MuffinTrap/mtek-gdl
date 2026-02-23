@@ -243,6 +243,7 @@ void OggPlayer_SetSoundElapsedMs(Sound* snd, u32 milliseconds)
 	float secondsIn = (float)milliseconds / 1000.0f;
 	sample = (musics[snd->voiceNumber].channels * musics[snd->voiceNumber].sampleRate) * secondsIn;
 	stb_vorbis_seek(musics[snd->voiceNumber].vorbisfile, sample);
+	musics[snd->voiceNumber].elapsedSeconds = secondsIn;
 }
 
 mgdlAudioStateEnum OggPlayer_GetSoundStatus(Sound* snd)

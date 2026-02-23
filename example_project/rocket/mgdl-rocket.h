@@ -5,6 +5,7 @@
 // to include and compile the rocket source
 
 #include <mgdl/mgdl-types.h>
+#include "mgdl-rocket-types.h"
 
 /**
  * @file mgdl-rocket.h
@@ -19,40 +20,6 @@
 
 // Forward defines of Rocket types
 struct sync_device;
-struct sync_track;
-
-typedef const struct sync_track* ROCKET_TRACK;
-
-// For CTOY interface
-#define ROCKET_TRACK_AMOUNT 512
-#define ROCKET_NAME_LENGTH 64
-struct RocketVariable
-{
-	char name[ROCKET_NAME_LENGTH];
-	float value;
-};
-typedef struct RocketVariable RocketVariable;
-// End CTOY
-
-
-struct Sound; // Forward declare of mgdl Sound
-
-enum SyncState
-{
-	SyncPlay,
-	SyncPause,
-	SyncStop
-};
-typedef enum SyncState SyncState;
-
-// Where do the tracks and values come from and where they are saved
-enum RocketTrackFormat
-{
-	TrackEditor, /**< Connect to rocket editor and get tracks there */
-	TrackCPP, /**< The tracks and values are provided as C++ code */
-	TrackJSON /**< The tracks and values are read from JSON file */
-};
-typedef enum RocketTrackFormat RocketTrackFormat;
 
 struct Rocket
 {
@@ -85,8 +52,11 @@ extern "C" {
 	int Rocket_IsPlaying_CB(void);
 
 	// Supply the rocket connection you created and the music
-	Rocket* _Rocket_GetSingleton(void);
-	bool Rocket_Connect(RocketTrackFormat trackSource, RocketTrackFormat trackDestination, struct Sound* music, float bpm, int beatsPerRow);
+	Rocket* m_Rocket_GetSingleton(void);
+	/**
+	 * @returns The source that was connected
+	 */
+	RocketTrackFormat Rocket_Connect(RocketTrackFormat trackDestination, struct Sound* music, float bpm, int beatsPerRow);
 	void Rocket_SetJsonFile(const char* filename);
 	void Rocket_SetBeatsPerMinute(float bpm);
 	void Rocket_SetRowsPerBeat(int rowsPerBeat);
@@ -97,11 +67,8 @@ extern "C" {
 	ROCKET_TRACK Rocket_AddTrack(const char* trackName);
 
 	ROCKET_TRACK Rocket_GetTrack(unsigned short index);
+	unsigned short Rocket_GetTrackAmount();
 	unsigned short Rocket_GetTrackIndex(ROCKET_TRACK track);
-
-	void Rocket_StartSaveToHeader(void);
-	void Rocket_SaveTrack(ROCKET_TRACK track);
-	void Rocket_EndSaveToHeader(void);
 
 	void Rocket_SetToBeSaved(ROCKET_TRACK track);
 	void Rocket_SaveAllTracks(void);

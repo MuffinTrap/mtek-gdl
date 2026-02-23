@@ -19,6 +19,7 @@ class Example
     Menu* performanceMenu;
     Menu* audioMenu;
     Menu* logMenu;
+    Menu* rocketMenu;
     Scene* wiiScene;
     Scene* shipScene;
     Texture* wiiTexture;
@@ -35,7 +36,7 @@ class Example
     float elapsedSeconds;
 
     // Toggles
-    bool toggleSprites, toggle3D, toggleTexture, toggleCamera, toggleInputs, togglePerformance, toggleAudio, toggleLog = false;
+    bool toggleSprites, toggle3D, toggleTexture, toggleCamera, toggleInputs, togglePerformance, toggleAudio, toggleLog, toggleRocket = false;
 
     public:
         Example();
@@ -57,6 +58,7 @@ class Example
         void DrawAudio();
         void DrawLog();
         void DrawSoundStatus(mgdlAudioStateEnum status);
+        void DrawRocket();
 
         void DrawVersion();
         void DrawScene(Scene* scene, V3f scale);

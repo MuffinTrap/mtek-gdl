@@ -31,7 +31,6 @@
 #include "mgdl/mgdl-draw2d.h"
 #include "mgdl/mgdl-draw3d.h"
 #include "mgdl/mgdl-splash.h"
-#include "mgdl/mgdl-rocket.h"
 #include "mgdl/mgdl-console.h"
 #include "mgdl/mgdl-audio.h"
 #include "mgdl/mgdl-main.h"
