@@ -214,8 +214,9 @@ typedef enum MeshAttributeFlags MeshAttributeFlags;
 
 enum CameraMode
 {
-    CameraTarget = 0,
-    CameraDirection = 1
+    CameraTarget = 0, // Camera looks at set target
+    CameraRotation = 1, // Camera is rotated
+    CameraDirection = 2 // Camera looks to direction
 };
 typedef enum CameraMode CameraMode;
 

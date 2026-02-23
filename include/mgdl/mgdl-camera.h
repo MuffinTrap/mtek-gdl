@@ -16,6 +16,7 @@ struct Camera
 	V3f position;
 	V3f up;
 	V3f rotations;
+	V3f direction;
 
 	float fovY;
 	float nearZ;
@@ -43,6 +44,7 @@ void Camera_SetPositionV(Camera* camera, V3f position);
 void Camera_SetPosition(Camera* camera, float x, float y, float z);
 void Camera_SetRotationsV(Camera* camera, V3f rotations);
 void Camera_SetRotations(Camera* camera, float pitch, float yaw, float roll);
+void Camera_SetDirection(Camera* camera, vec3 direction);
 
 void Camera_SetMode(Camera* camera, CameraMode mode);
 

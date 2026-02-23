@@ -12,6 +12,8 @@ Camera* Camera_CreateDefault()
 	camera->fovY = 90.0f;
 	camera->nearZ = 0.1f;
 	camera->farZ = 1000.0f;
+	camera->direction = V3f_Create(0.0f, 0.0f, -1.0f);
+	camera->rotations = V3f_Create(0.0f, 0.0f, 0.0f);
 
 	return camera;
 }
@@ -36,7 +38,7 @@ void Camera_Apply(Camera* camera)
 		case CameraTarget:
 			mgdl_InitCamera(camera->position, camera->target, camera->up);
 		break;
-		case CameraDirection:
+		case CameraRotation:
 		{
 			V3f unit = mgdl_GetGLWorldForward();
 			V3f target;
@@ -50,6 +52,11 @@ void Camera_Apply(Camera* camera)
 			V3f_Add(camera->position, target, camera->target);
 			mgdl_InitCamera(camera->position, camera->target, camera->up);
 		}
+		break;
+		case CameraDirection:
+			// Presume direction is set with Camera_SetDirection
+			camera->target = vec3Add(camera->position, camera->direction);
+			mgdl_InitCamera(camera->position, camera->target, camera->up);
 		break;
 
 	}
@@ -111,6 +118,11 @@ void Camera_DrawOverlayColor(Camera* camera, Color4f* color, float opacity)
 void Camera_SetPositionV(Camera* camera, V3f position)
 {
 	camera->position = position;
+}
+
+void Camera_SetDirection(Camera* camera, V3f direction)
+{
+	camera->direction = direction;
 }
 
 void Camera_SetPosition(Camera* camera, float x, float y, float z)

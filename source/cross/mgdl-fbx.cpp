@@ -7,10 +7,8 @@
 #include <mgdl/mgdl-dynamic_array.h>
 #include <stdio.h>
 
-Scene* FBX_Load(const char* fbxFile)
+ufbx_scene* FBX_LoadScene(const char* fbxFile)
 {
-	// Right handed for OpenGL
-	// Y is up
 	ufbx_load_opts opts = {};
 	opts.target_axes = ufbx_axes_right_handed_y_up;
 	opts.target_unit_meters = 1.0f;
@@ -18,10 +16,15 @@ Scene* FBX_Load(const char* fbxFile)
 	Log_InfoF("Reading fbx file %s\n", fbxFile);
 	ufbx_scene* scene = ufbx_load_file(fbxFile, &opts, &error);
 	mgdl_assert_printf(scene != nullptr, "Cannot load fbx: %s\n", error.description.data);
-	if (scene == nullptr)
-	{
-		return nullptr;
-	}
+	return scene;
+
+}
+
+Scene* FBX_Load(const char* fbxFile)
+{
+	// Right handed for OpenGL
+	// Y is up
+	ufbx_scene* scene = FBX_LoadScene(fbxFile);
 
 	Scene* gdlScene = Scene_CreateEmpty();
 	// What is in this file?

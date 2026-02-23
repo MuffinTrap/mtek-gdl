@@ -30,6 +30,9 @@ Mesh* _FBX_LoadMesh(ufbx_mesh* fbxMesh);
 Light* _FBX_LoadLight(ufbx_light* fbxLight);
 bool _FBX_LoadNode(Scene* gdlScene, Node* parentNode, ufbx_node* node, short int depth);
 
+
+ufbx_scene* FBX_LoadScene(const char* fbxFile);
+
 #ifdef __cplusplus
 }
 #endif
