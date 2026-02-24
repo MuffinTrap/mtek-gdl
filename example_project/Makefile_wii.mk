@@ -39,7 +39,7 @@ CFLAGS	= -g -Wall -Wextra -DMGDL_PLATFORM_WII -DMGDL_USE_CCVECTOR -std=c++11 $(M
 CXXFLAGS	= -Wwrite-strings $(CFLAGS) -DUFBX_REAL_IS_FLOAT
 
 # If you use rocket, uncomment this
-CXXFLAGS += -DMGDL_ROCKET
+#CXXFLAGS += -DMGDL_ROCKET
 # Wii specific settings
 CXXFLAGS += -DMGDL_PLATFORM=\"Wii\"
 

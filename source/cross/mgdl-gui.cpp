@@ -274,7 +274,7 @@ bool Menu_Slider(Menu* menu, const char* text, float minValue, float maxValue, f
     // -100 --100 -> 0 / 200 -> 0.0f
     Draw2D_Rect(x, y, x + w * fill , y - h, bar);
 
-    Font_PrintfAligned(menu->font, pen, x, y, menu->textSize, LJustify, LJustify, "%s:%.1f", text, *valueRef);
+    Font_PrintfAligned(menu->font, pen, x, y, menu->textSize, LJustify, LJustify, "%s:%.4f", text, *valueRef);
 
     float drawh = h * menu->rowHeightEm;
     menu->largestHeightOnRow = maxF(menu->largestHeightOnRow, drawh);

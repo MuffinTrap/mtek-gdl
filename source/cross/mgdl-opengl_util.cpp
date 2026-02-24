@@ -77,15 +77,19 @@ void mgdl_glSetTransparency(bool enabled)
 
 void mgdl_glSetAlphaTest(bool enabled)
 {
+	mgdl_glSetAlphaTestTreshold(enabled, 0.5f);
+}
+void mgdl_glSetAlphaTestTreshold(bool enabled, float treshold)
+{
 	if (enabled)
 	{
 		glEnable(GL_ALPHA_TEST);
-		glAlphaFunc(GL_GEQUAL, 0.5f);
+		glAlphaFunc(GL_GEQUAL, treshold);
 	}
 	else
 	{
 		glDisable(GL_ALPHA_TEST);
-		glAlphaFunc(GL_ALWAYS, 0.5f);
+		glAlphaFunc(GL_ALWAYS, treshold);
 	}
 }
 

@@ -30,6 +30,7 @@ extern "C"
     // Helper functions to do common OpenGL things
     void mgdl_glSetTransparency(bool enabled);
     void mgdl_glSetAlphaTest(bool enabled);
+    void mgdl_glSetAlphaTestTreshold(bool enabled, float treshold);
 
     void mgdl_glColor3f(Color4f* color);
     void mgdl_glColor4f(Color4f* color);

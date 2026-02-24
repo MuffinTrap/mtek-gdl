@@ -20,6 +20,10 @@ extern "C"
 void Random_CreateGenerator(void);
 void Random_SetSeed(u32 seed);
 float Random_Float(float min, float max);
+
+/**
+ * @brief Returns a number between [0, 1.0]
+ */
 float Random_FloatNormalized(void);
 int Random_Int(int min, int max);
 

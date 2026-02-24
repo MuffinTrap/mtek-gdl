@@ -107,10 +107,25 @@ extern "C"
 	Texture* Texture_LoadPNG(PNGFile* pngFile, TextureFilterModes filterMode);
 
 	/**
-	 * @brief Generates a 8x8 checkerboard image
-	 * @return The generated image
+	 * @brief Generates a 8x8 checkerboard black and white texture
+	 * @return The generated texture
 	 */
 	Texture* Texture_GenerateCheckerBoard(void);
+
+	/**
+	 * @brief Generates a 2x2 single color texture
+	 * @return The generated texture
+	 */
+	Texture* Texture_GenerateColorTexture(Color4f* color);
+
+	/**
+	 * @brief Generates a random noise texture
+	 * @return The generated texture
+	 */
+	Texture* Texture_GenerateNoiseTexture(u16 width, u16 height, u32 seed);
+
+	Texture* Texture_CreateFromArray(u16 width, u16 height, void* pixels, GLenum colorFormat, GLenum dataFormat);
+
 
 #ifdef __cplusplus
 }

@@ -2,6 +2,7 @@
 #include <wiiuse/wpad.h>
 
 #include <mgdl/mgdl-opengl.h>
+#include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-splash.h>
 #include <mgdl/mgdl-platform.h>
 #include <mgdl/mgdl-audio.h>

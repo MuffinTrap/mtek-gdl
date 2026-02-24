@@ -211,6 +211,50 @@ void Texture_SetTint (Texture* img, float red, float green, float blue )
 	img->tint.blue = blue;
 }
 
+GLuint PixelsToOpenGL(u32 width, u32 height, void* pixels, GLenum colorFormat, GLenum dataType)
+{
+	GLint alignment;
+	glGetIntegerv(GL_UNPACK_ALIGNMENT, &alignment);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	GLuint texName;
+	glGenTextures(1, &texName);
+	glBindTexture(GL_TEXTURE_2D, texName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexImage2D(GL_TEXTURE_2D, 0, colorFormat, width, height, 0, colorFormat, dataType, pixels);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
+
+	return texName;
+
+}
+
+Texture* Texture_CreateFromArray(u16 width, u16 height, void* pixels, GLenum colorFormat, GLenum dataFormat)
+{
+	GLuint texName = PixelsToOpenGL(width, height, pixels, colorFormat, dataFormat);
+
+	ColorFormats f = ColorFormats::RGBA;
+	switch(colorFormat)
+	{
+		case GL_LUMINANCE:
+			f = ColorFormats::Gray;
+			break;
+		case GL_LUMINANCE_ALPHA:
+			f = ColorFormats::GrayAlpha;
+			break;
+		case GL_RGB:
+			f = ColorFormats::RGB;
+			break;
+		case GL_RGBA:
+			f = ColorFormats::RGBA;
+			break;
+	};
+	Texture* img = Texture_Create();
+	Texture_SetGLName(img, texName, width, height, f);
+	return img;
+}
+
 Texture* Texture_GenerateCheckerBoard()
 {
 	const u32 width = 8;
@@ -229,23 +273,71 @@ Texture* Texture_GenerateCheckerBoard()
 		}
 	}
 
-	GLint alignment;
-	glGetIntegerv(GL_UNPACK_ALIGNMENT, &alignment);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	GLuint texName;
-	glGenTextures(1, &texName);
-	glBindTexture(GL_TEXTURE_2D, texName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE_ALPHA, width, height, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, checkerTexture);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
+	GLuint texName = PixelsToOpenGL(width, height, checkerTexture, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE);
+
 
 	Texture* img = Texture_Create();
 	Texture_SetGLName(img, texName, width, height, ColorFormats::GrayAlpha);
 	return img;
 }
+	/**
+	 * @brief Generates a 2x2 single color texture
+	 * @return The generated texture
+	 */
+	Texture* Texture_GenerateColorTexture(Color4f* color)
+	{
+		const u32 width = 2;
+		const u32 height = 2;
+		GLubyte pixels[height][width][4];
+
+		Color4b colorByte;
+		colorByte.red = color->red * 255;
+		colorByte.green = color->green * 255;
+		colorByte.blue = color->blue * 255;
+		colorByte.alpha = color->alpha * 255;
+
+		for(u32 y = 0; y < height; y++)
+		{
+			for(u32 x = 0; x < width; x++)
+			{
+				pixels[y][x][0] = colorByte.red;
+				pixels[y][x][1] = colorByte.green;
+				pixels[y][x][2] = colorByte.blue;
+				pixels[y][x][3] = colorByte.alpha;
+			}
+		}
+		GLuint texName = PixelsToOpenGL(width, height, pixels, GL_RGBA, GL_UNSIGNED_BYTE);
+
+		Texture* img = Texture_Create();
+		Texture_SetGLName(img, texName, width, height, ColorFormats::RGBA);
+		return img;
+
+	}
+
+	/**
+	 * @brief Generates a random noise texture
+	 * @return The generated texture
+	 */
+	Texture* Texture_GenerateNoiseTexture(u16 width, u16 height, u32 seed)
+	{
+		GLubyte noise[height][width];
+		Random_SetSeed(seed);
+
+		for(u32 y = 0; y < height; y++)
+		{
+			for(u32 x = 0; x < width; x++)
+			{
+				noise[y][x]= Random_FloatNormalized() * 255;
+			}
+		}
+
+		GLuint texName = PixelsToOpenGL(width, height, noise, GL_LUMINANCE, GL_UNSIGNED_BYTE);
+
+
+		Texture* img = Texture_Create();
+		Texture_SetGLName(img, texName, width, height, ColorFormats::Gray);
+		return img;
+	}
 
 
 
