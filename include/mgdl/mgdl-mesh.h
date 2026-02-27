@@ -60,6 +60,7 @@ extern "C"
 
 	void Mesh_SetupVertexArrays(Mesh* mesh);
 	void Mesh_DrawElements(Mesh* mesh);
+	void Mesh_DrawArrays(Mesh* mesh);
 	// TODO void Mesh_DrawElementsPartially(Mesh* mesh, float start, float amount);
 	void Mesh_DrawPoints(Mesh* mesh);
 	void Mesh_DrawLines(Mesh* mesh);

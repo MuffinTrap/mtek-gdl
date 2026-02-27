@@ -25,13 +25,16 @@ extern "C"
  */
 Scene* FBX_Load(const char* fbxFile);
 
-Mesh* _FBX_AllocateMesh(ufbx_mesh* fbxMesh);
-Mesh* _FBX_LoadMesh(ufbx_mesh* fbxMesh);
-Light* _FBX_LoadLight(ufbx_light* fbxLight);
-bool _FBX_LoadNode(Scene* gdlScene, Node* parentNode, ufbx_node* node, short int depth);
+Mesh* m_FBX_AllocateMesh(ufbx_mesh* fbxMesh);
+Mesh* m_FBX_LoadMesh(ufbx_mesh* fbxMesh);
+Light* m_FBX_LoadLight(ufbx_light* fbxLight);
+bool m_FBX_LoadNode(Scene* gdlScene, Node* parentNode, ufbx_node* node, short int depth);
+
+Mesh* FBX_LoadMeshTrianglesOnly(ufbx_mesh* mesh);
 
 
 ufbx_scene* FBX_LoadScene(const char* fbxFile);
+ufbx_mesh* FBX_GetFirstMesh(ufbx_scene* scene);
 
 #ifdef __cplusplus
 }

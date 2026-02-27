@@ -31,7 +31,7 @@ Scene* FBX_Load(const char* fbxFile)
 
 	// Start from the root
 	ufbx_node* root = scene->root_node;
-	_FBX_LoadNode(gdlScene, Scene_GetRootNode(gdlScene), root, 0);
+	m_FBX_LoadNode(gdlScene, Scene_GetRootNode(gdlScene), root, 0);
 
 	// DANGER ZONE
 	// TODO copy only the necessary data so that this can be freed
@@ -48,7 +48,7 @@ void Indent(short depth)
 	}
 }
 
-bool _FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short depth )
+bool m_FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short depth )
 {
 	mgdl_assert_print(node != nullptr, "Tried to load null node");
 	mgdl_assert_print(gdlScene != nullptr, "No scene to load nodes to");
@@ -104,7 +104,7 @@ bool _FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short d
 		// Cannot use name: if multiple meshes have the same name
 		// the ufbx will postfix _1 etc.
 		// element_id is not unique either. Need to compare ufbx* mesh directly?
-		n->mesh = _FBX_LoadMesh(mesh);
+		n->mesh = m_FBX_LoadMesh(mesh);
 
 
 		// Does this node have materials?
@@ -176,7 +176,7 @@ bool _FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short d
 			Log_Info("volumetric");
 		}
 
-		Light* gdlLight = _FBX_LoadLight(light);
+		Light* gdlLight = m_FBX_LoadLight(light);
 		n->light = gdlLight;
 
 		Log_Info("\n");
@@ -199,7 +199,7 @@ bool _FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short d
 	{
 		for(size_t i = 0; i < node->children.count; i++)
 		{
-			_FBX_LoadNode(gdlScene, n, node->children[i], depth+1);
+			m_FBX_LoadNode(gdlScene, n, node->children[i], depth+1);
 		}
 	}
 
@@ -243,12 +243,13 @@ void PushUV(Mesh* mesh, size_t index, ufbx_vec2 uv)
 	mesh->uvs[vti+1] = y;
 }
 
-Mesh * _FBX_AllocateMesh ( ufbx_mesh* fbxMesh )
+Mesh * m_FBX_AllocateMesh ( ufbx_mesh* fbxMesh )
 {
 	Mesh *mesh = Mesh_CreateEmpty();
 	sizetype vertices = fbxMesh->num_triangles * 3;
 	bool normals = fbxMesh->vertex_normal.exists;
 	bool uvs = fbxMesh->vertex_uv.exists;
+	sizetype indices = fbxMesh->num_indices;
 	u32 creationFlags = 0;
 	if (normals)
 	{
@@ -258,7 +259,7 @@ Mesh * _FBX_AllocateMesh ( ufbx_mesh* fbxMesh )
 	{
 		creationFlags += FlagUVs;
 	}
-	Mesh_Init(mesh, vertices, vertices, creationFlags);
+	Mesh_Init(mesh, vertices, indices, creationFlags);
 	return mesh;
 }
 
@@ -273,10 +274,77 @@ void PushVertex(ufbx_mesh* fbxMesh, Mesh* mesh, uint32_t faceIndex, size_t array
 	PushNormal(mesh, arrayIndex, normal);
 	PushUV(mesh, arrayIndex, uv);
 }
-
-Mesh * _FBX_LoadMesh(ufbx_mesh* fbxMesh)
+ufbx_mesh* FBX_GetFirstMesh(ufbx_scene* scene)
 {
-	Mesh* mesh = _FBX_AllocateMesh(fbxMesh);
+	for (size_t i = 0; i < scene->nodes.count; i++) {
+            ufbx_node *node = scene->nodes.data[i];
+            Log_InfoF("Node %d : %s", i, node->name.data);
+            if (node->mesh != nullptr)
+            {
+                ufbx_mesh* mesh = node->mesh;
+
+                Log_InfoF("Mesh %s (%u) with %zu faces", mesh->name.data, mesh->element_id, mesh->faces.count);
+                if (mesh->vertex_normal.exists)
+                {
+                    Log_InfoF(", %zu normals", mesh->vertex_normal.values.count);
+                }
+                if (mesh->vertex_uv.exists)
+                {
+                    Log_InfoF(",%zu uvs", mesh->vertex_uv.values.count);
+                }
+                Log_Info("\n");
+                return mesh;
+            }
+        }
+    return nullptr;
+}
+
+Mesh* FBX_LoadMeshTrianglesOnly(ufbx_mesh* fbxMesh)
+{
+	// NOTE Does not use indices
+	if (fbxMesh->vertex_uv.exists == false)
+	{
+		Log_Warning("Mesh does not have UVs");
+	}
+	ufbx_vec2 zeroUV;
+	zeroUV.x = 0.0f;
+	zeroUV.y = 0.0f;
+	Mesh* mesh = m_FBX_AllocateMesh(fbxMesh);
+	sizetype indexIndex = 0;
+	for(ufbx_face face : fbxMesh->faces)
+	{
+		// Ufbx indices that belong to a single face and
+		// are used to refer to vertex data
+		for(uint32_t corner = 0; corner < face.num_indices; corner++)
+		{
+			uint32_t index = face.index_begin + corner;
+
+			ufbx_vec3 position = ufbx_get_vertex_vec3(&fbxMesh->vertex_position, index);
+			PushPosition(mesh, indexIndex, position);
+			if (fbxMesh->vertex_normal.exists)
+			{
+				ufbx_vec3 normal = ufbx_get_vertex_vec3(&fbxMesh->vertex_normal, index);
+				PushNormal(mesh, indexIndex, normal);
+			}
+			if (fbxMesh->vertex_uv.exists)
+			{
+				ufbx_vec2 uv = ufbx_get_vertex_vec2(&fbxMesh->vertex_uv, index);
+				PushUV(mesh, indexIndex, uv);
+			}
+			else
+			{
+				//PushUV(mesh, indexIndex, zeroUV);
+			}
+			indexIndex++;
+		}
+	}
+	mesh->name = fbxMesh->name.data;
+	return mesh;
+}
+
+Mesh * m_FBX_LoadMesh(ufbx_mesh* fbxMesh)
+{
+	Mesh* mesh = m_FBX_AllocateMesh(fbxMesh);
 
 	size_t vertexArrayIndex = 0;
 	size_t indiceArrayIndex = 0;
@@ -347,7 +415,7 @@ Mesh * _FBX_LoadMesh(ufbx_mesh* fbxMesh)
 	return mesh;
 }
 
-Light* _FBX_LoadLight(ufbx_light* fbxLight)
+Light* m_FBX_LoadLight(ufbx_light* fbxLight)
 {
 	Light* light = new Light();
 

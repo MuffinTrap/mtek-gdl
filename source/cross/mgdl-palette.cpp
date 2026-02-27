@@ -29,24 +29,24 @@ Palette* Palette_GetDefault()
 Palette* Palette_Create(u32* colorsArray, u8 size)
 {
 	Palette* palette = (Palette*)malloc(sizeof(Palette));
-	palette->_colors = (Color4f*)malloc(sizeof(Color4f) * size);
+	palette->m_colors = (Color4f*)malloc(sizeof(Color4f) * size);
 	for(int i = 0; i < size; i++)
 	{
-		palette->_colors[i] = Color_HexToFloats(colorsArray[i]);
+		palette->m_colors[i] = Color_HexToFloats(colorsArray[i]);
 	}
-	palette->size = size;
+	palette->m_size = size;
 	return palette;
 }
 
 Palette* Palette_Create4f(Color4f* colorsArray, u8 size)
 {
 	Palette* palette = (Palette*)malloc(sizeof(Palette));
-	palette->_colors = (Color4f*)malloc(sizeof(Color4f) * size);
+	palette->m_colors = (Color4f*)malloc(sizeof(Color4f) * size);
 	for(int i = 0; i < size; i++)
 	{
-		palette->_colors[i] = colorsArray[i];
+		palette->m_colors[i] = colorsArray[i];
 	}
-	palette->size = size;
+	palette->m_size = size;
 	return palette;
 }
 
@@ -54,38 +54,44 @@ Palette* Palette_Create4f(Color4f* colorsArray, u8 size)
 Palette* Palette_CreateEmpty(u8 size)
 {
 	Palette* palette = (Palette*)malloc(sizeof(Palette));
-	palette->_colors = (Color4f*)malloc(sizeof(u32)*size);
-	palette->size = size;
+	palette->m_colors = (Color4f*)malloc(sizeof(Color4f)*size);
+	palette->m_size = size;
 	return palette;
 
 }
 
 u32 Palette_GetColor(Palette* palette, u8 index)
 {
-	index = index % palette->size;
-	return Color_FloatsToHex(palette->_colors[index]);
+	index = index % palette->m_size;
+	return Color_FloatsToHex(palette->m_colors[index]);
 }
 
 Color4f Palette_GetColor4f(Palette* palette, u8 index)
 {
-	index = index % palette->size;
-	return palette->_colors[index];
+	index = index % palette->m_size;
+	return palette->m_colors[index];
 }
 
-void Palette_SetColor(Palette* palette, u8 index, Color4f* color)
+void Palette_SetColor4f(Palette* palette, u8 index, Color4f* color)
 {
-	index = index % palette->size;
-	palette->_colors[index] = Color_CreateFromPointer4f(color);
+	index = index % palette->m_size;
+	palette->m_colors[index] = Color_CreateFromPointer4f(color);
+}
+
+void Palette_SetColor(Palette* palette, u8 index, u32 color)
+{
+	index = index % palette->m_size;
+	palette->m_colors[index] = Color_HexToFloats(color);
 }
 
 void Palette_Delete(Palette* palette)
 {
 	if (palette != NULL)
 	{
-		if (palette->_colors != NULL)
+		if (palette->m_colors != NULL)
 		{
-			free(palette->_colors);
-			palette->_colors = NULL;
+			free(palette->m_colors);
+			palette->m_colors = NULL;
 		}
 		free(palette);
 	}
@@ -93,5 +99,5 @@ void Palette_Delete(Palette* palette)
 
 u8 Palette_GetColorAmount(Palette* palette)
 {
-	return palette->size;
+	return palette->m_size;
 }

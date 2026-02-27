@@ -113,6 +113,12 @@ void Mesh_DrawElements(Mesh* mesh)
 	glDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_SHORT, mesh->indices);
 }
 
+void Mesh_DrawArrays(Mesh* mesh)
+{
+	Mesh_SetupVertexArrays(mesh);
+	glDrawArrays(GL_TRIANGLES, 0, mesh->vertexCount);
+}
+
 void Mesh_DrawPoints(Mesh* mesh)
 {
 	mgdl_assert_print(mesh->indexCount > 0, "No indices on Mesh_DrawLines");

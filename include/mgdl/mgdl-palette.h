@@ -11,8 +11,8 @@
 
 struct Palette
 {
-	Color4f* _colors;
-	u8 size;
+	Color4f* m_colors;
+	u8 m_size;
 };
 typedef struct Palette Palette;
 
