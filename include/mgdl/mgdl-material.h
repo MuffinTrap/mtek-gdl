@@ -39,6 +39,7 @@ extern "C"
 	Material* Material_Load(const char* name, Texture* texture, MaterialType type);
 
 	Material* Material_CreateColor(Color4f color, GLfloat shininess, GLfloat emissionPower);
+	void Material_SetDiffuseColor(Material* material, Color4f* color);
 
 	/**
 	 * @brief Applies the material properties for the next mesh drawing operation
@@ -46,6 +47,7 @@ extern "C"
 	 */
 	void Material_Apply(Material* material);
 	void Material_Reset(void);
+	void Material_Free(Material* material);
 
 #ifdef __cplusplus
 }

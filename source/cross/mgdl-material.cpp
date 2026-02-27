@@ -1,5 +1,6 @@
 #include <mgdl/mgdl-scene.h>
 #include <mgdl/mgdl-opengl_util.h>
+#include <mgdl/mgdl-alloc.h>
 #include <cstring>
 
 static GLfloat whiteSpecular[4] = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -7,7 +8,7 @@ static GLfloat blackEmissive[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 
 Material* Material_Load (const char* name, Texture* texture, MaterialType type)
 {
-	Material* material = (Material*)malloc(sizeof(Material));
+	Material* material = (Material*)mgdl_AllocateGraphicsMemory(sizeof(Material));
 	sizetype nameSize = strlen(name);
 	material->name = new char[nameSize+1];
 	strncpy(material->name,  name, nameSize+1);
@@ -19,7 +20,7 @@ Material* Material_Load (const char* name, Texture* texture, MaterialType type)
 
 Material* Material_CreateColor(Color4f color, GLfloat shininess, GLfloat emissionPower)
 {
-	Material* material = (Material*)malloc(sizeof(Material));
+	Material* material = (Material*)mgdl_AllocateGraphicsMemory(sizeof(Material));
 	material->name = nullptr;
 	material->texture = nullptr;
 	material->shininess = shininess;
@@ -51,6 +52,13 @@ void Material_Apply(Material* material)
 		glMaterialfv(GL_FRONT, GL_EMISSION, material->emissiveColor);
 	}
 }
+void Material_SetDiffuseColor(Material* material, Color4f* color)
+{
+	material->diffuseColor[0] = color->red;
+	material->diffuseColor[1] = color->green;
+	material->diffuseColor[2] = color->blue;
+	material->diffuseColor[3] = color->alpha;
+}
 
 void Material_Reset(void)
 {
@@ -60,5 +68,13 @@ void Material_Reset(void)
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, whiteSpecular);
 		glMaterialf(GL_FRONT, GL_SHININESS, 0.0f);
 		glMaterialfv(GL_FRONT, GL_EMISSION, blackEmissive);
+	}
+}
+void Material_Free(Material* m)
+{
+	if (m != nullptr)
+	{
+		mgdl_FreeGraphicsMemory(m);
+		m = nullptr;
 	}
 }

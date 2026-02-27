@@ -1,4 +1,8 @@
 # Quick'n'dirty makefile [BC] v2
+LIBOGC_INC	:= $(DEVKITPRO)/libogc/include
+LIBOGC_LIB	:= $(DEVKITPRO)/libogc/lib/wii
+PORTLIBS_INC	:=	$(DEVKITPRO)/portlibs/ppc/include
+PORTLIBS_LIB	:=	$(DEVKITPRO)/portlibs/ppc/lib
 
 ifeq ($(strip $(DEVKITPPC)),)
   $(error "Use   export DEVKITPPC=<path to>devkitPPC   and try again")
