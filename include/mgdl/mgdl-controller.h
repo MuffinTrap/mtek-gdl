@@ -9,6 +9,8 @@
 #include "mgdl-types.h"
 #include "mgdl-vector.h"
 
+#define MGDL_MAX_CONTROLLERS 4
+
 /**
  * @brief Enum values for all the buttons on the Wii Controller.
  */

@@ -26,7 +26,7 @@ void Platform_ResizeWindow(int newWidth, int newHeight)
     float scaledHeight = scale*(float)platformPC->windowHeight;
 
     int left = 0;
-    int top = 0;
+    int bottom = 0;
 
     if (scaledWidth < newWidth)
     {
@@ -36,13 +36,13 @@ void Platform_ResizeWindow(int newWidth, int newHeight)
     if (scaledHeight < newHeight)
     {
         // Black bars on top and bottom
-        top = (newHeight - scaledHeight)/2;
+        bottom = (newHeight - scaledHeight)/2;
     }
 
     // But keep showing the internal resolution scaled
-    glViewport(left, top, scaledWidth, scaledHeight);
+    glViewport(left, bottom, scaledWidth, scaledHeight);
     platformPC->viewport.left = left;
-    platformPC->viewport.top = top;
+    platformPC->viewport.bottom = bottom;
     platformPC->viewport.width = scaledWidth;
     platformPC->viewport.height = scaledHeight;
 

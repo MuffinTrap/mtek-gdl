@@ -37,43 +37,51 @@ size_t get_button_count(int fd)
 
     return buttons;
 }
+
 void Joystick_Init()
 {
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < MGDL_MAX_CONTROLLERS; i++)
     {
         joysticks[i] = Joystick_Create(i);
-        Joystick* joystick = joysticks[i];
-        const char* device;
-        switch (i)
+    }
+    // Look for sensible joysticks, some mice report as joysticks
+    int deviceIndex = 0;
+    int joystickIndex = 0;
+    char* deviceName;
+
+    while(joystickIndex < MGDL_MAX_CONTROLLERS)
+    {
+        // Get joystick
+        Joystick* joystick = joysticks[joystickIndex];
+
+        // Start from js0
+        deviceName = mgdl_BufferPrintf("/dev/input/js%d", deviceIndex);
+        deviceIndex += 1;
+
+        int linux_index = open(deviceName, O_NONBLOCK);
+        if (linux_index == -1)
         {
-        case 0:
-            device = "/dev/input/js0";
-            break;
-
-        case 1:
-            device = "/dev/input/js1";
-            break;
-
-        case 2:
-            device = "/dev/input/js2";
-            break;
-
-        case 3:
-            device = "/dev/input/js3";
-            break;
-        }
-        joystick->linux_device_index = open(device, O_NONBLOCK);
-        if (joystick->linux_device_index == -1)
-        {
-            Log_ErrorF("Could not open joystick %d\n", joystick->index);
+            Log_ErrorF("Could not open js%d\n", deviceIndex-1);
             joystick->isConnected = false;
-            continue;
+
+            // No more joysticks connected
+            break;
         }
         else
         {
+            sizetype axisCount = get_axis_count(linux_index);
+            sizetype buttonCount = get_button_count(linux_index);
+            // Check that has axii and buttons
+            if (axisCount < 2 || buttonCount < 2)
+            {
+                Log_InfoF("Device %d has too few buttons or axis\n", deviceIndex-1);
+                continue;
+            }
+
+            joystick->linux_device_index = linux_index;
             joystick->isConnected = true;
-            joystick->axisCount = get_axis_count(joystick->linux_device_index);
-            joystick->buttonCount = get_button_count(joystick->linux_device_index);
+            joystick->axisCount = axisCount;
+            joystick->buttonCount = buttonCount;
 
             // Get joystick name
             char name[128];
@@ -81,8 +89,11 @@ void Joystick_Init()
             {
                 strncpy(name, "Unknown", sizeof(name));
             }
-            Log_InfoF("Joystick Init %d %s : %zu axii %zu buttons", joystick->index, name, joystick->axisCount, joystick->buttonCount);
+            Log_InfoF("Joystick Init %d %s : %zu axii %zu buttons\n", joystick->index, name, joystick->axisCount, joystick->buttonCount);
             joystick->axes = (struct axis_state*)malloc(sizeof(struct axis_state) * joystick->axisCount);
+
+            // This joystick is ok, next one
+            joystickIndex += 1;
         }
     }
 }

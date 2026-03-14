@@ -27,7 +27,7 @@ void Platform_SetWindowNameAndAspect(const char* windowName, ScreenAspect aspect
             break;
     };
     platform->viewport.left = 0;
-    platform->viewport.top = platform->windowHeight;
+    platform->viewport.bottom = 0;
     platform->viewport.width = platform->windowWidth;
     platform->viewport.height = platform->windowHeight;
 }

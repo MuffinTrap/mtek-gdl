@@ -235,7 +235,7 @@ sizetype OggPlayer_GetSoundSizeBytes(Sound* snd)
 
 u32 OggPlayer_GetSoundElapsedMs(Sound* snd)
 {
-	return musics[snd->voiceNumber].elapsedSeconds * 1000;
+	return musics[snd->voiceNumber].elapsedSeconds * 1000.0f;
 }
 void OggPlayer_SetSoundElapsedMs(Sound* snd, u32 milliseconds)
 {

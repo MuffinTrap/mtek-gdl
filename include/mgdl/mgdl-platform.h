@@ -8,7 +8,6 @@
  * @brief Virtual functions to be defined by each platform
  */
 
-#define MGDL_MAX_CONTROLLERS 4
 
 /**
  * @class Platform

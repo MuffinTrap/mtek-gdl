@@ -251,7 +251,7 @@ typedef struct RectF RectF;
 struct Viewport
 {
     int left;
-    int top;
+    int bottom;
     u32 width;
     u32 height;
 };
