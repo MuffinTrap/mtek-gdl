@@ -4,6 +4,7 @@
 #include <mgdl/mgdl-texture.h>
 #include <mgdl/mgdl-png.h>
 #include <mgdl/mgdl-sound.h>
+#include <mgdl/mgdl-dynamic_array.h>
 
 /**
  * @file mgdl-assetmanager.h
@@ -16,20 +17,53 @@
  */
 struct AssetManager
 {
-	sizetype _memoryInUse;
+	sizetype m_memoryInUse;
+	struct DynamicArray* m_textureAssets;
+	struct DynamicArray* m_soundAssets;
+	struct DynamicArray* m_imageAssets;
 };
 typedef struct AssetManager AssetManager;
+
+struct TextureAsset
+{
+	Texture* data;
+	zstr filename;
+};
+typedef struct TextureAsset TextureAsset;
+
+DYNAMIC_ARRAY(TextureAsset)
+
+struct SoundAsset
+{
+	Sound* data;
+	zstr filename;
+};
+typedef struct SoundAsset SoundAsset;
+
+DYNAMIC_ARRAY(SoundAsset)
+
+struct ImageAsset
+{
+	PNGFile* data;
+	zstr filename;
+};
+typedef struct ImageAsset ImageAsset;
+
+DYNAMIC_ARRAY(ImageAsset)
+
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-void AssetManager_Init(AssetManager* manager);
-void AssetManager_LoadFont(AssetManager* manager, Font* font);
-void AssetManager_LoadTexture(AssetManager* manager, Texture* image);
-void AssetManager_LoadPNG(AssetManager* manager, PNGFile* png);
-void AssetManager_LoadSound(AssetManager* manager, Sound* snd);
+void AssetManager_Init();
+TextureHandle AssetManager_LoadTexture(const char* filename);
+Texture* AssetManager_GetTexture(TextureHandle handle);
+ImageHandle AssetManager_LoadPNG(const char* filename);
+SoundHandle AssetManager_LoadSound(const char* filename, SoundFileType fileType);
+Sound* AssetManager_GetSound(SoundHandle handle);
+
 
 
 #ifdef __cplusplus

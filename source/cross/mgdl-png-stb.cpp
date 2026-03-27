@@ -113,6 +113,30 @@ GLenum PNG_PNGtoGLInternalFormat(int stbi_format)
 	};
 	return 0;
 }
+int PNG_GLFormattoPNGFormat(GLenum format)
+{
+	switch (format)
+	{
+		case GL_LUMINANCE:
+		return STBI_grey;
+		break;
+	case GL_LUMINANCE_ALPHA:
+		return STBI_grey_alpha;
+		break;
+	case GL_RGB:
+		return STBI_rgb;
+		break;
+	case GL_RGBA:
+		return STBI_rgb_alpha;
+		break;
+	default:
+		Log_Warning("Unsupported GL format\n");
+		return 0;
+		break;
+	};
+	return 0;
+
+}
 #endif
 
 // GENERAL PNG FUNCTIONS
@@ -163,4 +187,20 @@ GLenum PNG_GetGLInternalFormat(PNGFile* png)
 	return PNG_PNGtoGLInternalFormat(png->_pngFormat);
 }
 
-
+PNGFile* PNG_GenerateColorImage(Color4f* color)
+{
+	PNGFile* generated = (PNGFile*)mgdl_AllocateGeneralMemory(sizeof(PNGFile));
+	generated->bytesPerPixel = 1;
+	generated->height = 2;
+	generated->width = 2;
+	generated->_pngFormat = PNG_GLFormattoPNGFormat(GL_RGBA);
+	generated->_texels = (GLubyte*)mgdl_AllocateGeneralMemory(sizeof(GLubyte) * 2 * 2 * 4);
+	for (int i = 0; i < 2*2*4; i+=4)
+	{
+		generated->_texels[i+0] = color->red*255;
+		generated->_texels[i+1] = color->green*255;
+		generated->_texels[i+2] = color->blue*255;
+		generated->_texels[i+3] = color->alpha*255;
+	}
+	return generated;
+}

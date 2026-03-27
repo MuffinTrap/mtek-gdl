@@ -33,6 +33,10 @@ struct Scene
 
 };
 typedef struct Scene Scene;
+
+DYNAMIC_ARRAY(Mesh)
+DYNAMIC_ARRAY(Light)
+
 #ifdef __cplusplus
 extern "C"
 {

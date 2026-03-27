@@ -313,11 +313,6 @@ bool Menu_TexturedButton(Menu* menu, Texture* texture, TextureFlipModes flipflag
                 (cy <= y) &&
                 (cy >= y - h));
 
-    Texture_SetTint(texture, 1.0f, 1.0f, 1.0f);
-    if (!inside)
-    {
-        Texture_SetTint(texture, 0.7f, 0.7f, 0.7f);
-    }
     short tx1 = x;
     short tx2 = x+w;
     short ty1 = y;
@@ -345,7 +340,6 @@ bool Menu_TexturedButton(Menu* menu, Texture* texture, TextureFlipModes flipflag
         glEnable(GL_CULL_FACE);
     }
 
-    Texture_SetTint(texture, 1.0f, 1.0f, 1.0f);
 
     menu->largestHeightOnRow = maxF(menu->largestHeightOnRow, h);
     switch(menu->drawDirection)

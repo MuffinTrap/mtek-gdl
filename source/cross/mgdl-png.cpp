@@ -93,6 +93,31 @@ GLenum PNG_PNGtoGLInternalFormat(int pngFormat)
 
 }
 
+int PNG_GLFormattoPNGFormat(GLenum format)
+{
+	switch (format)
+	{
+		case GL_LUMINANCE:
+		return PNG_COLOR_TYPE_GRAY;
+		break;
+	case GL_LUMINANCE_ALPHA:
+		return PNG_COLOR_TYPE_GRAY_ALPHA;
+		break;
+	case GL_RGB:
+		return PNG_COLOR_TYPE_RGB;
+		break;
+	case GL_RGBA:
+		return PNG_COLOR_TYPE_RGB_ALPHA;
+		break;
+	default:
+		Log_Warning("Unsupported GL format\n");
+		return 0;
+		break;
+	};
+	return 0;
+
+}
+
 
 PNGFile* _PNG_ReadFilePointer(FILE* fp)
 {

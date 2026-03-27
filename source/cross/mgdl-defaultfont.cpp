@@ -567,7 +567,6 @@ Font* DefaultFont_GetDefaultFont(void)
 
 		Texture* img = (Texture*)malloc(sizeof(Texture));
 		Texture_SetGLName(img, texName, width, height, ColorFormats::GrayAlpha);
-		Texture_SetTint(img, 1.0f, 1.0f, 1.0f);
 		debugFont = Font_Load(img, 8, 8, ' ');
 	}
 	return debugFont;

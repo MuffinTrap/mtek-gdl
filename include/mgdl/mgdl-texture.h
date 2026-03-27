@@ -20,7 +20,6 @@ struct Texture
 	PNGFile* pngFile;
 
 	float aspectRatio;
-	Color4f tint;
 	GLsizei width;
 	GLsizei height;
 	ColorFormats colorFormat;
@@ -78,17 +77,6 @@ extern "C"
 		* @param alignY Alignment on the Y axis.
 		*/
 	void Texture_Draw3D(Texture* img, float scale, AlignmentModes alignX, AlignmentModes alignY);
-
-	/**
-		* @brief Sets the tint of the image.
-		*
-		* This function sets the tint color. Each pixel is multiplied by the tint color. Default tint is white (1,1,1)
-		* @param red Red component of the tint color, [0,1].
-		* @param green Red component of the tint color, [0,1].
-		* @param blue Red component of the tint color, [0,1].
-		*/
-	void Texture_SetTint(Texture* img, float red, float green, float blue);
-
 
 	/**
 		* @brief Loads an image from a file.

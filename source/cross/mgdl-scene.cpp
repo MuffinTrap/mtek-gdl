@@ -4,12 +4,13 @@
 #include <mgdl/mgdl-assert.h>
 
 // TODO Move materials and meshes to AssetManager
+DYNAMIC_ARRAY_IMPL(Mesh)
 
 void Scene_Init(Scene* scene)
 {
 	scene->rootNode = nullptr;
 	scene->materials = DynamicArray_CreateMaterial(4);
-	scene->meshes = DynamicArray_CreateMesh(4);
+	scene->meshes = DynamicArray_CreatePtrMesh(4);
 	scene->lights = nullptr;
 }
 

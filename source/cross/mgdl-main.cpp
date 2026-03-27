@@ -7,8 +7,6 @@
 #include <mgdl/mgdl-sound.h>
 #include <mgdl/mgdl-audio.h>
 
-static AssetManager assetManager;
-
 void mgdl_InitSystem(const char* windowName,
 	ScreenAspect screenAspect,
 	CallbackFunction initCallback,
@@ -17,59 +15,61 @@ void mgdl_InitSystem(const char* windowName,
 	u32 initFlags)
 {
 	Platform_Init(windowName, screenAspect, initCallback, frameCallback, quitCallback, initFlags);
-	AssetManager_Init(&assetManager);
+
+	AssetManager_Init();
 }
 
-PNGFile* mgdl_LoadPNG(const char* filename)
+// HANDLE API
+
+TextureHandle mgdl_LoadTexture(const char* filename)
+{
+	return AssetManager_LoadTexture(filename);
+}
+
+void mgdl_DrawTexture(TextureHandle handle, short x, short y)
+{
+	Texture* texture = AssetManager_GetTexture(handle);
+	Texture_Draw2DAligned(texture, x, y, 1.0f, LJustify, LJustify);
+}
+void mgdl_DrawTextureV(TextureHandle handle, vec2 position)
+{
+	mgdl_DrawTexture(handle, position.x, position.y);
+}
+
+SoundHandle mgdl_LoadSound(const char* filename, SoundFileType soundType)
+{
+	return AssetManager_LoadSound(filename, soundType);
+}
+
+void mgdl_PlaySound(SoundHandle handle)
+{
+	Sound* snd = AssetManager_GetSound(handle);
+	Audio_PlaySound(snd);
+}
+
+ImageHandle mgdl_LoadPNG(const char* filename)
+{
+	return AssetManager_LoadPNG(filename);
+}
+
+// DIRECT API
+
+PNGFile* mgdl_LoadPNGFile(const char* filename)
 {
 	PNGFile* png = PNG_ReadFile(filename);
-	if (png != nullptr)
-	{
-		AssetManager_LoadPNG(&assetManager, png);
-		return png;
-	}
-	else
-	{
-		delete png;
-		return nullptr;
-	}
+	return png;
 }
 
-Texture* mgdl_LoadTexture(const char* filename, TextureFilterModes filterMode)
-{
-	Texture* img = Texture_LoadFile(filename, filterMode);
-	if (img != nullptr)
-	{
-		AssetManager_LoadTexture(&assetManager, img);
-		return img;
-	}
-	else
-	{
-		return nullptr;
-	}
-}
 
 Texture* mgdl_LoadTexturePNG(PNGFile* png, TextureFilterModes filterMode)
 {
 	Texture* img = Texture_LoadPNG(png, filterMode);
-	if (img != nullptr)
-	{
-		return img;
-	}
-	else
-	{
-		delete img;
-		return nullptr;
-	}
+	return img;
 }
 
 Sound* mgdl_LoadSoundWav(const char* filename)
 {
 	Sound* snd = Audio_LoadSound(filename, SoundWav);
-	if(snd != nullptr)
-	{
-		AssetManager_LoadSound(&assetManager, snd);
-	}
 	return snd;
 }
 
@@ -77,66 +77,33 @@ Sound* mgdl_LoadSoundWav(const char* filename)
 Sound* mgdl_LoadSoundOgg(const char* filename)
 {
 	Sound* snd = Audio_LoadSound(filename, SoundOgg);
-	if(snd != nullptr)
-	{
-		AssetManager_LoadSound(&assetManager, snd);
-	}
 	return snd;
 }
 Sound* mgdl_LoadSoundMp3(const char* filename)
 {
 	Sound* snd = Audio_LoadSound(filename, SoundMp3);
-	if(snd != nullptr)
-	{
-		AssetManager_LoadSound(&assetManager, snd);
-	}
 	return snd;
 }
 
 Font* mgdl_LoadFont(const char* filename, short characterWidth, short characterHeight, char firstCharacter)
 {
-	Texture* fontTexture = mgdl_LoadTexture(filename, TextureFilterModes::Nearest);
+	Texture* fontTexture = Texture_LoadFile(filename, TextureFilterModes::Nearest);
 	Font* font = Font_Load(fontTexture, characterWidth, characterHeight, firstCharacter);
-	if (font != nullptr)
-	{
-		AssetManager_LoadFont(&assetManager, font);
-		return font;
-	}
-	else
-	{
-		return nullptr;
-	}
+	return font;
 }
 
 Font* mgdl_LoadFontCustom(const char* filename, short characterWidth, short characterHeight, char firstCharacter, short charactersPerRow)
 {
-	Texture* fontTexture = mgdl_LoadTexture(filename, TextureFilterModes::Linear);
+	Texture* fontTexture = Texture_LoadFile(filename, TextureFilterModes::Linear);
 	Font* font = Font_LoadPadded(fontTexture, characterWidth, characterHeight, firstCharacter, charactersPerRow);
-
-	if (font != nullptr)
-	{
-		AssetManager_LoadFont(&assetManager, font);
-		return font;
-	}
-	else
-	{
-		return nullptr;
-	}
+	return font;
 }
 
 Font* mgdl_LoadFontCustom(const char* filename, short characterWidth, short characterHeight, short charactersPerRow, const char* characters)
 {
-	Texture* fontTexture = mgdl_LoadTexture(filename, TextureFilterModes::Linear);
+	Texture* fontTexture = Texture_LoadFile(filename, TextureFilterModes::Linear);
 	Font* font = Font_LoadSelective(fontTexture, characterWidth, characterHeight, charactersPerRow, characters);
-	if (font != nullptr)
-	{
-		AssetManager_LoadFont(&assetManager, font);
-		return font;
-	}
-	else
-	{
-		return nullptr;
-	}
+	return font;
 }
 
 Scene* mgdl_LoadFBX(const char* filename)

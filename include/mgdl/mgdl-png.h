@@ -28,6 +28,8 @@ extern "C"
 {
 #endif
 
+PNGFile* PNG_GenerateColorImage(Color4f* color);
+
 PNGFile* PNG_ReadFile(const char* filename);
 void PNG_DeleteData(PNGFile* png);
 
@@ -40,6 +42,7 @@ float PNG_GetGrayscale(PNGFile* png, int x, int y);
 
 GLenum PNG_PNGtoGLFormat(int pngFormat);
 GLenum PNG_PNGtoGLInternalFormat(int pngFormat);
+int PNG_GLFormattoPNGFormat(GLenum format);
 
 #ifdef __cplusplus
 }

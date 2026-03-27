@@ -13,7 +13,7 @@ Node* Node_Create(u8 childCapacity)
 	node->light = nullptr;
 	node->name = nullptr;
 	node->enabledElements = (NodeTransform |NodeMesh| NodeMaterial| NodeLight| NodeChildren);
-	node->children = DynamicArray_CreateNode(childCapacity);
+	node->children = DynamicArray_CreatePtrNode(childCapacity);
 
 	return node;
 }

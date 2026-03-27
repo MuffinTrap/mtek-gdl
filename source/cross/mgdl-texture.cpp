@@ -14,10 +14,6 @@ Texture* Texture_Create()
 	img->aspectRatio = 1.0f;
 	img->width = 0;
 	img->height = 0;
-	img->tint.red = 1.0f;
-	img->tint.green = 1.0f;
-	img->tint.blue = 1.0f;
-	img->tint.alpha = 1.0f;
 	img->textureId = 0;
 	img->pngFile = nullptr;
 	return img;
@@ -76,8 +72,6 @@ Texture* Texture_LoadPNG(PNGFile* png, TextureFilterModes filterMode)
 	image->width = png->width;
 	image->height = png->height;
 	image->aspectRatio = image->width / image->height;
-	Texture_SetTint(image, 1.0f, 1.0f, 1.0f);
-									  //(1.0f/(float)png->height) * 0.375f);
 
 	return image;
 }
@@ -88,7 +82,6 @@ void Texture_SetGLName(Texture* img, GLuint textureName, GLsizei width, GLsizei 
 	img->height = height;
 	img->textureId = textureName;
 	img->colorFormat = format;
-	Texture_SetTint(img, 1.0f, 1.0f, 1.0f);
 }
 
 // TODO add padding to UVs so that the corners are inside the pixels and not in between
@@ -102,8 +95,6 @@ void Texture_Draw2DAbsolute(Texture* img, short x, short y, short x2, short y2)
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, img->textureId);
 	glBegin(GL_QUADS);
-		glColor3f(img->tint.red, img->tint.green, img->tint.blue);
-
 		// Lower left
 		glTexCoord2f(0.0f, 0.0f);
 		glVertex2f(dx, dy2);
@@ -177,8 +168,6 @@ void Texture_Draw3D(Texture* img, float scale, AlignmentModes alignX, AlignmentM
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, img->textureId);
 	glBegin(GL_QUADS);
-		glColor3f(img->tint.red, img->tint.green, img->tint.blue);
-
 		// TODO calculate uv to be inside border pixels to avoid repeating
 		// Lower left
 		glTexCoord2f(0.0f, 0.0f);
@@ -200,15 +189,6 @@ void Texture_Draw3D(Texture* img, float scale, AlignmentModes alignX, AlignmentM
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
-}
-
-
-
-void Texture_SetTint (Texture* img, float red, float green, float blue )
-{
-	img->tint.red = red;
-	img->tint.green = green;
-	img->tint.blue = blue;
 }
 
 GLuint PixelsToOpenGL(u32 width, u32 height, void* pixels, GLenum colorFormat, GLenum dataType)

@@ -13,8 +13,20 @@
 
 // Vector types
 #include "mgdl-vectorfunctions.h"
+#include "mgdl-vector.h"
 
 #include <mgdl/mgdl-opengl.h>
+
+
+// String library
+#ifndef GEKKO
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wc99-extensions"
+#endif
+#include <mgdl/zstrh/zstr.h>
+#ifndef GEKKO
+#pragma GCC diagnostic pop
+#endif
 
 // For MacOS
 #include <stddef.h>
@@ -256,4 +268,15 @@ struct Viewport
     u32 height;
 };
 typedef struct Viewport Viewport;
+
+// Asset handles
+struct Handle
+{
+    sizetype index;
+};
+typedef struct Handle Handle;
+
+typedef Handle TextureHandle;
+typedef Handle SoundHandle;
+typedef Handle ImageHandle;
 

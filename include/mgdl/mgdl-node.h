@@ -4,14 +4,13 @@
 #include <mgdl/mgdl-mesh.h>
 #include <mgdl/mgdl-material.h>
 #include <mgdl/mgdl-light.h>
+#include <mgdl/mgdl-dynamic_array.h>
 
 /**
  * @file mgdl-node.h
  * @ingroup scene
  * @brief Node class for scene graph
  */
-
-struct DynamicArray;
 
 enum NodeFlags
 {
@@ -34,10 +33,10 @@ struct Node
 	const char* name;
 	NodeFlagField enabledElements;
 	struct DynamicArray* children;
-
 };
 typedef struct Node Node;
 
+DYNAMIC_ARRAY(Node)
 
 #ifdef __cplusplus
 extern "C"

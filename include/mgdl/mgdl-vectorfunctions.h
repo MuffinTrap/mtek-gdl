@@ -6,9 +6,6 @@
  * @ingroup core
  * @brief Macro definitions for vector and matrix operations
  */
-
-#if defined(MGDL_USE_CCVECTOR)
-
 	// Vector 2
 	#define V2f_Create(x,y) vec2New(x,y)
 	#define V2f_X(Va) Va.x
@@ -71,57 +68,3 @@
 
 	// Matrix 4x4
 	#define MTX4x4_MultiplyVector(matrix, source, dest) dest = mat4x4MultiplyVector(matrix, source)
-
-#elif defined(MGDL_PLATFORM_WII)
-	// On the wii the gu library is used if not CC_VECTOR or CGML
-
-	#define V2f_Create(x, y) {x, y}
-	#define V2f_X(Va) Va.x
-	#define V2f_Y(Va) Va.y
-
-	#define V3f_Create(x,y,z) {x, y, z}
-	#define V3f_X(Va) Va.x
-	#define V3f_Y(Va) Va.y
-	#define V3f_Z(Va) Va.z
-
-	#define V3f_Copy(source, dest) dest = source;
-	#define V3f_FromFloatArray(array, index, dest) V3f_Create(array[index], array[index+1], array[index+2]);
-	#define V3f_ToFloatArray(source, array, index) array[index*3] = source.x; array[index*3+1] = source.y; array[index*3+2] = source.z;
-	#define V3f_FromVec3Array(array, index, dest) dest = array[index];
-
-	#define V3f_Scale(Va, scalar, dest) guVecScale(&Va, &dest, scalar);
-	#define V3f_Add(Va, Vb, dest) guVecAdd(&Va, &Vb, &dest);
-	#define V3f_Sub(Va, Vb, dest) guVecSub(&Va, &Vb, &dest);
-	#define V3f_Normalize(Va) guVecNormalize(&Va);
-	#define V3f_Cross(Va, Vb, dest) guVecCross(&Va, &Vb, &dest);
-	#define V3f_Dot(Va, Vb) guVecDotProduct(&Va, &Vb);
-
-		// Rotations
-	V3f V3f_RotateYFunc(V3f source, float angle);
-	#define V3f_RotateY(source, angle, dest) dest = V3f_RotateYFunc(source, angle);
-
-	V3f V3f_RotateZFunc(V3f source, float angle);
-	#define V3f_RotateZ(source, angle, dest) dest = V3f_RotateZFunc(source, angle);
-
-
-	V3f V3f_HexToColorFunc(int red, int green, int blue);
-	#define V3f_HexToColor(red, green, blue, dest); dest = V3f_HexToColorFunc(red, green, blue);
-
-	float V3f_BezierFuncF(float s, float P0, float C0, float C1, float P1);
-	V3f V3f_BezierFuncV3(float s, V3f P0, V3f C0, V3f C1, V3f P1);
-
-	#define V3f_BezierV3(s, P0, C0, C1, P1, dest) dest = V3f_BezierFuncV3(s, P0, C0, C1, P1);
-
-	#define V3f_Print(Va) printf("%.2f, %.2f, %.2f\n", Va.x, Va.y, Va.z);
-
-
-	// Matrix 3x3
-	#define MTX3x3_Identity(matrix) guMtxIdentity(matrix);
-	#define MTX3x3_MultiplyVector(matrix, Va, dest) guVecMultiply(matrix, &Va, &dest);
-	// TODO test these, what is the correct letter
-	#define MTX3x3_RotateX(matrix, radians) guMtxRotRad(matrix, "x", (radians));
-	#define MTX3x3_RotateY(matrix, radians) guMtxRotRad(matrix, "y", (radians));
-	#define MTX3x3_RotateZ(matrix, radians) guMtxRotRad(matrix, "z", (radians));
-
-#endif
-

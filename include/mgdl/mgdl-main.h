@@ -7,6 +7,7 @@
 #include <mgdl/mgdl-sound.h>
 #include <mgdl/mgdl-scene.h>
 #include <mgdl/mgdl-sprite.h>
+#include <mgdl/mgdl-types.h>
 
 /**
  * @file mgdl-main.h
@@ -52,9 +53,22 @@ void mgdl_InitSystem(const char* name,
 				CallbackFunction quitCallback,
 				u32 initFlags);
 
+
+TextureHandle mgdl_LoadTexture(const char* filename);
+void mgdl_DrawTexture(TextureHandle handle, short x, short y);
+void mgdl_DrawTextureV(TextureHandle handle, vec2 position);
+void mgdl_DrawTextureEx(TextureHandle handle, vec2 position, float rotationDegrees, float scale);
+void mgdl_DrawTextureRec(TextureHandle handle, RectF source, vec2 position);
+
+SoundHandle mgdl_LoadSound(const char* filename, SoundFileType soundType);
+void mgdl_PlaySound(SoundHandle handle);
+
+ImageHandle mgdl_LoadPNG(const char* filename);
+
+
+
 // TODO Move all loading to AssetManager to get memory status and other stats
-PNGFile* mgdl_LoadPNG(const char* filename);
-Texture* mgdl_LoadTexture(const char* filename, TextureFilterModes filterMode);
+PNGFile* mgdl_LoadPNGFile(const char* filename);
 Texture* mgdl_LoadTexturePNG(PNGFile* png, TextureFilterModes filterMode);
 
 Sound* mgdl_LoadSoundWav(const char* filename);
