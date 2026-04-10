@@ -6,7 +6,7 @@ CXXFLAGS += -DMGDL_PLATFORM=\"Linux\"
 CXXFLAGS += -DMGDL_PLATFORM_LINUX
 
 # Address sanitizer reports leaks and crash reasons
-CXXFLAGS += -fsanitize=address
+# CXXFLAGS += -fsanitize=address
 
 # Set Compiler
 CXX = clang++
@@ -30,7 +30,7 @@ EXE_SUFFIX = .elf
 
 # Create a list of libraries that need to be linked
 # Link statically to mgdl
-LDFLAGS = -Wl,-Bstatic -lmgdl -Wl,-Bdynamic -lopenal -lGL -lGLU -lglut -lm -Wno-unused-function -z muldefs
+LDFLAGS = -Wl,-Bstatic -lmgdl -Wl,-Bdynamic -lopenal -lGL -lGLU -lglut -lm -langelscript -Wno-unused-function -z muldefs
 
 
 
@@ -48,6 +48,9 @@ LDFLAGS = -Wl,-Bstatic -lmgdl -Wl,-Bdynamic -lopenal -lGL -lGLU -lglut -lm -Wno-
 
 # Add mgdl library search directory
 LDFLAGS += -L$(MGDL_DIR)/lib
+
+# Add AngelScript search directory
+LDFLAGS += -Langelscript/linux
 
 # Executable is the same name as current directory +
 # platform specific postfix

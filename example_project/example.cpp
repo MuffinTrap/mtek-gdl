@@ -2,6 +2,106 @@
 #include "example.h"
 #include <mgdl/mgdl-draw2d.h>
 
+void AngelScriptMessageCallback(const asSMessageInfo *msg)
+{
+    switch(msg->type)
+    {
+        case asMSGTYPE_ERROR:
+            Log_ErrorF("AngelScript: Section %s, row %d, col %d message: %s\n", msg->section, msg->row, msg->col, msg->message);
+            break;
+        case asMSGTYPE_WARNING:
+            Log_WarningF("AngelScript: Section %s, row %d, col %d message: %s\n", msg->section, msg->row, msg->col, msg->message);
+            break;
+        case asMSGTYPE_INFORMATION:
+            Log_InfoF("AngelScript: Section %s, row %d, col %d message: %s\n", msg->section, msg->row, msg->col, msg->message);
+            break;
+    }
+}
+
+void DrawLine(int x1, int y1, int x2, int y2)
+{
+    Draw2D_Line(x1, y1, x2, y2, Color_GetDefaultColor(Color_Red));
+}
+
+float Sin(float degrees)
+{
+    return sin(Deg2Rad(degrees));
+}
+float Cos(float degrees)
+{
+    return cos(Deg2Rad(degrees));
+}
+
+void Example::InitAngelScript()
+{
+    as_engine = asCreateScriptEngine();
+    int result = as_engine->SetMessageCallback(asFUNCTION(AngelScriptMessageCallback), 0, asCALL_CDECL);
+    mgdl_assert_print(result >= 0, "Failed setting AngelScript message callback\n");
+
+    result = as_engine->RegisterGlobalFunction("void DrawLine(int x1, int y1, int x2, int y2)", asFUNCTION(DrawLine), asCALL_CDECL);
+    result = as_engine->RegisterGlobalFunction("float Sin(float degrees)", asFUNCTION(Sin), asCALL_CDECL);
+    result = as_engine->RegisterGlobalFunction("float Cos(float degrees)", asFUNCTION(Cos), asCALL_CDECL);
+    mgdl_assert_print(result >= 0, "Failed registering DrawLine\n");
+
+    as_ctx = as_engine->CreateContext();
+}
+
+void Example::LoadAngelScript(const char* script)
+{
+    asIScriptModule *mod = as_engine->GetModule("MyModule");
+    if (mod != nullptr)
+    {
+        mod->Discard();
+    }
+
+    CScriptBuilder builder;
+    int result = builder.StartNewModule(as_engine, "MyModule");
+    mgdl_assert_print(result >= 0, "Failed starting module\n");
+
+    result = builder.AddSectionFromFile(script);
+    mgdl_assert_print(result >= 0, "Failed to add test.angel\n");
+
+    result = builder.BuildModule();
+    mgdl_assert_print(result >= 0, "Failed to build module\n");
+
+    mod = as_engine->GetModule("MyModule");
+    mgdl_assert_print(mod != nullptr, "Failed to get module\n");
+
+    as_mainFunc = mod->GetFunctionByDecl("void main(float deltatime)");
+    if( as_mainFunc == 0 )
+    {
+        // The function couldn't be found. Instruct the script writer
+        // to include the expected function in the script.
+        printf("The script must have the function 'void main()'. Please add it and try again.\n");
+        return;
+    }
+
+}
+
+void Example::RunAngelScript()
+{
+    as_ctx->Prepare(as_mainFunc);
+    // pass deltatime
+    as_ctx->SetArgFloat(0, mgdl_GetDeltaTime());
+    int runResult = as_ctx->Execute();
+    if (runResult != asEXECUTION_FINISHED)
+    {
+        if (runResult == asEXECUTION_EXCEPTION)
+        {
+                // An exception occurred, let the script writer know what happened so it can be corrected.
+            Log_ErrorF("An exception '%s' occurred. Please correct the code and try again.\n", as_ctx->GetExceptionString());
+        }
+
+    }
+}
+
+void Example::DeinitAngelScript()
+{
+    as_ctx->Release();
+    as_engine->ShutDownAndRelease();
+}
+
+
 #include <string>
 
 #ifdef MGDL_ROCKET
@@ -29,7 +129,7 @@ void Example::Init()
 
 
     // Wii model scene
-    wiiScene = mgdl_LoadFBX("assets/wii_et_baby.fbx");
+    // wiiScene = mgdl_LoadFBX("assets/wii_et_baby.fbx");
     wiiTexture = mgdl_LoadTexture("assets/wii_console_texture.png");
 
     // TODO Materials somewhere else than in scene
@@ -73,6 +173,7 @@ void Example::Init()
     audioMenu =         Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 256, 256, "Audio");
     logMenu =           Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 620, 256, "Log");
     rocketMenu =        Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 256, 356, "Rocket");
+    angelMenu =        Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 256, 32, "AngelScript");
 
     if (sampleMusic)
     {
@@ -105,6 +206,10 @@ void Example::Init()
             Rocket_PlayTracks();
         }
     #endif
+
+    // AngelScript
+    InitAngelScript();
+    LoadAngelScript("assets/test.angel");
 }
 
 void Example::Quit()
@@ -171,6 +276,8 @@ void Example::Draw()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+    RunAngelScript();
+
     if (toggleLog) { DrawLog();}
     if ( toggleSprites) {DrawSprites();}
     if ( toggleTexture) {DrawTexture();}
@@ -179,6 +286,7 @@ void Example::Draw()
     if ( togglePerformance) {DrawTimingInfo();}
     if ( toggleAudio) {DrawAudio();}
     if ( toggleRocket) {DrawRocket();}
+    if ( toggleAngel) {DrawAngel();}
 
     DrawMenu();
 }
@@ -403,6 +511,7 @@ void Example::DrawMenu()
     Menu_Toggle(menu, "Performance", &togglePerformance);
     Menu_Toggle(menu, "Audio", &toggleAudio);
     Menu_Toggle(menu, "Log", &toggleLog);
+    Menu_Toggle(menu, "AngelScript", &toggleAngel);
 #if MGDL_ROCKET
 
     Menu_Toggle(menu, "Rocket", &toggleRocket);
@@ -606,4 +715,13 @@ void Example::DrawRocket()
 
 #endif
 }
+void Example::DrawAngel()
+{
+    Menu_Start(angelMenu, 10, mgdl_GetScreenHeight()-10, 256);
+    if (Menu_Button(angelMenu, "Reload"))
+    {
+        LoadAngelScript("assets/test.angel");
+    }
+}
+
 

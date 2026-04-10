@@ -1,6 +1,8 @@
 #pragma once
 
 #include <mgdl.h>
+#include <angelscript.h>
+#include <scriptbuilder.h>
 
 class Example
 {
@@ -19,6 +21,7 @@ class Example
     Menu* audioMenu;
     Menu* logMenu;
     Menu* rocketMenu;
+    Menu* angelMenu;
     Scene* wiiScene;
     Scene* shipScene;
     TextureHandle wiiTexture;
@@ -34,12 +37,22 @@ class Example
     float deltaTime;
     float elapsedSeconds;
 
+    // Scripting
+    asIScriptEngine *as_engine;
+    asIScriptContext* as_ctx;
+    asIScriptFunction* as_mainFunc;
+
     // Toggles
-    bool toggleSprites, toggle3D, toggleTexture, toggleCamera, toggleInputs, togglePerformance, toggleAudio, toggleLog, toggleRocket = false;
+    bool toggleSprites, toggle3D, toggleTexture, toggleCamera, toggleInputs, togglePerformance, toggleAudio, toggleLog, toggleRocket, toggleAngel = false;
 
     public:
         Example();
         void Init();
+        void InitAngelScript();
+        void LoadAngelScript(const char* script);
+        void ReloadAngelScript(const char* script);
+        void RunAngelScript();
+        void DeinitAngelScript();
         void Update();
         void Draw();
         void Quit();
@@ -58,6 +71,7 @@ class Example
         void DrawLog();
         void DrawSoundStatus(mgdlAudioStateEnum status);
         void DrawRocket();
+        void DrawAngel();
 
         void DrawVersion();
         void DrawScene(Scene* scene, V3f scale);
