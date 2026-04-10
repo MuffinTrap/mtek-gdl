@@ -4,10 +4,9 @@
 
 class Example
 {
-    Texture* barb;
+    TextureHandle barb;
     Sprite* mel_sprites;
     Sprite* fruitSprites;
-    Texture* pointerTexture;
     Font* ibmFont;
     Font* debugFont;
     Sound* sampleMusic;
@@ -22,9 +21,9 @@ class Example
     Menu* rocketMenu;
     Scene* wiiScene;
     Scene* shipScene;
-    Texture* wiiTexture;
+    TextureHandle wiiTexture;
 
-    Texture* matcapTexture;
+    TextureHandle matcapTexture;
     Texture* checkerTexture;
     Scene* icosaScene;
     Material* matcapMaterial;

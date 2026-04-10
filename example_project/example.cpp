@@ -20,10 +20,9 @@ void Example::Init()
 
     // Sprites, images and fonts
     short spriteHeight = 64;
-    barb = mgdl_LoadTexture("assets/barb.png", TextureFilterModes::Linear);
+    barb = mgdl_LoadTexture("assets/barb.png");
     mel_sprites = mgdl_LoadSprite("assets/mel_tiles.png", spriteHeight, spriteHeight);
     fruitSprites = mgdl_LoadSprite("assets/fruits.png", 16, 16);
-    pointerTexture = mgdl_LoadTexture("assets/pointer.png", TextureFilterModes::Nearest);
 
     ibmFont = mgdl_LoadFont("assets/font8x16.png", 8, 16, ' ');
     debugFont = DefaultFont_GetDefaultFont();
@@ -31,14 +30,17 @@ void Example::Init()
 
     // Wii model scene
     wiiScene = mgdl_LoadFBX("assets/wii_et_baby.fbx");
-    wiiTexture = mgdl_LoadTexture("assets/wii_console_texture.png", TextureFilterModes::Nearest);
-    Scene_SetMaterialTexture(wiiScene, "wii_console_texture.png", wiiTexture);
+    wiiTexture = mgdl_LoadTexture("assets/wii_console_texture.png");
+
+    // TODO Materials somewhere else than in scene
+    // Scene_SetMaterialTexture(wiiScene, "wii_console_texture.png", wiiTexture);
 
     // Ship with matcap texture
+    /*
     shipScene = mgdl_LoadFBX("assets/ship_with_uvs.fbx");
-    matcapTexture = mgdl_LoadTexture("assets/matcap.png", TextureFilterModes::Linear);
-    matcapMaterial = Material_Load("matcap", matcapTexture, MaterialType::Matcap);
-    Scene_SetAllMaterialTextures(shipScene, matcapTexture);
+    matcapTexture = mgdl_LoadTexture("assets/matcap.png");
+    matcapMaterial = Material_Load("matcap", AssetManager_GetTexture(matcapTexture), MaterialType::Matcap);
+    // TODO Scene_SetAllMaterialTextures(shipScene, matcapTexture);
     Material* st = Scene_GetMaterial(shipScene, "standardSurface1");
     Material* mt2 = Scene_GetMaterial(shipScene, "Material.002");
     if (st!=nullptr)
@@ -49,6 +51,7 @@ void Example::Init()
     {
         mt2->type = MaterialType::Matcap;
     }
+    */
 
     // Generated icosahedron and checkerboard texture
     icosaScene = Scene_CreateEmpty();
@@ -187,7 +190,7 @@ void Example::DrawSprites()
     for (int i = 0; i < 16; i++)
     {
         int size = 64;
-        Sprite_Draw2D(fruitSprites, i, size * (i%4), size + (i/4) * size, size, LJustify, RJustify, Color_GetDefaultColor(Color_White));
+        Sprite_Draw2D(fruitSprites, i, size * (i%4), size + (i/4) * size, size, Alignment_LJustify, Alignment_RJustify, Color_GetDefaultColor(Color_White));
     }
 
     const short h = Sprite_GetHeight(mel_sprites);
@@ -199,7 +202,7 @@ void Example::DrawSprites()
     short placeY = mgdl_GetScreenHeight();
     for (short i = 0; i < 4; i++)
     {
-        Sprite_Draw2D(mel_sprites, i, placeX, placeY, spriteH, LJustify, LJustify, Color_GetDefaultColor(Color_White));
+        Sprite_Draw2D(mel_sprites, i, placeX, placeY, spriteH, Alignment_LJustify, Alignment_LJustify, Color_GetDefaultColor(Color_White));
         placeY -= spriteH;
     }
 }
@@ -215,17 +218,17 @@ void Example::DrawIcosa()
 void Example::DrawTexture()
 {
     // Draw Texture
-    Texture_Draw2DAligned(barb,
+    Texture_Draw2DAligned(AssetManager_GetTexture(barb),
             0,
             mgdl_GetScreenHeight()/2,
             1.0f,
-            LJustify, Centered);
+            Alignment_LJustify, Alignment_Centered);
 
     Texture_Draw2DAligned(debugFont->_fontTexture,
             0,
             mgdl_GetScreenHeight()/2,
             1.0f,
-            LJustify, Centered);
+            Alignment_LJustify, Alignment_Centered);
 }
 
 void Example::DrawScene ( Scene* scene, V3f scale)
