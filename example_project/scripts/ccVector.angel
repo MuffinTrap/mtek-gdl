@@ -1,0 +1,51 @@
+class vec2
+{
+	float x;
+	float y;
+}
+
+vec2 vec2New(float x, float y)
+{
+	vec2 v;
+	v.x = x;
+	v.y = y;
+	return v;
+}
+
+vec2 vec2Add(vec2 vA, vec2 vB)
+{
+	vec2 v;
+	v.x = vA.x + vB.x;
+	v.y = vA.y + vB.y;
+	return v;
+}
+
+vec2 vec2Subtract(vec2 vA, vec2 vB)
+{
+	vec2 v;
+	v.x = vA.x - vB.x;
+	v.y = vA.y - vB.y;
+	return v;
+}
+
+float vec2Length(vec2 v)
+{
+	return sqrt(v.x * v.x + v.y * v.y);
+}
+
+vec2 vec2Normalize(vec2 v)
+{
+	vec2 n;
+	float l = vec2Length(v);
+	if (l > 0.0f)
+	{
+		n.x = v.x / l;
+		n.y = v.y / l;
+	}
+	else
+	{
+		n.x = 0.0f;
+		n.y = 0.0f;
+	}
+	return n;
+}

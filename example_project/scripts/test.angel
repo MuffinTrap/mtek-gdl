@@ -1,0 +1,33 @@
+#include "ccVector.angel"
+
+float elapsed = 0.0f;
+vec2 deltaCircle;
+vec2 frameCircle;
+const float speed = 10.0f;
+const float circleSize = 10.0f;
+
+void angelscript_init()
+{
+	int screenHeight = mgdl_GetScreenHeight();
+	deltaCircle = vec2New(0, screenHeight/4.0f );
+	frameCircle = vec2New(0, screenHeight*(2.0f/3.0f) );
+}
+
+void angelscript_frame(float deltatime)
+{
+	int screenWidth = mgdl_GetScreenWidth();
+	deltaCircle.x += deltatime * speed;
+	frameCircle.x += 0.01f * speed;
+
+	if (deltaCircle.x > screenWidth || mgdl_IsButtonPressed(0, ButtonA))
+	{
+		deltaCircle.x = 0;
+	}
+	if (frameCircle.x > screenWidth || mgdl_IsButtonPressed(0, ButtonA))
+	{
+		frameCircle.x = 0;
+	}
+
+	mgdl_DrawRectangle(deltaCircle.x, deltaCircle.y, circleSize, circleSize, Color_Red );
+	mgdl_DrawRectangle(frameCircle.x, frameCircle.y, circleSize, circleSize, Color_Blue );
+}

@@ -47,6 +47,9 @@ install: $(ARC)
 # random generation library
 	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/wflcg
 	@cp $(RANDOM_HDR) $(INSTALL_DIR)/include/$(LIB)/wflcg
+# file change watching library
+	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/dmon
+	@cp $(DMON_HDR) $(INSTALL_DIR)/include/$(LIB)/dmon
 
 	@echo installed to $(INSTALL_DIR)
 

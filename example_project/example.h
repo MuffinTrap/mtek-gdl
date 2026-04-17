@@ -1,8 +1,7 @@
 #pragma once
 
 #include <mgdl.h>
-#include <angelscript.h>
-#include <scriptbuilder.h>
+#include "mgdl-scripting.h"
 
 class Example
 {
@@ -37,10 +36,8 @@ class Example
     float deltaTime;
     float elapsedSeconds;
 
-    // Scripting
-    asIScriptEngine *as_engine;
-    asIScriptContext* as_ctx;
-    asIScriptFunction* as_mainFunc;
+    mgdl_AngelScriptContext* angelContext;
+
 
     // Toggles
     bool toggleSprites, toggle3D, toggleTexture, toggleCamera, toggleInputs, togglePerformance, toggleAudio, toggleLog, toggleRocket, toggleAngel = false;

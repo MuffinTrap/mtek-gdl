@@ -27,7 +27,6 @@ CXXFLAGS += $(ROCKET_INCLUDE)
 # Use AngelScript
 SRC_DIRS += angelscript/scriptbuilder
 CXXFLAGS += -Iangelscript
-CXXFLAGS += -Iangelscript/scriptbuilder
 
 
 # Use find to gather all .cpp and .c files in SRC_DIRS
