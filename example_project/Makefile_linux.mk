@@ -51,6 +51,8 @@ LDFLAGS += -L$(MGDL_DIR)/lib
 
 # Add AngelScript search directory
 LDFLAGS += -Langelscript/linux
+# Set AngelScript Compilation flags
+
 
 # Executable is the same name as current directory +
 # platform specific postfix

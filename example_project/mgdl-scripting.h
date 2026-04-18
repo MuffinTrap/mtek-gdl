@@ -1,6 +1,6 @@
 #pragma once
 
-#include <angelscript.h>
+#include "angelscript/angelscript.h"
 #include <mgdl/mgdl-color.h>
 #include <mgdl/mgdl-controller.h>
 

@@ -49,3 +49,19 @@ vec2 vec2Normalize(vec2 v)
 	}
 	return n;
 }
+
+class vec3
+{
+	float x;
+	float y;
+	float z;
+}
+
+vec3 vec3New(float x, float y, float z)
+{
+	vec3 v;
+	v.x = x;
+	v.y = y;
+	v.z = z;
+	return v;
+}

@@ -8,14 +8,21 @@ const float circleSize = 10.0f;
 
 void angelscript_init()
 {
+	int screenWidth = mgdl_GetScreenWidth();
 	int screenHeight = mgdl_GetScreenHeight();
 	deltaCircle = vec2New(0, screenHeight/4.0f );
 	frameCircle = vec2New(0, screenHeight*(2.0f/3.0f) );
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
 }
 
-void angelscript_frame(float deltatime)
+void effect_2d(float deltatime)
 {
+	glClearColor(0.2f, 0.2f, 0.1f, 1.0f);
+	mgdl_InitOrthoProjection();
 	int screenWidth = mgdl_GetScreenWidth();
+	int screenHeight = mgdl_GetScreenHeight();
 	deltaCircle.x += deltatime * speed;
 	frameCircle.x += 0.01f * speed;
 
@@ -27,7 +34,84 @@ void angelscript_frame(float deltatime)
 	{
 		frameCircle.x = 0;
 	}
-
 	mgdl_DrawRectangle(deltaCircle.x, deltaCircle.y, circleSize, circleSize, Color_Red );
 	mgdl_DrawRectangle(frameCircle.x, frameCircle.y, circleSize, circleSize, Color_Blue );
+}
+void Quad(
+    vec3 A,
+    vec3 B,
+    vec3 C,
+    vec3 D)
+{
+	// bottom
+	glVertex3f(A.x, A.y, A.z);
+
+	// bottom2
+	glVertex3f(D.x, D.y, D.z);
+
+	// top 1 and 2
+	glVertex3f(C.x, C.y, C.z);
+
+	glVertex3f(B.x, B.y, B.z);
+}
+void effect_3d(float deltatime)
+{
+	elapsed += deltatime;
+	glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+	int screenWidth = mgdl_GetScreenWidth();
+	int screenHeight = mgdl_GetScreenHeight();
+	float aspect = float(screenWidth)/float(screenHeight);
+	float nearZ = 0.01f;
+	float farZ = 10.0f;
+    gluPerspective(60.0f, aspect, nearZ, farZ);
+
+	glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+	gluLookAt(0.0f, 0.0f, 4.0f,
+				 0.0f, 0.0f, 0.0f,
+				 0.0f, 1.0f, 0.0);
+
+	glRotatef(elapsed * 90.0f, 1.0f, 0.0f, 0.3f);
+
+	float size = 1.0f;
+	float hs = size/2.0f;
+	vec3 bl = vec3New(-hs, -hs, -hs);
+	vec3 br = vec3New( hs, -hs, -hs);
+	vec3 fl = vec3New(-hs, -hs,  hs);
+	vec3 fr = vec3New( hs, -hs,  hs);
+
+	vec3 tbl = vec3New(-hs, hs, -hs); // top back left
+	vec3 tbr = vec3New( hs, hs, -hs); // top back right
+	vec3 tfl = vec3New(-hs, hs, hs); //  top forward left
+	vec3 tfr = vec3New( hs, hs, hs);
+
+	glBegin(GL_QUADS);
+		// left side
+		glColor3f(0.5f, 0.5f, 0.1f);
+		Quad(bl, tbl, tfl, fl);
+		// right
+		glColor3f(0.2f, 0.8f, 0.4f);
+		Quad(fr, tfr, tbr, br);
+
+		// front
+		glColor3f(0.9f, 0.2f, 0.1f);
+		Quad(fl, tfl, tfr, fr);
+		// back
+		glColor3f(0.5f, 0.4f, 0.2f);
+		 Quad(br, tbr, tbl, bl);
+
+         // top
+		glColor3f(0.7f, 0.1f, 0.5f);
+        Quad(tfl, tbl, tbr, tfr);
+		 // bottom
+		glColor3f(0.8f, 0.8f, 0.4f);
+		Quad(fr, br, bl, fl);
+	glEnd();
+}
+
+void angelscript_frame(float deltatime)
+{
+	effect_3d(deltatime);
 }

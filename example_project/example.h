@@ -44,6 +44,10 @@ class Example
 
     public:
         Example();
+
+        void AngelInit();
+        void AngelFrame();
+
         void Init();
         void InitAngelScript();
         void LoadAngelScript(const char* script);

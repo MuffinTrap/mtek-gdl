@@ -14,6 +14,23 @@ Example::Example()
 
 }
 
+void Example::AngelInit()
+{
+    // AngelScript
+    angelContext = mgdl_InitAngelScript();
+    mgdl_SetDirectoryForAngelScriptHotReload(angelContext, "scripts");
+    bool loadOk =  mgdl_LoadAngelScript(angelContext, "scripts/test.angel");
+    if (loadOk)
+    {
+        mgdl_RunAngelScriptInit(angelContext);
+    }
+}
+
+void Example::AngelFrame()
+{
+    mgdl_RunAngelScriptFrame(angelContext);
+}
+
 void Example::Init()
 {
     Log_SaveLines(256);
@@ -107,12 +124,6 @@ void Example::Init()
         }
     #endif
 
-    // AngelScript
-    angelContext = mgdl_InitAngelScript();
-    mgdl_LoadAngelScript(angelContext, "scripts/test.angel");
-    mgdl_SetDirectoryForAngelScriptHotReload(angelContext, "scripts");
-
-    mgdl_RunAngelScriptInit(angelContext);
 }
 
 void Example::Quit()
@@ -179,7 +190,6 @@ void Example::Draw()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    mgdl_RunAngelScriptFrame(angelContext);
 
     if (toggleLog) { DrawLog();}
     if ( toggleSprites) {DrawSprites();}

@@ -1,12 +1,15 @@
 #include "mgdl-scripting.h"
 #include <scriptbuilder/scriptbuilder.h>
 #include <scriptmath/scriptmath.h>
+#include <scriptopengl/ScriptOpenGL.h>
+#include <scriptarray/scriptarray.h>
 
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-alloc.h>
 #include <mgdl/mgdl-main.h>
 #include <mgdl/mgdl-draw2d.h>
+#include <mgdl/mgdl-opengl_util.h>
 #include <mgdl/mgdl-util.h>
 #include <mgdl/ccVector/ccVector.h>
 
@@ -88,55 +91,64 @@ static void AngelScriptMessageCallback(const asSMessageInfo *msg)
     }
 }
 
-void RegisterMain(mgdl_AngelScriptContext* context)
+
+void RegisterOpenGLFunctionsAndTypes(asIScriptEngine* as_engine)
 {
-	int result = context->as_engine->RegisterGlobalFunction("int mgdl_GetScreenHeight()", asFUNCTION(mgdl_GetScreenHeight), asCALL_CDECL);
-	result = context->as_engine->RegisterGlobalFunction("int mgdl_GetScreenWidth()", asFUNCTION(mgdl_GetScreenWidth), asCALL_CDECL);
+	// Basic OpenGL functions
+	RegisterOpenGL(as_engine);
+
+	// GLU functions
+
+	int result = as_engine->RegisterGlobalFunction("void gluLookAt(GLdouble eyex,GLdouble eyey,GLdouble eyez, GLdouble centerx, GLdouble centery, GLdouble centerz, GLdouble upx, GLdouble upz, GLdouble upz)", asFUNCTION(gluLookAt), asCALL_CDECL);
+
+	result = as_engine->RegisterGlobalFunction("void gluPerspective(GLdouble fovy,GLdouble aspect,GLdouble zNear, GLdouble zFarz)", asFUNCTION(gluPerspective), asCALL_CDECL);
+
+
+	// mgdl utils
+	result = as_engine->RegisterGlobalFunction("void mgdl_InitOrthoProjection()", asFUNCTION(mgdl_InitOrthoProjection), asCALL_CDECL);
 }
 
-void RegisterDrawing(mgdl_AngelScriptContext* context)
+void RegisterMain(asIScriptEngine* as_engine)
 {
+	int result = as_engine->RegisterGlobalFunction("int mgdl_GetScreenHeight()", asFUNCTION(mgdl_GetScreenHeight), asCALL_CDECL);
+	result = as_engine->RegisterGlobalFunction("int mgdl_GetScreenWidth()", asFUNCTION(mgdl_GetScreenWidth), asCALL_CDECL);
+}
+
+void RegisterDrawing(asIScriptEngine* as_engine)
+{
+	// Register DefaultColor
+	int result = as_engine->RegisterEnum("DefaultColor");
+	result = as_engine->RegisterEnumValue("DefaultColor" , "Color_White", (int)Color_White);
+	result = as_engine->RegisterEnumValue("DefaultColor" , "Color_Black", (int)Color_Black);
+	result = as_engine->RegisterEnumValue("DefaultColor" , "Color_Red", (int)Color_Red);
+	result = as_engine->RegisterEnumValue("DefaultColor" , "Color_Green", (int)Color_Green);
+	result = as_engine->RegisterEnumValue("DefaultColor" , "Color_Blue", (int)Color_Blue);
 
 	// Register drawing functions
-
-	// Register DefaultColor
-	int result = context->as_engine->RegisterEnum("DefaultColor");
-	result = context->as_engine->RegisterEnumValue("DefaultColor" , "Color_White", 0);
-	result = context->as_engine->RegisterEnumValue("DefaultColor" , "Color_Black", 1);
-	result = context->as_engine->RegisterEnumValue("DefaultColor" , "Color_Red", 2);
-	result = context->as_engine->RegisterEnumValue("DefaultColor" , "Color_Green", 3);
-	result = context->as_engine->RegisterEnumValue("DefaultColor" , "Color_Blue", 4);
-
-	result = context->as_engine->RegisterGlobalFunction("void  mgdl_DrawRectangle(float x, float y, float w, float h, DefaultColor color)", asFUNCTION(mgdl_DrawRectangle), asCALL_CDECL);
+	result = as_engine->RegisterGlobalFunction("void  mgdl_DrawRectangle(float x, float y, float w, float h, DefaultColor color)", asFUNCTION(mgdl_DrawRectangle), asCALL_CDECL);
 }
 
-void RegisterController(mgdl_AngelScriptContext* context)
+void RegisterController(asIScriptEngine* as_engine)
 {
-	int result = context->as_engine->RegisterEnum("WiiButtons");
-	result = context->as_engine->RegisterEnumValue("WiiButtons" , "Color_White", 0);
-	result = context->as_engine->RegisterEnumValue("WiiButtons" , "Color_Black", 1);
-	result = context->as_engine->RegisterEnumValue("WiiButtons" , "Color_Red", 2);
-	result = context->as_engine->RegisterEnumValue("WiiButtons" , "Color_Green", 3);
-	result = context->as_engine->RegisterEnumValue("WiiButtons" , "Color_Blue", 4);
+	int result = as_engine->RegisterEnum("WiiButtons");
+	result = as_engine->RegisterEnumValue("WiiButtons", "ButtonNone", 	0x0000);
+	result = as_engine->RegisterEnumValue("WiiButtons", "Button2", 		0x0001);
+	result = as_engine->RegisterEnumValue("WiiButtons", "Button1", 		0x0002);
+	result = as_engine->RegisterEnumValue("WiiButtons", "ButtonB", 		0x0004);
+	result = as_engine->RegisterEnumValue("WiiButtons", "ButtonA", 		0x0008);
+	result = as_engine->RegisterEnumValue("WiiButtons", "ButtonMinus", 	0x0010);
+	result = as_engine->RegisterEnumValue("WiiButtons", "ButtonHome", 	0x0080);
+	result = as_engine->RegisterEnumValue("WiiButtons", "ButtonLeft", 	0x0100);
+	result = as_engine->RegisterEnumValue("WiiButtons", "ButtonRight", 	0x0200);
+	result = as_engine->RegisterEnumValue("WiiButtons", "ButtonDown", 	0x0400);
+	result = as_engine->RegisterEnumValue("WiiButtons", "ButtonUp", 		0x0800);
+	result = as_engine->RegisterEnumValue("WiiButtons", "ButtonPlus", 	0x1000);
+	result = as_engine->RegisterEnumValue("WiiButtons", "ButtonZ"	,		(0x0001 << 16));
+	result = as_engine->RegisterEnumValue("WiiButtons", "ButtonC"	,		(0x0002 << 16));
+	result = as_engine->RegisterEnumValue("WiiButtons", "ButtonAny", 	0xFFF);
 
-	result = context->as_engine->RegisterEnumValue("WiiButtons", "ButtonNone", 	0x0000);
-	result = context->as_engine->RegisterEnumValue("WiiButtons", "Button2", 		0x0001);
-	result = context->as_engine->RegisterEnumValue("WiiButtons", "Button1", 		0x0002);
-	result = context->as_engine->RegisterEnumValue("WiiButtons", "ButtonB", 		0x0004);
-	result = context->as_engine->RegisterEnumValue("WiiButtons", "ButtonA", 		0x0008);
-	result = context->as_engine->RegisterEnumValue("WiiButtons", "ButtonMinus", 	0x0010);
-	result = context->as_engine->RegisterEnumValue("WiiButtons", "ButtonHome", 	0x0080);
-	result = context->as_engine->RegisterEnumValue("WiiButtons", "ButtonLeft", 	0x0100);
-	result = context->as_engine->RegisterEnumValue("WiiButtons", "ButtonRight", 	0x0200);
-	result = context->as_engine->RegisterEnumValue("WiiButtons", "ButtonDown", 	0x0400);
-	result = context->as_engine->RegisterEnumValue("WiiButtons", "ButtonUp", 		0x0800);
-	result = context->as_engine->RegisterEnumValue("WiiButtons", "ButtonPlus", 	0x1000);
-	result = context->as_engine->RegisterEnumValue("WiiButtons", "ButtonZ"	,		(0x0001 << 16));
-	result = context->as_engine->RegisterEnumValue("WiiButtons", "ButtonC"	,		(0x0002 << 16));
-	result = context->as_engine->RegisterEnumValue("WiiButtons", "ButtonAny", 	0xFFF);
-
-	result = context->as_engine->RegisterGlobalFunction("bool mgdl_IsButtonDown(int controller, WiiButtons button)", asFUNCTION(mgdl_IsButtonDown), asCALL_CDECL);
-	result = context->as_engine->RegisterGlobalFunction("bool mgdl_IsButtonPressed(int controller, WiiButtons button)", asFUNCTION(mgdl_IsButtonPressed), asCALL_CDECL);
+	result = as_engine->RegisterGlobalFunction("bool mgdl_IsButtonDown(int controller, WiiButtons button)", asFUNCTION(mgdl_IsButtonDown), asCALL_CDECL);
+	result = as_engine->RegisterGlobalFunction("bool mgdl_IsButtonPressed(int controller, WiiButtons button)", asFUNCTION(mgdl_IsButtonPressed), asCALL_CDECL);
 }
 
 
@@ -147,15 +159,22 @@ mgdl_AngelScriptContext* mgdl_InitAngelScript()
     int result = context->as_engine->SetMessageCallback(asFUNCTION(AngelScriptMessageCallback), 0, asCALL_CDECL);
     mgdl_assert_print(result >= 0, "Failed setting AngelScript message callback\n");
 
-	// Register mgdl main functions
-	RegisterMain(context);
-	RegisterController(context);
-	RegisterDrawing(context);
+	// Arrays with int[] array declaration
+	RegisterScriptArray(context->as_engine, true);
+	// Add std math functions
+	RegisterScriptMath(context->as_engine);
+	// Add OpenGL 1.1 functions and types
+	RegisterOpenGLFunctionsAndTypes(context->as_engine);
+	// Register mgdl functions
+	RegisterMain(context->as_engine);
+	RegisterController(context->as_engine);
+	RegisterDrawing(context->as_engine);
 
     context->as_ctx = context->as_engine->CreateContext();
 
-	// Add std math functions
-	RegisterScriptMath(context->as_engine);
+	context->as_frameFunc = nullptr;
+	context->as_initFunc = nullptr;
+
 	return context;
 }
 
@@ -223,18 +242,20 @@ bool mgdl_LoadAngelScript(mgdl_AngelScriptContext* context, const char* script)
 
 void mgdl_RunAngelScriptInit(mgdl_AngelScriptContext* context)
 {
+	if (context->as_initFunc != nullptr)
+	{
+		context->as_ctx->Prepare(context->as_initFunc);
+		int runResult = context->as_ctx->Execute();
+		if (runResult != asEXECUTION_FINISHED)
+		{
+			if (runResult == asEXECUTION_EXCEPTION)
+			{
+				// An exception occurred, let the script writer know what happened so it can be corrected.
+				Log_ErrorF("An exception '%s' occurred. Please correct the code and try again.\n", context->as_ctx->GetExceptionString());
+			}
 
-    context->as_ctx->Prepare(context->as_initFunc);
-    int runResult = context->as_ctx->Execute();
-    if (runResult != asEXECUTION_FINISHED)
-    {
-        if (runResult == asEXECUTION_EXCEPTION)
-        {
-            // An exception occurred, let the script writer know what happened so it can be corrected.
-            Log_ErrorF("An exception '%s' occurred. Please correct the code and try again.\n", context->as_ctx->GetExceptionString());
-        }
-
-    }
+		}
+	}
 }
 void mgdl_RunAngelScriptFrame(mgdl_AngelScriptContext* context)
 {
