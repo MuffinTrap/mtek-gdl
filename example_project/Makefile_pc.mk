@@ -11,9 +11,6 @@ CXXFLAGS = -Werror=unused-function -Wall -Wextra -Wpedantic -std=c++11
 MGDL_INCLUDE	= -I$(MGDL_DIR)/include
 CXXFLAGS += $(MGDL_INCLUDE)
 
-# Add AngelScript include
-CXXFLAGS += -Ilib
-
 # Options for ufbx and vector library selection
 CXXFLAGS += -DUFBX_REAL_IS_FLOAT
 CXXFLAGS += -DMGDL_USE_CCVECTOR
@@ -26,11 +23,15 @@ CXXFLAGS += $(ROCKET_INCLUDE)
 
 # Use AngelScript
 SRC_DIRS += angelscript/scriptbuilder
+SRC_DIRS += angelscript/scriptarray
+SRC_DIRS += angelscript/scriptmath
 CXXFLAGS += -Iangelscript
+CXXFLAGS += -DUSE_ANGEL_AS_CPP
 
 
 # Use find to gather all .cpp and .c files in SRC_DIRS
-cpp_src := $(shell find $(SRC_DIRS) -name '*.cpp')
+cpp_src = $(shell find $(SRC_DIRS) -name '*.cpp')
+angel_src = $(shell find $(SRC_DIRS) -name '*.cxx')
 
 
 # Extra compilation options

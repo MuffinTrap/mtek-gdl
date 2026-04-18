@@ -63,13 +63,16 @@ TARGET	:=	$(notdir $(CURDIR))_lnx.elf
 
 # Create a list of object files that make needs to
 # process
-OFILES	:= $(cpp_src:.cpp=.pco)
+OFILES	= $(cpp_src:.cpp=.pco)
+OFILES	+= $(angel_src:.cxx=.pco)
 
 .PHONY: all
 
 # When all OFILES have been processed, link them together
 all : $(OFILES)
+	@echo Object files $(OFILES)
 	$(CXX) $(OFILES) $(CXXFLAGS) $(LDFLAGS) -o $(TARGET)
+
 
 # Remove obj directory, all object files and the target
 clean:
@@ -79,4 +82,7 @@ clean:
 # For any .cpp file, create a object file with the same
 # name.
 %.pco : %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+%.pco : %.cxx
 	$(CXX) $(CXXFLAGS) -c $< -o $@

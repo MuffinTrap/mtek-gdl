@@ -19,7 +19,7 @@ void Example::AngelInit()
     // AngelScript
     angelContext = mgdl_InitAngelScript();
     mgdl_SetDirectoryForAngelScriptHotReload(angelContext, "scripts");
-    bool loadOk =  mgdl_LoadAngelScript(angelContext, "scripts/test.angel");
+    bool loadOk =  mgdl_LoadAngelScript(angelContext, "scripts/angel.cxx");
     if (loadOk)
     {
         mgdl_RunAngelScriptInit(angelContext);

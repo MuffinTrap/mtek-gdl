@@ -1,4 +1,10 @@
+#if USE_ANGEL_AS_SCRIPT
 #include "ccVector.angel"
+#endif
+#if USE_ANGEL_AS_CPP
+#include <mgdl.h>
+#include "../mgdl-scripting.h"
+#endif
 
 float elapsed = 0.0f;
 vec2 deltaCircle;

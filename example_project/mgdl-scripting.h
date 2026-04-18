@@ -29,6 +29,13 @@ void mgdl_SetDirectoryForAngelScriptHotReload(mgdl_AngelScriptContext* context, 
 void mgdl_RunAngelScriptInit(mgdl_AngelScriptContext* context);
 void mgdl_RunAngelScriptFrame(mgdl_AngelScriptContext* context);
 void mgdl_DeinitAngelScript(mgdl_AngelScriptContext* context);
+
+// When angelscript is used as C++ code, declare functions here
+#if defined(USE_ANGEL_AS_CPP)
+	void angelscript_init();
+	void angelscript_frame(float deltatime);
+#endif
+
 #if defined(__cplusplus)
 }
 #endif

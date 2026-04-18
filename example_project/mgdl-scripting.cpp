@@ -201,6 +201,13 @@ bool mgdl_LoadAngelScript(mgdl_AngelScriptContext* context, const char* script)
     }
 
     CScriptBuilder builder;
+
+	// Set preprocessor directives to angelscript
+#if defined(USE_ANGEL_AS_SCRIPT)
+	builder.DefineWord("USE_ANGEL_AS_SCRIPT");
+#elif defined(USE_ANGEL_AS_CPP)
+	builder.DefineWord("USE_ANGEL_AS_CPP");
+#endif
     int result = builder.StartNewModule(context->as_engine, "MyModule");
     mgdl_assert_print(result >= 0, "Failed starting module\n");
 
@@ -242,6 +249,9 @@ bool mgdl_LoadAngelScript(mgdl_AngelScriptContext* context, const char* script)
 
 void mgdl_RunAngelScriptInit(mgdl_AngelScriptContext* context)
 {
+#if defined(USE_ANGEL_AS_CPP)
+	angelscript_init();
+#elif defined(USE_ANGEL_AS_SCRIPT)
 	if (context->as_initFunc != nullptr)
 	{
 		context->as_ctx->Prepare(context->as_initFunc);
@@ -256,9 +266,13 @@ void mgdl_RunAngelScriptInit(mgdl_AngelScriptContext* context)
 
 		}
 	}
+#endif
 }
 void mgdl_RunAngelScriptFrame(mgdl_AngelScriptContext* context)
 {
+#if defined(USE_ANGEL_AS_CPP)
+	angelscript_frame(mgdl_GetDeltaTime());
+#elif defined(USE_ANGEL_AS_SCRIPT)
 	if (context->as_frameFunc != nullptr)
 	{
 		context->as_ctx->Prepare(context->as_frameFunc);
@@ -275,6 +289,7 @@ void mgdl_RunAngelScriptFrame(mgdl_AngelScriptContext* context)
 
 		}
 	}
+#endif
 }
 
 void mgdl_DeinitAngelScript(mgdl_AngelScriptContext* context)
