@@ -17,10 +17,10 @@
  */
 struct AssetManager
 {
-	sizetype m_memoryInUse;
-	struct DynamicArray* m_textureAssets;
-	struct DynamicArray* m_soundAssets;
-	struct DynamicArray* m_imageAssets;
+	sizetype m_memoryInUse = 0;
+	struct DynamicArray* m_textureAssets = nullptr;
+	struct DynamicArray* m_soundAssets = nullptr;
+	struct DynamicArray* m_imageAssets = nullptr;
 };
 typedef struct AssetManager AssetManager;
 
@@ -64,6 +64,8 @@ ImageHandle AssetManager_LoadPNG(const char* filename);
 SoundHandle AssetManager_LoadSound(const char* filename, SoundFileType fileType);
 Sound* AssetManager_GetSound(SoundHandle handle);
 
+
+void AssetManager_PrintLoadedTextures();
 
 
 #ifdef __cplusplus

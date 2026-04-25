@@ -2,6 +2,7 @@
 #include <wiiuse/wpad.h>
 
 #include <mgdl/mgdl-opengl.h>
+#include <mgdl/mgdl-assetmanager.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-splash.h>
 #include <mgdl/mgdl-platform.h>
@@ -103,6 +104,7 @@ void Platform_Init(const char* windowName,
 	gdl::ConsoleMode();
 
 	// printf("Got resolution: %d x %d\n", screenWidth, screenHeight);
+	AssetManager_Init();
 	initCall();
 	u64 now = gettime();
 	platformWii.applicationStartMs = ticks_to_millisecs(now);

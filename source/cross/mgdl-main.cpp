@@ -1,6 +1,7 @@
 #include <mgdl/mgdl-main.h>
 #include <mgdl/mgdl-platform.h>
 #include <mgdl/mgdl-assetmanager.h>
+#include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-fbx.h>
 
 #include <mgdl/mgdl-font.h>
@@ -16,7 +17,6 @@ void mgdl_InitSystem(const char* windowName,
 {
 	Platform_Init(windowName, screenAspect, initCallback, frameCallback, quitCallback, initFlags);
 
-	AssetManager_Init();
 }
 
 // HANDLE API
@@ -26,7 +26,7 @@ TextureHandle mgdl_LoadTexture(const char* filename)
 	return AssetManager_LoadTexture(filename);
 }
 
-void mgdl_DrawTexture(TextureHandle handle, short x, short y)
+void mgdl_DrawTexture(TextureHandle handle, s16 x, s16 y)
 {
 	Texture* texture = AssetManager_GetTexture(handle);
 	Texture_Draw2DAligned(texture, x, y, 1.0f, LJustify, LJustify);

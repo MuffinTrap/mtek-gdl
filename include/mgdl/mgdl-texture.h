@@ -56,7 +56,7 @@ extern "C"
 		* @param alignX Alignment on the X axis.
 		* @param alignY Alignment on the Y axis.
 		*/
-	void Texture_Draw2DAligned(Texture* img, short x, short y, float scale, AlignmentModes alignX, AlignmentModes alignY);
+	void Texture_Draw2DAligned(Texture* img, s16 x, s16 y, float scale, AlignmentModes alignX, AlignmentModes alignY);
 
 	/**
 		* @brief Draws the image using 2D vertices.

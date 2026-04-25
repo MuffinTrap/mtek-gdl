@@ -4,6 +4,8 @@
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-util.h>
 
+DYNAMIC_ARRAY_IMPL(Node)
+
 Node* Node_Create(u8 childCapacity)
 {
 	Node* node = (Node*)malloc(sizeof(Node));
@@ -56,10 +58,10 @@ Node* Node_Clone(Node* source, NodeFlagField cloningFlags)
 	{
 		for(sizetype i = 0; i < DynamicArray_CountNode(source->children); i++)
 		{
-			Node* childNode = DynamicArray_GetNode(source->children, i);
+			Node* childNode = DynamicArray_GetPtrNode(source->children, i);
 			if (childNode != nullptr)
 			{
-				DynamicArray_AddNode(clone->children, Node_Clone(childNode, cloningFlags));
+				DynamicArray_AddPtrNode(clone->children, Node_Clone(childNode, cloningFlags));
 			}
 		}
 	}

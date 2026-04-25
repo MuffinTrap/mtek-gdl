@@ -1,6 +1,7 @@
 #ifdef MGDL_PLATFORM_WINDOWS
 
 #include <mgdl/mgdl-platform.h>
+#include <mgdl/mgdl-assetmanager.h>
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-util.h>
@@ -458,6 +459,7 @@ void Platform_Init(const char* windowName,
 	// Main loop gets messages from Windows
 	OutputDebugStringA("Start Message Loop\n");
 
+	AssetManager_Init();
 	// Call the game/demo init
 	initCall();
 	// Setup timing

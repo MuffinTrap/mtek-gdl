@@ -5,11 +5,12 @@
 
 // TODO Move materials and meshes to AssetManager
 DYNAMIC_ARRAY_IMPL(Mesh)
+DYNAMIC_ARRAY_IMPL(Material)
 
 void Scene_Init(Scene* scene)
 {
 	scene->rootNode = nullptr;
-	scene->materials = DynamicArray_CreateMaterial(4);
+	scene->materials = DynamicArray_CreatePtrMaterial(4);
 	scene->meshes = DynamicArray_CreatePtrMesh(4);
 	scene->lights = nullptr;
 }
@@ -30,7 +31,7 @@ void Scene_AddChildNode (Scene* scene, Node* parent, Node* child )
 	}
 	else
 	{
-		DynamicArray_AddNode(parent->children, child);
+		DynamicArray_AddPtrNode(parent->children, child);
 	}
 }
 
@@ -78,7 +79,7 @@ void Scene_DebugDrawNode_( Node* node, Menu* menu, short depth, short* index, u3
 	{
 		drawIndex += 1;
 		*index = drawIndex;
-		Scene_DebugDrawNode_(DynamicArray_GetNode(node->children, i), menu, depth+1, index, debugFlags);
+		Scene_DebugDrawNode_(DynamicArray_GetPtrNode(node->children, i), menu, depth+1, index, debugFlags);
 	}
 }
 
@@ -100,7 +101,7 @@ void Scene_DrawNode ( Node* node )
 		{
 			for(sizetype i = 0; i < DynamicArray_CountNode(node->children); i++)
 			{
-				Scene_DrawNode(DynamicArray_GetNode(node->children, i));
+				Scene_DrawNode(DynamicArray_GetPtrNode(node->children, i));
 			}
 		}
 	glPopMatrix();
@@ -124,14 +125,14 @@ void Scene_SetAllMaterialTextures (Scene* scene, Texture* texture )
 {
 	for(sizetype i = 0; i < DynamicArray_CountMaterial(scene->materials); i++)
 	{
-		Material* m = DynamicArray_GetMaterial(scene->materials, i);
+		Material* m = DynamicArray_GetPtrMaterial(scene->materials, i);
 		m->texture = texture;
 	}
 }
 
 void Scene_AddMaterial ( Scene* scene, Material* material )
 {
-	DynamicArray_AddMaterial(scene->materials, material);
+	DynamicArray_AddPtrMaterial(scene->materials, material);
 }
 
 Node* Scene_GetRootNode(Scene* scene )

@@ -1,5 +1,6 @@
 #if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC) || defined(MGDL_PLATFORM_MSYS2)
 #include <mgdl/mgdl-platform.h>
+#include <mgdl/mgdl-assetmanager.h>
 #include <mgdl/mgdl-opengl.h>
 #include <mgdl/mgdl-audio.h>
 #include <mgdl/mgdl-assert.h>
@@ -181,7 +182,7 @@ void Platform_Init(const char* windowName,
     }
 
 	Platform_InitAudio();
-
+	AssetManager_Init();
     initCall();
 
     const bool SplashFlag = Flag_IsSet(initFlags, PlatformInitFlag::FlagSplashScreen);

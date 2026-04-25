@@ -22,6 +22,7 @@
 
 PNGFile* PNG_ReadFile(const char* filename)
 {
+	Log_InfoF("Loading Png file %s\n", filename);
 	int width, height, channels;
 	unsigned char* texelPtr = stbi_load(filename, &width, &height, &channels, 0);
 	if (texelPtr == NULL)
@@ -54,7 +55,7 @@ PNGFile* PNG_ReadFile(const char* filename)
 	free(tmpRow);
 
 
-	PNGFile* png = (PNGFile*)malloc(sizeof(PNGFile));
+	PNGFile* png = (PNGFile*)mgdl_AllocateGraphicsMemory(sizeof(PNGFile));
 	png->width = width;
 	png->height = height;
 	png->bytesPerPixel = channels;

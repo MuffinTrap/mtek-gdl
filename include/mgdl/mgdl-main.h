@@ -55,10 +55,8 @@ void mgdl_InitSystem(const char* name,
 
 
 TextureHandle mgdl_LoadTexture(const char* filename);
-void mgdl_DrawTexture(TextureHandle handle, short x, short y);
+void mgdl_DrawTexture(TextureHandle handle, s16 x, s16 y);
 void mgdl_DrawTextureV(TextureHandle handle, vec2 position);
-void mgdl_DrawTextureEx(TextureHandle handle, vec2 position, float rotationDegrees, float scale);
-void mgdl_DrawTextureRec(TextureHandle handle, RectF source, vec2 position);
 
 SoundHandle mgdl_LoadSound(const char* filename, SoundFileType soundType);
 void mgdl_PlaySound(SoundHandle handle);

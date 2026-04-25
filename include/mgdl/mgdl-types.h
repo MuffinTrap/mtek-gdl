@@ -270,11 +270,13 @@ struct Viewport
 typedef struct Viewport Viewport;
 
 // Asset handles
+/*
 struct Handle
 {
     sizetype index;
 };
-typedef struct Handle Handle;
+*/
+typedef sizetype Handle;
 
 typedef Handle TextureHandle;
 typedef Handle SoundHandle;

@@ -30,9 +30,11 @@ Texture* Texture_LoadFile ( const char* filename, TextureFilterModes filterMode)
 		return Texture_GenerateCheckerBoard();
 	}
 	Texture* image = Texture_LoadPNG(pngFile, filterMode);
+	Log_InfoF("Loaded image to texture size %d %d\n", image->width, image->height);
 
 	// Data is loaded to OpenGX, release the buffers
 	PNG_DeleteData(pngFile);
+	mgdl_FreeGraphicsMemory(pngFile);
 	return image;
 }
 
@@ -94,6 +96,7 @@ void Texture_Draw2DAbsolute(Texture* img, short x, short y, short x2, short y2)
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, img->textureId);
+	glColor3f(1.0f, 1.0f, 1.0f);
 	glBegin(GL_QUADS);
 		// Lower left
 		glTexCoord2f(0.0f, 0.0f);
@@ -113,7 +116,7 @@ void Texture_Draw2DAbsolute(Texture* img, short x, short y, short x2, short y2)
 	glDisable(GL_TEXTURE_2D);
 }
 
-void Texture_Draw2DAligned(Texture* img, short x, short y, float scale, AlignmentModes alignX, AlignmentModes alignY)
+void Texture_Draw2DAligned(Texture* img, s16 x, s16 y, float scale, AlignmentModes alignX, AlignmentModes alignY)
 {
 	short w = img->width * scale;
 	short h = img->height * scale;

@@ -36,6 +36,7 @@ typedef struct Scene Scene;
 
 DYNAMIC_ARRAY(Mesh)
 DYNAMIC_ARRAY(Light)
+DYNAMIC_ARRAY(Material)
 
 #ifdef __cplusplus
 extern "C"
