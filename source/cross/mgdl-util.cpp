@@ -114,6 +114,22 @@ GLint TextureFilterToGLFilter(TextureFilterModes filterMode)
 	};
 }
 
+GLint TextureWrapToGLWrap(TextureWrapModes wrapMode)
+{
+	switch(wrapMode)
+	{
+		case TextureWrapModes::Clamp:
+			return GL_CLAMP;
+			break;
+		case TextureWrapModes::Mirror:
+			return GL_MIRRORED_REPEAT;
+			break;
+		case TextureWrapModes::Repeat:
+			return GL_REPEAT;
+			break;
+	}
+}
+
 static char printfBuffer[MGDL_PRINTF_BUFFER_SIZE];
 
 char* mgdl_GetPrintfBuffer()

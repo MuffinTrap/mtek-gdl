@@ -54,14 +54,7 @@ void mgdl_InitSystem(const char* name,
 				u32 initFlags);
 
 
-TextureHandle mgdl_LoadTexture(const char* filename);
-void mgdl_DrawTexture(TextureHandle handle, s16 x, s16 y);
-void mgdl_DrawTextureV(TextureHandle handle, vec2 position);
 
-SoundHandle mgdl_LoadSound(const char* filename, SoundFileType soundType);
-void mgdl_PlaySound(SoundHandle handle);
-
-ImageHandle mgdl_LoadPNG(const char* filename);
 
 
 

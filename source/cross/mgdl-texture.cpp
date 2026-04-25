@@ -322,5 +322,24 @@ Texture* Texture_GenerateCheckerBoard()
 		return img;
 	}
 
+	void Texture_SetFilterMode(Texture* texture, TextureFilterModes mode)
+	{
+		glBindTexture(GL_TEXTURE_2D, texture->textureId);
+
+		GLint glFilter = TextureFilterToGLFilter(mode);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glFilter);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glFilter);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+	void Texture_SetWrapMode(Texture* texture, TextureWrapModes mode)
+	{
+		glBindTexture(GL_TEXTURE_2D, texture->textureId);
+		GLint glWrap = TextureWrapToGLWrap(mode);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, glWrap);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, glWrap);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+	}
 
 

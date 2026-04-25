@@ -281,4 +281,5 @@ typedef sizetype Handle;
 typedef Handle TextureHandle;
 typedef Handle SoundHandle;
 typedef Handle ImageHandle;
+typedef Handle PaletteHandle;
 

@@ -12,6 +12,17 @@ Color4f Color_CreateFromPointer4f(Color4f* color)
 	return copy;
 }
 
+Color4f Color_CreateFrom4b(Color4b bytecolor)
+{
+    Color4f components = {0,0,0,0};
+    components.red = (float)bytecolor.red/255.0f;
+    components.green = (float)bytecolor.green/255.0f;
+    components.blue = (float)bytecolor.blue/255.0f;
+    components.alpha = (float)bytecolor.alpha/255.0f;
+    return components;
+
+}
+
 Color4b Color_Create4b(u8 red, u8 green, u8 blue, u8 alpha)
 {
     Color4b color = {red, green, blue, alpha};

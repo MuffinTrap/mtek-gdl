@@ -21,17 +21,20 @@ extern "C"
 {
 #endif
 	Palette* Palette_GetDefault(void);
+	Palette* Palette_GetDebug(void);
 
 	Palette* Palette_Create(u32* colorsArray, u8 size);
 	Palette* Palette_Create4f(u32* colorsArray, u8 size);
 	Palette* Palette_CreateEmpty(u8 size);
 
-	//TODO Palette* Palette_FromTexture(const char* filename);
+	Palette* Palette_FromPNG(const char* filename);
 	void Palette_SetColor(Palette* palette, u8 index, u32 color);
 	void Palette_SetColor4f(Palette* palette, u8 index, Color4f color);
+	void Palette_SetColor4fPtr(Palette* palette, u8 index, Color4f* color);
 
 	u32 Palette_GetColor(Palette* palette, u8 index);
 	Color4f Palette_GetColor4f(Palette* palette, u8 index);
+	Color4f* Palette_GetColor4fPtr(Palette* palette, u8 index);
 
 	u8 Palette_GetColorAmount(Palette* palette);
 

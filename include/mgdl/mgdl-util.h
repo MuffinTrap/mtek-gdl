@@ -44,6 +44,13 @@ float Rad2Deg(float radians);
 	*/
 GLint TextureFilterToGLFilter(TextureFilterModes filterMode);
 
+/**
+	* @brief Converts texture wrap enumeration to OpenGL enumeration.
+	* @param wrapMode Wrap mode to convert.
+	* @return OpenGL enumeration for the given format.
+	*/
+GLint TextureWrapToGLWrap(TextureWrapModes wrapMode);
+
 
 /**
  * @brief Tells if a flag is set.

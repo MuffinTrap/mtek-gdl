@@ -37,3 +37,6 @@ build
 *.wo
 *.mo
 *.zip
+
+# Valgrind artifacts
+vgcore.*

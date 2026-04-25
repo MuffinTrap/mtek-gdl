@@ -114,6 +114,9 @@ extern "C"
 
 	Texture* Texture_CreateFromArray(u16 width, u16 height, void* pixels, GLenum colorFormat, GLenum dataFormat);
 
+	void Texture_SetFilterMode(Texture* texture, TextureFilterModes mode);
+	void Texture_SetWrapMode(Texture* texture, TextureWrapModes mode);
+
 
 #ifdef __cplusplus
 }

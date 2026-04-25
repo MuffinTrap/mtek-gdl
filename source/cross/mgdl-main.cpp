@@ -23,7 +23,6 @@ void mgdl_InitSystem(const char* windowName,
 
 TextureHandle mgdl_LoadTexture(const char* filename)
 {
-	return AssetManager_LoadTexture(filename);
 }
 
 void mgdl_DrawTexture(TextureHandle handle, s16 x, s16 y)

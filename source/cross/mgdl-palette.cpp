@@ -1,6 +1,7 @@
 #include <mgdl/mgdl-palette.h>
 #include <mgdl/mgdl-alloc.h>
 #include <mgdl/mgdl-util.h>
+#include <mgdl/mgdl-png.h>
 
 static Palette* defaultPalette_ = nullptr;
 static u32 blessing[] =
@@ -17,6 +18,21 @@ static u32 blessing[] =
 	0x7d7a76FF, // 7: Dark orange gray
 };
 
+static Palette* debugPalette = nullptr;
+static u32 brightDos[] =
+{
+	0x000000FF, // 0 Black
+	0x555555FF, // 1 Dark Gray
+	0x5555FFFF, // 2 Blue
+	0x55FF55FF, // 3 Green
+
+	0xFF5555FF, // 4 Red
+	0xFF55FFFF, // 5 Magenta
+	0xFFFF55FF, // 6 Yellow
+	0xFFFFFFFF  // 7 White
+};
+
+
 Palette* Palette_GetDefault()
 {
 	if (defaultPalette_ == nullptr)
@@ -24,6 +40,15 @@ Palette* Palette_GetDefault()
 		defaultPalette_ = Palette_Create(blessing, 8);
 	}
 	return defaultPalette_;
+}
+
+Palette* Palette_GetDebug(void)
+{
+	if (debugPalette == nullptr)
+	{
+		debugPalette = Palette_Create(brightDos, 8);
+	}
+	return debugPalette;
 }
 
 Palette* Palette_Create(u32* colorsArray, u8 size)
@@ -72,7 +97,18 @@ Color4f Palette_GetColor4f(Palette* palette, u8 index)
 	return palette->m_colors[index];
 }
 
-void Palette_SetColor4f(Palette* palette, u8 index, Color4f* color)
+Color4f* Palette_GetColor4fPtr(Palette* palette, u8 index)
+{
+	index = index % palette->m_size;
+	return &palette->m_colors[index];
+}
+void Palette_SetColor4f(Palette* palette, u8 index, Color4f color)
+{
+	index = index % palette->m_size;
+	palette->m_colors[index] = color;
+}
+
+void Palette_SetColor4fPtr(Palette* palette, u8 index, Color4f* color)
 {
 	index = index % palette->m_size;
 	palette->m_colors[index] = Color_CreateFromPointer4f(color);
@@ -100,4 +136,21 @@ void Palette_Delete(Palette* palette)
 u8 Palette_GetColorAmount(Palette* palette)
 {
 	return palette->m_size;
+}
+
+Palette* Palette_FromPNG(const char* filename)
+{
+	PNGFile* png = PNG_ReadFile(filename);
+	if (png != nullptr)
+	{
+		Palette* pal = Palette_CreateEmpty(png->width);
+		for (GLsizei i = 0; i < png->width; i++)
+		{
+			Color4b col = PNG_GetRGBA(png, i, 0);
+			Palette_SetColor4f(pal, i, Color_CreateFrom4b(col));
+		}
+		PNG_DeleteData(png);
+		return pal;
+	}
+	return nullptr;
 }

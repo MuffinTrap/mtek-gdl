@@ -86,6 +86,7 @@ extern "C"
 #endif
 
 Color4f Color_Create4f(float red, float green, float blue, float alpha);
+Color4f Color_CreateFrom4b(Color4b bytecolor);
 Color4f Color_CreateFromPointer4f(Color4f* color);
 Color4b Color_Create4b(u8 red, u8 green, u8 blue, u8 alpha);
 Color4f Color_HexToFloats(u32 color);
