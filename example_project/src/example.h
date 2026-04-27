@@ -1,11 +1,11 @@
 #pragma once
 
 #include <mgdl.h>
-#include "mgdl-scripting.h"
+#include "mgdl-angelscript.h"
 
 class Example
 {
-    TextureHandle barb;
+    Texture* barb;
     Sprite* mel_sprites;
     Sprite* fruitSprites;
     Font* ibmFont;
@@ -36,7 +36,7 @@ class Example
     float deltaTime;
     float elapsedSeconds;
 
-    mgdl_AngelScriptContext* angelContext;
+    mgdl_AngelScript* angelContext;
 
 
     // Toggles

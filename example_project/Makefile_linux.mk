@@ -1,5 +1,7 @@
-include Makefile_pc.mk
-
+# Rules for all targets
+include rules_all.mk
+# Contains definitions shared by all PC platforms
+include rules_pc.mk
 # ############################################
 # Linux specific settings
 CXXFLAGS += -DMGDL_PLATFORM=\"Linux\"
@@ -30,8 +32,8 @@ EXE_SUFFIX = .elf
 
 # Create a list of libraries that need to be linked
 # Link statically to mgdl
-LDFLAGS = -Wl,-Bstatic -lmgdl -Wl,-Bdynamic -lopenal -lGL -lGLU -lglut -lm -langelscript -Wno-unused-function -z muldefs
-
+LDFLAGS += -Wl,-Bstatic -lmgdl -Wl,-Bdynamic -lopenal -lGL -lGLU -lglut -lm -Wno-unused-function -z muldefs
+LDFLAGS += -langelscript
 
 
 
@@ -49,11 +51,6 @@ LDFLAGS = -Wl,-Bstatic -lmgdl -Wl,-Bdynamic -lopenal -lGL -lGLU -lglut -lm -lang
 # Add mgdl library search directory
 LDFLAGS += -L$(MGDL_DIR)/lib
 
-# Add AngelScript search directory
-LDFLAGS += -Langelscript/linux
-# Set AngelScript Compilation flags
-
-
 # Executable is the same name as current directory +
 # platform specific postfix
 TARGET	:=	$(notdir $(CURDIR))_lnx.elf
@@ -61,12 +58,17 @@ TARGET	:=	$(notdir $(CURDIR))_lnx.elf
 # ########################
 # Common settings and targets
 
-# Create a list of object files that make needs to
-# process
-OFILES	= $(cpp_src:.cpp=.pco)
-OFILES	+= $(angel_src:.cxx=.pco)
 
-.PHONY: all
+.PHONY: all release debug
+
+ifdef ROCKET
+release: CXXFLAGS += -DSYNC_PLAYER
+endif
+release: CXXFLAGS += $(release_flags)
+release: all
+
+debug: CXXFLAGS += $(debug_flags)
+debug: all
 
 # When all OFILES have been processed, link them together
 all : $(OFILES)

@@ -1,7 +1,7 @@
 
 #include "example.h"
 #include <mgdl/mgdl-draw2d.h>
-#include "mgdl-scripting.h"
+#include "mgdl-angelscript.h"
 #include <string>
 
 #ifdef MGDL_ROCKET
@@ -17,18 +17,17 @@ Example::Example()
 void Example::AngelInit()
 {
     // AngelScript
-    angelContext = mgdl_InitAngelScript();
-    mgdl_SetDirectoryForAngelScriptHotReload(angelContext, "scripts");
-    bool loadOk =  mgdl_LoadAngelScript(angelContext, "scripts/angel.cxx");
-    if (loadOk)
+    angelContext = mgdl_InitAngelScript("scripts/angel.cxx", "scripts", "example");
+    if (angelContext != nullptr)
     {
         mgdl_RunAngelScriptInit(angelContext);
     }
+    AssetManager_PrintLoadedTextures();
 }
 
 void Example::AngelFrame()
 {
-    mgdl_RunAngelScriptFrame(angelContext);
+    mgdl_RunAngelScriptFrame(angelContext, mgdl_GetDeltaTime());
 }
 
 void Example::Init()
@@ -36,14 +35,15 @@ void Example::Init()
     Log_SaveLines(256);
 
     // Sprites, images and fonts
+    barb = Texture_LoadFile("assets/barb.png", TextureFilterModes::Linear);
     short spriteHeight = 64;
-    barb = mgdl_LoadTexture("assets/barb.png");
     mel_sprites = mgdl_LoadSprite("assets/mel_tiles.png", spriteHeight, spriteHeight);
     fruitSprites = mgdl_LoadSprite("assets/fruits.png", 16, 16);
 
     ibmFont = mgdl_LoadFont("assets/font8x16.png", 8, 16, ' ');
     debugFont = DefaultFont_GetDefaultFont();
 
+    /*
 
     // Wii model scene
     // wiiScene = mgdl_LoadFBX("assets/wii_et_baby.fbx");
@@ -53,7 +53,6 @@ void Example::Init()
     // Scene_SetMaterialTexture(wiiScene, "wii_console_texture.png", wiiTexture);
 
     // Ship with matcap texture
-    /*
     shipScene = mgdl_LoadFBX("assets/ship_with_uvs.fbx");
     matcapTexture = mgdl_LoadTexture("assets/matcap.png");
     matcapMaterial = Material_Load("matcap", AssetManager_GetTexture(matcapTexture), MaterialType::Matcap);
@@ -68,7 +67,6 @@ void Example::Init()
     {
         mt2->type = MaterialType::Matcap;
     }
-    */
 
     // Generated icosahedron and checkerboard texture
     icosaScene = Scene_CreateEmpty();
@@ -81,11 +79,12 @@ void Example::Init()
     Node* icosaNode = Node_Create(1);
     Node_SetContent(icosaNode, "icosaNode", quad, checkerMaterial);
     Scene_AddChildNode(icosaScene, nullptr, icosaNode);
+    */
 
 
-    menu =              Menu_CreateWindowed(ibmFont, 1.0f, 1.0f, 128, 256, "MTEK GDL");
+    menu =              Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 128, 256, "MTEK GDL");
     cameraMenu =        Menu_CreateWindowed(debugFont, 2.0f, 1.0f, 128, 256, "Camera");
-    controllerMenu =    Menu_CreateWindowed(ibmFont, 1.0f, 1.0f, 128, 356, "Controls");
+    controllerMenu =    Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 128, 356, "Controls");
     performanceMenu =   Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 256, 64, "Performance");
     audioMenu =         Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 256, 256, "Audio");
     logMenu =           Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 620, 256, "Log");
@@ -102,6 +101,7 @@ void Example::Init()
     cameraDistance = 30.0f;
 
 
+    /*
     // Audio
     blip = mgdl_LoadSoundWav("assets/blipSelect.wav");
     sampleMusic = mgdl_LoadSoundOgg("assets/sample3.ogg");
@@ -124,6 +124,7 @@ void Example::Init()
         }
     #endif
 
+    */
 }
 
 void Example::Quit()
@@ -211,7 +212,7 @@ void Example::DrawSprites()
     for (int i = 0; i < 16; i++)
     {
         int size = 64;
-        Sprite_Draw2D(fruitSprites, i, size * (i%4), size + (i/4) * size, size, Alignment_LJustify, Alignment_RJustify, Color_GetDefaultColor(Color_White));
+        Sprite_Draw2D(fruitSprites, i, size * (i%4), size + (i/4) * size, size, LJustify, RJustify, Color_GetDefaultColor(Color_White));
     }
 
     const short h = Sprite_GetHeight(mel_sprites);
@@ -223,7 +224,7 @@ void Example::DrawSprites()
     short placeY = mgdl_GetScreenHeight();
     for (short i = 0; i < 4; i++)
     {
-        Sprite_Draw2D(mel_sprites, i, placeX, placeY, spriteH, Alignment_LJustify, Alignment_LJustify, Color_GetDefaultColor(Color_White));
+        Sprite_Draw2D(mel_sprites, i, placeX, placeY, spriteH, LJustify, LJustify, Color_GetDefaultColor(Color_White));
         placeY -= spriteH;
     }
 }
@@ -238,18 +239,21 @@ void Example::DrawIcosa()
 
 void Example::DrawTexture()
 {
+    Texture_Draw2DAligned(barb, 100, mgdl_GetScreenHeight(), 1.0f, LJustify, LJustify);
+    /*
     // Draw Texture
     Texture_Draw2DAligned(AssetManager_GetTexture(barb),
             0,
             mgdl_GetScreenHeight()/2,
             1.0f,
-            Alignment_LJustify, Alignment_Centered);
+            LJustify, Centered);
+            */
 
     Texture_Draw2DAligned(debugFont->_fontTexture,
             0,
             mgdl_GetScreenHeight()/2,
             1.0f,
-            Alignment_LJustify, Alignment_Centered);
+            LJustify, Centered);
 }
 
 void Example::DrawScene ( Scene* scene, V3f scale)
@@ -631,10 +635,6 @@ void Example::DrawRocket()
 void Example::DrawAngel()
 {
     Menu_Start(angelMenu, 10, mgdl_GetScreenHeight()-10, 256);
-    if (Menu_Button(angelMenu, "Reload"))
-    {
-        mgdl_LoadAngelScript(angelContext, "scripts/test.angel");
-    }
 }
 
 

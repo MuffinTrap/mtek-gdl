@@ -1,9 +1,14 @@
 #if USE_ANGEL_AS_SCRIPT
 #include "ccVector.angel"
 #endif
+
 #if USE_ANGEL_AS_CPP
-#include <mgdl.h>
-#include "../mgdl-scripting.h"
+#	include <mgdl.h>
+#	include <mgdl/mgdl-script-api.h>
+#	include "../src/mgdl-angelscript.h"
+#	ifdef __cplusplus
+		extern "C" {
+#	endif
 #endif
 
 float elapsed = 0.0f;
@@ -12,6 +17,8 @@ vec2 frameCircle;
 const float speed = 10.0f;
 const float circleSize = 10.0f;
 
+Handle barb = 0;
+
 void angelscript_init()
 {
 	int screenWidth = mgdl_GetScreenWidth();
@@ -19,8 +26,18 @@ void angelscript_init()
 	deltaCircle = vec2New(0, screenHeight/4.0f );
 	frameCircle = vec2New(0, screenHeight*(2.0f/3.0f) );
 
+	barb = mgdl_LoadTexture("assets/barb.png");
+
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
+
+	Handle debugPalette = mgdl_GetDebugPalette();
+	mgdl_SetPalette(debugPalette);
+}
+
+void angelscript_quit()
+{
+
 }
 
 void effect_2d(float deltatime)
@@ -40,8 +57,12 @@ void effect_2d(float deltatime)
 	{
 		frameCircle.x = 0;
 	}
-	mgdl_DrawRectangle(deltaCircle.x, deltaCircle.y, circleSize, circleSize, Color_Red );
-	mgdl_DrawRectangle(frameCircle.x, frameCircle.y, circleSize, circleSize, Color_Blue );
+
+
+	mgdl_DrawTexture(barb, 120, screenHeight-16);
+
+	mgdl_DrawRectangle(deltaCircle.x, deltaCircle.y, circleSize, circleSize, 3 );
+	mgdl_DrawRectangle(frameCircle.x, frameCircle.y, circleSize, circleSize, 4 );
 }
 void Quad(
     vec3 A,
@@ -119,5 +140,11 @@ void effect_3d(float deltatime)
 
 void angelscript_frame(float deltatime)
 {
-	effect_3d(deltatime);
+	effect_2d(deltatime);
 }
+
+#if USE_ANGEL_AS_CPP
+#	ifdef __cplusplus
+		}
+#	endif
+#endif

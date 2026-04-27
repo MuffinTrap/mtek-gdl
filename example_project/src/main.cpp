@@ -13,7 +13,7 @@ void init()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    // example.Init();
+    //example.Init();
     example.AngelInit();
 }
 
