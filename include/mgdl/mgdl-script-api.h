@@ -2,6 +2,15 @@
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-controller.h>
 
+// Everything that takes a string parameter needs to be
+// C++ polymorphic
+Handle mgdl_LoadPalette(const zstr& image);
+Handle mgdl_LoadPalette(const char* image);
+TextureHandle mgdl_LoadTexture(const zstr& filename);
+TextureHandle mgdl_LoadTexture(const char* filename);
+SoundHandle mgdl_LoadSound(const zstr& filename);
+SoundHandle mgdl_LoadSound(const char* filename);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -10,7 +19,6 @@ void mgdl_InitScriptApi();
 
 // TEXTURES
 // -----------------
-TextureHandle mgdl_LoadTexture(const zstr& filename);
 void mgdl_SetTextureFilter(Handle texture, TextureFilterModes mode);
 void mgdl_SetTextureWrap(Handle texture, TextureWrapModes mode);
 
@@ -22,12 +30,10 @@ void mgdl_DrawTextureV(TextureHandle handle, vec2 position);
 
 // SOUNDS
 // -----------------------------
-SoundHandle mgdl_LoadSound(const zstr& filename);
 void mgdl_PlaySound(SoundHandle handle);
 
 // PALETTES
 // ---------------------------------------
-Handle mgdl_LoadPalette(const zstr& image);
 Handle mgdl_GetDefaultPalette();
 Handle mgdl_GetDebugPalette();
 void mgdl_SetPalette(Handle palette);

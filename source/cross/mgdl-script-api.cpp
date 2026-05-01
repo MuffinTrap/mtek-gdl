@@ -20,8 +20,12 @@ void mgdl_InitScriptApi()
 
 Handle mgdl_LoadTexture(const zstr& filename)
 {
-	Log_InfoF("Angel Load texture from file %s\n", zstr_cstr(&filename));
-	TextureHandle handle = AssetManager_LoadTexture(zstr_cstr(&filename));
+	return mgdl_LoadTexture(zstr_cstr(&filename));
+}
+Handle mgdl_LoadTexture(const char* filename)
+{
+	Log_InfoF("Angel Load texture from file %s\n", filename);
+	TextureHandle handle = AssetManager_LoadTexture(filename);
 	Log_InfoF("Angel got texture handle %u\n", handle);
 	return handle;
 }
@@ -45,19 +49,27 @@ void mgdl_DrawTexture(TextureHandle handle, s16 x, s16 y)
 
 SoundHandle mgdl_LoadSound(const zstr& filename)
 {
-	const char* file = zstr_cstr(&filename);
-	if (zstr_ends_with(&filename, "wav"))
+	return mgdl_LoadSound(zstr_cstr(&filename));
+
+}
+SoundHandle mgdl_LoadSound(const char* filename)
+{
+	z_str::string file = z_str::string(filename);
+	z_str::view fileview = file;
+
+	if (fileview.ends_with("wav"))
 	{
-		return AssetManager_LoadSound(file, SoundWav);
+		return AssetManager_LoadSound(filename, SoundWav);
 	}
-	else if (zstr_ends_with(&filename, "ogg"))
+	else if (fileview.ends_with("ogg"))
 	{
-		return AssetManager_LoadSound(file, SoundOgg);
+		return AssetManager_LoadSound(filename, SoundOgg);
 	}
-	else if (zstr_ends_with(&filename, "mp3"))
+	else if (fileview.ends_with("mp3"))
 	{
-		return AssetManager_LoadSound(file, SoundMp3);
+		return AssetManager_LoadSound(filename, SoundMp3);
 	}
+	Log_ErrorF("LoadSound unsupported file type on %s\n", filename);
 	return 0;
 }
 
@@ -69,7 +81,12 @@ void mgdl_PlaySound(SoundHandle handle)
 
 Handle mgdl_LoadPalette(const zstr& image)
 {
-	return AssetManager_LoadPalette(zstr_cstr(&image));
+	return mgdl_LoadPalette(zstr_cstr(&image));
+}
+
+Handle mgdl_LoadPalette(const char* image)
+{
+	return AssetManager_LoadPalette(image);
 }
 
 Handle mgdl_GetDefaultPalette()

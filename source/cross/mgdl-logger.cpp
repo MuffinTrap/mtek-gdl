@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <mgdl/mgdl-logger.h>
+#include <mgdl/mgdl-console.h>
 #include <mgdl/mgdl-util.h>
 
 static LogLevel level_ = All;
@@ -12,6 +13,33 @@ static const int LINE_LENGTH  = 256;
 
 static char empty[1] = "";
 
+static void Log_Print(LogLevel lvl, const char* text)
+{
+	if (saveLinesOn)
+	{
+		strncpy(messages[nextSaveIndex], text, LINE_LENGTH);
+		nextSaveIndex = (nextSaveIndex + 1) % lineAmount;
+	}
+	switch(lvl)
+	{
+		case Error:
+		Console_Print(ConsoleText_Magenta, "[Error] ");
+		break;
+		case Warning:
+		Console_Print(ConsoleText_Cyan, "[Warning] ");
+		break;
+		case Info:
+			// Nop
+		break;
+		case All:
+			// Nop
+		break;
+		case None:
+			// Nop
+		break;
+	};
+	printf("%s", text);
+}
 
 void Log_SetLevel(LogLevel lvl)
 {
@@ -67,7 +95,7 @@ void Log_Info(const char* text)
 {
 	if (level_ >= Info)
 	{
-		_Log_Print(text);
+		Log_Print(Info, text);
 	}
 }
 
@@ -76,16 +104,15 @@ void Log_InfoF(const char* fmt, ...)
 	if (level_ >= Info)
 	{
 		MGDL_PRINTF_TO_BUFFER(fmt);
-		_Log_Print(mgdl_GetPrintfBuffer());
+		Log_Print(Info, mgdl_GetPrintfBuffer());
 	}
-
 }
 
 void Log_Warning(const char* text)
 {
 	if (level_ >= Warning)
 	{
-		_Log_Print(text);
+		Log_Print(Warning, text);
 	}
 }
 
@@ -94,18 +121,16 @@ void Log_WarningF(const char* fmt, ...)
 	if (level_ >= Warning)
 	{
 		MGDL_PRINTF_TO_BUFFER(fmt);
-		_Log_Print(mgdl_GetPrintfBuffer());
+		Log_Print(Warning, mgdl_GetPrintfBuffer());
 	}
-
 }
 
 void Log_Error(const char* text)
 {
 	if (level_ >= Error)
 	{
-		_Log_Print(text);
+		Log_Print(Error, text);
 	}
-
 }
 
 void Log_ErrorF(const char* fmt, ...)
@@ -113,17 +138,7 @@ void Log_ErrorF(const char* fmt, ...)
 	if (level_ >= Error)
 	{
 		MGDL_PRINTF_TO_BUFFER(fmt);
-		_Log_Print(mgdl_GetPrintfBuffer());
+		Log_Print(Error, mgdl_GetPrintfBuffer());
 	}
-
 }
 
-void _Log_Print(const char* text)
-{
-	if (saveLinesOn)
-	{
-		strncpy(messages[nextSaveIndex], text, LINE_LENGTH);
-		nextSaveIndex = (nextSaveIndex + 1) % lineAmount;
-	}
-	printf("%s", text);
-}

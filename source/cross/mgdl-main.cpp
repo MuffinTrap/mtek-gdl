@@ -20,11 +20,6 @@ void mgdl_InitSystem(const char* windowName,
 }
 
 // HANDLE API
-
-TextureHandle mgdl_LoadTexture(const char* filename)
-{
-}
-
 void mgdl_DrawTexture(TextureHandle handle, s16 x, s16 y)
 {
 	Texture* texture = AssetManager_GetTexture(handle);

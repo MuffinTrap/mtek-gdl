@@ -35,7 +35,6 @@ extern "C"
 	void Log_Error(const char* text);
 	void Log_ErrorF(const char* fmt, ...);
 
-	void _Log_Print(const char* text);
 
 #ifdef __cplusplus
 }
