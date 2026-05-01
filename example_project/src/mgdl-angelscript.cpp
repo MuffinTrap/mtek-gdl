@@ -5,6 +5,8 @@
 #include <mgdl/mgdl-alloc.h>
 #include <mgdl/mgdl-main.h>
 #include <mgdl/mgdl-util.h>
+#include <mgdl/mgdl-console.h>
+#include <mgdl/mgdl-script-api.h>
 
 // AngelScript add-ons
 #include <scriptbuilder/scriptbuilder.h>
@@ -21,27 +23,48 @@ static bool s_compileErrorFlag = false;
 
 static void AngelScriptMessageCallback(const asSMessageInfo *msg)
 {
+	zstr filename = zstr_from(msg->section);
+	zstr_view fileview = zstr_as_view(&filename);
+	// Find last '/'
+	int slash = -1;
+	for (int i = zstr_len(&filename)-1; i>=0; i--)
+	{
+		char c = msg->section[i];
+		if (c == '/')
+		{
+			slash = i+1;
+			fileview = zstr_sub(fileview, slash, zstr_len(&filename)-i);
+			break;
+		}
+	}
+
+	zstr justfile = zstr_from_view(fileview);
+	const char* file = zstr_cstr(&justfile);
+
     switch(msg->type)
     {
         case asMSGTYPE_ERROR:
-            Log_ErrorF("AngelScript Error: Section %s, row %d, col %d message: %s\n", msg->section, msg->row, msg->col, msg->message);
+            Log_ErrorF("%s:%d:%d %s\n", file, msg->row, msg->col, msg->message);
 			s_compileErrorFlag = true;
             break;
         case asMSGTYPE_WARNING:
-            Log_WarningF("AngelScript Warning: Section %s, row %d, col %d message: %s\n", msg->section, msg->row, msg->col, msg->message);
+            Log_WarningF("%s:%d:%d %s\n", file, msg->row, msg->col, msg->message);
             break;
         case asMSGTYPE_INFORMATION:
-            Log_InfoF("AngelScript Info: message: %s\n", msg->message);
+            Log_InfoF("AngelScript: %s\n", msg->message);
             break;
     }
+    zstr_free(&filename);
+    zstr_free(&justfile);
 }
 
-static bool LoadAngelScriptModule(mgdl_AngelScript* angel, const char* script)
+static bool ReloadAngelScriptCode(mgdl_AngelScript* angel)
 {
 	const char* moduleName = zstr_cstr(&angel->moduleName);
+	const char* script = zstr_cstr(&angel->mainScriptFile);
 	if (script == nullptr)
 	{
-		script = zstr_cstr(&angel->mainScriptFile);
+		Log_Error("Cannot reload AngelScript, no main file set");
 	}
 
 	// If module exists already, discard it
@@ -139,8 +162,12 @@ static bool LoadAngelScriptModule(mgdl_AngelScript* angel, const char* script)
 				Log_InfoF("Dmon callback on %s%s\n", rootdir, filepath);
 
 				// Combine the folder and file into path
-				mgdl_BufferPrintf("%s%s", rootdir, filepath);
-				LoadAngelScriptModule(angel, mgdl_GetPrintfBuffer());
+				//mgdl_BufferPrintf("%s%s", rootdir, filepath);
+				//mgdl_GetPrintfBuffer());
+
+				// Actually, always compile the main file
+				// that should #include everything else
+				ReloadAngelScriptCode(angel);
 				mgdl_RunAngelScriptInit(angel);
 			}
 		}
@@ -149,7 +176,11 @@ static bool LoadAngelScriptModule(mgdl_AngelScript* angel, const char* script)
 
 mgdl_AngelScript* mgdl_InitAngelScript(const char* mainScript, const char* hotloadDirectory, const char* moduleName)
 {
-	mgdl_AngelScript* angel = (mgdl_AngelScript*)mgdl_AllocateGeneralMemory(sizeof(mgdl_AngelScript));
+	mgdl_AngelScript* angel = nullptr;
+	mgdl_InitScriptApi();
+
+#if defined(USE_ANGEL_AS_SCRIPT)
+	angel = (mgdl_AngelScript*)mgdl_AllocateGeneralMemory(sizeof(mgdl_AngelScript));
     angel->engine = asCreateScriptEngine();
     int result = angel->engine->SetMessageCallback(asFUNCTION(AngelScriptMessageCallback), 0, asCALL_CDECL);
     mgdl_assert_print(result >= 0, "Failed setting AngelScript message callback\n");
@@ -189,7 +220,7 @@ mgdl_AngelScript* mgdl_InitAngelScript(const char* mainScript, const char* hotlo
 		size_t len = zstr_len(&angel->mainScriptFile) - index;
 		zstr_view filetype = zstr_sub(nameView, index, len);
 		angel->scriptFileType = zstr_from_view(filetype);
-		Log_InfoF("AngelScript filetype read as '%s\n'", zstr_cstr(&angel->scriptFileType));
+		Log_InfoF("AngelScript filetype read as '%s'\n", zstr_cstr(&angel->scriptFileType));
 
 		// file.axx
 		// 01234567
@@ -216,7 +247,10 @@ mgdl_AngelScript* mgdl_InitAngelScript(const char* mainScript, const char* hotlo
 	}
 
 	// Load the given file to module
-	LoadAngelScriptModule(angel, nullptr);
+	ReloadAngelScriptCode(angel);
+#elif defined(USE_ANGEL_AS_CPP)
+	mgdl_RunAngelScriptInit(angel);
+#endif
 
 	return angel;
 }
@@ -287,19 +321,24 @@ void mgdl_RunAngelScriptQuit(mgdl_AngelScript* angel)
 
 void mgdl_DeinitAngelScript(mgdl_AngelScript* angel)
 {
-    angel->ctx->Release();
-    angel->engine->ShutDownAndRelease();
-	zstr_free(&angel->mainScriptFile);
-	zstr_free(&angel->scriptFileType);
-	zstr_free(&angel->moduleName);
-#if defined(GEKKO)
-	// nop
-#else
-	if (angel->dmonInitDone)
+#if defined(USE_ANGEL_AS_SCRIPT)
+	if (angel != nullptr)
 	{
-		dmon_deinit();
+		angel->ctx->Release();
+		angel->engine->ShutDownAndRelease();
+		zstr_free(&angel->mainScriptFile);
+		zstr_free(&angel->scriptFileType);
+		zstr_free(&angel->moduleName);
+	#	if defined(GEKKO)
+			// nop
+	#	else
+			if (angel->dmonInitDone)
+			{
+				dmon_deinit();
+			}
+	#	endif
+		mgdl_FreeGeneralMemory(angel);
 	}
 #endif
-	mgdl_FreeGeneralMemory(angel);
 }
 

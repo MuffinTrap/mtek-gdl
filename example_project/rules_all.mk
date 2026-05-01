@@ -1,6 +1,8 @@
 
 # Default build flags for all builds
 CXXFLAGS = -Wall -Wextra -Wpedantic -std=c++11
+# Don't complain about zstr
+CXXFLAGS = -Wno-c99-extensions -Wno-c++20-designator
 LDFLAGS =
 
 # Options for ufbx and vector library selection

@@ -62,9 +62,9 @@ static void RegisterMain(asIScriptEngine* as_engine)
 	as_engine->RegisterGlobalFunction("int mgdl_GetScreenWidth()", asFUNCTION(mgdl_GetScreenWidth), asCALL_CDECL);
 
 	// Asset handling
-	as_engine->RegisterGlobalFunction("Handle mgdl_LoadTexture(const zstr &in filename)", asFUNCTION(mgdl_LoadTexture), asCALL_CDECL);
-	as_engine->RegisterGlobalFunction("Handle mgdl_LoadPalette(const zstr &in filename)", asFUNCTION(mgdl_LoadPalette), asCALL_CDECL);
-	as_engine->RegisterGlobalFunction("Handle mgdl_LoadSound(const zstr &in filename)", asFUNCTION(mgdl_LoadSound), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("Handle mgdl_LoadTexture(const zstr &in filename)", asFUNCTIONPR(mgdl_LoadTexture, (const zstr&), Handle), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("Handle mgdl_LoadPalette(const zstr &in filename)", asFUNCTIONPR(mgdl_LoadPalette, (const zstr&), Handle), asCALL_CDECL);;
+	as_engine->RegisterGlobalFunction("Handle mgdl_LoadSound(const zstr &in filename)", asFUNCTIONPR(mgdl_LoadSound, (const zstr&), Handle), asCALL_CDECL);
 }
 
 static void RegisterDrawing(asIScriptEngine* as_engine)
@@ -106,7 +106,6 @@ static void RegisterController(asIScriptEngine* as_engine)
 
 void RegisterMGDL(asIScriptEngine* as_engine)
 {
-	mgdl_InitScriptApi();
 	RegisterTypes(as_engine);
 	RegisterMain(as_engine);
 	RegisterDrawing(as_engine);
