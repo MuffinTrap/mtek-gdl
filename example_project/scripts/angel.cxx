@@ -3,6 +3,7 @@
 #if USE_ANGEL_AS_CPP
 #	include <mgdl.h>
 #	include <mgdl/mgdl-script-api.h>
+#	include "angel.hxx"
 #	include "../src/mgdl-angelscript.h"
 #	ifdef __cplusplus
 		extern "C" {
@@ -15,7 +16,7 @@ vec2 frameCircle;
 const float speed = 10.0f;
 const float circleSize = 10.0f;
 
-Handle barb = 0;
+TextureHandle barb;
 
 void angelscript_init()
 {
@@ -29,7 +30,7 @@ void angelscript_init()
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
-	Handle debugPalette = mgdl_GetDebugPalette();
+	PaletteHandle debugPalette = mgdl_GetDebugPalette();
 	mgdl_SetPalette(debugPalette);
 }
 

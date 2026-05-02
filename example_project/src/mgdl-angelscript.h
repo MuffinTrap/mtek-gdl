@@ -5,6 +5,12 @@
 #if defined(__cplusplus)
 extern "C" {
 #endif
+	/**
+	 * @brief Function pointer types
+	 */
+	typedef void (*AngelInitFuncType)(void);
+	typedef void (*AngelQuitFuncType)(void);
+	typedef void (*AngelFrameFuncType)(float);
 
 	/**
 	 * @brief Struct representing the AngelScript engine and functions
@@ -16,6 +22,9 @@ extern "C" {
 		asIScriptFunction* initFunc;
 		asIScriptFunction* frameFunc;
 		asIScriptFunction* quitFunc;
+		AngelInitFuncType cxxInitFunc;
+		AngelFrameFuncType cxxFrameFunc;
+		AngelQuitFuncType cxxQuitFunc;
 		zstr mainScriptFile;
 		zstr moduleName;
 		zstr scriptFileType;
@@ -24,13 +33,21 @@ extern "C" {
 	typedef struct mgdl_AngelScript mgdl_AngelScript;
 
 	/**
-	 * @brief Allocates and initializes a new AngelScript object.
+	 * @brief Allocates and initializes a new AngelScript object to use with scripts.
 	 * @param mainScript Name of main script file.
 	 * @param hotloadDirectory Name of the directory which is watched for changing. Set to nullptr to disable hotloading.
 	 * @param moduleName Optional name for the module. If set to nullptr a default name is used
 	 * @returns Pointer to the initialized object
 	 */
 	mgdl_AngelScript* mgdl_InitAngelScript(const char* mainScript, const char* hotloadDirectory, const char* moduleName);
+
+	/**
+	 * @brief Initializes the AngelScript to be used as cpp code.
+	 * @details Use the returned pointer like when using AngelScript as script as it will tell the
+	 * functions if they should call the cpp function or the script function
+	 * @returns A nullptr
+	 */
+	mgdl_AngelScript* mgdl_InitAngelCpp(AngelInitFuncType initFunc, AngelFrameFuncType frameFunc, AngelQuitFuncType quitFunc);
 
 	/**
 	 * @brief Runs the init function in the module. This is run automatically on every code change.
@@ -55,12 +72,6 @@ extern "C" {
 	 */
 	void mgdl_DeinitAngelScript(mgdl_AngelScript* angel);
 
-	// When angelscript is used as C++ code, the script functions are declared here
-	#if defined(USE_ANGEL_AS_CPP)
-	void angelscript_init();
-	void angelscript_frame(float deltatime);
-	void angelscript_quit();
-	#endif
 
 #if defined(__cplusplus)
 }

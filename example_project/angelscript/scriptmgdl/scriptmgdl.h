@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../angelscript.h"
+#include <mgdl/mgdl-types.h>
 
 
 #ifdef __cplusplus

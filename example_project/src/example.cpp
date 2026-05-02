@@ -4,9 +4,13 @@
 #include "mgdl-angelscript.h"
 #include <string>
 
-#ifdef MGDL_ROCKET
-    #include "rocket/mgdl-rocket.h"
+#if defined(MGDL_ROCKET)
+    #include <mgdl-rocket.h>
     static ROCKET_TRACK sync_value;
+#endif
+
+#if defined(USE_ANGEL_AS_CPP)
+#include <angel.hxx>
 #endif
 
 Example::Example()
@@ -17,11 +21,16 @@ Example::Example()
 void Example::AngelInit()
 {
     // AngelScript
+#if defined(USE_ANGEL_AS_SCRIPT)
     angelContext = mgdl_InitAngelScript("scripts/angel.cxx", "scripts", "example");
     if (angelContext != nullptr)
     {
         mgdl_RunAngelScriptInit(angelContext);
     }
+#elif defined(USE_ANGEL_AS_CPP)
+    angelContext = mgdl_InitAngelCpp(&angelscript_init, &angelscript_frame, &angelscript_quit);
+	mgdl_RunAngelScriptInit(angelContext);
+#endif
     AssetManager_PrintLoadedTextures();
 }
 

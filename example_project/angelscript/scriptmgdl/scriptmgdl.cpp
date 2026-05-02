@@ -19,6 +19,10 @@ static void RegisterOpenGLUtilsAndGlut(asIScriptEngine* as_engine)
 }
 
 
+static void TextureHandleDefaultConstructor(TextureHandle* self)
+{
+	new(self) TextureHandle();
+}
 
 
 static ZStrFactory stringFactory;
@@ -41,18 +45,18 @@ static void RegisterTypes(asIScriptEngine* as_engine)
 
 #ifdef GEKKO
 	as_engine->RegisterTypedef("sizetype", "uint32");
-	as_engine->RegisterTypedef("Handle", "uint32");
 #else
 	as_engine->RegisterTypedef("sizetype", "uint64");
-	as_engine->RegisterTypedef("Handle", "uint64");
 #endif
 
 	// Register zstr as the string type
 	as_engine->RegisterObjectType("zstr", sizeof(zstr), asOBJ_VALUE|asOBJ_POD| asOBJ_APP_CLASS);
 	as_engine->RegisterStringFactory("zstr", &stringFactory);
 
-	// Register handle type
-	//as_engine->RegisterObjectType("Handle", sizeof(Handle), asOBJ_VALUE|asOBJ_POD);
+	as_engine->RegisterTypedef("PaletteHandle", "uint32");
+	as_engine->RegisterTypedef("TextureHandle", "uint32");
+	as_engine->RegisterTypedef("SoundHandle", "uint32");
+	as_engine->RegisterTypedef("ImageHandle", "uint32");
 }
 
 static void RegisterMain(asIScriptEngine* as_engine)
@@ -62,22 +66,22 @@ static void RegisterMain(asIScriptEngine* as_engine)
 	as_engine->RegisterGlobalFunction("int mgdl_GetScreenWidth()", asFUNCTION(mgdl_GetScreenWidth), asCALL_CDECL);
 
 	// Asset handling
-	as_engine->RegisterGlobalFunction("Handle mgdl_LoadTexture(const zstr &in filename)", asFUNCTIONPR(mgdl_LoadTexture, (const zstr&), Handle), asCALL_CDECL);
-	as_engine->RegisterGlobalFunction("Handle mgdl_LoadPalette(const zstr &in filename)", asFUNCTIONPR(mgdl_LoadPalette, (const zstr&), Handle), asCALL_CDECL);;
-	as_engine->RegisterGlobalFunction("Handle mgdl_LoadSound(const zstr &in filename)", asFUNCTIONPR(mgdl_LoadSound, (const zstr&), Handle), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("TextureHandle mgdl_LoadTexture(const zstr &in filename)", asFUNCTIONPR(mgdl_LoadTexture, (const zstr&), TextureHandle), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("PaletteHandle mgdl_LoadPalette(const zstr &in filename)", asFUNCTIONPR(mgdl_LoadPalette, (const zstr&), PaletteHandle), asCALL_CDECL);;
+	as_engine->RegisterGlobalFunction("SoundHandle mgdl_LoadSound(const zstr &in filename)", asFUNCTIONPR(mgdl_LoadSound, (const zstr&), SoundHandle), asCALL_CDECL);
 }
 
 static void RegisterDrawing(asIScriptEngine* as_engine)
 {
-	as_engine->RegisterGlobalFunction("Handle  mgdl_GetDefaultPalette()", asFUNCTION(mgdl_GetDefaultPalette), asCALL_CDECL);
-	as_engine->RegisterGlobalFunction("Handle  mgdl_GetDebugPalette()", asFUNCTION(mgdl_GetDebugPalette), asCALL_CDECL);
-	as_engine->RegisterGlobalFunction("void  mgdl_SetPalette(Handle palette)", asFUNCTION(mgdl_SetPalette), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("PaletteHandle  mgdl_GetDefaultPalette()", asFUNCTION(mgdl_GetDefaultPalette), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("PaletteHandle  mgdl_GetDebugPalette()", asFUNCTION(mgdl_GetDebugPalette), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void  mgdl_SetPalette(PaletteHandle palette)", asFUNCTION(mgdl_SetPalette), asCALL_CDECL);
 
 	// Register drawing functions
 	as_engine->RegisterGlobalFunction("void  mgdl_DrawRectangle(s16 x, s16 y, s16 w, s16 h, u8 paletteIndex)", asFUNCTION(mgdl_DrawRectangle), asCALL_CDECL);
 
 
-	as_engine->RegisterGlobalFunction("void  mgdl_DrawTexture(Handle textureHandle, s16 y, s16 w)", asFUNCTION(mgdl_DrawTexture), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void  mgdl_DrawTexture(TextureHandle textureHandle, s16 y, s16 w)", asFUNCTION(mgdl_DrawTexture), asCALL_CDECL);
 }
 
 static void RegisterController(asIScriptEngine* as_engine)

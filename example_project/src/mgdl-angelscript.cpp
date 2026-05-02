@@ -77,11 +77,7 @@ static bool ReloadAngelScriptCode(mgdl_AngelScript* angel)
     CScriptBuilder builder;
 
 	// Set preprocessor directives to angelscript
-#if defined(USE_ANGEL_AS_SCRIPT)
 	builder.DefineWord("USE_ANGEL_AS_SCRIPT");
-#elif defined(USE_ANGEL_AS_CPP)
-	builder.DefineWord("USE_ANGEL_AS_CPP");
-#endif
 
     int result = builder.StartNewModule(angel->engine, moduleName);
     mgdl_assert_printf(result >= 0, "Failed starting module %s\n", moduleName);
@@ -174,13 +170,29 @@ static bool ReloadAngelScriptCode(mgdl_AngelScript* angel)
 	}
 #endif
 
+mgdl_AngelScript* mgdl_InitAngelCpp(AngelInitFuncType initFunc, AngelFrameFuncType frameFunc, AngelQuitFuncType quitFunc)
+{
+	mgdl_InitScriptApi();
+	mgdl_AngelScript* angel = (mgdl_AngelScript*)mgdl_AllocateGeneralMemory(sizeof(mgdl_AngelScript));
+
+	angel->engine = nullptr;
+	angel->ctx = nullptr;
+	angel->frameFunc = nullptr;
+	angel->initFunc = nullptr;
+	angel->quitFunc = nullptr;
+	angel->dmonInitDone = false;
+	mgdl_assert_print(initFunc != nullptr && frameFunc != nullptr && quitFunc != nullptr, "Must provide pointers to angelscript c++ functions when initializing AngelScript as CPP");
+	angel->cxxInitFunc = initFunc;
+	angel->cxxFrameFunc = frameFunc;
+	angel->cxxQuitFunc = quitFunc;
+	return angel;
+}
+
 mgdl_AngelScript* mgdl_InitAngelScript(const char* mainScript, const char* hotloadDirectory, const char* moduleName)
 {
-	mgdl_AngelScript* angel = nullptr;
 	mgdl_InitScriptApi();
+	mgdl_AngelScript* angel =(mgdl_AngelScript*)mgdl_AllocateGeneralMemory(sizeof(mgdl_AngelScript));
 
-#if defined(USE_ANGEL_AS_SCRIPT)
-	angel = (mgdl_AngelScript*)mgdl_AllocateGeneralMemory(sizeof(mgdl_AngelScript));
     angel->engine = asCreateScriptEngine();
     int result = angel->engine->SetMessageCallback(asFUNCTION(AngelScriptMessageCallback), 0, asCALL_CDECL);
     mgdl_assert_print(result >= 0, "Failed setting AngelScript message callback\n");
@@ -198,6 +210,9 @@ mgdl_AngelScript* mgdl_InitAngelScript(const char* mainScript, const char* hotlo
 	angel->frameFunc = nullptr;
 	angel->initFunc = nullptr;
 	angel->quitFunc = nullptr;
+	angel->cxxInitFunc = nullptr;
+	angel->cxxFrameFunc = nullptr;
+	angel->cxxQuitFunc = nullptr;
 	angel->dmonInitDone = false;
 	mgdl_assert_print(mainScript != nullptr, "Must specify main angel script file.");
 	angel->mainScriptFile = zstr_from(mainScript);
@@ -222,12 +237,12 @@ mgdl_AngelScript* mgdl_InitAngelScript(const char* mainScript, const char* hotlo
 		angel->scriptFileType = zstr_from_view(filetype);
 		Log_InfoF("AngelScript filetype read as '%s'\n", zstr_cstr(&angel->scriptFileType));
 
-		// file.axx
+		// file.cxx
 		// 01234567
 		//     ^index
 		// zstr_len returns 8
 		// 8-4 = 4
-		// zstr_sub(4,4) -> ".axx"
+		// zstr_sub(4,4) -> ".cxx"
 	}
 	else
 	{
@@ -248,9 +263,6 @@ mgdl_AngelScript* mgdl_InitAngelScript(const char* mainScript, const char* hotlo
 
 	// Load the given file to module
 	ReloadAngelScriptCode(angel);
-#elif defined(USE_ANGEL_AS_CPP)
-	mgdl_RunAngelScriptInit(angel);
-#endif
 
 	return angel;
 }
@@ -294,34 +306,42 @@ static void RunAngelFunctionVoidFloat(mgdl_AngelScript* angel, asIScriptFunction
 
 void mgdl_RunAngelScriptInit(mgdl_AngelScript* angel)
 {
-#if defined(USE_ANGEL_AS_CPP)
-	angelscript_init();
-#elif defined(USE_ANGEL_AS_SCRIPT)
-	RunAngelFunctionVoidVoid(angel, angel->initFunc);
-#endif
+	if (angel->cxxInitFunc != nullptr)
+	{
+		angel->cxxInitFunc();
+	}
+	else
+	{
+		RunAngelFunctionVoidVoid(angel, angel->initFunc);
+	}
 }
 
 void mgdl_RunAngelScriptFrame(mgdl_AngelScript* angel, float deltatime)
 {
-#if defined(USE_ANGEL_AS_CPP)
-	angelscript_frame(deltatime);
-#elif defined(USE_ANGEL_AS_SCRIPT)
-	RunAngelFunctionVoidFloat(angel, angel->frameFunc, deltatime);
-#endif
+	if (angel->cxxFrameFunc != nullptr)
+	{
+		angel->cxxFrameFunc(deltatime);
+	}
+	else
+	{
+		RunAngelFunctionVoidFloat(angel, angel->frameFunc, deltatime);
+	}
 }
 
 void mgdl_RunAngelScriptQuit(mgdl_AngelScript* angel)
 {
-#if defined(USE_ANGEL_AS_CPP)
-	angelscript_quit();
-#elif defined(USE_ANGEL_AS_SCRIPT)
-	RunAngelFunctionVoidVoid(angel, angel->quitFunc);
-#endif
+	if (angel->cxxQuitFunc != nullptr)
+	{
+		angel->cxxQuitFunc();
+	}
+	else
+	{
+		RunAngelFunctionVoidVoid(angel, angel->quitFunc);
+	}
 }
 
 void mgdl_DeinitAngelScript(mgdl_AngelScript* angel)
 {
-#if defined(USE_ANGEL_AS_SCRIPT)
 	if (angel != nullptr)
 	{
 		angel->ctx->Release();
@@ -339,6 +359,5 @@ void mgdl_DeinitAngelScript(mgdl_AngelScript* angel)
 	#	endif
 		mgdl_FreeGeneralMemory(angel);
 	}
-#endif
 }
 
