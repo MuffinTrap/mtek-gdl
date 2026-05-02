@@ -270,16 +270,31 @@ struct Viewport
 typedef struct Viewport Viewport;
 
 // Asset handles
-/*
-struct Handle
+enum AssetType
 {
-    sizetype index;
+    Type_Texture = 1,
+    Type_Sound,
+    Type_Palette,
+    Type_Image
 };
-*/
-typedef sizetype Handle;
+typedef enum AssetType AssetType;
+// high word is asset type
+// low word is index to dynamic array
+typedef u32 Handle;
+typedef Handle SoundHandle;
 
 typedef Handle TextureHandle;
-typedef Handle SoundHandle;
-typedef Handle ImageHandle;
+
 typedef Handle PaletteHandle;
+
+typedef Handle ImageHandle;
+
+u16 Handle_Index(Handle handle);
+AssetType Handle_Type(Handle handle);
+
+TextureHandle Handle_CreateTexture(u16 index);
+SoundHandle Handle_CreateSound(u16 index);
+PaletteHandle Handle_CreatePalette(u16 index);
+ImageHandle Handle_CreateImage(u16 index);
+
 

@@ -3,7 +3,7 @@
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-png.h>
 
-static Palette* defaultPalette_ = nullptr;
+static Palette* s_defaultPalette = nullptr;
 static u32 blessing[] =
 {
 	0x484848FF, // 0: Neutral almost black
@@ -18,7 +18,7 @@ static u32 blessing[] =
 	0x7d7a76FF, // 7: Dark orange gray
 };
 
-static Palette* debugPalette = nullptr;
+static Palette* s_debugPalette = nullptr;
 static u32 brightDos[] =
 {
 	0x000000FF, // 0 Black
@@ -35,20 +35,20 @@ static u32 brightDos[] =
 
 Palette* Palette_GetDefault()
 {
-	if (defaultPalette_ == nullptr)
+	if (s_defaultPalette == nullptr)
 	{
-		defaultPalette_ = Palette_Create(blessing, 8);
+		s_defaultPalette = Palette_Create(blessing, 8);
 	}
-	return defaultPalette_;
+	return s_defaultPalette;
 }
 
 Palette* Palette_GetDebug(void)
 {
-	if (debugPalette == nullptr)
+	if (s_debugPalette == nullptr)
 	{
-		debugPalette = Palette_Create(brightDos, 8);
+		s_debugPalette = Palette_Create(brightDos, 8);
 	}
-	return debugPalette;
+	return s_debugPalette;
 }
 
 Palette* Palette_Create(u32* colorsArray, u8 size)

@@ -265,34 +265,34 @@ Texture* Texture_GenerateCheckerBoard()
 }
 	/**
 	 * @brief Generates a 2x2 single color texture
+	 * @param color The alpha value is ignored.
 	 * @return The generated texture
 	 */
 	Texture* Texture_GenerateColorTexture(Color4f* color)
 	{
 		const u32 width = 2;
 		const u32 height = 2;
-		GLubyte pixels[height][width][4];
+		GLubyte* pixels = (GLubyte*)mgdl_AllocateGeneralMemory(sizeof(GLubyte)*height*width*3);
 
 		Color4b colorByte;
 		colorByte.red = color->red * 255;
 		colorByte.green = color->green * 255;
 		colorByte.blue = color->blue * 255;
-		colorByte.alpha = color->alpha * 255;
 
 		for(u32 y = 0; y < height; y++)
 		{
 			for(u32 x = 0; x < width; x++)
 			{
-				pixels[y][x][0] = colorByte.red;
-				pixels[y][x][1] = colorByte.green;
-				pixels[y][x][2] = colorByte.blue;
-				pixels[y][x][3] = colorByte.alpha;
+				pixels[y*width + x*3 + 0] = colorByte.red;
+				pixels[y*width + x*3 + 1] = colorByte.green;
+				pixels[y*width + x*3 + 2] = colorByte.blue;
 			}
 		}
-		GLuint texName = PixelsToOpenGL(width, height, pixels, GL_RGBA, GL_UNSIGNED_BYTE);
+		GLuint texName = PixelsToOpenGL(width, height, pixels, GL_RGB, GL_UNSIGNED_BYTE);
 
 		Texture* img = Texture_Create();
-		Texture_SetGLName(img, texName, width, height, ColorFormats::RGBA);
+		Texture_SetGLName(img, texName, width, height, ColorFormats::RGB);
+		mgdl_FreeGeneralMemory(pixels);
 		return img;
 
 	}
@@ -303,14 +303,14 @@ Texture* Texture_GenerateCheckerBoard()
 	 */
 	Texture* Texture_GenerateNoiseTexture(u16 width, u16 height, u32 seed)
 	{
-		GLubyte noise[height][width];
+		GLubyte* noise = (GLubyte*)mgdl_AllocateGeneralMemory(sizeof(GLubyte)*height*width);
 		Random_SetSeed(seed);
 
 		for(u32 y = 0; y < height; y++)
 		{
 			for(u32 x = 0; x < width; x++)
 			{
-				noise[y][x]= Random_FloatNormalized() * 255;
+				noise[y * width + x]= Random_FloatNormalized() * 255;
 			}
 		}
 
@@ -319,6 +319,7 @@ Texture* Texture_GenerateCheckerBoard()
 
 		Texture* img = Texture_Create();
 		Texture_SetGLName(img, texName, width, height, ColorFormats::Gray);
+		mgdl_FreeGeneralMemory(noise);
 		return img;
 	}
 

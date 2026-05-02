@@ -6,8 +6,8 @@
 #include <mgdl/mgdl-draw2d.h>
 
 static Palette* s_activePalette = nullptr;
-static PaletteHandle s_defaultPaletteHandle = 0;
-static PaletteHandle s_debugPaletteHandle = 0;
+static PaletteHandle s_defaultPaletteHandle = PaletteHandle{0};
+static PaletteHandle s_debugPaletteHandle = PaletteHandle{0};
 
 void mgdl_InitScriptApi()
 {
@@ -18,11 +18,11 @@ void mgdl_InitScriptApi()
 	s_activePalette = AssetManager_GetPalette(s_defaultPaletteHandle);
 }
 
-Handle mgdl_LoadTexture(const zstr& filename)
+TextureHandle mgdl_LoadTexture(const zstr& filename)
 {
 	return mgdl_LoadTexture(zstr_cstr(&filename));
 }
-Handle mgdl_LoadTexture(const char* filename)
+TextureHandle mgdl_LoadTexture(const char* filename)
 {
 	Log_InfoF("Angel Load texture from file %s\n", filename);
 	TextureHandle handle = AssetManager_LoadTexture(filename);
@@ -30,12 +30,12 @@ Handle mgdl_LoadTexture(const char* filename)
 	return handle;
 }
 
-void mgdl_SetTextureFilter(Handle texture, TextureFilterModes mode)
+void mgdl_SetTextureFilter(TextureHandle texture, TextureFilterModes mode)
 {
 	Texture* tex = AssetManager_GetTexture(texture);
 	Texture_SetFilterMode(tex, mode);
 }
-void mgdl_SetTextureWrap(Handle texture, TextureWrapModes mode)
+void mgdl_SetTextureWrap(TextureHandle texture, TextureWrapModes mode)
 {
 	Texture* tex = AssetManager_GetTexture(texture);
 	Texture_SetWrapMode(tex, mode);
@@ -70,7 +70,7 @@ SoundHandle mgdl_LoadSound(const char* filename)
 		return AssetManager_LoadSound(filename, SoundMp3);
 	}
 	Log_ErrorF("LoadSound unsupported file type on %s\n", filename);
-	return 0;
+	return SoundHandle{0};
 }
 
 void mgdl_PlaySound(SoundHandle handle)
@@ -79,27 +79,27 @@ void mgdl_PlaySound(SoundHandle handle)
 	Audio_PlaySound(snd);
 }
 
-Handle mgdl_LoadPalette(const zstr& image)
+PaletteHandle mgdl_LoadPalette(const zstr& image)
 {
 	return mgdl_LoadPalette(zstr_cstr(&image));
 }
 
-Handle mgdl_LoadPalette(const char* image)
+PaletteHandle mgdl_LoadPalette(const char* image)
 {
 	return AssetManager_LoadPalette(image);
 }
 
-Handle mgdl_GetDefaultPalette()
+PaletteHandle mgdl_GetDefaultPalette()
 {
 	return s_defaultPaletteHandle;
 }
 
-Handle mgdl_GetDebugPalette()
+PaletteHandle mgdl_GetDebugPalette()
 {
 	return s_debugPaletteHandle;
 }
 
-void mgdl_SetPalette(Handle palette)
+void mgdl_SetPalette(PaletteHandle palette)
 {
 	s_activePalette = AssetManager_GetPalette(palette);
 }

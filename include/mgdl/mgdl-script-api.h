@@ -4,8 +4,8 @@
 
 // Everything that takes a string parameter needs to be
 // C++ polymorphic
-Handle mgdl_LoadPalette(const zstr& image);
-Handle mgdl_LoadPalette(const char* image);
+PaletteHandle mgdl_LoadPalette(const zstr& image);
+PaletteHandle mgdl_LoadPalette(const char* image);
 TextureHandle mgdl_LoadTexture(const zstr& filename);
 TextureHandle mgdl_LoadTexture(const char* filename);
 SoundHandle mgdl_LoadSound(const zstr& filename);
@@ -19,8 +19,8 @@ void mgdl_InitScriptApi();
 
 // TEXTURES
 // -----------------
-void mgdl_SetTextureFilter(Handle texture, TextureFilterModes mode);
-void mgdl_SetTextureWrap(Handle texture, TextureWrapModes mode);
+void mgdl_SetTextureFilter(TextureHandle texture, TextureFilterModes mode);
+void mgdl_SetTextureWrap(TextureHandle texture, TextureWrapModes mode);
 
 // DRAWING
 // ----------------------------
@@ -34,9 +34,9 @@ void mgdl_PlaySound(SoundHandle handle);
 
 // PALETTES
 // ---------------------------------------
-Handle mgdl_GetDefaultPalette();
-Handle mgdl_GetDebugPalette();
-void mgdl_SetPalette(Handle palette);
+PaletteHandle mgdl_GetDefaultPalette();
+PaletteHandle mgdl_GetDebugPalette();
+void mgdl_SetPalette(PaletteHandle palette);
 
 // INPUT
 // ------------------------------------

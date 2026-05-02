@@ -78,6 +78,7 @@ PaletteHandle AssetManager_LoadPalette(const char* filename);
 PaletteHandle AssetManager_LoadDefaultPalette();
 PaletteHandle AssetManager_LoadDebugPalette();
 Palette* AssetManager_GetPalette(PaletteHandle handle);
+bool AssetManager_HasPalette(const char* filename);
 
 TextureAsset AssetManager_CreateTextureAsset(Texture* data, const char* filename);
 SoundAsset AssetManager_CreateSoundAsset(Sound* data, const char* filename);
