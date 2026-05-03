@@ -32,9 +32,8 @@ EXE_SUFFIX = .elf
 
 # Create a list of libraries that need to be linked
 # Link statically to mgdl
-LDFLAGS += -Wl,-Bstatic -lmgdl -Wl,-Bdynamic -lopenal -lGL -lGLU -lglut -lm -Wno-unused-function -z muldefs
+LDFLAGS += -Wl,-Bstatic -lmgdl  -Wl,-Bdynamic -lopenal -lGL -lGLU -lglut -lm -Wno-unused-function -z muldefs
 LDFLAGS += -langelscript
-
 
 
 
@@ -72,7 +71,7 @@ debug: all
 
 # When all OFILES have been processed, link them together
 all : $(OFILES)
-	@echo Object files $(OFILES)
+	@echo Linking...
 	$(CXX) $(OFILES) $(CXXFLAGS) $(LDFLAGS) -o $(TARGET)
 
 

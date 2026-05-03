@@ -4,7 +4,7 @@
 #	include <mgdl.h>
 #	include <mgdl/mgdl-script-api.h>
 #	include "angel.hxx"
-#	include "../src/mgdl-angelscript.h"
+#	include <mgdl/mgdl-angelscript.h>
 #	ifdef __cplusplus
 		extern "C" {
 #	endif

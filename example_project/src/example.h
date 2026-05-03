@@ -1,7 +1,7 @@
 #pragma once
 
 #include <mgdl.h>
-#include "mgdl-angelscript.h"
+#include <mgdl/mgdl-angelscript.h>
 
 class Example
 {

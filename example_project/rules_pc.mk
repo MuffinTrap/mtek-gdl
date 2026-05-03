@@ -18,16 +18,10 @@ endif
 # Optional: Use AngelScript either as script or compiled as c++
 ifdef ANGEL
 
-# TODO Read from $(ANGELSCRIPT_SDK) enviroment value directory
-
-# TODO move to muffin-gdl
+# Read from $(ANGELSCRIPT_SDK) environment value directory
+CXXFLAGS += -I$(ANGELSCRIPT_SDK)/angelscript/include
 # Add AngelScript library directory
-SRC_DIRS += dmon
-CXXFLAGS += -Idmon
-SRC_DIRS += angelscript
-CXXFLAGS += -Iangelscript
-# TODO move to platform makefile
-LDFLAGS += -Langelscript/linux
+LDFLAGS += -L$(ANGELSCRIPT_SDK)/angelscript/lib/linux
 
 ifeq ($(ANGEL), script)
 CXXFLAGS += -DUSE_ANGEL_AS_SCRIPT

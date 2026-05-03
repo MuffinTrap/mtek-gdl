@@ -1,7 +1,6 @@
 
 #include "example.h"
 #include <mgdl/mgdl-draw2d.h>
-#include "mgdl-angelscript.h"
 #include <string>
 
 #if defined(MGDL_ROCKET)
