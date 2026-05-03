@@ -1,13 +1,25 @@
 #pragma once
-#include "../angelscript.h"
+#include <angelscript.h>
 #include <mgdl/zstrh/zstr.h>
 
+/**
+ * @file ZStrFactory.h
+ * @ingroup angelscript
+ * @brief String factory needed by AngelScript
+ */
+
+/**
+ * @brief Function object providing equal check
+ */
 class ZstrEqual
 {
 public:
 	bool operator()(zstr const& keyA, zstr const& keyB) const;
 };
 
+/**
+ * @brief Function object providing string hash
+ */
 class ZstrHash
 {
 public:
@@ -18,7 +30,9 @@ public:
 #include <unordered_map>
 typedef std::unordered_map<zstr, int, ZstrHash, ZstrEqual> map_t;
 
-// String interface to zstr.h
+/**
+ * @brief String factory for zstr, needed by AngelScript
+ */
 class ZStrFactory : public asIStringFactory
 {
 public:

@@ -1,6 +1,6 @@
 
 #include <mgdl.h>
-#include "../angelscript.h"
+#include <angelscript.h>
 #include "scriptmgdl.h"
 #include "ZStrFactory.h"
 #include <mgdl/mgdl-types.h>
@@ -16,12 +16,6 @@ static void RegisterOpenGLUtilsAndGlut(asIScriptEngine* as_engine)
 
 	// mgdl utils
 	as_engine->RegisterGlobalFunction("void mgdl_InitOrthoProjection()", asFUNCTION(mgdl_InitOrthoProjection), asCALL_CDECL);
-}
-
-
-static void TextureHandleDefaultConstructor(TextureHandle* self)
-{
-	new(self) TextureHandle();
 }
 
 

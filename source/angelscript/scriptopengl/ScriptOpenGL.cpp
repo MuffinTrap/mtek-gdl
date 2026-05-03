@@ -10,7 +10,6 @@
 #include <mgdl/mgdl-opengl.h>
 // openGL
 #ifdef _WIN32
-#include <windows.h>
 #define asGLFunctionCall asCALL_STDCALL
 #else
 #define asGLFunctionCall asCALL_CDECL

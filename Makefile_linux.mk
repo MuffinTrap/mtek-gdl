@@ -1,4 +1,5 @@
-include Makefile_pc.mk
+include rules_all.mk
+include rules_pc.mk
 
 # Linux specific settings
 CXX = clang++
