@@ -1,5 +1,6 @@
 #include <mgdl/mgdl-gui.h>
-#include <mgdl/mgdl-font.h>
+#include <mgdl/mgdl-texture.h>
+#include <mgdl/mgdl-spriteatlas.h>
 #include <mgdl/mgdl-defaultfont.h>
 #include <mgdl/mgdl-draw2d.h>
 #include <mgdl/mgdl-util.h>
@@ -23,14 +24,14 @@ Menu* Menu_CreateDefault()
     return Menu_Create(DefaultFont_GetDefaultFont(), 1.0f, 1.1f);
 }
 
-Menu* Menu_Create(Font* font, float textHeight, float rowHeightEm)
+Menu* Menu_Create(Texture* font, float textHeight, float rowHeightEm)
 {
     Menu* menu = (Menu*)malloc(sizeof(Menu));
 
     menu->font = font;
     menu->textHeight = textHeight;
     menu->rowHeightEm = rowHeightEm;
-    menu->textSize = textHeight * font->characterHeight;
+    menu->textSize = textHeight * font->spriteAtlas->characterHeight;
     menu->drawWindow = false;
 
     // TODO Calculate text and row heights just once
@@ -48,7 +49,7 @@ Menu* Menu_Create(Font* font, float textHeight, float rowHeightEm)
     return menu;
 }
 
-Menu* Menu_CreateWindowed(Font* font, float textHeight, float rowHeightEm, short windowWidth, short windowHeight, const char* title)
+Menu* Menu_CreateWindowed(Texture* font, float textHeight, float rowHeightEm, short windowWidth, short windowHeight, const char* title)
 {
     Menu* menu = Menu_Create(font, textHeight, rowHeightEm);
     menu->drawWindow = true;
@@ -129,7 +130,7 @@ void Menu_TitleBar_(Menu* menu)
                   y - h,
                   &menu->highlight);
 
-    Font_Print(menu->font, &menu->bg, x + 2, y, h, menu->windowName);
+    Texture_DrawText(menu->font, &menu->bg, x + 2, y, h, menu->windowName);
 
     // NOTE titlebar cannot be on a row
     menu->drawy -= h;
@@ -171,7 +172,7 @@ void Menu_Text(Menu* menu, const char* text)
     const short x = menu->drawx;
     const short y = menu->drawy;
     const short h = menu->textSize;
-    Font_PrintAligned(menu->font, &menu->text, x, y, h, LJustify, LJustify, text);
+    Texture_DrawText(menu->font, &menu->text, x, y, h, text);
 
     float drawh = h * menu->rowHeightEm;
     menu->largestHeightOnRow = maxF(menu->largestHeightOnRow, drawh);
@@ -179,7 +180,7 @@ void Menu_Text(Menu* menu, const char* text)
     switch(menu->drawDirection)
     {
         case MenuDownward: menu->drawy -= drawh; break;
-        case MenuRightward: menu->drawx += strlen(text) * menu->font->characterWidth; break;
+        case MenuRightward: menu->drawx += strlen(text) * menu->font->spriteAtlas->characterWidth; break;
     }
 }
 
@@ -190,14 +191,14 @@ void Menu_Icon(Menu* menu, IconSymbol icon, Color4f* color)
     const short x = menu->drawx;
     const short y = menu->drawy;
     const short h = menu->textSize;
-    Font_Icon(menu->font, color, x, y, h, LJustify, LJustify, icon);
+    DefaultFont_DrawIcon(color, x, y, h, icon);
 
     float drawh = h * menu->rowHeightEm;
     menu->largestHeightOnRow = maxF(menu->largestHeightOnRow, drawh);
     switch(menu->drawDirection)
     {
         case MenuDownward: menu->drawy -= drawh; break;
-        case MenuRightward: menu->drawx += menu->font->characterWidth; break;
+        case MenuRightward: menu->drawx += menu->font->spriteAtlas->characterWidth; break;
     }
 }
 
@@ -226,7 +227,7 @@ bool Menu_Button(Menu* menu, const char* text)
     }
     Draw2D_Rect(x, y, x + w, y - h, background);
 
-    Font_PrintAligned(menu->font, pen, x, y, menu->textSize, LJustify, LJustify, text);
+    Texture_DrawText(menu->font, pen, x, y, menu->textSize, text);
 
     float drawh = h * menu->rowHeightEm;
     menu->largestHeightOnRow = maxF(menu->largestHeightOnRow, drawh);
@@ -274,7 +275,7 @@ bool Menu_Slider(Menu* menu, const char* text, float minValue, float maxValue, f
     // -100 --100 -> 0 / 200 -> 0.0f
     Draw2D_Rect(x, y, x + w * fill , y - h, bar);
 
-    Font_PrintfAligned(menu->font, pen, x, y, menu->textSize, LJustify, LJustify, "%s:%.4f", text, *valueRef);
+    Texture_DrawTextF(menu->font, pen, x, y, menu->textSize, "%s:%.4f", text, *valueRef);
 
     float drawh = h * menu->rowHeightEm;
     menu->largestHeightOnRow = maxF(menu->largestHeightOnRow, drawh);
@@ -407,7 +408,7 @@ bool Menu_Toggle (Menu* menu,const char* text, bool* valuePtr )
                       x + h - padding, y - h + padding, pen);
     }
 
-    Font_PrintAligned(menu->font, pen, x + h + padding * 2, y, menu->textSize, LJustify, LJustify, text);
+    Texture_DrawText(menu->font, pen, x + h + padding * 2, y, menu->textSize, text);
 
     float drawh = h + 1;
 
@@ -442,7 +443,9 @@ void Menu_Flag(Menu* menu, const char* text, bool enabled)
     }
     Draw2D_Rect(x, y, x + w, y - h, background);
 
-    Font_PrintAligned(menu->font, pen, x+w/2, y, menu->textSize, Centered, LJustify, text);
+    vec2 pos = CalculateAlignedTopLeft(x+w/2, y, strlen(text) * menu->font->spriteAtlas->characterWidth ,menu->textSize, Centered, LJustify);
+
+    Texture_DrawText(menu->font, pen, pos.x, pos.y, menu->textSize, text);
 
     menu->largestHeightOnRow = maxF(menu->largestHeightOnRow, h);
     switch(menu->drawDirection)
@@ -466,12 +469,12 @@ void Menu_Skip(Menu* menu, short pixels)
 
 void Menu_DrawCursor(Menu* menu)
 {
-    Font* db = DefaultFont_GetDefaultFont();
+    Texture* db = DefaultFont_GetDefaultFont();
     Color4f* white = Color_GetDefaultColor(Color_White);
     short x = V2f_X(menu->cursorPosition);
     short y = V2f_Y(menu->cursorPosition);
-    short w = db->characterWidth;
-    short h = db->characterHeight;
+    short w = db->spriteAtlas->characterWidth;
+    short h = db->spriteAtlas->characterHeight;
     Menu_DrawCursorParams_(x+2, y-2, w, h, Color_GetDefaultColor(Color_Black));
     Menu_DrawCursorParams_(x, y, w, h, white);
 }
@@ -479,12 +482,11 @@ void Menu_DrawCursor(Menu* menu)
 void Menu_DrawCursorParams_(short x, short y, short w, short h, Color4f* color)
 {
 
-    Font* db = DefaultFont_GetDefaultFont();
-    Font_Icon(db, color,
-              x, y, h, LJustify, LJustify, Icon_CursorPoint);
-    Font_Icon(db, color,
-              x, y-h, h, LJustify, LJustify, Icon_CursorBase);
-    Font_IconRotated(db, color,
-              x + w, y-h+1, h, LJustify, LJustify, 1, Icon_CursorWing);
+    DefaultFont_DrawIcon( color,
+              x, y, h, Icon_CursorPoint);
+    DefaultFont_DrawIcon( color,
+              x, y-h, h, Icon_CursorBase);
+    DefaultFont_DrawIconRotated( color,
+              x + w, y-h+1, h, 1, Icon_CursorWing);
 
 }

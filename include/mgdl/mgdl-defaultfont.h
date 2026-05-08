@@ -6,7 +6,8 @@
  * @brief Function for getting the Default font.
  */
 
-#include <mgdl/mgdl-font.h>
+struct Texture;
+
 
 #ifdef __cplusplus
 extern "C"
@@ -14,11 +15,11 @@ extern "C"
 #endif
 
 /**
- * @brief Returns pointer to the Font which is always loaded.
+ * @brief Returns pointer to a Texture with SpriteAtlas mapped for the default font.
  *
  * @return Pointer to the Default Font.
  */
-Font* DefaultFont_GetDefaultFont(void);
+Texture* DefaultFont_GetDefaultFont(void);
 
 #ifdef __cplusplus
 }

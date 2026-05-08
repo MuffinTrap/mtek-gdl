@@ -4,7 +4,6 @@
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-fbx.h>
 
-#include <mgdl/mgdl-font.h>
 #include <mgdl/mgdl-sound.h>
 #include <mgdl/mgdl-audio.h>
 
@@ -19,32 +18,6 @@ void mgdl_InitSystem(const char* windowName,
 
 }
 
-// HANDLE API
-void mgdl_DrawTexture(TextureHandle handle, s16 x, s16 y)
-{
-	Texture* texture = AssetManager_GetTexture(handle);
-	Texture_Draw2DAligned(texture, x, y, 1.0f, LJustify, LJustify);
-}
-void mgdl_DrawTextureV(TextureHandle handle, vec2 position)
-{
-	mgdl_DrawTexture(handle, position.x, position.y);
-}
-
-SoundHandle mgdl_LoadSound(const char* filename, SoundFileType soundType)
-{
-	return AssetManager_LoadSound(filename, soundType);
-}
-
-void mgdl_PlaySound(SoundHandle handle)
-{
-	Sound* snd = AssetManager_GetSound(handle);
-	Audio_PlaySound(snd);
-}
-
-ImageHandle mgdl_LoadPNG(const char* filename)
-{
-	return AssetManager_LoadPNG(filename);
-}
 
 // DIRECT API
 
@@ -79,25 +52,19 @@ Sound* mgdl_LoadSoundMp3(const char* filename)
 	return snd;
 }
 
-Font* mgdl_LoadFont(const char* filename, short characterWidth, short characterHeight, char firstCharacter)
+Texture* mgdl_LoadFont(const char* filename, short characterWidth, short characterHeight, char firstCharacter)
 {
 	Texture* fontTexture = Texture_LoadFile(filename, TextureFilterModes::Nearest);
-	Font* font = Font_Load(fontTexture, characterWidth, characterHeight, firstCharacter);
-	return font;
+	SpriteAtlas_MapSimple(fontTexture, characterWidth, characterHeight, firstCharacter);
+	return fontTexture;
 }
 
-Font* mgdl_LoadFontCustom(const char* filename, short characterWidth, short characterHeight, char firstCharacter, short charactersPerRow)
-{
-	Texture* fontTexture = Texture_LoadFile(filename, TextureFilterModes::Linear);
-	Font* font = Font_LoadPadded(fontTexture, characterWidth, characterHeight, firstCharacter, charactersPerRow);
-	return font;
-}
 
-Font* mgdl_LoadFontCustom(const char* filename, short characterWidth, short characterHeight, short charactersPerRow, const char* characters)
+Texture* mgdl_LoadFontCustom(const char* filename, short characterWidth, short characterHeight, short charactersPerRow, const char* characters)
 {
 	Texture* fontTexture = Texture_LoadFile(filename, TextureFilterModes::Linear);
-	Font* font = Font_LoadSelective(fontTexture, characterWidth, characterHeight, charactersPerRow, characters);
-	return font;
+	SpriteAtlas_MapSelective(fontTexture, characterWidth, characterHeight, characters);
+	return fontTexture;
 }
 
 Scene* mgdl_LoadFBX(const char* filename)
@@ -106,12 +73,6 @@ Scene* mgdl_LoadFBX(const char* filename)
 
 	// TODO calculate size
 	return s;
-}
-
-Sprite* mgdl_LoadSprite(const char* filename, short spriteWidth, short spriteHeight)
-{
-	Font* spriteSheet = mgdl_LoadFont(filename, spriteWidth, spriteHeight, 0);
-	return Sprite_Load(spriteSheet);
 }
 
 WiiController* mgdl_GetController( int controllerNumber)

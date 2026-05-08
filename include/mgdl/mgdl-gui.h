@@ -1,8 +1,9 @@
 #pragma once
 
 #include "mgdl-types.h"
-#include "mgdl-font.h"
 #include "mgdl-color.h"
+
+struct Texture;
 
 /**
  * @file mgdl-gui.h
@@ -49,7 +50,7 @@ struct Menu
     float windowy;
     float windowHeight;
 
-    Font* font;
+    Texture* font;
 
     MenuDrawDirection drawDirection;
     float largestHeightOnRow;
@@ -81,16 +82,16 @@ extern "C"
 
     /**
      * @brief Creates a MenuCreator using font and parameters.
-     * @param font Font to use on the menu elements.
+     * @param font Texture to use on the menu elements.
      * @param textHeight Height of the text.
      * @param rowHeightEm Height of the row relative to the text height. 1 Em is same as text height, 2 is twice etc. Controls the amount of padding above and below text on elements.
      * @return Menu struct that can be used to draw menus.
      */
-    Menu* Menu_Create(Font* font, float textHeigh, float rowHeightEm);
+    Menu* Menu_Create(Texture* font, float textHeigh, float rowHeightEm);
 
     /**
      * @brief Creates a windowed menu.
-     * @param font Font to use on the menu elements.
+     * @param font Texture to use on the menu elements.
      * @param textHeight Height of the text.
      * @param rowHeightEm Height of the row relative to the text height. 1 Em is same as text height, 2 is twice etc. Controls the amount of padding above and below text on elements.
      * @return Menu struct that can be used to draw menus.
@@ -98,7 +99,7 @@ extern "C"
      * @param height Height of the window in pixels. -1 means automatic
      * @param text Title of the window.
      */
-    Menu* Menu_CreateWindowed(Font* font, float textHeight, float rowHeightEm, short width, short height, const char* title);
+    Menu* Menu_CreateWindowed(Texture* font, float textHeight, float rowHeightEm, short width, short height, const char* title);
 
     /**
      * @brief Creates a MenuCreator using default font and settings.

@@ -4,6 +4,7 @@
 #include "mgdl-util.h"
 #include "mgdl-opengl.h"
 #include "mgdl-png.h"
+#include "mgdl-spriteatlas.h"
 
 /**
  * @file mgdl-texture.h
@@ -11,6 +12,7 @@
  * @brief Texture class and functions
  */
 
+// Forward declares
 
 /**
 * @brief Holds pixels data and allows using them for drawing operations
@@ -18,6 +20,7 @@
 struct Texture
 {
 	PNGFile* pngFile;
+	SpriteAtlas* spriteAtlas;
 
 	float aspectRatio;
 	GLsizei width;

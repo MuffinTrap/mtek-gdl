@@ -180,7 +180,7 @@ float DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer)
 	// in stylized letters
 	mgdl_InitOrthoProjection();
 
-	Font* debf = DefaultFont_GetDefaultFont();
+	Texture* debf = DefaultFont_GetDefaultFont();
 	if (customColors == false)
 	{
 		Palette* blessing = Palette_GetDefault();
@@ -255,15 +255,15 @@ float DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer)
 		DrawLetters(paddingX, lean, logoOver, true, barsColored);
 
 	}
-	Font_Print(debf, &textLightColor, dStart, baseLine, 8, GDL_VERSION);
-	Font_Print(debf, &textLightColor, dStart, baseLine - 8, 8, MGDL_PLATFORM);
+	Texture_DrawText(debf, &textLightColor, dStart, baseLine, 8, GDL_VERSION);
+	Texture_DrawText(debf, &textLightColor, dStart, baseLine - 8, 8, MGDL_PLATFORM);
 
 	if (drawHoldAMessage)
 	{
 		int messageWidth = strlen(holdMessage) * 8;
 		int messageLeft = sw/2 - messageWidth/2;
 		int messageY = areaBottom - 8;
-		Font_Print(debf, &textLightColor, messageLeft, messageY, 8, holdMessage);
+		Texture_DrawText(debf, &textLightColor, messageLeft, messageY, 8, holdMessage);
 
 		Draw2D_Rect(messageLeft, messageY - 16, messageLeft + messageWidth * aHoldTimer, messageY - 16 - 4, &textLightColor);
 	}

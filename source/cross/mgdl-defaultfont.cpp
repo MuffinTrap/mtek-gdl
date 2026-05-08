@@ -2,6 +2,10 @@
 #include <mgdl/mgdl-defaultfont.h>
 #include <mgdl/mgdl-opengl.h>
 #include <mgdl/mgdl-cache.h>
+#include <mgdl/mgdl-texture.h>
+#include <mgdl/mgdl-spriteatlas.h>
+
+#include <mgdl/mgdl-alloc.h>
 
 /* This font is taken from https://int10h.org/oldschool-pc-fonts/fontlist/font?toshibasat_8x8
  * and converted to a header with Gimp.
@@ -529,11 +533,11 @@ static unsigned char header_data[] = {
 	0,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1
 	};
 
-Font* DefaultFont_GetDefaultFont(void)
+Texture* DefaultFont_GetDefaultFont(void)
 {
 	// NOTE In OpenGL
 	// the origo 0,0 is in lower left coordinate
-	static Font* debugFont = nullptr;
+	static Texture* debugFont = nullptr;
 	if (debugFont == nullptr)
 	{
 		GLubyte fontTexture[height][width][2];
@@ -565,9 +569,9 @@ Font* DefaultFont_GetDefaultFont(void)
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE_ALPHA, width, height, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, fontTexture);
 		glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
 
-		Texture* img = (Texture*)malloc(sizeof(Texture));
-		Texture_SetGLName(img, texName, width, height, ColorFormats::GrayAlpha);
-		debugFont = Font_Load(img, 8, 8, ' ');
+		debugFont = Texture_Create();
+		Texture_SetGLName(debugFont, texName, width, height, ColorFormats::GrayAlpha);
+		SpriteAtlas_MapSimple(debugFont, 8, 8, ' ');
 	}
 	return debugFont;
 }

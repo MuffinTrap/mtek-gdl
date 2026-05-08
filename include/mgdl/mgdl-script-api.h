@@ -21,6 +21,7 @@ void mgdl_InitScriptApi();
 // -----------------
 void mgdl_SetTextureFilter(TextureHandle texture, TextureFilterModes mode);
 void mgdl_SetTextureWrap(TextureHandle texture, TextureWrapModes mode);
+void mgdl_CreateFontUVs(TextureHandle texture, s16 characterWidth, s16 characterHeight, char firstCharacter);
 
 // DRAWING
 // ----------------------------

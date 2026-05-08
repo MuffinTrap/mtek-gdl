@@ -41,10 +41,32 @@ void mgdl_SetTextureWrap(TextureHandle texture, TextureWrapModes mode)
 	Texture_SetWrapMode(tex, mode);
 }
 
+void mgdl_CreateFontUVs(TextureHandle texture, s16 characterWidth, s16 characterHeight, char firstCharacter)
+{
+	Texture* tex = AssetManager_GetTexture(texture);
+	SpriteAtlas_MapSimple(tex, characterWidth, characterHeight, firstCharacter);
+}
+
 void mgdl_DrawTexture(TextureHandle handle, s16 x, s16 y)
 {
 	Texture* tex = AssetManager_GetTexture(handle);
 	Texture_Draw2DAligned(tex, x, y, 1.0f, LJustify, LJustify);
+}
+
+void mgdl_DrawTextureV(TextureHandle handle, vec2 position)
+{
+	mgdl_DrawTexture(handle, position.x, position.y);
+}
+
+void mgdl_PlaySound(SoundHandle handle)
+{
+	Sound* snd = AssetManager_GetSound(handle);
+	Audio_PlaySound(snd);
+}
+
+ImageHandle mgdl_LoadPNG(const char* filename)
+{
+	return AssetManager_LoadPNG(filename);
 }
 
 SoundHandle mgdl_LoadSound(const zstr& filename)
@@ -71,12 +93,6 @@ SoundHandle mgdl_LoadSound(const char* filename)
 	}
 	Log_ErrorF("LoadSound unsupported file type on %s\n", filename);
 	return SoundHandle{0};
-}
-
-void mgdl_PlaySound(SoundHandle handle)
-{
-	Sound* snd = AssetManager_GetSound(handle);
-	Audio_PlaySound(snd);
 }
 
 PaletteHandle mgdl_LoadPalette(const zstr& image)

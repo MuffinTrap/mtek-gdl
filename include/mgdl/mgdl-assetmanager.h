@@ -1,6 +1,5 @@
 #pragma once
 
-#include <mgdl/mgdl-font.h>
 #include <mgdl/mgdl-texture.h>
 #include <mgdl/mgdl-png.h>
 #include <mgdl/mgdl-sound.h>

@@ -98,9 +98,9 @@ PaletteAsset AssetManager_CreatePaletteAsset(Palette* data, const char* filename
 	return ta;
 }
 
-void AssetManager_LoadFont(AssetManager* manager, Font* font)
+void AssetManager_LoadFont(AssetManager* manager, Texture* texture)
 {
-	manager->m_memoryInUse += font->_characterCount * sizeof(vec2);
+	manager->m_memoryInUse += texture->spriteAtlas->characterCount * sizeof(vec2);
 }
 
 TextureHandle AssetManager_LoadTexture(const char* filename)

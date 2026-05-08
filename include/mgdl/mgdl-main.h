@@ -15,8 +15,6 @@
  * @brief Main functions to start and use the library
  */
 
-struct Font;
-
 #ifdef __cplusplus
 extern "C"
 {
@@ -67,11 +65,9 @@ Sound* mgdl_LoadSoundOgg(const char* filename);
 Sound* mgdl_LoadSoundMp3(const char* filename);
 
 Scene* mgdl_LoadFBX(const char* filename);
-Sprite* mgdl_LoadSprite(const char* filename, short spriteWidth, short spriteHeight);
 
-Font* mgdl_LoadFont(const char* filename, short characterWidth, short characterHeight, char firstCharacter);
-Font* mgdl_LoadFontCustom(const char* filename, short characterWidth, short characterHeight, char firstCharacter, short charactersPerRow);
-Font* mgdl_LoadFontSelective(const char* filename, short characterWidth, short characterHeight, short charactersPerRow, const char* characters);
+Texture* mgdl_LoadFont(const char* filename, short characterWidth, short characterHeight, char firstCharacter);
+Texture* mgdl_LoadFontSelective(const char* filename, short characterWidth, short characterHeight, const char* characters);
 
 WiiController* mgdl_GetController(int controllerNumber);
 

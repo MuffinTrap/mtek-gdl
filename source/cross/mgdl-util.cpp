@@ -177,6 +177,28 @@ u32 Flag_UnsetAll(u32 bitfield, u32 flags)
 	return (bitfield & ~flags);
 }
 
+vec2 CalculateAlignedTopLeft(float x, float y, float width, float height, AlignmentModes alignmentX, AlignmentModes alignmentY)
+{
+	vec2 topleft = vec2New(x, y);
+	if (alignmentX == RJustify)
+	{
+		topleft.x -= width;
+	}
+	else if (alignmentX == Centered)
+	{
+		topleft.x -= width / 2;
+	}
+	if (alignmentY == RJustify)
+	{
+		topleft.y += height;
+	}
+	else if (alignmentY == Centered)
+	{
+		topleft.y += height/2.0f;
+	}
+	return topleft;
+}
+
 // ******************************
 // ENDIANNES HANDLING FUNCTION
 // ******************************

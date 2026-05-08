@@ -141,6 +141,8 @@ static bool ReloadAngelScriptCode(mgdl_AngelScript* angel)
 	// NOP
 #else
 	#define DMON_IMPL
+#	define DMON_LOG_ERROR(s) Log_Error(s)
+#	define DMON_SLEEP_INTERVAL 64
 	#include <mgdl/dmon/dmon.h>
 
 	void dmon_WatchCallback(dmon_watch_id watch_id, dmon_action action, const char* rootdir,
@@ -256,7 +258,11 @@ mgdl_AngelScript* mgdl_InitAngelScript(const char* mainScript, const char* hotlo
 #		else
 		dmon_init();
 		angel->dmonInitDone = true;
-		dmon_watch(hotloadDirectory, dmon_WatchCallback, DMON_WATCHFLAGS_RECURSIVE, angel);
+		dmon_watch_id watch_id = dmon_watch(hotloadDirectory, dmon_WatchCallback, DMON_WATCHFLAGS_RECURSIVE, angel);
+		if (watch_id.id == 0)
+		{
+			Log_ErrorF("Dmon cannot watch directory %s\n", hotloadDirectory);
+		}
 #		endif
 	}
 

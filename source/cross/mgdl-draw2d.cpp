@@ -6,25 +6,6 @@
 #include <mgdl/mgdl-config.h>
 #include <mgdl/mgdl-platform.h>
 
-Rect Rect_Create(short x, short y, short w, short h)
-{
-	return {x, y, w, h};
-}
-
-RectF RectF_Create(float x, float y, float w, float h)
-{
-	RectF r;
-	r.x = x;
-	r.y = y;
-	r.w = w;
-	r.h = h;
-	return r;
-}
-
-Rect Rect_CreateV2f(vec2 position, vec2 size)
-{
-	return {(short)V2f_X(position), (short)V2f_Y(position), (short)V2f_X(size), (short)V2f_Y(size)};
-}
 
 void Draw2D_OrigoTo(short x, short y)
 {
@@ -144,8 +125,8 @@ void Draw2D_LineV2f(vec2 start, vec2 end, Color4f* color )
 
 void Draw2D_Text(short x, short y, const char* text, Color4f* color)
 {
-	Font* db = DefaultFont_GetDefaultFont();
-	Font_Print(db, color, x, y, db->characterHeight, text);
+	Texture* db = DefaultFont_GetDefaultFont();
+	Texture_DrawText(db, color, x, y, db->spriteAtlas->characterHeight, text);
 }
 
 void Draw2D_TextV2f(vec2 position, const char* text, Color4f* color)
