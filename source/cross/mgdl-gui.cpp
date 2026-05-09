@@ -125,7 +125,7 @@ void Menu_TitleBar_(Menu* menu)
     const short y = menu->drawy;
     const short h = menu->textSize;
     const short w = menu->menuWidth;
-    Draw2D_Rect(x, y,
+    mgdl_DrawRectangle(x, y,
                   x + w,
                   y - h,
                   &menu->highlight);
@@ -140,11 +140,11 @@ void Menu_Borders_(Menu* menu)
 {
     const short x = menu->drawx;
     const short y = menu->drawy;
-    Draw2D_Rect(x, y,
+    mgdl_DrawRectangle(x, y,
                   x + menu->menuWidth,
                   y - menu->windowHeight,
                   &menu->bg);
-    Draw2D_RectLines(x, y,
+    mgdl_DrawRectangleLines(x, y,
                   x + menu->menuWidth + 1,
                   y - menu->windowHeight - 1,
                   &menu->text);
@@ -225,7 +225,7 @@ bool Menu_Button(Menu* menu, const char* text)
     {
         pen = &menu->highlight;
     }
-    Draw2D_Rect(x, y, x + w, y - h, background);
+    mgdl_DrawRectangle(x, y, x + w, y - h, background);
 
     Texture_DrawText(menu->font, pen, x, y, menu->textSize, text);
 
@@ -266,14 +266,14 @@ bool Menu_Slider(Menu* menu, const char* text, float minValue, float maxValue, f
         bar = &menu->bg;
         pen = &menu->text;
     }
-    Draw2D_RectLines(x, y, x + w, y - h, background);
+    mgdl_DrawRectangleLines(x, y, x + w, y - h, background);
     float range = maxValue-minValue; // 100 - (-100) -> 200
     float fill = ((*valueRef)-minValue)/range;
     // value - min
     // 0-(-100) -> 100 /200 -> 0.5f
     // 50 --100 -> 150 / 200  -> 0.75f
     // -100 --100 -> 0 / 200 -> 0.0f
-    Draw2D_Rect(x, y, x + w * fill , y - h, bar);
+    mgdl_DrawRectangle(x, y, x + w * fill , y - h, bar);
 
     Texture_DrawTextF(menu->font, pen, x, y, menu->textSize, "%s:%.4f", text, *valueRef);
 
@@ -295,61 +295,6 @@ bool Menu_Slider(Menu* menu, const char* text, float minValue, float maxValue, f
 
     return false;
 
-}
-
-bool Menu_TexturedButton(Menu* menu, Texture* texture, TextureFlipModes flipflags)
-{
-    if (menu == nullptr) return false;
-
-    const short x = menu->drawx;
-    const short y = menu->drawy;
-    const short w = menu->menuWidth;
-    const short h = w / texture->aspectRatio;
-
-    const short cx = V2f_X(menu->cursorPosition);
-    const short cy = V2f_Y(menu->cursorPosition);
-
-    bool inside = ((cx >= x) &&
-                (cx <= x + w) &&
-                (cy <= y) &&
-                (cy >= y - h));
-
-    short tx1 = x;
-    short tx2 = x+w;
-    short ty1 = y;
-    short ty2 = y - h;
-
-    if (Flag_IsSet(flipflags, FlipVertical) || Flag_IsSet(flipflags, FlipHorizontal))
-    {
-        glDisable(GL_CULL_FACE);
-    }
-    if (Flag_IsSet(flipflags, FlipVertical))
-    {
-            tx1 = x+w;
-            tx2 = x;
-    }
-    if (Flag_IsSet(flipflags, FlipHorizontal))
-    {
-            ty1 = y-h;
-            ty2 = y;
-    }
-
-    Texture_Draw2DAbsolute(texture, tx1, ty1, tx2, ty2);
-
-    if (Flag_IsSet(flipflags, FlipVertical) || Flag_IsSet(flipflags, FlipHorizontal))
-    {
-        glEnable(GL_CULL_FACE);
-    }
-
-
-    menu->largestHeightOnRow = maxF(menu->largestHeightOnRow, h);
-    switch(menu->drawDirection)
-    {
-        case MenuDownward: menu->drawy -= h; break;
-        case MenuRightward: menu->drawx += w; break;
-    }
-
-    return (inside && menu->buttonPress);
 }
 
 bool Menu_IsCursorInside(Menu* menu, short w, short h)
@@ -395,16 +340,16 @@ bool Menu_Toggle (Menu* menu,const char* text, bool* valuePtr )
         background = &menu->highlight;
         pen = &menu->bg;
     }
-    Draw2D_Rect(x, y, x + w, y - h, background);
+    mgdl_DrawRectangle(x, y, x + w, y - h, background);
 
     if (isOn)
     {
-        Draw2D_Rect(x + padding, y - padding,
+        mgdl_DrawRectangle(x + padding, y - padding,
                       x + h - padding, y - h + padding, pen);
     }
     else
     {
-        Draw2D_RectLines(x + padding, y - padding,
+        mgdl_DrawRectangleLines(x + padding, y - padding,
                       x + h - padding, y - h + padding, pen);
     }
 
@@ -441,7 +386,7 @@ void Menu_Flag(Menu* menu, const char* text, bool enabled)
         background = &menu->highlight;
         pen = &menu->bg;
     }
-    Draw2D_Rect(x, y, x + w, y - h, background);
+    mgdl_DrawRectangle(x, y, x + w, y - h, background);
 
     vec2 pos = CalculateAlignedTopLeft(x+w/2, y, strlen(text) * menu->font->spriteAtlas->characterWidth ,menu->textSize, Centered, LJustify);
 

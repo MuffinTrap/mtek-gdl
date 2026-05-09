@@ -17,6 +17,10 @@ extern "C" {
 
 void mgdl_InitScriptApi();
 
+// DRAWING
+// --------------------------
+void mgdl_DrawRectanglePal(float x, float y, float w, float h, u8 paletteIndex);
+
 // TEXTURES
 // -----------------
 void mgdl_SetTextureFilter(TextureHandle texture, TextureFilterModes mode);
@@ -25,8 +29,7 @@ void mgdl_CreateFontUVs(TextureHandle texture, s16 characterWidth, s16 character
 
 // DRAWING
 // ----------------------------
-void mgdl_DrawRectangle(s16 x, s16 y, s16 w, s16 h, u8 paletteIndex);
-void mgdl_DrawTexture(TextureHandle handle, s16 x, s16 y);
+void mgdl_DrawTexture(TextureHandle handle, float x, float y);
 void mgdl_DrawTextureV(TextureHandle handle, vec2 position);
 
 // SOUNDS

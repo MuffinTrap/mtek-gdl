@@ -72,10 +72,10 @@ static void RegisterDrawing(asIScriptEngine* as_engine)
 	as_engine->RegisterGlobalFunction("void  mgdl_SetPalette(PaletteHandle palette)", asFUNCTION(mgdl_SetPalette), asCALL_CDECL);
 
 	// Register drawing functions
-	as_engine->RegisterGlobalFunction("void  mgdl_DrawRectangle(s16 x, s16 y, s16 w, s16 h, u8 paletteIndex)", asFUNCTION(mgdl_DrawRectangle), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void  mgdl_DrawRectanglePal(float x, float y, float w, float h, u8 paletteIndex)", asFUNCTION(mgdl_DrawRectangle), asCALL_CDECL);
 
 
-	as_engine->RegisterGlobalFunction("void  mgdl_DrawTexture(TextureHandle textureHandle, s16 y, s16 w)", asFUNCTION(mgdl_DrawTexture), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void  mgdl_DrawTexture(TextureHandle textureHandle, float y, float w)", asFUNCTION(mgdl_DrawTexture), asCALL_CDECL);
 }
 
 static void RegisterController(asIScriptEngine* as_engine)

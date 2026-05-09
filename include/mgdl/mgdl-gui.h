@@ -195,13 +195,6 @@ extern "C"
     bool Menu_Button(Menu* menu, const char* text);
 
     /**
-     * @brief Draws a button with a texture that can be clicked.
-     * @param text Texture on the button
-     * @param flipflags Combination of TextureFlipModes flags
-     * @return True if the button was clicked.
-     */
-    bool Menu_TexturedButton(Menu* menu, Texture* texture, TextureFlipModes flipflags);
-    /**
      * @brief Draws a toggle that can be clicked.
      * @param text Text on the toggle.
      * @param valueRef Pointer to the boolean controller by the toggle.

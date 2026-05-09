@@ -26,6 +26,11 @@ SpriteAtlas* SpriteAtlas_Create(void)
 	return font;
 }
 
+s16 Texture_GetSpriteWidth(Texture* texture) { return texture->spriteAtlas->spriteWidth; }
+s16 Texture_GetSpriteHeight(Texture* texture) { return texture->spriteAtlas->spriteHeight; }
+s16 Texture_GetCharacterWidth(Texture* texture) { return texture->spriteAtlas->characterWidth; }
+s16 Texture_GetCharacterHeight(Texture* texture) { return texture->spriteAtlas->characterHeight; }
+
 void SpriteAtlas_MapSimple(Texture* texture, short charw, short charh, char firstCharacter )
 {
 	mgdl_assert_print(texture != nullptr, "SpriteAtlas_MapSimple got nullptr for texture\n");

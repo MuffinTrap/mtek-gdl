@@ -36,6 +36,7 @@ extern "C"
 #endif
 
 	Texture* Texture_Create(void);
+	void Texture_Destroy(Texture* texture);
 
 	/**
 		* @brief Sets the GL name and dimenions of the image.
@@ -56,30 +57,16 @@ extern "C"
 		* @param x Lower left corner x of the image.
 		* @param y Lower left corner y of the image.
 		* @param scale Scaling of the image. Scale of 1.0 does not alter the size. Negative scale does not flip the image.
-		* @param alignX Alignment on the X axis.
-		* @param alignY Alignment on the Y axis.
 		*/
-	void Texture_Draw2DAligned(Texture* img, s16 x, s16 y, float scale, AlignmentModes alignX, AlignmentModes alignY);
+	void Texture_Draw(Texture* img, float x, float y, float scale);
+	void Texture_DrawV(Texture* img, vec2 lowerLeft, float scale);
 
 	/**
 		* @brief Draws the image using 2D vertices.
 		*
 		* This function expects the ortographic projection to be set. This function can stretch the image.
-		* @param x Upper left corner x of the image.
-		* @param y Upper left corner y of the image.
-		* @param x2 Lower right corner x of the image.
-		* @param y2 Lower right corner y of the image.
 		*/
-	void Texture_Draw2DAbsolute(Texture* img, short x, short y, short x2, short y2);
-
-	/**
-		* @brief Draws the image on the origo in 3D space.
-		*
-		* This function expects the perspective projection to be set. This function preserves the aspect ratio.
-		* @param alignX Alignment on the X axis.
-		* @param alignY Alignment on the Y axis.
-		*/
-	void Texture_Draw3D(Texture* img, float scale, AlignmentModes alignX, AlignmentModes alignY);
+	void Texture_DrawRectF(Texture* img, RectF area);
 
 	/**
 		* @brief Loads an image from a file.

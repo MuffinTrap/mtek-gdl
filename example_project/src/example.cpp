@@ -45,8 +45,8 @@ void Example::Init()
     // Sprites, images and fonts
     barb = Texture_LoadFile("assets/barb.png", TextureFilterModes::Linear);
     short spriteHeight = 64;
-    mel_sprites = mgdl_LoadSprite("assets/mel_tiles.png", spriteHeight, spriteHeight);
-    fruitSprites = mgdl_LoadSprite("assets/fruits.png", 16, 16);
+    mel_sprites = mgdl_LoadFont("assets/mel_tiles.png", spriteHeight, spriteHeight, 0);
+    fruitSprites = mgdl_LoadFont("assets/fruits.png", 16, 16, 0);
 
     ibmFont = mgdl_LoadFont("assets/font8x16.png", 8, 16, ' ');
     debugFont = DefaultFont_GetDefaultFont();
@@ -220,11 +220,11 @@ void Example::DrawSprites()
     for (int i = 0; i < 16; i++)
     {
         int size = 64;
-        Sprite_Draw2D(fruitSprites, i, size * (i%4), size + (i/4) * size, size, LJustify, RJustify, Color_GetDefaultColor(Color_White));
+        Texture_DrawSprite (fruitSprites, i, size * (i%4), size + (i/4) * size, size, Color_GetDefaultColor(Color_White));
     }
 
-    const short h = Sprite_GetHeight(mel_sprites);
-    const short w = Sprite_GetHeight(mel_sprites);
+    const short h = Texture_GetSpriteHeight(mel_sprites);
+    const short w = Texture_GetSpriteWidth(mel_sprites);
     float scale = 2.0f;
     short spriteW = w * scale;
     short spriteH = h * scale;
@@ -232,7 +232,7 @@ void Example::DrawSprites()
     short placeY = mgdl_GetScreenHeight();
     for (short i = 0; i < 4; i++)
     {
-        Sprite_Draw2D(mel_sprites, i, placeX, placeY, spriteH, LJustify, LJustify, Color_GetDefaultColor(Color_White));
+        Texture_DrawSprite(mel_sprites, i, placeX, placeY, spriteH, Color_GetDefaultColor(Color_White));
         placeY -= spriteH;
     }
 }
@@ -247,7 +247,7 @@ void Example::DrawIcosa()
 
 void Example::DrawTexture()
 {
-    Texture_Draw2DAligned(barb, 100, mgdl_GetScreenHeight(), 1.0f, LJustify, LJustify);
+    Texture_Draw(barb, 100, mgdl_GetScreenHeight(), 1.0f);
     /*
     // Draw Texture
     Texture_Draw2DAligned(AssetManager_GetTexture(barb),
@@ -257,11 +257,11 @@ void Example::DrawTexture()
             LJustify, Centered);
             */
 
-    Texture_Draw2DAligned(debugFont->_fontTexture,
+    Texture_Draw(debugFont,
             0,
             mgdl_GetScreenHeight()/2,
-            1.0f,
-            LJustify, Centered);
+            1.0f);
+
 }
 
 void Example::DrawScene ( Scene* scene, V3f scale)
@@ -335,7 +335,7 @@ void DrawDPad(short x, short y, short size)
             c = Palette_GetColor4f(blessing, 5);
         }
         vec2 d=directions[i];
-        Draw2D_RectWH(x + d.x * box-h,
+        mgdl_DrawRectangle(x + d.x * box-h,
                     y + d.y * box-h,
                     box,
                     box,
@@ -354,12 +354,12 @@ void DrawJoystick(short x, short y, short size)
     vec2 jdir = WiiController_GetNunchukJoystickDirection(mgdl_GetController(0));
     short jleft= x + jsize/2 + jdir.x * box-h;
     short jtop = y - jsize/2 - jdir.y * box-h;
-    Draw2D_RectLines(x-jsize, y, x+jsize*2, y-jsize*3, &jc);
+    mgdl_DrawRectangleLines(x-jsize, y, x+jsize*2, y-jsize*3, &jc);
     if (jdir.x != 0.0f || jdir.y != 0.0f)
     {
         jc = Palette_GetColor4f(blessing, 2);
     }
-    Draw2D_Rect(jleft, jtop, jleft+box, jtop-box, &jc);
+    mgdl_DrawRectangle(jleft, jtop, jleft+box, jtop-box, &jc);
 }
 
 

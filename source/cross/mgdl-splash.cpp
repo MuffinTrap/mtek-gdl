@@ -83,6 +83,9 @@ static float DrawLetter(float x, u8* sl, u8 bars, Color4f* color, float lean, bo
 		barsColored = bars;
 	}
 
+	glBegin(GL_QUADS);
+	mgdl_glColor4f(color);
+
 	for (int i = 0; i < bars; i++)
 	{
 		int line = i *2;
@@ -90,13 +93,19 @@ static float DrawLetter(float x, u8* sl, u8 bars, Color4f* color, float lean, bo
 		{
 			GetCorners(x, sl[line+0], sl[line+1], corners, lean, barsColored);
 
-			Draw2D_Quad(corners[0], corners[1], corners[2], corners[3],
-						corners[4], corners[5], corners[6], corners[7],
-						color);
+			glVertex2f(corners[0], corners[1]);
+			glVertex2f(corners[2], corners[3]);
+			glVertex2f(corners[4], corners[5]);
+			glVertex2f(corners[6], corners[7]);
+
+			//Draw2D_Quad(corners[0], corners[1], corners[2], corners[3],
+						//corners[4], corners[5], corners[6], corners[7],
+						//color);
 			barsColored -= 1.0f;
 		}
 		x += lineWidth-1;
 	}
+	glEnd();
 	return x - startX;
 }
 // Returns where the version string should be
@@ -265,7 +274,7 @@ float DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer)
 		int messageY = areaBottom - 8;
 		Texture_DrawText(debf, &textLightColor, messageLeft, messageY, 8, holdMessage);
 
-		Draw2D_Rect(messageLeft, messageY - 16, messageLeft + messageWidth * aHoldTimer, messageY - 16 - 4, &textLightColor);
+		mgdl_DrawRectangle(messageLeft, messageY - 16, messageWidth * aHoldTimer, (16 + 4), &textLightColor);
 	}
 	return (animationProgress / 2.0f);
 }

@@ -241,16 +241,6 @@ enum CameraProjection
 typedef enum CameraProjection CameraProjection;
 
 // Windows uses Rectangle
-struct Rect
-{
-    short x;
-    short y;
-    short w;
-    short h;
-};
-typedef struct Rect Rect;
-
-// Windows uses Rectangle
 struct RectF
 {
     float x;
@@ -289,12 +279,22 @@ typedef Handle PaletteHandle;
 
 typedef Handle ImageHandle;
 
+// FUNCTIONS
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+RectF RectF_Create(float x, float y, float w, float h);
+RectF Rect_CreateV2f(vec2 position, vec2 size);
+
 u16 Handle_Index(Handle handle);
 AssetType Handle_Type(Handle handle);
-
 TextureHandle Handle_CreateTexture(u16 index);
 SoundHandle Handle_CreateSound(u16 index);
 PaletteHandle Handle_CreatePalette(u16 index);
 ImageHandle Handle_CreateImage(u16 index);
 
+#if defined(__cplusplus)
+}
+#endif
 

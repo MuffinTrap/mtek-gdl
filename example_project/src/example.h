@@ -6,10 +6,10 @@
 class Example
 {
     Texture* barb;
-    Sprite* mel_sprites;
-    Sprite* fruitSprites;
-    Font* ibmFont;
-    Font* debugFont;
+    Texture* mel_sprites;
+    Texture* fruitSprites;
+    Texture* ibmFont;
+    Texture* debugFont;
     Sound* sampleMusic;
     Sound* blip;
     Sound* testmp3Music;

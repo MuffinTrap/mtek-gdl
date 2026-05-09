@@ -44,7 +44,16 @@ extern "C"
 {
 #endif
 
+	/**
+	 * @brief Allocates a new empty SpriteAtlas
+	 * @returns Allocated SpriteAtlas struct
+	 */
 SpriteAtlas* SpriteAtlas_Create(void);
+
+s16 Texture_GetSpriteWidth(Texture* texture);
+s16 Texture_GetSpriteHeight(Texture* texture);
+s16 Texture_GetCharacterWidth(Texture* texture);
+s16 Texture_GetCharacterHeight(Texture* texture);
 
 /**
  * @brief Creates font UVs for given texture

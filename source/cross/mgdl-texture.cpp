@@ -4,19 +4,26 @@
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-png.h>
 #include <mgdl/mgdl-logger.h>
+#include <mgdl/mgdl-types.h>
 #include <stdio.h>
 #include <cstdlib>
 #include <cstring>
 
 Texture* Texture_Create()
 {
-	Texture* img = (Texture*)malloc(sizeof(Texture));
+	Texture* img = (Texture*)mgdl_AllocateGraphicsMemory(sizeof(Texture));
 	img->aspectRatio = 1.0f;
 	img->width = 0;
 	img->height = 0;
 	img->textureId = 0;
 	img->pngFile = nullptr;
+	img->spriteAtlas = nullptr;
 	return img;
+}
+
+void Texture_Destroy(Texture* texture)
+{
+	mgdl_FreeGraphicsMemory(texture);
 }
 
 Texture* Texture_LoadFile ( const char* filename, TextureFilterModes filterMode)
@@ -87,12 +94,12 @@ void Texture_SetGLName(Texture* img, GLuint textureName, GLsizei width, GLsizei 
 }
 
 // TODO add padding to UVs so that the corners are inside the pixels and not in between
-void Texture_Draw2DAbsolute(Texture* img, short x, short y, short x2, short y2)
+void Texture_DrawRectF(Texture* img, RectF area)
 {
-	float dx = (float)x;
-	float dy = (float)y;
-	float dx2 = (float)x2;
-	float dy2 = (float)y2;
+	float dx = (float)area.x;
+	float dy = (float)area.y;
+	float dx2 = (float)area.x + area.w;
+	float dy2 = (float)area.y - area.h;
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, img->textureId);
@@ -116,85 +123,15 @@ void Texture_Draw2DAbsolute(Texture* img, short x, short y, short x2, short y2)
 	glDisable(GL_TEXTURE_2D);
 }
 
-void Texture_Draw2DAligned(Texture* img, s16 x, s16 y, float scale, AlignmentModes alignX, AlignmentModes alignY)
+void Texture_Draw(Texture* img, float x, float y, float scale)
 {
-	short w = img->width * scale;
-	short h = img->height * scale;
+	float w = img->width * scale;
+	float h = img->height * scale;
 
-
-	if (alignX == RJustify)
-	{
-		x -= w;
-	}
-	else if (alignX == Centered)
-	{
-		x -= w / 2;
-
-	}
-	if (alignY == RJustify)
-	{
-		y += h;
-	}
-	else if (alignY == Centered)
-	{
-		y -= h/2;
-	}
-	Texture_Draw2DAbsolute(img, x, y, x+w, y-h);
+	Texture_DrawRectF(img, RectF_Create(x, y, x+w, y-h));
 }
 
-void Texture_Draw3D(Texture* img, float scale, AlignmentModes alignX, AlignmentModes alignY)
-{
-	float aspect = img->aspectRatio;
-	float x = 0.0f;
-	float y = 0.0f;
-	float z = 0.0f;
-	float hs = scale/2.0f;
-
-	if (alignX == RJustify)
-	{
-		x -= scale * aspect;
-	}
-	else if (alignX == Centered)
-	{
-		x -= (scale * aspect)/ 2.0f;
-
-	}
-	if (alignY == RJustify)
-	{
-		y += scale;
-	}
-	else if (alignY == Centered)
-	{
-		y += scale/2.0f;
-	}
-
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, img->textureId);
-	glBegin(GL_QUADS);
-		// TODO calculate uv to be inside border pixels to avoid repeating
-		// Lower left
-		glTexCoord2f(0.0f, 0.0f);
-		glVertex3f(x-aspect*hs, y-hs, z);
-
-		// Lower right
-		glTexCoord2f(1.0f, 0.0f);
-		glVertex3f(x+aspect*hs, y-hs, z);
-
-		// Upper right
-		glTexCoord2f(1.0f, 1.0f);
-		glVertex3f(x+aspect*hs, y+hs, z);
-
-		// Upper left
-		glTexCoord2f(0.0f, 1.0f);
-		glVertex3f(x-aspect*hs, y+hs, z);
-
-
-	glEnd();
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glDisable(GL_TEXTURE_2D);
-}
-
-GLuint PixelsToOpenGL(u32 width, u32 height, void* pixels, GLenum colorFormat, GLenum dataType)
+static GLuint PixelsToOpenGL(u32 width, u32 height, void* pixels, GLenum colorFormat, GLenum dataType)
 {
 	GLint alignment;
 	glGetIntegerv(GL_UNPACK_ALIGNMENT, &alignment);

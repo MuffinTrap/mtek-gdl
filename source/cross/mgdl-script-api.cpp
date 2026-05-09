@@ -18,6 +18,16 @@ void mgdl_InitScriptApi()
 	s_activePalette = AssetManager_GetPalette(s_defaultPaletteHandle);
 }
 
+// DRAWING
+
+void mgdl_DrawRectanglePal(float x, float y, float w, float h, u8 paletteIndex)
+{
+	Color4f* color = Palette_GetColor4fPtr(s_activePalette, paletteIndex);
+	mgdl_DrawRectangle(x,y,w,h,color);
+}
+
+// TEXTURES
+
 TextureHandle mgdl_LoadTexture(const zstr& filename)
 {
 	return mgdl_LoadTexture(zstr_cstr(&filename));
@@ -47,10 +57,10 @@ void mgdl_CreateFontUVs(TextureHandle texture, s16 characterWidth, s16 character
 	SpriteAtlas_MapSimple(tex, characterWidth, characterHeight, firstCharacter);
 }
 
-void mgdl_DrawTexture(TextureHandle handle, s16 x, s16 y)
+void mgdl_DrawTexture(TextureHandle handle, float x, float y)
 {
 	Texture* tex = AssetManager_GetTexture(handle);
-	Texture_Draw2DAligned(tex, x, y, 1.0f, LJustify, LJustify);
+	Texture_Draw(tex, x, y, 1.0f);
 }
 
 void mgdl_DrawTextureV(TextureHandle handle, vec2 position)
@@ -58,16 +68,21 @@ void mgdl_DrawTextureV(TextureHandle handle, vec2 position)
 	mgdl_DrawTexture(handle, position.x, position.y);
 }
 
+// IMAGES
+
+ImageHandle mgdl_LoadPNG(const char* filename)
+{
+	return AssetManager_LoadPNG(filename);
+}
+
+// SOUNDS
+
 void mgdl_PlaySound(SoundHandle handle)
 {
 	Sound* snd = AssetManager_GetSound(handle);
 	Audio_PlaySound(snd);
 }
 
-ImageHandle mgdl_LoadPNG(const char* filename)
-{
-	return AssetManager_LoadPNG(filename);
-}
 
 SoundHandle mgdl_LoadSound(const zstr& filename)
 {
@@ -95,6 +110,8 @@ SoundHandle mgdl_LoadSound(const char* filename)
 	return SoundHandle{0};
 }
 
+// PALETTES
+
 PaletteHandle mgdl_LoadPalette(const zstr& image)
 {
 	return mgdl_LoadPalette(zstr_cstr(&image));
@@ -120,6 +137,8 @@ void mgdl_SetPalette(PaletteHandle palette)
 	s_activePalette = AssetManager_GetPalette(palette);
 }
 
+// INPUT
+
 bool mgdl_IsButtonDown(int controller, WiiButtons button)
 {
 	WiiController* c = mgdl_GetController(controller);
@@ -138,10 +157,4 @@ bool mgdl_IsButtonPressed(int controller, WiiButtons button)
 		return WiiController_ButtonPress(c, button);
 	}
 	return false;
-}
-
-
-void mgdl_DrawRectangle(s16 x, s16 y, s16 w, s16 h, u8 paletteIndex)
-{
-	Draw2D_RectWH(x, y, w, h, Palette_GetColor4fPtr(s_activePalette, paletteIndex));
 }

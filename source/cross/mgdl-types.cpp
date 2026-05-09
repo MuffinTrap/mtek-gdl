@@ -31,11 +31,6 @@ ImageHandle Handle_CreateImage(u16 index)
 	return (TextureHandle)CreateHandle(Type_Image, index);
 }
 
-Rect Rect_Create(short x, short y, short w, short h)
-{
-	return {x, y, w, h};
-}
-
 RectF RectF_Create(float x, float y, float w, float h)
 {
 	RectF r;
@@ -46,7 +41,7 @@ RectF RectF_Create(float x, float y, float w, float h)
 	return r;
 }
 
-Rect Rect_CreateV2f(vec2 position, vec2 size)
+RectF Rect_CreateV2f(vec2 position, vec2 size)
 {
-	return {(short)V2f_X(position), (short)V2f_Y(position), (short)V2f_X(size), (short)V2f_Y(size)};
+	return {V2f_X(position), V2f_Y(position), V2f_X(size), V2f_Y(size)};
 }
