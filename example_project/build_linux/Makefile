@@ -87,6 +87,7 @@ all: directories $(TARGET)
 $(TARGET): $(OBJS)
 	$(HIDE)echo Linking $@
 	$(HIDE)$(CXX) $(OBJS) $(CXXFLAGS) $(INCLUDES) $(LDFLAGS) $(LDLIBS) -o $(TARGET)
+	mv $(TARGET) ..
 
 # Include dependencies
 -include $(DEPS)

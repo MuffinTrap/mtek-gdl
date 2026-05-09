@@ -14,7 +14,7 @@ extern "C"
 {
 #endif
 
-	void SetSplashScreenColors(Color4f* bg, Color4f* textDim, Color4f* textLight);
+	void SetSplashScreenColors(color32 bg, color32 textDim, color32 textLight);
 	void SetSplashScreenDuration(float seconds);
 	float DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer);
 

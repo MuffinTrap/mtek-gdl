@@ -20,6 +20,7 @@ Camera* Camera_CreateDefault()
 
 void Camera_Apply(Camera* camera)
 {
+	ASSERT_DEBUG(camera != nullptr);
 	switch(camera->projection)
 	{
 		case CameraNone:
@@ -64,6 +65,7 @@ void Camera_Apply(Camera* camera)
 
 void Camera_DrawThirdsGuide(Camera* camera)
 {
+	ASSERT_DEBUG(camera != nullptr);
 	mgdl_InitOrthoProjection();
 
 	Viewport viewport = mgdl_GetViewport();
@@ -89,8 +91,9 @@ void Camera_DrawThirdsGuide(Camera* camera)
 	Camera_Apply(camera);
 }
 
-void Camera_DrawOverlayColor(Camera* camera, Color4f* color, float opacity)
+void Camera_DrawOverlayColor(Camera* camera, color32 color, float opacity)
 {
+	ASSERT_DEBUG(camera != nullptr);
 	if (opacity > 0.0f)
 	{
 		mgdl_InitOrthoProjection();
@@ -103,7 +106,7 @@ void Camera_DrawOverlayColor(Camera* camera, Color4f* color, float opacity)
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        mgdl_glColor4fa(color, opacity);
+        mgdl_glColor32a(color, opacity);
 		glBegin(GL_QUADS);
 			glVertex2f(0, 0);
 			glVertex2f(W, 0);
@@ -117,30 +120,36 @@ void Camera_DrawOverlayColor(Camera* camera, Color4f* color, float opacity)
 }
 void Camera_SetPositionV(Camera* camera, V3f position)
 {
+	ASSERT_DEBUG(camera != nullptr);
 	camera->position = position;
 }
 
 void Camera_SetDirection(Camera* camera, V3f direction)
 {
+	ASSERT_DEBUG(camera != nullptr);
 	camera->direction = direction;
 }
 
 void Camera_SetPosition(Camera* camera, float x, float y, float z)
 {
+	ASSERT_DEBUG(camera != nullptr);
 	camera->position = V3f_Create(x,y,z);
 }
 
 void Camera_SetRotationsV(Camera* camera, V3f rotations)
 {
+	ASSERT_DEBUG(camera != nullptr);
 	camera->rotations = rotations;
 }
 
 void Camera_SetRotations(Camera* camera, float pitch, float yaw, float roll)
 {
+	ASSERT_DEBUG(camera != nullptr);
 	camera->rotations = V3f_Create(pitch, yaw, roll);
 }
 
 void Camera_SetMode(Camera* camera, CameraMode mode)
 {
+	ASSERT_DEBUG(camera != nullptr);
 	camera->mode  = mode;
 }

@@ -28,7 +28,7 @@ extern "C"
 {
 #endif
 
-PNGFile* PNG_GenerateColorImage(Color4f* color);
+PNGFile* PNG_GenerateColorImage(color32 color);
 
 PNGFile* PNG_ReadFile(const char* filename);
 void PNG_DeleteData(PNGFile* png);
@@ -37,7 +37,7 @@ GLenum PNG_GetGLFormat(PNGFile* png);
 GLenum PNG_GetGLInternalFormat(PNGFile* png);
 
 GLubyte* PNG_GetTexels(PNGFile* png);
-Color4b PNG_GetRGBA(PNGFile* png, int x, int y);
+color32 PNG_GetRGBA(PNGFile* png, int x, int y);
 float PNG_GetGrayscale(PNGFile* png, int x, int y);
 
 GLenum PNG_PNGtoGLFormat(int pngFormat);

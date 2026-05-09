@@ -27,6 +27,8 @@ float Random_Float(float min, float max);
 float Random_FloatNormalized(void);
 int Random_Int(int min, int max);
 
+s16 clampS16(s16 val, s16 minVal, s16 maxVal);
+s32 clampS32(s32 val, s32 minVal, s32 maxVal);
 u32 clampU32(u32 val, u32 minVal, u32 maxVal);
 float clampF(float val, float minVal, float maxVal);
 float minF(float a, float b);

@@ -38,7 +38,7 @@ Camera* Camera_CreateDefault(void);
 
 void Camera_Apply(Camera* camera);
 void Camera_DrawThirdsGuide(Camera* camera);
-void Camera_DrawOverlayColor(Camera* camera, Color4f* color, float opacity);
+void Camera_DrawOverlayColor(Camera* camera, color32 color, float opacity);
 
 void Camera_SetPositionV(Camera* camera, V3f position);
 void Camera_SetPosition(Camera* camera, float x, float y, float z);

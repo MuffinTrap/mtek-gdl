@@ -12,7 +12,7 @@ void AssetManager_Init()
 	m_manager.m_memoryInUse = 0;
 	m_manager.m_textureAssets = DynamicArray_CreateTextureAsset(16);
 	{
-		Texture* white = Texture_GenerateColorTexture(Color_GetDefaultColor(Color_White));
+		Texture* white = Texture_GenerateColorTexture(Debug_White);
 		TextureAsset ta = AssetManager_CreateTextureAsset(white, nullptr);
 		DynamicArray_AddTextureAsset(m_manager.m_textureAssets, ta);
 	}
@@ -27,7 +27,7 @@ void AssetManager_Init()
 
 	m_manager.m_imageAssets = DynamicArray_CreateImageAsset(4);
 	{
-		PNGFile* white = PNG_GenerateColorImage(Color_GetDefaultColor(Color_White));
+		PNGFile* white = PNG_GenerateColorImage(Debug_White);
 		ImageAsset ta = AssetManager_CreateImageAsset(white, nullptr);
 		DynamicArray_AddImageAsset(m_manager.m_imageAssets, ta);
 	}
@@ -42,6 +42,7 @@ DYNAMIC_ARRAY_IMPL(PaletteAsset)
 
 TextureAsset AssetManager_CreateTextureAsset(Texture* data, const char* filename)
 {
+	ASSERT_DEBUG(data != nullptr);
 	TextureAsset ta;
 	ta.data = data;
 	if (filename != nullptr)
@@ -56,6 +57,7 @@ TextureAsset AssetManager_CreateTextureAsset(Texture* data, const char* filename
 }
 SoundAsset AssetManager_CreateSoundAsset(Sound* data, const char* filename)
 {
+	ASSERT_DEBUG(data != nullptr);
 	SoundAsset ta;
 	ta.data = data;
 	if (filename != nullptr)
@@ -71,6 +73,7 @@ SoundAsset AssetManager_CreateSoundAsset(Sound* data, const char* filename)
 }
 ImageAsset AssetManager_CreateImageAsset(PNGFile* data, const char* filename)
 {
+	ASSERT_DEBUG(data != nullptr);
 	ImageAsset ta;
 	ta.data = data;
 	if (filename != nullptr)
@@ -85,6 +88,7 @@ ImageAsset AssetManager_CreateImageAsset(PNGFile* data, const char* filename)
 }
 PaletteAsset AssetManager_CreatePaletteAsset(Palette* data, const char* filename)
 {
+	ASSERT_DEBUG(data != nullptr);
 	PaletteAsset ta;
 	ta.data = data;
 	if (filename != nullptr)
@@ -100,6 +104,7 @@ PaletteAsset AssetManager_CreatePaletteAsset(Palette* data, const char* filename
 
 void AssetManager_LoadFont(AssetManager* manager, Texture* texture)
 {
+	ASSERT_DEBUG(texture != nullptr);
 	manager->m_memoryInUse += texture->spriteAtlas->characterCount * sizeof(vec2);
 }
 
@@ -125,6 +130,7 @@ TextureHandle AssetManager_LoadTexture(const char* filename)
 
 	TextureFilterModes filterMode = TextureFilterModes::Linear;
 	Texture* texture = Texture_LoadFile(filename, filterMode);
+	ASSERT_DEBUG(texture != nullptr);
 	Log_InfoF("Texture %s size is %d %d\n", filename, texture->width, texture->height);
 	if (texture != nullptr)
 	{
@@ -186,6 +192,7 @@ ImageHandle AssetManager_LoadPNG(const char* filename)
 	// TODO Read settings from asset configuration file
 
 	PNGFile* image = PNG_ReadFile(filename);
+	ASSERT_DEBUG(image != nullptr);
 	if (image != nullptr)
 	{
 		m_manager.m_memoryInUse += image->width * image->height * image->bytesPerPixel;
@@ -213,6 +220,7 @@ SoundHandle AssetManager_LoadSound(const char* filename, SoundFileType fileType)
 		}
 	}
 	Sound* snd = Audio_LoadSound(filename, fileType);
+	ASSERT_DEBUG(snd != nullptr);
 	if (snd != nullptr)
 	{
 		m_manager.m_memoryInUse += Audio_GetSoundSizeBytes(snd);
@@ -253,9 +261,10 @@ PaletteHandle AssetManager_LoadPalette(const char* filename)
 		}
 	}
 	Palette* pal = Palette_FromPNG(filename);
+	ASSERT_DEBUG(pal != nullptr);
 	if (pal != nullptr)
 	{
-		m_manager.m_memoryInUse += Palette_GetColorAmount(pal) * sizeof(Color4f) + sizeof(Palette);
+		m_manager.m_memoryInUse += Palette_GetColorAmount(pal) * sizeof(color32) + sizeof(Palette);
 
 		PaletteAsset ta = AssetManager_CreatePaletteAsset(pal, filename);
 		handle = Handle_CreatePalette((u16) DynamicArray_AddPaletteAsset(array, ta));

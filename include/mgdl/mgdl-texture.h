@@ -94,7 +94,7 @@ extern "C"
 	 * @brief Generates a 2x2 single color texture
 	 * @return The generated texture
 	 */
-	Texture* Texture_GenerateColorTexture(Color4f* color);
+	Texture* Texture_GenerateColorTexture(color32 color);
 
 	/**
 	 * @brief Generates a random noise texture

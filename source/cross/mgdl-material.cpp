@@ -18,20 +18,14 @@ Material* Material_Load (const char* name, Texture* texture, MaterialType type)
 	return material;
 }
 
-Material* Material_CreateColor(Color4f color, GLfloat shininess, GLfloat emissionPower)
+Material* Material_CreateColor(color32 color, GLfloat shininess, GLfloat emissionPower)
 {
 	Material* material = (Material*)mgdl_AllocateGraphicsMemory(sizeof(Material));
 	material->name = nullptr;
 	material->texture = nullptr;
 	material->shininess = shininess;
-	material->diffuseColor[0] = color.red;
-	material->diffuseColor[1] = color.green;
-	material->diffuseColor[2] = color.blue;
-	material->diffuseColor[3] = color.alpha;
-	material->emissiveColor[0] = color.red * emissionPower;
-	material->emissiveColor[1] = color.green * emissionPower;
-	material->emissiveColor[2] = color.blue * emissionPower;
-	material->emissiveColor[3] = color.alpha * emissionPower;
+	Color_HexToGLfloats(color, material->diffuseColor);
+	Color_HexToGLfloats(color, material->emissiveColor);
 	material->type = MaterialType::Diffuse;
 	return material;
 }
@@ -52,12 +46,9 @@ void Material_Apply(Material* material)
 		glMaterialfv(GL_FRONT, GL_EMISSION, material->emissiveColor);
 	}
 }
-void Material_SetDiffuseColor(Material* material, Color4f* color)
+void Material_SetDiffuseColor(Material* material, color32 color)
 {
-	material->diffuseColor[0] = color->red;
-	material->diffuseColor[1] = color->green;
-	material->diffuseColor[2] = color->blue;
-	material->diffuseColor[3] = color->alpha;
+	Color_HexToGLfloats(color, material->diffuseColor);
 }
 
 void Material_Reset(void)

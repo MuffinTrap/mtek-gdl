@@ -39,9 +39,9 @@ struct Menu
     vec2 cursorPosition;
 
     // Colors
-    Color4f bg; /**< Background color of elements. */
-    Color4f text; /**< Color of the text, toggles and slider bars. */
-    Color4f highlight; /**< Used instead of _text when the item is hovered. */
+    color32 bg; /**< Background color of elements. */
+    color32 text; /**< Color of the text, toggles and slider bars. */
+    color32 highlight; /**< Used instead of _text when the item is hovered. */
 
     // Window
     bool drawWindow;
@@ -67,7 +67,7 @@ extern "C"
      */
     void Menu_DrawCursor(Menu* menu);
 
-    void Menu_DrawCursorParams_(short x, short y, short w, short h, Color4f* color);
+    void Menu_DrawCursorParams_(short x, short y, short w, short h, color32 color);
 
     /**
      * @brief Set the menu to which the other functions are applied to.
@@ -138,7 +138,7 @@ extern "C"
      * @param text Color of the text.
      * @param highlight Highlight color to show hovered element.
      */
-    void Menu_SetColors(Menu* menu, Color4f* bg, Color4f* text, Color4f* highlight);
+    void Menu_SetColors(Menu* menu, color32 bg, color32 text, color32 highlight);
 
     void Menu_BeginRow(Menu* menu);
     void Menu_EndRow(Menu* menu);
@@ -185,7 +185,7 @@ extern "C"
      * @brief Draws a colored icon
      * @param icon The icon to draw
      */
-    void Menu_Icon(Menu* menu, IconSymbol icon, Color4f* color);
+    void Menu_Icon(Menu* menu, IconSymbol icon, color32 color);
 
     /**
      * @brief Draws a button that can be clicked.

@@ -18,9 +18,9 @@ static float areaBottom;
 static float animationProgress = 0.0f;
 static const char* holdMessage = "Hold A to start";
 static bool customColors = false;
-static Color4f bgColor;
-static Color4f textDimColor;
-static Color4f textLightColor;
+static color32 bgColor;
+static color32 textDimColor;
+static color32 textLightColor;
 static float durationSeconds_ = 1.0f;
 static float drawCounter_ = 0;
 static bool logoColorGrey_ = false;
@@ -30,12 +30,12 @@ void SetSplashScreenDurationSeconds(float duration)
 	durationSeconds_ = duration;
 }
 
-void SetSplashScreenColors(Color4f* bg, Color4f* textDim, Color4f* textLight)
+void SetSplashScreenColors(color32 bg, color32 textDim, color32 textLight)
 {
 	customColors = true;
-	bgColor = Color_CreateFromPointer4f(bg);
-	textDimColor = Color_CreateFromPointer4f(textDim);
-	textLightColor = Color_CreateFromPointer4f(textLight);
+	bgColor = (bg);
+	textDimColor = (textDim);
+	textLightColor = (textLight);
 }
 
 
@@ -74,7 +74,7 @@ static void GetCorners(float xOffset, float start, float height, float* cornersO
 
 // bars colored is how many bars should
 // have color. Fractional value means bar is not fully coloured
-static float DrawLetter(float x, u8* sl, u8 bars, Color4f* color, float lean, bool useBars, float barsColored)
+static float DrawLetter(float x, u8* sl, u8 bars, color32 color, float lean, bool useBars, float barsColored)
 {
 	float startX = x;
 	float corners[] = {0,0,0,0, 0,0,0,0};
@@ -84,7 +84,7 @@ static float DrawLetter(float x, u8* sl, u8 bars, Color4f* color, float lean, bo
 	}
 
 	glBegin(GL_QUADS);
-	mgdl_glColor4f(color);
+	mgdl_glColor32(color);
 
 	for (int i = 0; i < bars; i++)
 	{
@@ -109,7 +109,7 @@ static float DrawLetter(float x, u8* sl, u8 bars, Color4f* color, float lean, bo
 	return x - startX;
 }
 // Returns where the version string should be
-static float DrawLetters(float x, float lean, Color4f* color, bool useBars, float barsColored)
+static float DrawLetters(float x, float lean, color32 color, bool useBars, float barsColored)
 {
 	// m
 	// start points and lengths
@@ -193,11 +193,11 @@ float DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer)
 	if (customColors == false)
 	{
 		Palette* blessing = Palette_GetDefault();
-		bgColor = Palette_GetColor4f(blessing, 1);
-		textLightColor = Palette_GetColor4f(blessing, 3);
-		textDimColor = Palette_GetColor4f(blessing, 5);
+		bgColor = Palette_GetColor(blessing, 1);
+		textLightColor = Palette_GetColor(blessing, 3);
+		textDimColor = Palette_GetColor(blessing, 5);
 	}
-	mgdl_glClearColor4f(&bgColor);
+	mgdl_glClearColor32(bgColor);
 	mgdl_glClear(GL_COLOR_BUFFER_BIT);
 
 
@@ -251,12 +251,12 @@ float DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer)
 		}
 		float drawProgress = (drawCounter_/durationSeconds_);
 
-		Color4f* logoBase = &textDimColor;
-		Color4f* logoOver = &textLightColor;
+		color32 logoBase = textDimColor;
+		color32 logoOver = textLightColor;
 		if (logoColorGrey_)
 		{
-			logoBase = &textLightColor;
-			logoOver =&textDimColor;
+			logoBase = textLightColor;
+			logoOver =textDimColor;
 		}
 
 		dStart = DrawLetters(paddingX, lean, logoBase, false, 0.0f);
@@ -264,17 +264,17 @@ float DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer)
 		DrawLetters(paddingX, lean, logoOver, true, barsColored);
 
 	}
-	Texture_DrawText(debf, &textLightColor, dStart, baseLine, 8, GDL_VERSION);
-	Texture_DrawText(debf, &textLightColor, dStart, baseLine - 8, 8, MGDL_PLATFORM);
+	Texture_DrawText(debf, textLightColor, dStart, baseLine, 8, GDL_VERSION);
+	Texture_DrawText(debf, textLightColor, dStart, baseLine - 8, 8, MGDL_PLATFORM);
 
 	if (drawHoldAMessage)
 	{
 		int messageWidth = strlen(holdMessage) * 8;
 		int messageLeft = sw/2 - messageWidth/2;
 		int messageY = areaBottom - 8;
-		Texture_DrawText(debf, &textLightColor, messageLeft, messageY, 8, holdMessage);
+		Texture_DrawText(debf, textLightColor, messageLeft, messageY, 8, holdMessage);
 
-		mgdl_DrawRectangle(messageLeft, messageY - 16, messageWidth * aHoldTimer, (16 + 4), &textLightColor);
+		mgdl_DrawRectangle(messageLeft, messageY - 16, messageWidth * aHoldTimer, (16 + 4), textLightColor);
 	}
 	return (animationProgress / 2.0f);
 }

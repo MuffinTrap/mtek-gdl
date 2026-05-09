@@ -32,10 +32,9 @@ extern "C"
     void mgdl_glSetAlphaTest(bool enabled);
     void mgdl_glSetAlphaTestTreshold(bool enabled, float treshold);
 
-    void mgdl_glColor3f(Color4f* color);
-    void mgdl_glColor4f(Color4f* color);
-    void mgdl_glColor4fa(Color4f* color, float alpha);
-    void mgdl_glClearColor4f(Color4f* color);
+    void mgdl_glColor32(color32 color);
+    void mgdl_glColor32a(color32 color, float alpha);
+    void mgdl_glClearColor32(color32 color);
 
     void mgdl_glVertexV3F(V3f);
     void mgdl_glVertexV3F_xy(V3f);

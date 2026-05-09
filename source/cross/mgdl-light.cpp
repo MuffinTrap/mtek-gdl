@@ -83,22 +83,13 @@ void Light_SetPosition(Light* light, V3f position)
     light->position[3] = 1.0f;
 }
 
-void Light_SetColor(Light* light, Color4f* color)
+void Light_SetColor(Light* light, color32 color)
 {
-    light->diffuse[0] = color->red;
-    light->diffuse[1] = color->green;
-    light->diffuse[2] = color->blue;
-    light->diffuse[3] = 1.0f;
-    light->specular[0] = color->red;
-    light->specular[1] = color->green;
-    light->specular[2] = color->blue;
-    light->specular[3] = 1.0f;
+    Color_HexToGLfloats(color, light->diffuse);;
+    Color_HexToGLfloats(color, light->specular);;
 }
 
-void Light_SetAmbientColor(Light* light, Color4f* color)
+void Light_SetAmbientColor(Light* light, color32 color)
 {
-    light->ambient[0] = color->red;
-    light->ambient[1] = color->green;
-    light->ambient[2] = color->blue;
-    light->ambient[3] = 1.0f;
+    Color_HexToGLfloats(color, light->ambient);
 }

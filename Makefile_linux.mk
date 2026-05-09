@@ -9,7 +9,10 @@ CXXFLAGS += -DMGDL_PLATFORM=\"Linux\"
 
 # Common part
 
-.PHONY: all clean install
+.PHONY: all clean install debug
+
+debug: CXXFLAGS += -DMGDL_DEBUG
+debug: all
 
 all : $(ARC)
 
@@ -51,6 +54,9 @@ install: $(ARC)
 # file change watching library
 	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/dmon
 	@cp $(DMON_HDR) $(INSTALL_DIR)/include/$(LIB)/dmon
+# raymath library
+	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/raymath
+	@cp $(RAYMATH_HDR) $(INSTALL_DIR)/include/$(LIB)/raymath
 
 	@echo installed to $(INSTALL_DIR)
 

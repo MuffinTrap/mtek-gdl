@@ -412,8 +412,8 @@ Light* m_FBX_LoadLight(ufbx_light* fbxLight)
 {
 	Light* light = new Light();
 
-	Color4f c = {fbxLight->color.x, fbxLight->color.y, fbxLight->color.z, 1.0f};
-	Light_SetColor(light, &c);
+	color32 c = Color_Create4f(fbxLight->color.x, fbxLight->color.y, fbxLight->color.z, 1.0f);
+	Light_SetColor(light, c);
 	light->intensity = fbxLight->intensity;
 	light->name = fbxLight->name.data;
 

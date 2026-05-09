@@ -94,7 +94,7 @@ typedef enum ColorFormats ColorFormats;
  * @note Wrapping modes other than gdl::Clamp require a texture resolution that is a power of two to work correctly.
  */
 enum TextureWrapModes {
-    Clamp,		//!< Clamped (no wrap).
+    Wrap_Clamp,		//!< Clamped (no wrap).
     Repeat,	//!< Repeated wrap (only applicable to power of two textures).
     Mirror,	//!< Mirrored wrap (only applicable to power of two textures).
 };

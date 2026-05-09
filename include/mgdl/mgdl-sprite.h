@@ -25,9 +25,9 @@ extern "C"
 	 */
 	void Texture_EndSpriteBatch(void);
 
-	void Texture_DrawBatchedSprite(Texture* texture, u16 spriteIndex, short x, short y, float scale, Color4f* tintColor);
+	void Texture_DrawBatchedSprite(Texture* texture, u16 spriteIndex, s16 x, s16 y, float scale, color32 tintColor);
 
-	void Texture_DrawSprite(Texture* texture, u16 spriteIndex, short x, short y, float scale, Color4f* tintColor);
+	void Texture_DrawSprite(Texture* texture, u16 spriteIndex, s16 x, s16 y, float scale, color32 tintColor);
 
 	// TODO u16 CreateAnimation(u16 start, u16 stop, float frameTime);
 	// TODO PlayAnimation(u16 index);

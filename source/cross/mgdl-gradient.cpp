@@ -1,6 +1,8 @@
 
 #include <mgdl/mgdl-gradient.h>
 #include <mgdl/mgdl-opengl_util.h>
+#include <mgdl/mgdl-assert.h>
+#include <mgdl/mgdl-util.h>
 
 
 struct Gradient Gradient_CreateEmpty(enum GradientShape shape, enum GradientLoopMode loop_mode)
@@ -14,19 +16,21 @@ struct Gradient Gradient_CreateEmpty(enum GradientShape shape, enum GradientLoop
     return g;
 }
 
-void Gradient_PushColor(struct Gradient* gradient, Color4f* color, float stop)
+void Gradient_PushColor(struct Gradient* gradient, color32 color, float stop)
 {
+    ASSERT_DEBUG(gradient != nullptr);
     if (gradient->color_amount + 1 < GRADIENT_SIZE)
     {
-        gradient->colors[gradient->color_amount] = (*color);
+        gradient->colors[gradient->color_amount] = (color);
         gradient->stops[gradient->color_amount] = stop;
         gradient->color_amount++;
     }
 }
 
 
-void Gradient_PushColorArray(struct Gradient* gradient, Color4f* colors, short amount)
+void Gradient_PushColorArray(struct Gradient* gradient, color32* colors, short amount)
 {
+    ASSERT_DEBUG(gradient != nullptr);
     if (amount < GRADIENT_SIZE)
     {
         float step = 1.0f/(float)amount;
@@ -38,25 +42,42 @@ void Gradient_PushColorArray(struct Gradient* gradient, Color4f* colors, short a
         gradient->color_amount = amount;
     }
 }
-
-static float color_lerp(float a, float b, float t)
+static color32 color_lerp32(color32 a, color32 b, float t)
 {
-    return a * (1.0f - t) + (b * t);
+    s16 ra = RED(a);
+    s16 ga = GREEN(a);
+    s16 ba = BLUE(a);
+    s16 aa = ALPHA(a);
+
+    s16 diffRed = RED(b)-ra;
+    s16 diffGreen = GREEN(b)-ga;
+    s16 diffBlue = BLUE(b)-ba;
+    s16 diffAlpha = ALPHA(b)-aa;
+
+    return Color_Create4b(
+        (u8)clampS16(ra + diffRed * t, 0, 255),
+        (u8)clampS16(ga + diffGreen * t, 0, 255),
+        (u8)clampS16(ba + diffBlue * t, 0, 255),
+        (u8)clampS16(aa + diffAlpha * t, 0, 255)
+    );
 }
 
 void Gradient_glColor(struct Gradient* gradient, float stop)
 {
-    Color4f between = Gradient_GetColor(gradient, stop);
-    glColor3f(between.red, between.green, between.blue);
+    ASSERT_DEBUG(gradient != nullptr);
+    color32 between = Gradient_GetColor(gradient, stop);
+    mgdl_glColor32(between);
 }
 void Gradient_glColorA(struct Gradient* gradient, float stop, float alpha)
 {
-    Color4f between = Gradient_GetColor(gradient, stop);
-    glColor4f(between.red, between.green, between.blue, alpha);
+    ASSERT_DEBUG(gradient != nullptr);
+    color32 between = Gradient_GetColor(gradient, stop);
+    mgdl_glColor32a(between, alpha);
 }
 
-Color4f Gradient_GetColor(Gradient* gradient, float stop)
+color32 Gradient_GetColor(Gradient* gradient, float stop)
 {
+    ASSERT_DEBUG(gradient != nullptr);
     // NOTE must have at least 2 colors for this to work
     short before_index = 0;
     short after_index = gradient->color_amount;
@@ -125,15 +146,11 @@ Color4f Gradient_GetColor(Gradient* gradient, float stop)
         after_index = gradient->color_amount-1;
         before_index = after_index - 1;
     }
-    Color4f* before = &gradient->colors[before_index];
-    Color4f* after = &gradient->colors[after_index];
+    color32 before = gradient->colors[before_index];
+    color32 after = gradient->colors[after_index];
     float range = gradient->stops[after_index] - gradient->stops[before_index];
     float into_next = (read_stop - gradient->stops[before_index]);
     float t = into_next/range;
 
-    Color4f between;
-    between.red = color_lerp(before->red, after->red, t);
-    between.green = color_lerp(before->green, after->green, t);
-    between.blue = color_lerp(before->blue, after->blue, t);
-    return between;
+    return color_lerp32(before, after, t);
 }

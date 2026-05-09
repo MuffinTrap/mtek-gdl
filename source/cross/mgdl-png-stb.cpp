@@ -152,7 +152,7 @@ void PNG_DeleteData(PNGFile* png)
 }
 
 
-Color4b PNG_GetRGBA(PNGFile* png, int x, int y)
+color32 PNG_GetRGBA(PNGFile* png, int x, int y)
 {
 	size_t index = x + y * png->width;
 	size_t byteIndex = index * png->bytesPerPixel;
@@ -188,7 +188,7 @@ GLenum PNG_GetGLInternalFormat(PNGFile* png)
 	return PNG_PNGtoGLInternalFormat(png->_pngFormat);
 }
 
-PNGFile* PNG_GenerateColorImage(Color4f* color)
+PNGFile* PNG_GenerateColorImage(color32 color)
 {
 	PNGFile* generated = (PNGFile*)mgdl_AllocateGeneralMemory(sizeof(PNGFile));
 	generated->bytesPerPixel = 1;
@@ -198,10 +198,10 @@ PNGFile* PNG_GenerateColorImage(Color4f* color)
 	generated->_texels = (GLubyte*)mgdl_AllocateGeneralMemory(sizeof(GLubyte) * 2 * 2 * 4);
 	for (int i = 0; i < 2*2*4; i+=4)
 	{
-		generated->_texels[i+0] = color->red*255;
-		generated->_texels[i+1] = color->green*255;
-		generated->_texels[i+2] = color->blue*255;
-		generated->_texels[i+3] = color->alpha*255;
+		generated->_texels[i+0] = RED(color);
+		generated->_texels[i+1] = GREEN(color);
+		generated->_texels[i+2] = BLUE(color);
+		generated->_texels[i+3] = ALPHA(color);
 	}
 	return generated;
 }

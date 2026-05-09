@@ -90,4 +90,9 @@ if ((test) == false) \
 	AssertFunctionPrint(__FILE__, __LINE__, #test); \
 }
 
+#if defined(MGDL_DEBUG)
+#	define ASSERT_DEBUG(test) mgdl_assert_test(test)
+#else
+#	define ASSERT_DEBUG(test) //NOP
+#endif
 

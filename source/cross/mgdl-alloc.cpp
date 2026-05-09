@@ -1,4 +1,5 @@
 #include <mgdl/mgdl-alloc.h>
+#include <mgdl/mgdl-assert.h>
 #include <stdlib.h>
 
 static sizetype allocatedGraphicsMemory = 0;
@@ -14,6 +15,7 @@ void* mgdl_AllocateAlignedMemory(sizetype size) {
 #else // Win-Mac-Linux
 
 void* mgdl_AllocateAlignedMemory(sizetype size) {
+	ASSERT_DEBUG(size > 0);
 	return malloc(size);
 }
 #endif
@@ -25,12 +27,13 @@ void* mgdl_AllocateGraphicsMemory(sizetype size)
 }
 void mgdl_FreeGraphicsMemory(void* ptr)
 {
+	ASSERT_DEBUG(ptr != nullptr);
 	free(ptr);
 }
 
 void* mgdl_AllocateGeneralMemory(sizetype size)
 {
-
+	ASSERT_DEBUG(size > 0);
 	allocatedGeneralMemory += size;
 #ifdef GEKKO
 	return valloc(size);
@@ -40,6 +43,7 @@ void* mgdl_AllocateGeneralMemory(sizetype size)
 }
 void mgdl_FreeGeneralMemory(void* ptr)
 {
+	ASSERT_DEBUG(ptr != nullptr);
 #ifdef GEKKO
 	vfree(ptr);
 #else

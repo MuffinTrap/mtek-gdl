@@ -10,7 +10,12 @@ HDRS		:= $(HDRS_X) $(HDRS_PC)
 INSTALL_DIR = $(HOME)/libmgdl
 
 # Link everything statically
-CXXFLAGS += -O3 -Werror=unused-function -Wall -Wextra -Wpedantic -std=c++11 -static
+ifdef DEBUG
+CXXFLAGS += -g
+else
+CXXFLAGS += -O3
+endif
+CXXFLAGS += -Werror=unused-function -Wall -Wextra -Wpedantic -std=c++11 -static
 # Vector library
 CXXFLAGS	+= -DMGDL_USE_CCVECTOR
 

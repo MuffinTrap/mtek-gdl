@@ -39,9 +39,9 @@ Menu* Menu_Create(Texture* font, float textHeight, float rowHeightEm)
     // Default colors    //TODO Change to palette colors
     Palette* blessing = Palette_GetDefault();
 
-    menu->bg = Palette_GetColor4f(blessing, 1);
-    menu->text = Palette_GetColor4f(blessing, 5);
-    menu->highlight = Palette_GetColor4f(blessing, 3);
+    menu->bg = Palette_GetColor(blessing, 1);
+    menu->text = Palette_GetColor(blessing, 5);
+    menu->highlight = Palette_GetColor(blessing, 3);
 
     menu->drawDirection = MenuDownward;
     menu->largestHeightOnRow = 0.0f;
@@ -128,9 +128,9 @@ void Menu_TitleBar_(Menu* menu)
     mgdl_DrawRectangle(x, y,
                   x + w,
                   y - h,
-                  &menu->highlight);
+                  menu->highlight);
 
-    Texture_DrawText(menu->font, &menu->bg, x + 2, y, h, menu->windowName);
+    Texture_DrawText(menu->font, menu->bg, x + 2, y, h, menu->windowName);
 
     // NOTE titlebar cannot be on a row
     menu->drawy -= h;
@@ -143,20 +143,20 @@ void Menu_Borders_(Menu* menu)
     mgdl_DrawRectangle(x, y,
                   x + menu->menuWidth,
                   y - menu->windowHeight,
-                  &menu->bg);
+                  menu->bg);
     mgdl_DrawRectangleLines(x, y,
                   x + menu->menuWidth + 1,
                   y - menu->windowHeight - 1,
-                  &menu->text);
+                  menu->text);
 }
 
-void Menu_SetColors(Menu* menu, Color4f* bg, Color4f* text, Color4f* highlight)
+void Menu_SetColors(Menu* menu, color32 bg, color32 text, color32 highlight)
 {
     if (menu == nullptr) return;
 
-        menu->bg = Color_CreateFromPointer4f(bg);
-        menu->text = Color_CreateFromPointer4f(text);
-        menu->highlight = Color_CreateFromPointer4f(highlight);
+        menu->bg = (bg);
+        menu->text = (text);
+        menu->highlight = (highlight);
 }
 
 void Menu_TextF(Menu* menu, const char* text, ...)
@@ -172,7 +172,7 @@ void Menu_Text(Menu* menu, const char* text)
     const short x = menu->drawx;
     const short y = menu->drawy;
     const short h = menu->textSize;
-    Texture_DrawText(menu->font, &menu->text, x, y, h, text);
+    Texture_DrawText(menu->font, menu->text, x, y, h, text);
 
     float drawh = h * menu->rowHeightEm;
     menu->largestHeightOnRow = maxF(menu->largestHeightOnRow, drawh);
@@ -184,7 +184,7 @@ void Menu_Text(Menu* menu, const char* text)
     }
 }
 
-void Menu_Icon(Menu* menu, IconSymbol icon, Color4f* color)
+void Menu_Icon(Menu* menu, IconSymbol icon, color32 color)
 {
 
     if (menu == nullptr) return;
@@ -219,11 +219,11 @@ bool Menu_Button(Menu* menu, const char* text)
                 (cy <= y) &&
                 (cy >= y - h));
 
-    Color4f* background = &menu->bg;
-    Color4f* pen = &menu->text;
+    color32 background = menu->bg;
+    color32 pen = menu->text;
     if (inside)
     {
-        pen = &menu->highlight;
+        pen = menu->highlight;
     }
     mgdl_DrawRectangle(x, y, x + w, y - h, background);
 
@@ -257,14 +257,14 @@ bool Menu_Slider(Menu* menu, const char* text, float minValue, float maxValue, f
                 (cy <= y) &&
                 (cy >= y - h));
 
-    Color4f* background = &menu->bg;
-    Color4f* pen = &menu->text;
-    Color4f* bar = &menu->highlight;
+    color32 background = menu->bg;
+    color32 pen = menu->text;
+    color32 bar = menu->highlight;
     if (inside)
     {
-        background = &menu->highlight;
-        bar = &menu->bg;
-        pen = &menu->text;
+        background = menu->highlight;
+        bar = menu->bg;
+        pen = menu->text;
     }
     mgdl_DrawRectangleLines(x, y, x + w, y - h, background);
     float range = maxValue-minValue; // 100 - (-100) -> 200
@@ -333,12 +333,12 @@ bool Menu_Toggle (Menu* menu,const char* text, bool* valuePtr )
 
     short padding = 2;
 
-    Color4f* background = &menu->bg;
-    Color4f* pen = &menu->text;
+    color32 background = menu->bg;
+    color32 pen = menu->text;
     if (inside)
     {
-        background = &menu->highlight;
-        pen = &menu->bg;
+        background = menu->highlight;
+        pen = menu->bg;
     }
     mgdl_DrawRectangle(x, y, x + w, y - h, background);
 
@@ -379,12 +379,12 @@ void Menu_Flag(Menu* menu, const char* text, bool enabled)
     const short w = menu->menuWidth;
     const short h = menu->textSize * menu->rowHeightEm;
 
-    Color4f* background = &menu->bg;
-    Color4f* pen = &menu->text;
+    color32 background = menu->bg;
+    color32 pen = menu->text;
     if (enabled)
     {
-        background = &menu->highlight;
-        pen = &menu->bg;
+        background = menu->highlight;
+        pen = menu->bg;
     }
     mgdl_DrawRectangle(x, y, x + w, y - h, background);
 
@@ -415,16 +415,16 @@ void Menu_Skip(Menu* menu, short pixels)
 void Menu_DrawCursor(Menu* menu)
 {
     Texture* db = DefaultFont_GetDefaultFont();
-    Color4f* white = Color_GetDefaultColor(Color_White);
+    color32 white = Debug_White;
     short x = V2f_X(menu->cursorPosition);
     short y = V2f_Y(menu->cursorPosition);
     short w = db->spriteAtlas->characterWidth;
     short h = db->spriteAtlas->characterHeight;
-    Menu_DrawCursorParams_(x+2, y-2, w, h, Color_GetDefaultColor(Color_Black));
+    Menu_DrawCursorParams_(x+2, y-2, w, h, Debug_Black);
     Menu_DrawCursorParams_(x, y, w, h, white);
 }
 
-void Menu_DrawCursorParams_(short x, short y, short w, short h, Color4f* color)
+void Menu_DrawCursorParams_(short x, short y, short w, short h, color32 color)
 {
 
     DefaultFont_DrawIcon( color,

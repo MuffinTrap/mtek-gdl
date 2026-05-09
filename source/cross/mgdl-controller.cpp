@@ -1,5 +1,6 @@
 #include <mgdl/mgdl-controller.h>
 #include <mgdl/mgdl-util.h>
+#include <mgdl/mgdl-assert.h>
 
 void WiiController_Init(WiiController* controller, u8 channel)
 {
@@ -23,6 +24,7 @@ void WiiController_ZeroAllInputs(WiiController* controller)
 
 void WiiController_AddStateFrom(WiiController* dest, WiiController* source)
 {
+	ASSERT_DEBUG(dest != nullptr && source != nullptr);
 	dest->m_pressedButtons = (dest->m_pressedButtons | source->m_pressedButtons);
 	dest->m_releasedButtons = (dest->m_releasedButtons | source->m_releasedButtons);
 	dest->m_heldButtons = (dest->m_heldButtons | source->m_heldButtons);
@@ -54,6 +56,7 @@ void WiiController_AddStateFrom(WiiController* dest, WiiController* source)
 
 void WiiController_ReplaceWith(WiiController* dest, WiiController* source)
 {
+	ASSERT_DEBUG(dest != nullptr && source != nullptr);
 	dest->m_pressedButtons = source->m_pressedButtons;
 	dest->m_releasedButtons = source->m_releasedButtons;
 	dest->m_heldButtons = source->m_heldButtons;
@@ -68,23 +71,28 @@ void WiiController_ReplaceWith(WiiController* dest, WiiController* source)
 
 void WiiController_StartFrame(WiiController* controller)
 {
+	ASSERT_DEBUG(controller != nullptr);
 	controller->m_pressedButtons = 0;
 	controller->m_releasedButtons = 0;
 }
 
 bool WiiController_ButtonPress(WiiController* controller, u32 buttonEnum) {
+	ASSERT_DEBUG(controller != nullptr);
 	return Flag_IsSet(controller->m_pressedButtons, buttonEnum);
 }
 
 bool WiiController_ButtonRelease(WiiController* controller, u32 buttonEnum) {
+	ASSERT_DEBUG(controller != nullptr);
 	return Flag_IsSet(controller->m_releasedButtons, buttonEnum);
 }
 
 bool WiiController_ButtonHeld(WiiController* controller, u32 buttonEnum) {
+	ASSERT_DEBUG(controller != nullptr);
 	return Flag_IsSet(controller->m_heldButtons, buttonEnum);
 }
 
 vec2 WiiController_GetCursorPosition(WiiController* controller) {
+	ASSERT_DEBUG(controller != nullptr);
 
 	vec2 d;
 	d.x = controller->m_cursorX;
@@ -94,6 +102,7 @@ vec2 WiiController_GetCursorPosition(WiiController* controller) {
 
 vec2 WiiController_GetNunchukJoystickDirection(WiiController* controller)
 {
+	ASSERT_DEBUG(controller != nullptr);
 	vec2 d;
 	d.x = controller->m_nunchukJoystickDirectionX;
 	d.y = controller->m_nunchukJoystickDirectionY;
@@ -101,24 +110,29 @@ vec2 WiiController_GetNunchukJoystickDirection(WiiController* controller)
 }
 
 float WiiController_GetPitch(WiiController* controller) {
+	ASSERT_DEBUG(controller != nullptr);
 	return controller->m_pitch;
 }
 
 float WiiController_GetYaw(WiiController* controller) {
+	ASSERT_DEBUG(controller != nullptr);
 	return controller->m_yaw;
 }
 
 float WiiController_GetRoll(WiiController* controller) {
+	ASSERT_DEBUG(controller != nullptr);
 	return controller->m_roll;
 }
 
 void WiiController_SetButtonDown (WiiController* controller, u32 buttonEnum )
 {
+	ASSERT_DEBUG(controller != nullptr);
 	controller->m_pressedButtons = Flag_Set(controller->m_pressedButtons, buttonEnum);
 	controller->m_heldButtons = Flag_Set(controller->m_heldButtons, buttonEnum);
 }
 void WiiController_SetButtonUp (WiiController* controller, u32 buttonEnum )
 {
+	ASSERT_DEBUG(controller != nullptr);
 	controller->m_heldButtons = Flag_Unset(controller->m_heldButtons,buttonEnum);
 	controller->m_releasedButtons = Flag_Set(controller->m_releasedButtons, buttonEnum);
 }

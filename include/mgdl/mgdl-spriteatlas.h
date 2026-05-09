@@ -96,7 +96,7 @@ void SpriteAtlas_MapSelective(Texture* fontTexture, short charw, short charh, co
  * @param format Text, has to containg formatting markers.
  * @param __VA_ARGS__ Values to the formatting markers.
  */
-void Texture_DrawTextF(Texture* texture, Color4f* color, float x, float y, float textHeight, const char* format, ... );
+void Texture_DrawTextF(Texture* texture, color32 color, float x, float y, float textHeight, const char* format, ... );
 
 /**
  * @brief Draws text either in 2D or 3D.
@@ -109,7 +109,7 @@ void Texture_DrawTextF(Texture* texture, Color4f* color, float x, float y, float
  * @param textHeight Height of the text.
  * @param text Text to be drawn.
  */
-void Texture_DrawText(Texture* texture, Color4f* color, float x, float y, float textHeight, const char* text);
+void Texture_DrawText(Texture* texture, color32 color, float x, float y, float textHeight, const char* text);
 
 
 /**
@@ -125,7 +125,7 @@ void Texture_DrawText(Texture* texture, Color4f* color, float x, float y, float 
  * @param alignmentY Alignment of text on the vertical axis.
  * @param glybh The symbol/icon/glyph to be drawn.
  */
-void DefaultFont_DrawIcon(Color4f* color, float x, float y, float textHeight, IconSymbol glyph);
+void DefaultFont_DrawIcon(color32 color, float x, float y, float textHeight, IconSymbol glyph);
 
 /**
  * @brief Draws an icon rotated
@@ -142,7 +142,7 @@ void DefaultFont_DrawIcon(Color4f* color, float x, float y, float textHeight, Ic
  * @param rotation How many clockwise 90 degree turns to do
  * @param glybh The symbol/icon/glyph to be drawn.
  */
-void DefaultFont_DrawIconRotated(Color4f* color, float x, float y, float textHeight, u8 rotation, IconSymbol glyph);
+void DefaultFont_DrawIconRotated(color32 color, float x, float y, float textHeight, u8 rotation, IconSymbol glyph);
 
 /**
  * @brief Get the texture coordinate corners of a letter

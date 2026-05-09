@@ -3,17 +3,20 @@
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-main.h>
 #include <mgdl/mgdl-opengl_util.h>
+#include <mgdl/mgdl-assert.h>
 
 void Texture_BeginSpriteBatch(Texture* texture)
 {
+	ASSERT_DEBUG(texture != nullptr);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture->textureId);
 
 	glBegin(GL_QUADS);
 }
 
-void Texture_DrawBatchedSprite(Texture* texture, u16 spriteIndex, short x, short y, float scale, Color4f* tintColor)
+void Texture_DrawBatchedSprite(Texture* texture, u16 spriteIndex, s16 x, s16 y, float scale, color32 tintColor)
 {
+	ASSERT_DEBUG(texture != nullptr);
 	V3f drawPos = vec3New(x,y,0);
 	SpriteAtlas* atlas = texture->spriteAtlas;
 
@@ -22,7 +25,7 @@ void Texture_DrawBatchedSprite(Texture* texture, u16 spriteIndex, short x, short
 	const float uvW = atlas->uvWidth;
 	const float uvH = atlas->uvHeight;
 
-	mgdl_glColor4f(tintColor);
+	mgdl_glColor32(tintColor);
 	V2f tx = SpriteAtlas_GetTextureCoordinateSprite(atlas, spriteIndex); //LOW LEFT!
 
 	// LOW LEFT!
@@ -43,8 +46,9 @@ void Texture_DrawBatchedSprite(Texture* texture, u16 spriteIndex, short x, short
 	glVertex2f(V3f_X(drawPos), V3f_Y(drawPos) );
 }
 
-void Texture_DrawSprite(Texture* texture, u16 spriteIndex, short x, short y, float scale, Color4f* tintColor)
+void Texture_DrawSprite(Texture* texture, u16 spriteIndex, s16 x, s16 y, float scale, color32 tintColor)
 {
+	ASSERT_DEBUG(texture != nullptr);
 	Texture_BeginSpriteBatch(texture);
 
 	Texture_DrawBatchedSprite(texture, spriteIndex, x, y, scale, tintColor);

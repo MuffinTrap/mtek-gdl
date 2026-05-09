@@ -164,22 +164,22 @@ void mgdl_DisableLightIndex(GLint index)
 	}
 }
 
-void mgdl_glColor3f(Color4f* color)
+void mgdl_glColor3f(color32 color)
 {
-	glColor3f(color->red, color->green, color->blue);
+	glColor3f(REDf(color), GREENf(color), BLUEf(color));
 }
-void mgdl_glColor4f(Color4f* color)
+void mgdl_glColor32(color32 color)
 {
-	glColor4f(color->red, color->green, color->blue, color->alpha);
+	glColor4f(REDf(color), GREENf(color), BLUEf(color), ALPHAf(color));
 }
-void mgdl_glColor4fa(Color4f* color, float alpha)
+void mgdl_glColor32a(color32 color, float alpha)
 {
-	glColor4f(color->red, color->green, color->blue, alpha);
+	glColor4f(REDf(color), GREENf(color), BLUEf(color), alpha);
 }
 
-void mgdl_glClearColor4f(Color4f* color)
+void mgdl_glClearColor32(color32 color)
 {
-	glClearColor(color->red, color->green, color->blue, color->alpha);
+	glClearColor(REDf(color), GREENf(color), BLUEf(color), ALPHAf(color));
 }
 
 void mgdl_glVertexV3F(V3f position)

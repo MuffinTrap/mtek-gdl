@@ -59,6 +59,7 @@ static void AngelScriptMessageCallback(const asSMessageInfo *msg)
 
 static bool ReloadAngelScriptCode(mgdl_AngelScript* angel)
 {
+	ASSERT_DEBUG(angel != nullptr);
 	const char* moduleName = zstr_cstr(&angel->moduleName);
 	const char* script = zstr_cstr(&angel->mainScriptFile);
 	if (script == nullptr)
@@ -311,6 +312,7 @@ static void RunAngelFunctionVoidFloat(mgdl_AngelScript* angel, asIScriptFunction
 
 void mgdl_RunAngelScriptInit(mgdl_AngelScript* angel)
 {
+	ASSERT_DEBUG(angel != nullptr);
 	if (angel->cxxInitFunc != nullptr)
 	{
 		angel->cxxInitFunc();
@@ -323,6 +325,7 @@ void mgdl_RunAngelScriptInit(mgdl_AngelScript* angel)
 
 void mgdl_RunAngelScriptFrame(mgdl_AngelScript* angel, float deltatime)
 {
+	ASSERT_DEBUG(angel != nullptr);
 	if (angel->cxxFrameFunc != nullptr)
 	{
 		angel->cxxFrameFunc(deltatime);
@@ -335,6 +338,7 @@ void mgdl_RunAngelScriptFrame(mgdl_AngelScript* angel, float deltatime)
 
 void mgdl_RunAngelScriptQuit(mgdl_AngelScript* angel)
 {
+	ASSERT_DEBUG(angel != nullptr);
 	if (angel->cxxQuitFunc != nullptr)
 	{
 		angel->cxxQuitFunc();

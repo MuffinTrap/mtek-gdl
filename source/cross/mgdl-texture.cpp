@@ -87,6 +87,8 @@ Texture* Texture_LoadPNG(PNGFile* png, TextureFilterModes filterMode)
 
 void Texture_SetGLName(Texture* img, GLuint textureName, GLsizei width, GLsizei height, ColorFormats format)
 {
+	ASSERT_DEBUG(img != nullptr);
+
 	img->width = width;
 	img->height = height;
 	img->textureId = textureName;
@@ -96,6 +98,7 @@ void Texture_SetGLName(Texture* img, GLuint textureName, GLsizei width, GLsizei 
 // TODO add padding to UVs so that the corners are inside the pixels and not in between
 void Texture_DrawRectF(Texture* img, RectF area)
 {
+	ASSERT_DEBUG(img != nullptr);
 	float dx = (float)area.x;
 	float dy = (float)area.y;
 	float dx2 = (float)area.x + area.w;
@@ -125,10 +128,11 @@ void Texture_DrawRectF(Texture* img, RectF area)
 
 void Texture_Draw(Texture* img, float x, float y, float scale)
 {
+	ASSERT_DEBUG(img != nullptr);
 	float w = img->width * scale;
 	float h = img->height * scale;
 
-	Texture_DrawRectF(img, RectF_Create(x, y, x+w, y-h));
+	Texture_DrawRectF(img, RectF_Create(x, y, w, h));
 }
 
 static GLuint PixelsToOpenGL(u32 width, u32 height, void* pixels, GLenum colorFormat, GLenum dataType)
@@ -152,6 +156,7 @@ static GLuint PixelsToOpenGL(u32 width, u32 height, void* pixels, GLenum colorFo
 
 Texture* Texture_CreateFromArray(u16 width, u16 height, void* pixels, GLenum colorFormat, GLenum dataFormat)
 {
+	ASSERT_DEBUG(pixels != nullptr);
 	GLuint texName = PixelsToOpenGL(width, height, pixels, colorFormat, dataFormat);
 
 	ColorFormats f = ColorFormats::RGBA;
@@ -205,24 +210,23 @@ Texture* Texture_GenerateCheckerBoard()
 	 * @param color The alpha value is ignored.
 	 * @return The generated texture
 	 */
-	Texture* Texture_GenerateColorTexture(Color4f* color)
+	Texture* Texture_GenerateColorTexture(color32 color)
 	{
 		const u32 width = 2;
 		const u32 height = 2;
 		GLubyte* pixels = (GLubyte*)mgdl_AllocateGeneralMemory(sizeof(GLubyte)*height*width*3);
 
-		Color4b colorByte;
-		colorByte.red = color->red * 255;
-		colorByte.green = color->green * 255;
-		colorByte.blue = color->blue * 255;
+		u8 red = RED(color);
+		u8 green = GREEN(color);
+		u8 blue = BLUE(color);
 
 		for(u32 y = 0; y < height; y++)
 		{
 			for(u32 x = 0; x < width; x++)
 			{
-				pixels[y*width + x*3 + 0] = colorByte.red;
-				pixels[y*width + x*3 + 1] = colorByte.green;
-				pixels[y*width + x*3 + 2] = colorByte.blue;
+				pixels[y*width + x*3 + 0] = red;
+				pixels[y*width + x*3 + 1] = green;
+				pixels[y*width + x*3 + 2] = blue;
 			}
 		}
 		GLuint texName = PixelsToOpenGL(width, height, pixels, GL_RGB, GL_UNSIGNED_BYTE);
@@ -262,6 +266,7 @@ Texture* Texture_GenerateCheckerBoard()
 
 	void Texture_SetFilterMode(Texture* texture, TextureFilterModes mode)
 	{
+		ASSERT_DEBUG(texture != nullptr);
 		glBindTexture(GL_TEXTURE_2D, texture->textureId);
 
 		GLint glFilter = TextureFilterToGLFilter(mode);
@@ -272,6 +277,7 @@ Texture* Texture_GenerateCheckerBoard()
 	}
 	void Texture_SetWrapMode(Texture* texture, TextureWrapModes mode)
 	{
+		ASSERT_DEBUG(texture != nullptr);
 		glBindTexture(GL_TEXTURE_2D, texture->textureId);
 		GLint glWrap = TextureWrapToGLWrap(mode);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, glWrap);

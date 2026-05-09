@@ -14,10 +14,11 @@ void mgdl_InitSystem(const char* windowName,
 	CallbackFunction quitCallback,
 	u32 initFlags)
 {
+#if defined(MGDL_DEBUG)
+	Log_Warning("YOU ARE USING DEBUG BUILD OF the mgdl LIBRARY\n");
+#endif
 	Platform_Init(windowName, screenAspect, initCallback, frameCallback, quitCallback, initFlags);
-
 }
-
 
 // DIRECT API
 
@@ -30,6 +31,7 @@ PNGFile* mgdl_LoadPNGFile(const char* filename)
 
 Texture* mgdl_LoadTexturePNG(PNGFile* png, TextureFilterModes filterMode)
 {
+    ASSERT_DEBUG(png != nullptr);
 	Texture* img = Texture_LoadPNG(png, filterMode);
 	return img;
 }

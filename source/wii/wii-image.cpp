@@ -27,7 +27,7 @@
 namespace gdl {
 
 	// Extended put with centering, rotation and scaling
-	void _put(short x, short y, short cx, short cy, short px, short py, float angle, float scale, Color4f* col, short xSize, short ySize, GXTexObj *texObj, void *vList, void *tList) {
+	void _put(short x, short y, short cx, short cy, short px, short py, float angle, float scale, color32 col, short xSize, short ySize, GXTexObj *texObj, void *vList, void *tList) {
 
 		/// Draws an image with rotation and scaling
 
@@ -134,7 +134,7 @@ namespace gdl {
 	}
 
 	// Stretched put
-	void _putS(short x1, short y1, short x2, short y2, Color4f* col, short xSize, short ySize, GXTexObj *texObj, void *vList, void *tList) {
+	void _putS(short x1, short y1, short x2, short y2, color32 col, short xSize, short ySize, GXTexObj *texObj, void *vList, void *tList) {
 
 		// Draws an image as a stretchable rectangle
 
@@ -917,14 +917,14 @@ short gdl::ImageWii::Ysize() {
 
 }
 
-void gdl::ImageWii::Put(short x, short y, Color4f* col, short cx, short cy, float scale, float angle) {
+void gdl::ImageWii::Put(short x, short y, color32 col, short cx, short cy, float scale, float angle) {
 
 	_put(x, y, cx, cy, 0, 0, angle, scale, col, xSize, ySize,
 				Texture.TexObj(), vList, tList);
 
 }
 
-void gdl::ImageWii::PutS(short x1, short y1, short x2, short y2, Color4f* col) {
+void gdl::ImageWii::PutS(short x1, short y1, short x2, short y2, color32 col) {
 
 	_putS(x1, y1, x2, y2, col, xSize, ySize,
 				Texture.TexObj(), vList, tList);

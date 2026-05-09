@@ -186,8 +186,8 @@ void DrawTextDouble(const char* text, short x, short y, float textHeight, Font* 
 
 void Example::Draw()
 {
-    Color4f black = Palette_GetColor4f(Palette_GetDefault(), 5);
-    mgdl_glClearColor4f(&black);
+    color32 black = Palette_GetColor(Palette_GetDefault(), 5);
+    mgdl_glClearColor32(black);
 
     mgdl_InitOrthoProjection();
     glMatrixMode(GL_MODELVIEW);
@@ -220,7 +220,7 @@ void Example::DrawSprites()
     for (int i = 0; i < 16; i++)
     {
         int size = 64;
-        Texture_DrawSprite (fruitSprites, i, size * (i%4), size + (i/4) * size, size, Color_GetDefaultColor(Color_White));
+        Texture_DrawSprite (fruitSprites, i, size * (i%4), size + (i/4) * size, size, Debug_White);
     }
 
     const short h = Texture_GetSpriteHeight(mel_sprites);
@@ -232,7 +232,7 @@ void Example::DrawSprites()
     short placeY = mgdl_GetScreenHeight();
     for (short i = 0; i < 4; i++)
     {
-        Texture_DrawSprite(mel_sprites, i, placeX, placeY, spriteH, Color_GetDefaultColor(Color_White));
+        Texture_DrawSprite(mel_sprites, i, placeX, placeY, spriteH, Debug_White);
         placeY -= spriteH;
     }
 }
@@ -320,7 +320,7 @@ void DrawDPad(short x, short y, short size)
         vec2New(1,0)
     };
     Palette* blessing = Palette_GetDefault();
-    Color4f c = Palette_GetColor4f(blessing, 5);
+    color32 c = Palette_GetColor(blessing, 5);
 
     //Draw2D_Line(x, y, x+size, y-size, &c);
 
@@ -328,18 +328,18 @@ void DrawDPad(short x, short y, short size)
     {
         if (WiiController_ButtonHeld(mgdl_GetController(0), dpad_buttons[i]))
         {
-            c = Palette_GetColor4f(blessing, 2);
+            c = Palette_GetColor(blessing, 2);
         }
         else
         {
-            c = Palette_GetColor4f(blessing, 5);
+            c = Palette_GetColor(blessing, 5);
         }
         vec2 d=directions[i];
         mgdl_DrawRectangle(x + d.x * box-h,
                     y + d.y * box-h,
                     box,
                     box,
-                    &c);
+                    c);
     }
 }
 
@@ -350,16 +350,16 @@ void DrawJoystick(short x, short y, short size)
     short box = jsize;
     short h=box/2;
     Palette* blessing = Palette_GetDefault();
-    Color4f jc = Palette_GetColor4f(blessing, 5);
+    color32 jc = Palette_GetColor(blessing, 5);
     vec2 jdir = WiiController_GetNunchukJoystickDirection(mgdl_GetController(0));
     short jleft= x + jsize/2 + jdir.x * box-h;
     short jtop = y - jsize/2 - jdir.y * box-h;
-    mgdl_DrawRectangleLines(x-jsize, y, x+jsize*2, y-jsize*3, &jc);
+    mgdl_DrawRectangleLines(x-jsize, y, x+jsize*2, y-jsize*3, jc);
     if (jdir.x != 0.0f || jdir.y != 0.0f)
     {
-        jc = Palette_GetColor4f(blessing, 2);
+        jc = Palette_GetColor(blessing, 2);
     }
-    mgdl_DrawRectangle(jleft, jtop, jleft+box, jtop-box, &jc);
+    mgdl_DrawRectangle(jleft, jtop, jleft+box, jtop-box, jc);
 }
 
 
@@ -446,27 +446,27 @@ void Example::DrawMenu()
 
 void Example::DrawSoundStatus(mgdlAudioStateEnum status)
 {
-    Color4f* musicColor = Color_GetDefaultColor(Color_Red);
+    color32 musicColor = Debug_Red;
     IconSymbol icon = IconSymbol::Icon_Dot;
     switch(status)
     {
         case Audio_StatePlaying:
-            musicColor = Color_GetDefaultColor(Color_Green);
+            musicColor = Debug_Green;
             icon = IconSymbol::Icon_TriangleUp;
             Menu_Text(audioMenu, "Playing");
             break;
         case Audio_StatePaused:
-            musicColor = Color_GetDefaultColor(Color_White);
+            musicColor = Debug_White;
             icon = IconSymbol::Icon_Clock;
             Menu_Text(audioMenu, "Paused");
             break;
         case Audio_StateStopped:
-            musicColor = Color_GetDefaultColor(Color_Red);
+            musicColor = Debug_Red;
             icon = IconSymbol::Icon_Skull;
             Menu_Text(audioMenu, "Stopped");
             break;
         case Audio_StateInvalid:
-            musicColor = Color_GetDefaultColor(Color_Black);
+            musicColor = Debug_Black;
             Menu_Text(audioMenu, "Invalid");
         break;
     };

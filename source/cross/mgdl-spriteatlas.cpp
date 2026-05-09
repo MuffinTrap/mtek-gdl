@@ -53,6 +53,7 @@ void SpriteAtlas_MapSelective(Texture* texture, short int charw, short int charh
 
 static void SpriteAtlas_CalculateSizes(Texture* texture, short charw, short charh)
 {
+	ASSERT_DEBUG(texture != nullptr);
 	const short tw = texture->width;
 	const short th = texture->height;
 	// Calculate the vertex and texture coordinates (vertices are not used)
@@ -89,12 +90,12 @@ void SpriteAtlas_BindSelective (Texture* texture, short charw, short charh, cons
 }
 
 
-void DefaultFont_DrawIcon (Color4f* color, float x, float y, float textHeight, IconSymbol glyph )
+void DefaultFont_DrawIcon (color32 color, float x, float y, float textHeight, IconSymbol glyph )
 {
 	DefaultFont_DrawIconRotated(color, x, y, textHeight, 0, glyph);
 }
 
-void DefaultFont_DrawIconRotated(Color4f* color, float x, float y, float textHeight, u8 rotation, IconSymbol glyph)
+void DefaultFont_DrawIconRotated(color32 color, float x, float y, float textHeight, u8 rotation, IconSymbol glyph)
 {
 	Texture* font = DefaultFont_GetDefaultFont();
 	GLuint textureName = font->textureId;
@@ -122,7 +123,7 @@ void DefaultFont_DrawIconRotated(Color4f* color, float x, float y, float textHei
 	short uvIndex = 0 + rotation * 2;
 
 	glBegin(GL_QUADS);
-	mgdl_glColor3f(color);
+	mgdl_glColor32(color);
 
 
 		// LOW LEFT!
@@ -154,8 +155,10 @@ void DefaultFont_DrawIconRotated(Color4f* color, float x, float y, float textHei
 }
 
 
-void Texture_DrawText(Texture* texture, Color4f* color, float x, float y, float textHeight, const char* text)
+void Texture_DrawText(Texture* texture, color32 color, float x, float y, float textHeight, const char* text)
 {
+	ASSERT_DEBUG(texture != nullptr);
+
 	GLuint textureName = texture->textureId;
 	SpriteAtlas* font = texture->spriteAtlas;
 	const float step = font->aspectRatio * textHeight;
@@ -176,7 +179,7 @@ void Texture_DrawText(Texture* texture, Color4f* color, float x, float y, float 
     // Discard pixels with low alpha
 
 	glBegin(GL_QUADS);
-	mgdl_glColor3f(color);
+	mgdl_glColor32(color);
 	for (short c = 0; text[c] != '\0'; c++)
 	{
 		char character = text[c];
@@ -214,7 +217,7 @@ void Texture_DrawText(Texture* texture, Color4f* color, float x, float y, float 
 }
 
 
-void Texture_DrawTextF(Texture* texture, Color4f* color, float x, float y, float textHeight, const char* format, ... )
+void Texture_DrawTextF(Texture* texture, color32 color, float x, float y, float textHeight, const char* format, ... )
 {
 	MGDL_PRINTF_TO_BUFFER(format)
 	Texture_DrawText(texture, color, x, y, textHeight, mgdl_GetPrintfBuffer());

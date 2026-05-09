@@ -44,6 +44,18 @@ int Random_Int(int min, int max)
 // ******************************
 // MATH UTIL FUNCTIONS
 // ******************************
+s16 clampS16(s16 val, s16 minVal, s16 maxVal)
+{
+	if (val < minVal) return minVal;
+	if (val > maxVal) return maxVal;
+	return val;
+}
+s32 clampS32(s32 val, s32 minVal, s32 maxVal)
+{
+	if (val < minVal) return minVal;
+	if (val > maxVal) return maxVal;
+	return val;
+}
 
 u32 clampU32(u32 val, u32 minVal, u32 maxVal)
 {

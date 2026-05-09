@@ -26,6 +26,9 @@
 	#pragma GCC diagnostic pop
 #endif
 
+#define RAYMATH_IMPLEMENTATION
+#include <mgdl/raymath/raymath.h>
+
 typedef vec3 V3f;
 typedef vec2 V2f;
 typedef mat3x3 MTX3x3;

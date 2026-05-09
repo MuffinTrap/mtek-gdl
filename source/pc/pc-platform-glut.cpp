@@ -265,6 +265,10 @@ void Platform_DoProgramExit()
     // Close window
     glutDestroyWindow(glutWindowId);
 
+#if defined(MGDL_DEBUG)
+    Log_Warning("YOU ARE RUNNING A DEBUG BUILD OF MGDL!\n");
+#endif
+
 	exit(0);
 }
 

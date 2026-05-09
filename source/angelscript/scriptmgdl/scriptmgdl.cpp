@@ -5,6 +5,14 @@
 #include "ZStrFactory.h"
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-script-api.h>
+#include <mgdl/mgdl-vector.h>
+
+static void RegisterRaymath(asIScriptEngine* as_engine)
+{
+	as_engine->RegisterObjectType("Vector2", 0, asOBJ_REF);
+	as_engine->RegisterObjectProperty("Vector2", "float x", asOFFSET(Vector2, x));
+	as_engine->RegisterObjectProperty("Vector2", "float y", asOFFSET(Vector2, y));
+}
 
 static void RegisterOpenGLUtilsAndGlut(asIScriptEngine* as_engine)
 {
@@ -51,6 +59,8 @@ static void RegisterTypes(asIScriptEngine* as_engine)
 	as_engine->RegisterTypedef("TextureHandle", "uint32");
 	as_engine->RegisterTypedef("SoundHandle", "uint32");
 	as_engine->RegisterTypedef("ImageHandle", "uint32");
+
+	as_engine->RegisterTypedef("color32", "uint32");
 }
 
 static void RegisterMain(asIScriptEngine* as_engine)
@@ -67,15 +77,18 @@ static void RegisterMain(asIScriptEngine* as_engine)
 
 static void RegisterDrawing(asIScriptEngine* as_engine)
 {
-	as_engine->RegisterGlobalFunction("PaletteHandle  mgdl_GetDefaultPalette()", asFUNCTION(mgdl_GetDefaultPalette), asCALL_CDECL);
-	as_engine->RegisterGlobalFunction("PaletteHandle  mgdl_GetDebugPalette()", asFUNCTION(mgdl_GetDebugPalette), asCALL_CDECL);
-	as_engine->RegisterGlobalFunction("void  mgdl_SetPalette(PaletteHandle palette)", asFUNCTION(mgdl_SetPalette), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("PaletteHandle mgdl_GetDefaultPalette()", asFUNCTION(mgdl_GetDefaultPalette), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("PaletteHandle mgdl_GetDebugPalette()", asFUNCTION(mgdl_GetDebugPalette), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_SetPalette(PaletteHandle palette)", asFUNCTION(mgdl_SetPalette), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("color32 mgdl_GetPaletteColor(PaletteHandle palette, u8 colorIndex)", asFUNCTION(mgdl_GetPaletteColor), asCALL_CDECL);
 
 	// Register drawing functions
-	as_engine->RegisterGlobalFunction("void  mgdl_DrawRectanglePal(float x, float y, float w, float h, u8 paletteIndex)", asFUNCTION(mgdl_DrawRectangle), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_DrawRectangle(float x, float y, float w, float h, color32 color)", asFUNCTION(mgdl_DrawRectangle), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_DrawText(float x, float y, const zstr &in text, color32 color)", asFUNCTIONPR(mgdl_DrawText, (float, float, const zstr&, color32), void), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_DrawTextV2(Vector2 topleft, const zstr &in text, color32 color)", asFUNCTIONPR(mgdl_DrawTextV2, (Vector2, const zstr&, color32), void), asCALL_CDECL);
 
 
-	as_engine->RegisterGlobalFunction("void  mgdl_DrawTexture(TextureHandle textureHandle, float y, float w)", asFUNCTION(mgdl_DrawTexture), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_DrawTexture(TextureHandle textureHandle, float y, float w)", asFUNCTION(mgdl_DrawTexture), asCALL_CDECL);
 }
 
 static void RegisterController(asIScriptEngine* as_engine)
@@ -105,6 +118,7 @@ static void RegisterController(asIScriptEngine* as_engine)
 void RegisterMGDL(asIScriptEngine* as_engine)
 {
 	RegisterTypes(as_engine);
+	RegisterRaymath(as_engine);
 	RegisterMain(as_engine);
 	RegisterDrawing(as_engine);
 	RegisterController(as_engine);

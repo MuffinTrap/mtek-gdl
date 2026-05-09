@@ -17,6 +17,7 @@ const float speed = 10.0f;
 const float circleSize = 10.0f;
 
 TextureHandle barb;
+PaletteHandle debugPalette;
 
 void angelscript_init()
 {
@@ -25,13 +26,12 @@ void angelscript_init()
 	deltaCircle = vec2New(0, screenHeight/4.0f );
 	frameCircle = vec2New(0, screenHeight*(2.0f/3.0f) );
 
-	//barb = mgdl_LoadTexture("assets/barb.png");
+	barb = mgdl_LoadTexture("assets/barb.png");
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
-	PaletteHandle debugPalette = mgdl_GetDebugPalette();
-	mgdl_SetPalette(debugPalette);
+	debugPalette = mgdl_GetDebugPalette();
 }
 
 void angelscript_quit()
@@ -60,8 +60,8 @@ void effect_2d(float deltatime)
 
 	mgdl_DrawTexture(barb, 120, screenHeight-16);
 
-	mgdl_DrawRectanglePal(deltaCircle.x, deltaCircle.y, circleSize, circleSize, 3 );
-	mgdl_DrawRectanglePal(frameCircle.x, frameCircle.y, circleSize, circleSize, 4 );
+	mgdl_DrawRectangle(deltaCircle.x, deltaCircle.y, circleSize, circleSize, mgdl_GetPaletteColor(debugPalette,3) );
+	mgdl_DrawRectangle(frameCircle.x, frameCircle.y, circleSize, circleSize, mgdl_GetPaletteColor(debugPalette,4) );
 }
 void Quad(
     vec3 A,

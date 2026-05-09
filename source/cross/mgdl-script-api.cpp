@@ -4,10 +4,11 @@
 #include <mgdl/mgdl-assetmanager.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-draw2d.h>
+#include <mgdl/mgdl-assert.h>
 
 static Palette* s_activePalette = nullptr;
-static PaletteHandle s_defaultPaletteHandle = PaletteHandle{0};
-static PaletteHandle s_debugPaletteHandle = PaletteHandle{0};
+static PaletteHandle s_defaultPaletteHandle = Handle_CreatePalette(0);
+static PaletteHandle s_debugPaletteHandle = Handle_CreatePalette(0);
 
 void mgdl_InitScriptApi()
 {
@@ -20,10 +21,13 @@ void mgdl_InitScriptApi()
 
 // DRAWING
 
-void mgdl_DrawRectanglePal(float x, float y, float w, float h, u8 paletteIndex)
+void mgdl_DrawText(float x, float y, const zstr& text, color32 color)
 {
-	Color4f* color = Palette_GetColor4fPtr(s_activePalette, paletteIndex);
-	mgdl_DrawRectangle(x,y,w,h,color);
+	mgdl_DrawText(x, y, zstr_cstr(&text), color);
+}
+void mgdl_DrawTextV2(Vector2 topleft, const zstr& text, color32 color)
+{
+	mgdl_DrawText(topleft.x, topleft.y, zstr_cstr(&text), color);
 }
 
 // TEXTURES
@@ -43,23 +47,27 @@ TextureHandle mgdl_LoadTexture(const char* filename)
 void mgdl_SetTextureFilter(TextureHandle texture, TextureFilterModes mode)
 {
 	Texture* tex = AssetManager_GetTexture(texture);
+	ASSERT_DEBUG(tex != nullptr);
 	Texture_SetFilterMode(tex, mode);
 }
 void mgdl_SetTextureWrap(TextureHandle texture, TextureWrapModes mode)
 {
 	Texture* tex = AssetManager_GetTexture(texture);
+	ASSERT_DEBUG(tex != nullptr);
 	Texture_SetWrapMode(tex, mode);
 }
 
 void mgdl_CreateFontUVs(TextureHandle texture, s16 characterWidth, s16 characterHeight, char firstCharacter)
 {
 	Texture* tex = AssetManager_GetTexture(texture);
+	ASSERT_DEBUG(tex != nullptr);
 	SpriteAtlas_MapSimple(tex, characterWidth, characterHeight, firstCharacter);
 }
 
 void mgdl_DrawTexture(TextureHandle handle, float x, float y)
 {
 	Texture* tex = AssetManager_GetTexture(handle);
+	ASSERT_DEBUG(tex != nullptr);
 	Texture_Draw(tex, x, y, 1.0f);
 }
 
@@ -80,6 +88,7 @@ ImageHandle mgdl_LoadPNG(const char* filename)
 void mgdl_PlaySound(SoundHandle handle)
 {
 	Sound* snd = AssetManager_GetSound(handle);
+	ASSERT_DEBUG(snd != nullptr);
 	Audio_PlaySound(snd);
 }
 
@@ -137,24 +146,37 @@ void mgdl_SetPalette(PaletteHandle palette)
 	s_activePalette = AssetManager_GetPalette(palette);
 }
 
+color32 mgdl_GetPaletteColor(PaletteHandle palette, u8 colorIndex)
+{
+	return Palette_GetColor(AssetManager_GetPalette(palette), colorIndex);
+}
+
 // INPUT
 
 bool mgdl_IsButtonDown(int controller, WiiButtons button)
 {
-	WiiController* c = mgdl_GetController(controller);
-	if (c != nullptr)
+	if (controller >=0 && controller < MGDL_MAX_CONTROLLERS)
 	{
-		return WiiController_ButtonHeld(c, button);
+		WiiController* c = mgdl_GetController(controller);
+		ASSERT_DEBUG(c != nullptr);
+		if (c != nullptr)
+		{
+			return WiiController_ButtonHeld(c, button);
+		}
 	}
 	return false;
 
 }
 bool mgdl_IsButtonPressed(int controller, WiiButtons button)
 {
-	WiiController* c = mgdl_GetController(controller);
-	if (c != nullptr)
+	if (controller >=0 && controller < MGDL_MAX_CONTROLLERS)
 	{
-		return WiiController_ButtonPress(c, button);
+		WiiController* c = mgdl_GetController(controller);
+		ASSERT_DEBUG(c != nullptr);
+		if (c != nullptr)
+		{
+			return WiiController_ButtonPress(c, button);
+		}
 	}
 	return false;
 }

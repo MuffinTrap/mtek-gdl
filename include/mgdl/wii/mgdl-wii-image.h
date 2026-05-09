@@ -227,7 +227,7 @@ public:
 	 *	\param[in]	scale	Scale of image (1.0f is original size).
 	 *	\param[in]	angle	Rotation angle in degrees.
 	 */
-	void Put(short x, short y, Color4f* col, short cx = 0, short cy = 0, float scale = 1.f, float angle = 0.f);
+	void Put(short x, short y, color32 col, short cx = 0, short cy = 0, float scale = 1.f, float angle = 0.f);
 
 
 	//! Draws an image as a stretchable rectangle.
@@ -242,7 +242,7 @@ public:
 	 *	\param[in]	y2	Lower-right Y coordinate of image.
 	 *	\param[in]	col	Color of image (use gdl::Color::White or full white with RGBA() for normal colors).
 	 */
-	void PutS(short x1, short y1, short x2, short y2, Color4f* col);
+	void PutS(short x1, short y1, short x2, short y2, color32 col);
 
 
 };

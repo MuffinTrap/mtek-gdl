@@ -52,49 +52,41 @@
 										 *	 \return 16-bit intensity with alpha value
 										 */
 
-struct Color4f
-{
-    GLfloat red;
-    GLfloat green;
-    GLfloat blue;
-    GLfloat alpha;
-};
-typedef struct Color4f Color4f;
+#define REDf(c) (float)RED(c)/255.0f
+#define GREENf(c) (float)GREEN(c)/255.0f
+#define BLUEf(c) (float)BLUE(c)/255.0f
+#define ALPHAf(c) (float)ALPHA(c)/255.0f
 
-struct Color4b
-{
-    u8 red;
-    u8 green;
-    u8 blue;
-    u8 alpha;
-};
-typedef struct Color4b Color4b;
+typedef u32 color32;
 
-enum DefaultColor
+struct RGBAf
 {
-	Color_White,
-	Color_Black,
-	Color_Red,
-	Color_Green,
-	Color_Blue
+	float red, green,blue, alpha;
 };
-typedef enum DefaultColor DefaultColor;
+typedef struct RGBAf RGBAf;
+
+
+const color32 Debug_Black		= 0x000000FF;// 0 Black
+const color32 Debug_DarkGray  	= 0x555555FF; // 1 Dark Gray
+const color32 Debug_Blue			= 0x5555FFFF; // 2 Blue
+const color32 Debug_Green		= 0x55FF55FF; // 3 Green
+const color32 Debug_Red			= 0xFF5555FF; // 4 Red
+const color32 Debug_Magenta		= 0xFF55FFFF; // 5 Magenta
+const color32 Debug_Yellow		= 0xFFFF55FF; // 6 Yellow
+const color32 Debug_White		= 0xFFFFFFFF;  // 7 White
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-Color4f Color_Create4f(float red, float green, float blue, float alpha);
-Color4f Color_CreateFrom4b(Color4b bytecolor);
-Color4f Color_CreateFromPointer4f(Color4f* color);
-Color4b Color_Create4b(u8 red, u8 green, u8 blue, u8 alpha);
-Color4f Color_HexToFloats(u32 color);
-Color4b Color_HexToBytes(u32 color);
-u32 Color_FloatsToHex(Color4f components);
 
-// Debugging colors
-Color4f* Color_GetDefaultColor(DefaultColor color);
+
+color32 Color_Create4f(float red, float green, float blue, float alpha);
+color32 Color_Create4b(u8 red, u8 green, u8 blue, u8 alpha);
+RGBAf Color_HexToFloats(u32 color);
+void Color_HexToGLfloats(color32 color, GLfloat* target4f);
+u32 Color_FloatsToHex(RGBAf components);
 
 #ifdef __cplusplus
 }

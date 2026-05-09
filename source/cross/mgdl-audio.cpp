@@ -4,6 +4,7 @@
 #include <mgdl/mgdl-ogg-player.h>
 #include <mgdl/mgdl-wav-player.h>
 #include <mgdl/mgdl-mp3-player.h>
+#include <mgdl/mgdl-assert.h>
 
 
 // TODO these are not used
@@ -99,10 +100,7 @@ Sound* Audio_LoadSound(const char* filename, SoundFileType filetype)
 
 void Audio_PlaySound(Sound* s)
 {
-	if (s == nullptr)
-	{
-		return;
-	}
+	ASSERT_DEBUG(s!=nullptr);
 	switch(s->type)
 	{
 		case SoundWav:
@@ -124,6 +122,7 @@ void Audio_PlaySound(Sound* s)
 }
 void Audio_PauseSound(Sound* s)
 {
+	ASSERT_DEBUG(s!=nullptr);
 	switch(s->type)
 	{
 		case SoundWav:
@@ -145,6 +144,7 @@ void Audio_PauseSound(Sound* s)
 }
 void Audio_ResumeSound(Sound* s)
 {
+	ASSERT_DEBUG(s!=nullptr);
 	switch(s->type)
 	{
 		case SoundWav:
@@ -166,6 +166,7 @@ void Audio_ResumeSound(Sound* s)
 }
 void Audio_StopSound(Sound* s)
 {
+	ASSERT_DEBUG(s!=nullptr);
 	switch(s->type)
 	{
 		case SoundWav:
@@ -188,6 +189,7 @@ void Audio_StopSound(Sound* s)
 
 sizetype Audio_GetSoundSizeBytes(Sound* snd)
 {
+	ASSERT_DEBUG(snd!=nullptr);
 	switch (snd->type)
 	{
 	case SoundWav:
@@ -204,6 +206,7 @@ sizetype Audio_GetSoundSizeBytes(Sound* snd)
 }
 u32 Audio_GetSoundElapsedMs(Sound* snd)
 {
+	ASSERT_DEBUG(snd!=nullptr);
 	switch (snd->type)
 	{
 	case SoundWav:
@@ -222,6 +225,7 @@ u32 Audio_GetSoundElapsedMs(Sound* snd)
 
 mgdlAudioStateEnum Audio_GetSoundStatus(Sound* snd)
 {
+	ASSERT_DEBUG(snd!=nullptr);
 	switch (snd->type)
 	{
 	case SoundWav:
@@ -241,6 +245,7 @@ mgdlAudioStateEnum Audio_GetSoundStatus(Sound* snd)
 
 void Audio_SetSoundElapsedMs(Sound* snd, s32 milliseconds)
 {
+	ASSERT_DEBUG(snd!=nullptr);
 	switch (snd->type)
 	{
 	case SoundWav:
