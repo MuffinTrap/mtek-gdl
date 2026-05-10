@@ -1,6 +1,6 @@
 #pragma once
 #include <angelscript.h>
-#include <mgdl/zstrh/zstr.h>
+#include <mgdl/mgdl-types.h>
 
 /**
  * @file ZStrFactory.h

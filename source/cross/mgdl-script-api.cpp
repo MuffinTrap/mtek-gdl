@@ -21,13 +21,24 @@ void mgdl_InitScriptApi()
 
 // DRAWING
 
-void mgdl_DrawText(float x, float y, const zstr& text, color32 color)
+void mgdl_DrawText(const zstr& text, float x, float y,  float fontSize, color32 color)
 {
-	mgdl_DrawText(x, y, zstr_cstr(&text), color);
+	mgdl_DrawText(x, y, zstr_cstr(&text), fontSize, color);
 }
-void mgdl_DrawTextV2(Vector2 topleft, const zstr& text, color32 color)
+void mgdl_DrawTextV(const zstr& text, Vector2 topleft,  float fontSize, color32 color)
 {
-	mgdl_DrawText(topleft.x, topleft.y, zstr_cstr(&text), color);
+	mgdl_DrawText(topleft.x, topleft.y, zstr_cstr(&text), fontSize, color);
+}
+
+void mgdl_DrawTextEx(TextureHandle font, const zstr& text, float x, float y,  float fontSize, color32 color)
+{
+	Texture* fontTexture = AssetManager_GetTexture(font);
+	ASSERT_DEBUG(fontTexture->spriteAtlas != nullptr);
+	Texture_DrawText(fontTexture, color, x, y, fontSize, zstr_cstr(&text));
+}
+void mgdl_DrawTextVEx(TextureHandle font, const zstr& text, Vector2 topleft,  float fontSize, color32 color)
+{
+	mgdl_DrawTextEx(font, text, topleft.x, topleft.y, fontSize, color);
 }
 
 // TEXTURES

@@ -27,7 +27,12 @@
 #endif
 
 #define RAYMATH_IMPLEMENTATION
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-field-initializers"
 #include <mgdl/raymath/raymath.h>
+#pragma clang diagnostic pop
+
+
 
 typedef vec3 V3f;
 typedef vec2 V2f;

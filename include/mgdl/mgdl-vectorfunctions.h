@@ -6,6 +6,14 @@
  * @ingroup core
  * @brief Macro definitions for vector and matrix operations
  */
+
+// NOTE
+// Needed becaus ugh...
+Vector2 Vector2New(float px, float py);
+
+Vector3 Vector3New(float px, float py, float pz);
+
+
 	// Vector 2
 	#define V2f_Create(x,y) vec2New(x,y)
 	#define V2f_X(Va) Va.x

@@ -9,7 +9,7 @@
 #endif
 
 #if defined(USE_ANGEL_AS_CPP)
-#include <angel.hxx>
+#include <angel.hpp>
 #endif
 
 Example::Example()
@@ -21,7 +21,7 @@ void Example::AngelInit()
 {
     // AngelScript
 #if defined(USE_ANGEL_AS_SCRIPT)
-    angelContext = mgdl_InitAngelScript("scripts/angel.cxx", "scripts", "example");
+    angelContext = mgdl_InitAngelScript("scripts/angel.cpp", "scripts", "example");
     if (angelContext != nullptr)
     {
         mgdl_RunAngelScriptInit(angelContext);

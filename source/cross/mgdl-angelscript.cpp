@@ -317,7 +317,7 @@ void mgdl_RunAngelScriptInit(mgdl_AngelScript* angel)
 	{
 		angel->cxxInitFunc();
 	}
-	else
+	else if (s_compileErrorFlag == false)
 	{
 		RunAngelFunctionVoidVoid(angel, angel->initFunc);
 	}
@@ -330,7 +330,7 @@ void mgdl_RunAngelScriptFrame(mgdl_AngelScript* angel, float deltatime)
 	{
 		angel->cxxFrameFunc(deltatime);
 	}
-	else
+	else if (s_compileErrorFlag == false)
 	{
 		RunAngelFunctionVoidFloat(angel, angel->frameFunc, deltatime);
 	}
@@ -343,7 +343,7 @@ void mgdl_RunAngelScriptQuit(mgdl_AngelScript* angel)
 	{
 		angel->cxxQuitFunc();
 	}
-	else
+	else if (s_compileErrorFlag == false)
 	{
 		RunAngelFunctionVoidVoid(angel, angel->quitFunc);
 	}

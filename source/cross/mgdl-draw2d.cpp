@@ -69,13 +69,13 @@ void mgdl_DrawLineV(vec2 start, vec2 end, color32 color )
 	glEnd();
 }
 
-void mgdl_DrawText(float x, float y, const char* text, color32 color)
+void mgdl_DrawText(float x, float y, const char* text, float fontSize, color32 color)
 {
 	Texture* db = DefaultFont_GetDefaultFont();
-	Texture_DrawText(db, color, x, y, Texture_GetCharacterHeight(db), text);
+	Texture_DrawText(db, color, x, y, fontSize, text);
 }
 
-void mgdl_DrawTextV(vec2 topleft, const char* text, color32 color)
+void mgdl_DrawTextV(vec2 topleft, const char* text, float fontSize, color32 color)
 {
-	mgdl_DrawText(V2f_X(topleft), V2f_Y(topleft), text, color);
+	mgdl_DrawText(V2f_X(topleft), V2f_Y(topleft), text, fontSize, color);
 }

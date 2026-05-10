@@ -1,0 +1,98 @@
+// These functions go around the problem that Vector2 cannot be used as a value
+// type on linux.
+// When AngelScript is used as CPP then these are not used, but the actual
+// CPP function is called
+#if USE_ANGEL_AS_SCRIPT
+
+float sqrtf(float value)
+{
+	return sqrt(value);
+}
+
+class Vector2
+{
+	float x;
+	float y;
+
+	Vector2()
+	{
+		x = 0;
+		y = 0;
+	}
+
+}
+
+Vector2 Vector2New(float px, float py)
+{
+	Vector2 v;
+	v.x = px;
+	v.y = py;
+	return v;
+}
+
+// Vector with components value 0.0f
+Vector2 Vector2Zero(void)
+{
+    return Vector2New(0.0f, 0.0f);
+}
+
+// Vector with components value 1.0f
+Vector2 Vector2One(void)
+{
+    return Vector2New(1.0f, 1.0f);
+}
+
+// Add two vectors (v1 + v2)
+Vector2 Vector2Add(Vector2 v1, Vector2 v2)
+{
+    return Vector2New(v1.x + v2.x, v1.y + v2.y);
+}
+
+// Add vector and float value
+Vector2 Vector2AddValue(Vector2 v, float add)
+{
+    return Vector2New( v.x + add, v.y + add );
+}
+
+// Subtract two vectors (v1 - v2)
+Vector2 Vector2Subtract(Vector2 v1, Vector2 v2)
+{
+    return Vector2New( v1.x - v2.x, v1.y - v2.y );
+}
+
+// Subtract vector by float value
+ Vector2 Vector2SubtractValue(Vector2 v, float sub)
+{
+    return Vector2New( v.x - sub, v.y - sub );
+}
+
+// Calculate vector length
+ float Vector2Length(Vector2 v)
+{
+    float result = sqrtf((v.x*v.x) + (v.y*v.y));
+
+    return result;
+}
+
+class Vector3
+{
+	float x;
+	float y;
+	float z;
+	Vector3()
+	{
+		x = 0;
+		y = 0;
+		z = 0;
+	}
+}
+Vector3 Vector3New(float px, float py, float pz)
+{
+	Vector3 v;
+	v.x = px;
+	v.y = py;
+	v.z = pz;
+	return v;
+}
+
+#endif

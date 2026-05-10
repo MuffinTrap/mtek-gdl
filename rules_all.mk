@@ -30,6 +30,8 @@ RAYMATH_HDR	:= include/mgdl/raymath/raymath.h
 
 # Silence zstr warnings
 CXXFLAGS += -Wno-c99-extensions -Wno-c++20-designator
+# Silence raymath warnings
+CXXFLAGS += -Wno-missing-field-initializers
 
 # UFBX settings
 CXXFLAGS += -DUFBX_REAL_IS_FLOAT

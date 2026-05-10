@@ -64,7 +64,7 @@ void mgdl_DrawLineEx(vec2 start, vec2 end, float lineThickness, color32 color );
  * @param text Text to be drawn.
  * @param color Color of the text.
  */
-void mgdl_DrawText(float x, float y, const char* text, color32 color);
+void mgdl_DrawText(float x, float y, const char* text, float fontSize, color32 color);
 
 /**
  * @brief Draws text using the default font.

@@ -20,12 +20,13 @@
 
 // String library
 #ifndef GEKKO
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wc99-extensions"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc99-extensions"
+#pragma clang diagnostic ignored "-Wc++20-designator"
 #endif
 #include <mgdl/zstrh/zstr.h>
 #ifndef GEKKO
-#pragma GCC diagnostic pop
+#pragma clang diagnostic pop
 #endif
 
 // For MacOS

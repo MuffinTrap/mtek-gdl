@@ -7,13 +7,6 @@
 #include <mgdl/mgdl-script-api.h>
 #include <mgdl/mgdl-vector.h>
 
-static void RegisterRaymath(asIScriptEngine* as_engine)
-{
-	as_engine->RegisterObjectType("Vector2", 0, asOBJ_REF);
-	as_engine->RegisterObjectProperty("Vector2", "float x", asOFFSET(Vector2, x));
-	as_engine->RegisterObjectProperty("Vector2", "float y", asOFFSET(Vector2, y));
-}
-
 static void RegisterOpenGLUtilsAndGlut(asIScriptEngine* as_engine)
 {
 	// GLU functions
@@ -68,6 +61,8 @@ static void RegisterMain(asIScriptEngine* as_engine)
 	// Get status functions
 	as_engine->RegisterGlobalFunction("int mgdl_GetScreenHeight()", asFUNCTION(mgdl_GetScreenHeight), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("int mgdl_GetScreenWidth()", asFUNCTION(mgdl_GetScreenWidth), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("float mgdl_GetElapsedSeconds()", asFUNCTION(mgdl_GetElapsedSeconds), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("float mgdl_GetDeltaTime()", asFUNCTION(mgdl_GetDeltaTime), asCALL_CDECL);
 
 	// Asset handling
 	as_engine->RegisterGlobalFunction("TextureHandle mgdl_LoadTexture(const zstr &in filename)", asFUNCTIONPR(mgdl_LoadTexture, (const zstr&), TextureHandle), asCALL_CDECL);
@@ -77,6 +72,19 @@ static void RegisterMain(asIScriptEngine* as_engine)
 
 static void RegisterDrawing(asIScriptEngine* as_engine)
 {
+	// Default debug colors
+	as_engine->RegisterGlobalProperty("const color32 Debug_Black", (void*)&Debug_Black);
+	as_engine->RegisterGlobalProperty("const color32 Debug_DarkGray", (void*)&Debug_DarkGray);
+	as_engine->RegisterGlobalProperty("const color32 Debug_Blue", (void*)&Debug_Blue);
+	as_engine->RegisterGlobalProperty("const color32 Debug_Green", (void*)&Debug_Green);
+	as_engine->RegisterGlobalProperty("const color32 Debug_Red", (void*)&Debug_Red);
+	as_engine->RegisterGlobalProperty("const color32 Debug_Magenta", (void*)&Debug_Magenta);
+	as_engine->RegisterGlobalProperty("const color32 Debug_Yellow", (void*)&Debug_Yellow);
+	as_engine->RegisterGlobalProperty("const color32 Debug_White", (void*)&Debug_White);
+
+
+
+	// Palette functions
 	as_engine->RegisterGlobalFunction("PaletteHandle mgdl_GetDefaultPalette()", asFUNCTION(mgdl_GetDefaultPalette), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("PaletteHandle mgdl_GetDebugPalette()", asFUNCTION(mgdl_GetDebugPalette), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("void mgdl_SetPalette(PaletteHandle palette)", asFUNCTION(mgdl_SetPalette), asCALL_CDECL);
@@ -84,8 +92,8 @@ static void RegisterDrawing(asIScriptEngine* as_engine)
 
 	// Register drawing functions
 	as_engine->RegisterGlobalFunction("void mgdl_DrawRectangle(float x, float y, float w, float h, color32 color)", asFUNCTION(mgdl_DrawRectangle), asCALL_CDECL);
-	as_engine->RegisterGlobalFunction("void mgdl_DrawText(float x, float y, const zstr &in text, color32 color)", asFUNCTIONPR(mgdl_DrawText, (float, float, const zstr&, color32), void), asCALL_CDECL);
-	as_engine->RegisterGlobalFunction("void mgdl_DrawTextV2(Vector2 topleft, const zstr &in text, color32 color)", asFUNCTIONPR(mgdl_DrawTextV2, (Vector2, const zstr&, color32), void), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_DrawText(const zstr &in text, float x, float y, float fontSize, color32 color)", asFUNCTIONPR(mgdl_DrawText, (const zstr&, float, float, float, color32), void), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_DrawTextEx(TextureHandle font,  const zstr &in text, float x, float y, float fontSize, color32 color)", asFUNCTIONPR(mgdl_DrawTextEx, (TextureHandle, const zstr&, float, float, float, color32), void), asCALL_CDECL);
 
 
 	as_engine->RegisterGlobalFunction("void mgdl_DrawTexture(TextureHandle textureHandle, float y, float w)", asFUNCTION(mgdl_DrawTexture), asCALL_CDECL);
@@ -118,7 +126,6 @@ static void RegisterController(asIScriptEngine* as_engine)
 void RegisterMGDL(asIScriptEngine* as_engine)
 {
 	RegisterTypes(as_engine);
-	RegisterRaymath(as_engine);
 	RegisterMain(as_engine);
 	RegisterDrawing(as_engine);
 	RegisterController(as_engine);

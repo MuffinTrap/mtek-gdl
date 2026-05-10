@@ -12,8 +12,9 @@ TextureHandle mgdl_LoadTexture(const char* filename);
 SoundHandle mgdl_LoadSound(const zstr& filename);
 SoundHandle mgdl_LoadSound(const char* filename);
 
-void mgdl_DrawText(float x, float y, const zstr& text, color32 color);
-void mgdl_DrawTextV2(Vector2 topleft, const zstr& text, color32 color);
+void mgdl_DrawText(const zstr& text, float x, float y, float fontSize, color32 color);
+void mgdl_DrawTextEx(TextureHandle font, const zstr& text, float x, float y,  float fontSize, color32 color);
+void mgdl_DrawTextVEx(TextureHandle font, const zstr& text, Vector2 topleft,  float fontSize, color32 color);
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,7 +32,6 @@ void mgdl_CreateFontUVs(TextureHandle texture, s16 characterWidth, s16 character
 // DRAWING
 // ----------------------------
 void mgdl_DrawTexture(TextureHandle handle, float x, float y);
-void mgdl_DrawTextureV(TextureHandle handle, vec2 position);
 
 
 // SOUNDS

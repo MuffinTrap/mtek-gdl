@@ -130,7 +130,7 @@ GLint TextureWrapToGLWrap(TextureWrapModes wrapMode)
 {
 	switch(wrapMode)
 	{
-		case TextureWrapModes::Clamp:
+		case TextureWrapModes::Wrap_Clamp:
 			return GL_CLAMP;
 			break;
 		case TextureWrapModes::Mirror:

@@ -43,7 +43,7 @@ VPATH = $(SOURCEDIRS)
 SOURCES = $(foreach dir,$(SOURCEDIRS),$(wildcard $(dir)/*.cpp))
 
 # Define objects for all sources
-OBJS := $(subst $(SOURCEDIR),$(BUILDDIR),$(SOURCES:.cpp=.o))
+OBJS = $(subst $(SOURCEDIR),$(BUILDDIR),$(SOURCES:.cpp=.o))
 
 # Define dependencies files for all objects
 DEPS = $(OBJS:.o=.d)
@@ -76,7 +76,7 @@ endif
 # Define the function that will generate each rule
 define generateRules
 $(1)/%.o: %.cpp
-	@echo Building $$@
+	@echo Building Cpp $$@
 	$(HIDE)$(CXX) -c $$(CXXFLAGS) $$(INCLUDES) -o $$(subst /,$$(PSEP),$$@) $$(subst /,$$(PSEP),$$<) -MMD
 endef
 

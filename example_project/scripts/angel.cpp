@@ -1,9 +1,12 @@
-#include "ccVector.angel"
+#include "mgdl.angel"
+#include "raymath.angel"
+#include "mgdl.angel"
 
 #if USE_ANGEL_AS_CPP
 #	include <mgdl.h>
+#	include <mgdl/raymath/raymath.h>
 #	include <mgdl/mgdl-script-api.h>
-#	include "angel.hxx"
+#	include "angel.hpp"
 #	include <mgdl/mgdl-angelscript.h>
 #	ifdef __cplusplus
 		extern "C" {
@@ -11,8 +14,8 @@
 #endif
 
 float elapsed = 0.0f;
-vec2 deltaCircle;
-vec2 frameCircle;
+Vector2 deltaCircle;
+Vector2 frameCircle;
 const float speed = 10.0f;
 const float circleSize = 10.0f;
 
@@ -23,8 +26,8 @@ void angelscript_init()
 {
 	int screenWidth = mgdl_GetScreenWidth();
 	int screenHeight = mgdl_GetScreenHeight();
-	deltaCircle = vec2New(0, screenHeight/4.0f );
-	frameCircle = vec2New(0, screenHeight*(2.0f/3.0f) );
+	deltaCircle = Vector2New(0, screenHeight/4.0f );
+	frameCircle = Vector2New(0, screenHeight*(2.0f/3.0f) );
 
 	barb = mgdl_LoadTexture("assets/barb.png");
 
@@ -62,12 +65,14 @@ void effect_2d(float deltatime)
 
 	mgdl_DrawRectangle(deltaCircle.x, deltaCircle.y, circleSize, circleSize, mgdl_GetPaletteColor(debugPalette,3) );
 	mgdl_DrawRectangle(frameCircle.x, frameCircle.y, circleSize, circleSize, mgdl_GetPaletteColor(debugPalette,4) );
+
+	mgdl_DrawText("Henlo!", 100, 300 + sin(mgdl_GetElapsedSeconds() * 2) * 130,  64, Debug_Yellow);
 }
 void Quad(
-    vec3 A,
-    vec3 B,
-    vec3 C,
-    vec3 D)
+    Vector3 A,
+    Vector3 B,
+    Vector3 C,
+    Vector3 D)
 {
 	// bottom
 	glVertex3f(A.x, A.y, A.z);
@@ -103,15 +108,15 @@ void effect_3d(float deltatime)
 
 	float size = 1.0f;
 	float hs = size/2.0f;
-	vec3 bl = vec3New(-hs, -hs, -hs);
-	vec3 br = vec3New( hs, -hs, -hs);
-	vec3 fl = vec3New(-hs, -hs,  hs);
-	vec3 fr = vec3New( hs, -hs,  hs);
+	Vector3 bl = Vector3New(-hs, -hs, -hs);
+	Vector3 br = Vector3New( hs, -hs, -hs);
+	Vector3 fl = Vector3New(-hs, -hs,  hs);
+	Vector3 fr = Vector3New( hs, -hs,  hs);
 
-	vec3 tbl = vec3New(-hs, hs, -hs); // top back left
-	vec3 tbr = vec3New( hs, hs, -hs); // top back right
-	vec3 tfl = vec3New(-hs, hs, hs); //  top forward left
-	vec3 tfr = vec3New( hs, hs, hs);
+	Vector3 tbl = Vector3New(-hs, hs, -hs); // top back left
+	Vector3 tbr = Vector3New( hs, hs, -hs); // top back right
+	Vector3 tfl = Vector3New(-hs, hs, hs); //  top forward left
+	Vector3 tfr = Vector3New( hs, hs, hs);
 
 	glBegin(GL_QUADS);
 		// left side

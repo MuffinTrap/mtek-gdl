@@ -1,6 +1,23 @@
 
 #include <mgdl/mgdl-vectorfunctions.h>
 
+Vector2 Vector2New(float px, float py)
+{
+	Vector2 v;
+	v.x = px;
+	v.y = py;
+	return v;
+}
+
+Vector3 Vector3New(float px, float py, float pz)
+{
+	Vector3 v;
+	v.x = px;
+	v.y = py;
+	v.z = pz;
+	return v;
+}
+
 #ifdef MGDL_USE_CCVECTOR
 V3f V3f_RotateYFunc(V3f p, float angle) {
 	float xt = p.x*cos(angle) - p.z*sin(angle);
