@@ -12,12 +12,11 @@ INSTALL_DIR = $(HOME)/libmgdl
 # Link everything statically
 ifdef DEBUG
 CXXFLAGS += -g
+CXXFLAGS += -DMGDL_DEBUG
 else
 CXXFLAGS += -O3
 endif
 CXXFLAGS += -Werror=unused-function -Wall -Wextra -Wpedantic -std=c++11 -static
-# Vector library
-CXXFLAGS	+= -DMGDL_USE_CCVECTOR
 
 # Position independent code
 CXXFLAGS += -fPIC

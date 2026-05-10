@@ -46,20 +46,20 @@ static void GetCorners(float xOffset, float start, float height, float* cornersO
 	width = clampF(width, 0.0f, 1.0f);
 
 	// The lean needs to be the same regardless of segment height
-	vec2 AreaTopLeft = vec2New(xOffset + lean, areaTop);
-	vec2 AreaBottomLeft = vec2New(xOffset, areaBottom);
+	Vector2 AreaTopLeft = Vector2New(xOffset + lean, areaTop);
+	Vector2 AreaBottomLeft = Vector2New(xOffset, areaBottom);
 
-	vec2 downwards = vec2Add(AreaBottomLeft, vec2Negate(AreaTopLeft));
+	Vector2 downwards = Vector2Add(AreaBottomLeft, Vector2Negate(AreaTopLeft));
 	// Lean vector points left and down
-	vec2 D = vec2Normalize(downwards);
+	Vector2 D = Vector2Normalize(downwards);
 
 	// From area top left go down until segment starts
-	vec2 tl = vec2Add(AreaTopLeft, vec2Multiply(D, (float)(start * lineHeight)));
+	Vector2 tl = Vector2Add(AreaTopLeft, Vector2Scale(D, (float)(start * lineHeight)));
 	cornersOut[0] = tl.x;
 	cornersOut[1] = tl.y;
 
 	// From segment start go down * height
-	vec2 bl = vec2Add(tl, vec2Multiply(D, (float)(height * lineHeight)));
+	Vector2 bl = Vector2Add(tl, Vector2Scale(D, (float)(height * lineHeight)));
 	cornersOut[2] = bl.x;
 	cornersOut[3] = bl.y;
 

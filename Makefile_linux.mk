@@ -11,9 +11,6 @@ CXXFLAGS += -DMGDL_PLATFORM=\"Linux\"
 
 .PHONY: all clean install debug
 
-debug: CXXFLAGS += -DMGDL_DEBUG
-debug: all
-
 all : $(ARC)
 
 $(ARC): $(OFILES)
@@ -45,9 +42,6 @@ install: $(ARC)
 # UFBX library
 	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/ufbx
 	@cp $(UFBX_HDR) $(INSTALL_DIR)/include/$(LIB)/ufbx
-# ccVector library
-	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/ccVector
-	@cp $(CCVEC_HDR) $(INSTALL_DIR)/include/$(LIB)/ccVector
 # random generation library
 	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/wflcg
 	@cp $(RANDOM_HDR) $(INSTALL_DIR)/include/$(LIB)/wflcg

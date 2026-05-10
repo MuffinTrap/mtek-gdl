@@ -59,7 +59,7 @@ extern "C"
 		* @param scale Scaling of the image. Scale of 1.0 does not alter the size. Negative scale does not flip the image.
 		*/
 	void Texture_Draw(Texture* img, float x, float y, float scale);
-	void Texture_DrawV(Texture* img, vec2 lowerLeft, float scale);
+	void Texture_DrawV(Texture* img, Vector2 lowerLeft, float scale);
 
 	/**
 		* @brief Draws the image using 2D vertices.

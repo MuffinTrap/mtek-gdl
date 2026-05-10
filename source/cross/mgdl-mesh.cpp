@@ -133,9 +133,9 @@ void Mesh_DrawLines(Mesh* mesh)
 	glDisableClientState(GL_VERTEX_ARRAY);
 	for (GLsizei i = 0; i < mesh->indexCount; i+=3)
 	{
-		V3f a = Mesh_GetPosition(mesh, i);
-		V3f b = Mesh_GetPosition(mesh, i+1);
-		V3f c = Mesh_GetPosition(mesh, i+2);
+		Vector3 a = Mesh_GetPosition(mesh, i);
+		Vector3 b = Mesh_GetPosition(mesh, i+1);
+		Vector3 c = Mesh_GetPosition(mesh, i+2);
 		glBegin(GL_LINE_LOOP);
 			glVertex3f(a.x, a.y, a.z);
 			glVertex3f(b.x, b.y, b.z);
@@ -150,26 +150,26 @@ void Mesh_DrawNormals(Mesh* mesh)
 	glBegin(GL_LINES);
 	for (GLsizei i = 0; i < mesh->indexCount; i++)
 	{
-		V3f n = Mesh_GetNormal(mesh, i);
-		V3f a = Mesh_GetPosition(mesh, i);
+		Vector3 n = Mesh_GetNormal(mesh, i);
+		Vector3 a = Mesh_GetPosition(mesh, i);
 		glVertex3f(a.x, a.y, a.z);
 		glVertex3f(a.x + n.x, a.y + n.y, a.z + n.z);
 	}
 	glEnd();
 }
 
-void Mesh_CalculateMatcapUVs(Mesh* mesh, mat4x4 modelViewMatrix, mat4x4 normalMatrix)
+void Mesh_CalculateMatcapUVs(Mesh* mesh, Matrix modelViewMatrix, Matrix normalMatrix)
 {
 	// This calculation happens in screen space
 
-	V3f eye;
-	V3f normal; // screen space normalo
-	vec4 normal4;
-	V3f reflection;
-	vec2 R2;
-	V3f position;
-	vec4 position4;
-	vec2 matcapUV;
+	Vector3 eye;
+	Vector3 normal; // screen space normalo
+	Vector4 normal4;
+	Vector3 reflection;
+	Vector2 R2;
+	Vector3 position;
+	Vector4 position4;
+	Vector2 matcapUV;
 
 	// Overwrite UVs
 	for (sizetype i = 0; i < mesh->vertexCount; i++)
@@ -178,84 +178,84 @@ void Mesh_CalculateMatcapUVs(Mesh* mesh, mat4x4 modelViewMatrix, mat4x4 normalMa
 		normal = Mesh_GetNormalFromArray(mesh, i);
 	}
 
-	const vec2 half = V2f_Create(0.5f, 0.5f);
+	const Vector2 half = Vector2New(0.5f, 0.5f);
 	for (sizetype i = 0; i < mesh->vertexCount; i++)
 	{
 		position = Mesh_GetPositionFromArray(mesh, i);
 		normal = Mesh_GetNormalFromArray(mesh, i);
 
-		normal4 = vec4New(normal.x, normal.y, normal.z, 0.0f);
-		position4 = vec4New(position.x, position.y, position.z, 1.0f);
-		MTX4x4_MultiplyVector(modelViewMatrix, position4, position4);
-		position = position4.xyz;
-		matcapUV = V2f_Create(0.5f, 0.5f);
-		if (V3f_Length(position) != 0.0f)
-		{
-			V3f_Normalize(position, eye);
-			MTX4x4_MultiplyVector(normalMatrix, normal4, normal4);
-			V3f_FromV4f_xyz(normal4, normal);
-			V3f_Normalize(normal, normal);
+		normal4 = Vector4New(normal.x, normal.y, normal.z, 0.0f);
+		position4 = Vector4New(position.x, position.y, position.z, 1.0f);
 
-			V3f_Reflect(normal, eye, reflection);// Reflect eye with normal
+		position = Vector3Transform(position, modelViewMatrix);
+
+		matcapUV = Vector2New(0.5f, 0.5f);
+		if (Vector3Length(position) != 0.0f)
+		{
+			eye = Vector3Normalize(position);
+			normal = Vector3Transform(normal, normalMatrix);
+			normal = Vector3Normalize(normal);
+
+			reflection = Vector3Reflect(normal, eye);// Reflect eye with normal
 
 			const float rx2 = pow(reflection.x, 2.0f);
 			const float ry2 = pow(reflection.y, 2.0f);
 			const float rz12 = pow(reflection.z+1, 2.0f);
 			const float sqrtR2 = sqrt(rx2 + ry2 + rz12) * 2.0f;
-			R2 = reflection.xy;
-			V2f_Add( V2f_Create(R2.x/sqrtR2, R2.y/sqrtR2), half, matcapUV);
+			R2 = Vector2New(reflection.x, reflection.y);
+			matcapUV = Vector2Add( Vector2New(R2.x/sqrtR2, R2.y/sqrtR2), half);
 		}
 		Mesh_SetUVToArray(mesh, i, matcapUV);
 	}
 }
 
-GLushort Mesh_AddPosition(Mesh* mesh, V3f position)
+GLushort Mesh_AddPosition(Mesh* mesh, Vector3 position)
 {
 	if (mesh->indexCounter < mesh->vertexCount)
 	{
 		GLushort i = mesh->indexCounter * 3;
-		mesh->positions[i+0] = V3f_X(position);
-		mesh->positions[i+1] = V3f_Y(position);
-		mesh->positions[i+2] = V3f_Z(position);
+		mesh->positions[i+0] = Vector3_X(position);
+		mesh->positions[i+1] = Vector3_Y(position);
+		mesh->positions[i+2] = Vector3_Z(position);
 	}
 	GLushort last = mesh->indexCounter;
 	mesh->indexCounter += 1;
 	return last;
 }
 
-void Mesh_AddNormal(Mesh* mesh, V3f normal)
+void Mesh_AddNormal(Mesh* mesh, Vector3 normal)
 {
 	GLushort index = mesh->indexCounter - 1;
 	if (index < mesh->vertexCount)
 	{
 		GLushort i = index * 3;
-		mesh->normals[i+0] = V3f_X(normal);
-		mesh->normals[i+1] = V3f_Y(normal);
-		mesh->normals[i+2] = V3f_Z(normal);
+		mesh->normals[i+0] = Vector3_X(normal);
+		mesh->normals[i+1] = Vector3_Y(normal);
+		mesh->normals[i+2] = Vector3_Z(normal);
 	}
 }
 
-void Mesh_AddUV(Mesh* mesh, vec2 uv)
+void Mesh_AddUV(Mesh* mesh, Vector2 uv)
 {
 
 	GLushort index = mesh->indexCounter - 1;
 	if (index < mesh->vertexCount)
 	{
 		GLushort i = index * 2;
-		mesh->uvs[i+0] = V3f_X(uv);
-		mesh->uvs[i+1] = V3f_Y(uv);
+		mesh->uvs[i+0] = Vector3_X(uv);
+		mesh->uvs[i+1] = Vector3_Y(uv);
 	}
 }
 
-void Mesh_AddColor(Mesh* mesh, V3f color)
+void Mesh_AddColor(Mesh* mesh, Vector3 color)
 {
 	GLushort index = mesh->indexCounter - 1;
 	if (index < mesh->vertexCount)
 	{
 		GLushort i = index * 3;
-		mesh->colors[i+0] = V3f_X(color);
-		mesh->colors[i+1] = V3f_Y(color);
-		mesh->colors[i+2] = V3f_Z(color);
+		mesh->colors[i+0] = Vector3_X(color);
+		mesh->colors[i+1] = Vector3_Y(color);
+		mesh->colors[i+2] = Vector3_Z(color);
 	}
 }
 
@@ -269,7 +269,7 @@ u32 Mesh_AddTriangle(Mesh* mesh, GLushort indexA, GLushort indexB, GLushort inde
 }
 
 // This is a drawing index, not an array index
-V3f Mesh_GetPosition ( Mesh* mesh, GLushort index )
+Vector3 Mesh_GetPosition ( Mesh* mesh, GLushort index )
 {
 	if (index < mesh->indexCount)
 	{
@@ -277,13 +277,13 @@ V3f Mesh_GetPosition ( Mesh* mesh, GLushort index )
 		GLushort position = mesh->indices[index];
 		// Get the index to float array
 		sizetype i = position * 3;
-		return V3f_Create(mesh->positions[i+0], mesh->positions[i+1], mesh->positions[i+2]);
+		return Vector3New(mesh->positions[i+0], mesh->positions[i+1], mesh->positions[i+2]);
 	}
 	Log_ErrorF("No such index! %d > %d\n", index, mesh->indexCount);
-	return V3f_Create(0.0f, 0.0f, 0.0f);
+	return Vector3New(0.0f, 0.0f, 0.0f);
 }
 
-V3f Mesh_GetNormal (Mesh* mesh, GLushort index )
+Vector3 Mesh_GetNormal (Mesh* mesh, GLushort index )
 {
 	if (index < mesh->indexCount)
 	{
@@ -291,21 +291,21 @@ V3f Mesh_GetNormal (Mesh* mesh, GLushort index )
 		GLushort position = mesh->indices[index];
 		// Get the index to float array
 		sizetype i = position * 3;
-		return V3f_Create(mesh->normals[i+0], mesh->normals[i+1], mesh->normals[i+2]);
+		return Vector3New(mesh->normals[i+0], mesh->normals[i+1], mesh->normals[i+2]);
 	}
 	Log_ErrorF("No such index! %d > %d\n", index, mesh->indexCount);
-	return V3f_Create(0.0f, 0.0f, 0.0f);
+	return Vector3New(0.0f, 0.0f, 0.0f);
 }
 
 
-void Mesh_SetNormalToArray ( Mesh* mesh,sizetype index, V3f normal )
+void Mesh_SetNormalToArray ( Mesh* mesh,sizetype index, Vector3 normal )
 {
 	if (index < mesh->vertexCount)
 	{
 		sizetype vi = index * 3;
-		mesh->normals[vi+0] = V3f_X(normal);
-		mesh->normals[vi+1] = V3f_Y(normal);
-		mesh->normals[vi+2] = V3f_Z(normal);
+		mesh->normals[vi+0] = Vector3_X(normal);
+		mesh->normals[vi+1] = Vector3_Y(normal);
+		mesh->normals[vi+2] = Vector3_Z(normal);
 	}
 }
 
@@ -322,7 +322,7 @@ bool Mesh_GetTriangleIndices (Mesh* mesh, GLsizei triangleIndex, GLushort* outA,
 	return false;
 }
 
-void Mesh_SetUVToArray (Mesh* mesh, sizetype index, vec2 uv )
+void Mesh_SetUVToArray (Mesh* mesh, sizetype index, Vector2 uv )
 {
 	if (mesh->uvs != nullptr)
 	{
@@ -338,25 +338,25 @@ void Mesh_SetDrawingIndex ( Mesh* mesh, sizetype index, GLushort drawIndex )
 }
 
 
-V3f Mesh_GetPositionFromArray(Mesh* mesh,sizetype index)
+Vector3 Mesh_GetPositionFromArray(Mesh* mesh,sizetype index)
 {
 	if (index < mesh->vertexCount)
 	{
 		sizetype vi = index * 3;
-		return V3f_Create(mesh->positions[vi+0], mesh->positions[vi+1], mesh->positions[vi+2]);
+		return Vector3New(mesh->positions[vi+0], mesh->positions[vi+1], mesh->positions[vi+2]);
 	}
 	Log_ErrorF("index %zu > %u vertexCount!\n", index, mesh->vertexCount);
-	return V3f_Create(0.0f, 0.0f, 0.0f);
+	return Vector3New(0.0f, 0.0f, 0.0f);
 }
-V3f Mesh_GetNormalFromArray(Mesh* mesh,sizetype index)
+Vector3 Mesh_GetNormalFromArray(Mesh* mesh,sizetype index)
 {
 	if (index < mesh->vertexCount)
 	{
 		sizetype vi = index * 3;
-		return V3f_Create(mesh->normals[vi+0], mesh->normals[vi+1], mesh->normals[vi+2]);
+		return Vector3New(mesh->normals[vi+0], mesh->normals[vi+1], mesh->normals[vi+2]);
 	}
 	Log_ErrorF("index %zu > %u vertexCount!\n", index, mesh->vertexCount);
-	return V3f_Create(0.0f, 1.0f, 0.0f);
+	return Vector3New(0.0f, 1.0f, 0.0f);
 }
 
 // Mesh creation functions
@@ -419,8 +419,8 @@ void Mesh_DebugPrint(Mesh* mesh)
 	Log_Info("\n");
 	for (sizetype i = 0; i < mesh->vertexCount; i++)
 	{
-		V3f pos = Mesh_GetPositionFromArray(mesh, i);
-		V3f normal = Mesh_GetNormalFromArray(mesh, i);
+		Vector3 pos = Mesh_GetPositionFromArray(mesh, i);
+		Vector3 normal = Mesh_GetNormalFromArray(mesh, i);
 		Log_InfoF("%zu: Pos %.2f, %.2f, %.2f\tN %.2f, %.2f, %.2f\n", i, pos.x, pos.y, pos.z, normal.x, normal.y, normal.z);
 	}
 }
@@ -451,10 +451,10 @@ Mesh * Mesh_CreateQuad (u32 creationFlags)
 
 	if (Flag_IsSet(creationFlags, FlagUVs))
 	{
-		Mesh_SetUVToArray(quad, 0, vec2New(0.0f, 0.0f));
-		Mesh_SetUVToArray(quad, 1, vec2New(1.0f, 0.0f));
-		Mesh_SetUVToArray(quad, 2, vec2New(1.0f, 1.0f));
-		Mesh_SetUVToArray(quad, 3, vec2New(0.0f, 1.0f));
+		Mesh_SetUVToArray(quad, 0, Vector2New(0.0f, 0.0f));
+		Mesh_SetUVToArray(quad, 1, Vector2New(1.0f, 0.0f));
+		Mesh_SetUVToArray(quad, 2, Vector2New(1.0f, 1.0f));
+		Mesh_SetUVToArray(quad, 3, Vector2New(0.0f, 1.0f));
 	}
 
 	quad->indices[0] = 0;
@@ -473,7 +473,7 @@ Mesh* CreateStar(float centerThickness, float pointRadius, float sharpness, int 
 {
 	Mesh* star = new Mesh();
 	Mesh_Init(star, 1 + pointAmount * 3, pointAmount * 6, creationFlags);
-	V3f point = V3f_Create(1.0f, 0.0f, 0.0f);
+	Vector3 point = Vector3New(1.0f, 0.0f, 0.0f);
 	float pointAngle = M_PI*2/(float)pointAmount;
 	float halfAngle = pointAngle/2.0f;
 	float baseRadius = pointRadius * (1.0f-sharpness);
@@ -491,7 +491,7 @@ Mesh* CreateStar(float centerThickness, float pointRadius, float sharpness, int 
 
 	for (int side = 0; side < sides; side++)
 	{
-		V3f topCenter = V3f_Create(0, centerThickness * -1.0f * side, 0);
+		Vector3 topCenter = Vector3New(0, centerThickness * -1.0f * side, 0);
 		GLushort top_center = Mesh_AddPosition(star, topCenter);
         for (int p = 0; p < pointAmount; p++)
         {
@@ -499,15 +499,15 @@ Mesh* CreateStar(float centerThickness, float pointRadius, float sharpness, int 
 			// Front side : side == 0
 			// Back side  : side == 1
             // Front side is facing Z axis
-            V3f baseRot1 ; V3f_RotateZ(point, pointAngle * (p + side), baseRot1);
-            V3f baseRot2 ; V3f_RotateZ(point, pointAngle * (p + 1 - side), baseRot2);
-            V3f pointRot ; V3f_RotateZ(point, pointAngle * p + halfAngle, pointRot);
+            Vector3 baseRot1 = Vector3RotateZ(point, pointAngle * (p + side));
+            Vector3 baseRot2 = Vector3RotateZ(point, pointAngle * (p + 1 - side));
+            Vector3 pointRot = Vector3RotateZ(point, pointAngle * p + halfAngle);
 
-            V3f rimPoint   ; V3f_Scale(pointRot, pointRadius, rimPoint);
-            V3f basePoint1 ; V3f_Scale(baseRot1 , baseRadius, basePoint1);
-            V3f basePoint2 ; V3f_Scale(baseRot2 , baseRadius, basePoint2);
+            Vector3 rimPoint   = Vector3Scale(pointRot, pointRadius);
+            Vector3 basePoint1 = Vector3Scale(baseRot1 , baseRadius);
+            Vector3 basePoint2 = Vector3Scale(baseRot2 , baseRadius);
 
-            // V3f normal1 = CalculateTriangleNormal(basePoint1, topCenter, rimPoint);
+            // Vector3 normal1 = CalculateTriangleNormal(basePoint1, topCenter, rimPoint);
             GLushort rim =   Mesh_AddPosition(star, rimPoint);
             GLushort base1 = Mesh_AddPosition(star, basePoint1);
             GLushort base2 = Mesh_AddPosition(star, basePoint2);
@@ -526,7 +526,7 @@ void Mesh_DrawStarBorder(float borderThickness, float pointRadius, float sharpne
 	float baseRadius = pointRadius * ratio;
 	//////////////////////////////////////////
 
-	V3f point = V3f_Create(1.0f, 0.0f, 0.0f);
+	Vector3 point = Vector3New(1.0f, 0.0f, 0.0f);
 	float fifth = (M_PI*2.0f)/(float)pointAmount;
 	float tenth = fifth/2.0f;
 
@@ -537,19 +537,19 @@ void Mesh_DrawStarBorder(float borderThickness, float pointRadius, float sharpne
 	for (int p = 0; p < pointAmount; p++)
 	{
 		// star is facing Z axis
-		V3f baseRot1;  V3f_RotateZ(point, fifth * p, baseRot1);
-		V3f baseRot2;  V3f_RotateZ(point, fifth * (p+1), baseRot2);
-		V3f pointRot;  V3f_RotateZ(point, fifth * p + tenth, pointRot);
+		Vector3 baseRot1=  Vector3RotateZ(point, fifth * p);
+		Vector3 baseRot2=  Vector3RotateZ(point, fifth * (p+1));
+		Vector3 pointRot=  Vector3RotateZ(point, fifth * p + tenth);
 
 		// Inner points
-		V3f rimPointI ;   V3f_Scale(pointRot, pointRadius - borderThickness, rimPointI);
-		V3f basePoint1I ; V3f_Scale(baseRot1 , baseRadius - borderThickness * fixRatio, basePoint1I);
-		V3f basePoint2I ; V3f_Scale(baseRot2 , baseRadius - borderThickness * fixRatio, basePoint2I);
+		Vector3 rimPointI =   Vector3Scale(pointRot, pointRadius - borderThickness);
+		Vector3 basePoint1I = Vector3Scale(baseRot1 , baseRadius - borderThickness * fixRatio);
+		Vector3 basePoint2I = Vector3Scale(baseRot2 , baseRadius - borderThickness * fixRatio);
 
 		// Outer points
-		V3f rimPointO ;   V3f_Scale(pointRot, pointRadius, rimPointO);
-		V3f basePoint1O ; V3f_Scale(baseRot1 , baseRadius, basePoint1O);
-		V3f basePoint2O ; V3f_Scale(baseRot2 , baseRadius, basePoint2O);
+		Vector3 rimPointO =   Vector3Scale(pointRot, pointRadius);
+		Vector3 basePoint1O = Vector3Scale(baseRot1 , baseRadius);
+		Vector3 basePoint2O = Vector3Scale(baseRot2 , baseRadius);
 
 		/*
 		GLushort rim_in =    Mesh_AddPosition(mesh, rimPointI);
@@ -586,7 +586,7 @@ Mesh* Mesh_CreateStarBorder(float borderThickness, float pointRadius, float shar
 
 	Mesh_Init(mesh, pointAmount * 6, 12 * pointAmount, creationFlags);
 
-	V3f point = V3f_Create(1.0f, 0.0f, 0.0f);
+	Vector3 point = Vector3New(1.0f, 0.0f, 0.0f);
 	float fifth = M_PI*2.0f/(float)pointAmount;
 	float tenth = fifth/2.0f;
 
@@ -596,19 +596,19 @@ Mesh* Mesh_CreateStarBorder(float borderThickness, float pointRadius, float shar
 	for (int p = 0; p < pointAmount; p++)
 	{
 		// star is facing Z axis
-		V3f baseRot1;  V3f_RotateZ(point, fifth * p, baseRot1);
-		V3f baseRot2;  V3f_RotateZ(point, fifth * (p+1), baseRot2);
-		V3f pointRot;  V3f_RotateZ(point, fifth * p + tenth, pointRot);
+		Vector3 baseRot1=  Vector3RotateZ(point, fifth * p);
+		Vector3 baseRot2=  Vector3RotateZ(point, fifth * (p+1));
+		Vector3 pointRot=  Vector3RotateZ(point, fifth * p + tenth);
 
 		// Inner points
-		V3f rimPointI ;   V3f_Scale(pointRot, pointRadius - borderThickness, rimPointI);
-		V3f basePoint1I ; V3f_Scale(baseRot1 , baseRadius - borderThickness * fixRatio, basePoint1I);
-		V3f basePoint2I ; V3f_Scale(baseRot2 , baseRadius - borderThickness * fixRatio, basePoint2I);
+		Vector3 rimPointI =   Vector3Scale(pointRot, pointRadius - borderThickness);
+		Vector3 basePoint1I = Vector3Scale(baseRot1 , baseRadius - borderThickness * fixRatio);
+		Vector3 basePoint2I = Vector3Scale(baseRot2 , baseRadius - borderThickness * fixRatio);
 
 		// Outer points
-		V3f rimPointO ;   V3f_Scale(pointRot, pointRadius, rimPointO);
-		V3f basePoint1O ; V3f_Scale(baseRot1 , baseRadius, basePoint1O);
-		V3f basePoint2O ; V3f_Scale(baseRot2 , baseRadius, basePoint2O);
+		Vector3 rimPointO =   Vector3Scale(pointRot, pointRadius);
+		Vector3 basePoint1O = Vector3Scale(baseRot1 , baseRadius);
+		Vector3 basePoint2O = Vector3Scale(baseRot2 , baseRadius);
 
 		GLushort rim_in =    Mesh_AddPosition(mesh, rimPointI);
 		GLushort base1_in =  Mesh_AddPosition(mesh, basePoint1I);

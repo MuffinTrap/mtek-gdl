@@ -77,8 +77,8 @@ bool m_FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short 
 	mgdl_assert_print(n != nullptr, "Could not create new Node");
 
 	Node_SetTransform(n, node->name.data,
-								 V3f_Create(t.x, t.y, t.z),
-								 V3f_Create(r.x, r.y, r.z));
+								 Vector3New(t.x, t.y, t.z),
+								 Vector3New(r.x, r.y, r.z));
 
 	Indent(depth);
 	if (node->mesh != nullptr)

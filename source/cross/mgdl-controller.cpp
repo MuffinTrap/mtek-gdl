@@ -91,19 +91,19 @@ bool WiiController_ButtonHeld(WiiController* controller, u32 buttonEnum) {
 	return Flag_IsSet(controller->m_heldButtons, buttonEnum);
 }
 
-vec2 WiiController_GetCursorPosition(WiiController* controller) {
+Vector2 WiiController_GetCursorPosition(WiiController* controller) {
 	ASSERT_DEBUG(controller != nullptr);
 
-	vec2 d;
+	Vector2 d;
 	d.x = controller->m_cursorX;
 	d.y = controller->m_cursorY;
 	return d;
 }
 
-vec2 WiiController_GetNunchukJoystickDirection(WiiController* controller)
+Vector2 WiiController_GetNunchukJoystickDirection(WiiController* controller)
 {
 	ASSERT_DEBUG(controller != nullptr);
-	vec2 d;
+	Vector2 d;
 	d.x = controller->m_nunchukJoystickDirectionX;
 	d.y = controller->m_nunchukJoystickDirectionY;
 	return d;

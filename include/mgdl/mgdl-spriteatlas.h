@@ -16,7 +16,7 @@ struct Texture;
  */
 struct SpriteAtlas
 {
-	vec2 *uvList;
+	Vector2 *uvList;
 	float uvWidth;
 	float uvHeight;
 	union
@@ -167,9 +167,9 @@ void SpriteAtlas_CreateTextureCoordList(SpriteAtlas* font, short rows, short cha
 void SpriteAtlas_CreateTextureCoordListSelective(SpriteAtlas* font, short rows, short charactersPerRow, short texW, short texH, const char* characters);
 
 void SpriteAtlas_CreateCoordinatesForGlyph(SpriteAtlas* font, u32 textureIndex, short cx, short cy, short texW, short texH);
-vec2 SpriteAtlas_GetTextureCoordinateChar(SpriteAtlas* font, char character);
-vec2 SpriteAtlas_GetTextureCoordinateSprite(SpriteAtlas* font, short sprite);
-vec2 DefaultFont_GetTextureCoordinateGlyph(IconSymbol glyph);
+Vector2 SpriteAtlas_GetTextureCoordinateChar(SpriteAtlas* font, char character);
+Vector2 SpriteAtlas_GetTextureCoordinateSprite(SpriteAtlas* font, short sprite);
+Vector2 DefaultFont_GetTextureCoordinateGlyph(IconSymbol glyph);
 
 #ifdef __cplusplus
 }

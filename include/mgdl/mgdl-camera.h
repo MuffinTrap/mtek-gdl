@@ -12,11 +12,11 @@
 
 struct Camera
 {
-	V3f target;
-	V3f position;
-	V3f up;
-	V3f rotations;
-	V3f direction;
+	Vector3 target;
+	Vector3 position;
+	Vector3 up;
+	Vector3 rotations;
+	Vector3 direction;
 
 	float fovY;
 	float nearZ;
@@ -40,11 +40,11 @@ void Camera_Apply(Camera* camera);
 void Camera_DrawThirdsGuide(Camera* camera);
 void Camera_DrawOverlayColor(Camera* camera, color32 color, float opacity);
 
-void Camera_SetPositionV(Camera* camera, V3f position);
+void Camera_SetPositionV(Camera* camera, Vector3 position);
 void Camera_SetPosition(Camera* camera, float x, float y, float z);
-void Camera_SetRotationsV(Camera* camera, V3f rotations);
+void Camera_SetRotationsV(Camera* camera, Vector3 rotations);
 void Camera_SetRotations(Camera* camera, float pitch, float yaw, float roll);
-void Camera_SetDirection(Camera* camera, vec3 direction);
+void Camera_SetDirection(Camera* camera, Vector3 direction);
 
 void Camera_SetMode(Camera* camera, CameraMode mode);
 

@@ -36,7 +36,7 @@ struct Menu
     // Input state
     bool buttonPress;
     bool buttonHeld;
-    vec2 cursorPosition;
+    Vector2 cursorPosition;
 
     // Colors
     color32 bg; /**< Background color of elements. */
@@ -118,7 +118,7 @@ extern "C"
      * @param cursorX cursorPosition Position of the cursor on the screen in pixels.
      * @param buttonPress Is the button pressed on this frame.
      */
-    void Menu_StartInput(Menu* menu, short x, short y, short width, vec2 cursorPosition, bool buttonPress, bool buttonHeld);
+    void Menu_StartInput(Menu* menu, short x, short y, short width, Vector2 cursorPosition, bool buttonPress, bool buttonHeld);
 
     /**
      * @brief Starts the menu from given position and uses default inputs

@@ -36,19 +36,19 @@ extern "C"
     void mgdl_glColor32a(color32 color, float alpha);
     void mgdl_glClearColor32(color32 color);
 
-    void mgdl_glVertexV3F(V3f);
-    void mgdl_glVertexV3F_xy(V3f);
+    void mgdl_glVertexV3F(Vector3);
+    void mgdl_glVertexV3F_xy(Vector3);
 
-    void mgdl_glTriangleV3F(V3f a, V3f b, V3f c);
-    void mgdl_glTriangleV3F_xy(V3f a, V3f b, V3f c);
+    void mgdl_glTriangleV3F(Vector3 a, Vector3 b, Vector3 c);
+    void mgdl_glTriangleV3F_xy(Vector3 a, Vector3 b, Vector3 c);
 
     void mgdl_SetFaceCulling(bool enabled);
 
     void mgdl_SetDepthTest(bool enabled);
 
-    V3f mgdl_GetGLWorldForward();
-    V3f mgdl_GetGLWorldUp();
-    V3f mgdl_GetGLWorldRight();
+    Vector3 mgdl_GetGLWorldForward();
+    Vector3 mgdl_GetGLWorldUp();
+    Vector3 mgdl_GetGLWorldRight();
 
 
     // Light status
@@ -62,7 +62,7 @@ extern "C"
 * @details Without this setup the Dolphin is all messed up with the rendering.
 * @note Must have gluLookAt for anything to be visible on Wii when using OpenGX.
 */
-void mgdl_InitCamera(V3f cameraPos, V3f cameraTarget, V3f cameraUp);
+void mgdl_InitCamera(Vector3 cameraPos, Vector3 cameraTarget, Vector3 cameraUp);
 
 #ifdef __cplusplus
 }

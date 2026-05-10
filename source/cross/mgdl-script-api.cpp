@@ -82,7 +82,7 @@ void mgdl_DrawTexture(TextureHandle handle, float x, float y)
 	Texture_Draw(tex, x, y, 1.0f);
 }
 
-void mgdl_DrawTextureV(TextureHandle handle, vec2 position)
+void mgdl_DrawTextureV(TextureHandle handle, Vector2 position)
 {
 	mgdl_DrawTexture(handle, position.x, position.y);
 }

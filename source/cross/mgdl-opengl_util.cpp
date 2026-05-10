@@ -7,9 +7,9 @@ static bool lightingEnabled_ = false;
 static bool lightsOn_[8] = {false, false, false, false,
 							false, false, false, false};
 
-static const V3f FORWARD = V3f_Create(0, 0, -1);
-static const V3f UP = V3f_Create(0, 1, 0);
-static const V3f RIGHT = V3f_Create(1, 0, 0);
+static const Vector3 FORWARD = Vector3New(0, 0, -1);
+static const Vector3 UP = Vector3New(0, 1, 0);
+static const Vector3 RIGHT = Vector3New(1, 0, 0);
 
 void mgdl_glClear(GLbitfield flags)
 {
@@ -52,7 +52,7 @@ void mgdl_InitOrthoProjection()
 	glTranslatef(0.375f, 0.375f, 0.0f);
 }
 
-void mgdl_InitCamera(V3f cameraPos, V3f cameraTarget, V3f cameraUp)
+void mgdl_InitCamera(Vector3 cameraPos, Vector3 cameraTarget, Vector3 cameraUp)
 {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -182,39 +182,39 @@ void mgdl_glClearColor32(color32 color)
 	glClearColor(REDf(color), GREENf(color), BLUEf(color), ALPHAf(color));
 }
 
-void mgdl_glVertexV3F(V3f position)
+void mgdl_glVertexV3F(Vector3 position)
 {
-	glVertex3f(V3f_X(position), V3f_Y(position), V3f_Z(position));
+	glVertex3f(Vector3_X(position), Vector3_Y(position), Vector3_Z(position));
 }
 
-void mgdl_glVertexV3F_xy(V3f position)
+void mgdl_glVertexV3F_xy(Vector3 position)
 {
-	glVertex2f(V3f_X(position), V3f_Y(position));
+	glVertex2f(Vector3_X(position), Vector3_Y(position));
 }
 
-void mgdl_glTriangleV3F_xy(V3f a, V3f b, V3f c)
+void mgdl_glTriangleV3F_xy(Vector3 a, Vector3 b, Vector3 c)
 {
 	mgdl_glVertexV3F_xy(a);
 	mgdl_glVertexV3F_xy(b);
 	mgdl_glVertexV3F_xy(c);
 }
 
-void mgdl_glTriangleV3F(V3f a, V3f b, V3f c)
+void mgdl_glTriangleV3F(Vector3 a, Vector3 b, Vector3 c)
 {
 	mgdl_glVertexV3F(a);
 	mgdl_glVertexV3F(b);
 	mgdl_glVertexV3F(c);
 }
 
-V3f mgdl_GetGLWorldForward()
+Vector3 mgdl_GetGLWorldForward()
 {
 	return FORWARD;
 }
-V3f mgdl_GetGLWorldUp()
+Vector3 mgdl_GetGLWorldUp()
 {
 	return UP;
 }
-V3f mgdl_GetGLWorldRight()
+Vector3 mgdl_GetGLWorldRight()
 {
 	return RIGHT;
 }

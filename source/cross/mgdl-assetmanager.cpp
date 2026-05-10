@@ -105,7 +105,7 @@ PaletteAsset AssetManager_CreatePaletteAsset(Palette* data, const char* filename
 void AssetManager_LoadFont(AssetManager* manager, Texture* texture)
 {
 	ASSERT_DEBUG(texture != nullptr);
-	manager->m_memoryInUse += texture->spriteAtlas->characterCount * sizeof(vec2);
+	manager->m_memoryInUse += texture->spriteAtlas->characterCount * sizeof(Vector2);
 }
 
 TextureHandle AssetManager_LoadTexture(const char* filename)

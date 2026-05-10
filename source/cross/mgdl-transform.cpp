@@ -2,13 +2,13 @@
 
 Transform* Transform_CreateZero()
 {
-	V3f position = V3f_Create(0.0f, 0.0f, 0.0f);
-	V3f rotationDegrees = V3f_Create(0.0f, 0.0f, 0.0f);
-	V3f scale = V3f_Create(1.0f, 1.0f, 1.0f);
+	Vector3 position = Vector3New(0.0f, 0.0f, 0.0f);
+	Vector3 rotationDegrees = Vector3New(0.0f, 0.0f, 0.0f);
+	Vector3 scale = Vector3New(1.0f, 1.0f, 1.0f);
 	return Transform_Create(position, rotationDegrees, scale);
 }
 
-Transform* Transform_Create(V3f position, V3f rotationDegrees, V3f scale)
+Transform* Transform_Create(Vector3 position, Vector3 rotationDegrees, Vector3 scale)
 {
 	Transform* transform = (Transform*)malloc(sizeof(Transform));
 	transform->position = position;
@@ -27,27 +27,27 @@ void Transform_Rotate (Transform* transform, short axis, float angle )
 {
 	switch(axis)
 	{
-		case 0: V3f_X(transform->rotationDegrees) += angle; break;
-		case 1: V3f_Y(transform->rotationDegrees) += angle; break;
-		case 2: V3f_Z(transform->rotationDegrees) += angle; break;
+		case 0: Vector3_X(transform->rotationDegrees) += angle; break;
+		case 1: Vector3_Y(transform->rotationDegrees) += angle; break;
+		case 2: Vector3_Z(transform->rotationDegrees) += angle; break;
 	};
 }
 
-void Transform_Translate (Transform* transform, V3f t )
+void Transform_Translate (Transform* transform, Vector3 t )
 {
-	V3f_X(transform->position) += V3f_X(t);
-	V3f_Y(transform->position) += V3f_Y(t);
-	V3f_Z(transform->position) += V3f_Z(t);
+	Vector3_X(transform->position) += Vector3_X(t);
+	Vector3_Y(transform->position) += Vector3_Y(t);
+	Vector3_Z(transform->position) += Vector3_Z(t);
 }
 
-void Transform_SetScale3f (Transform* transform, V3f scale )
+void Transform_SetScale3f (Transform* transform, Vector3 scale )
 {
 	transform->scale = scale;
 }
 
 void Transform_SetScalef (Transform* transform, float scale )
 {
-	transform->scale = V3f_Create(scale, scale, scale);
+	transform->scale = Vector3New(scale, scale, scale);
 }
 
 

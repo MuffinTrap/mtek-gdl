@@ -114,7 +114,7 @@ void DefaultFont_DrawIconRotated(color32 color, float x, float y, float textHeig
 	glBindTexture(GL_TEXTURE_2D, textureName);
     // Discard pixels with low alpha
 
-	vec2 tx= DefaultFont_GetTextureCoordinateGlyph(glyph); //LOW LEFT!
+	Vector2 tx= DefaultFont_GetTextureCoordinateGlyph(glyph); //LOW LEFT!
 	float uvs[] = {tx.x, tx.y,  // low left
 		tx.x + uvW, tx.y,       // low right
 		tx.x + uvW, tx.y + uvH, // high right
@@ -189,7 +189,7 @@ void Texture_DrawText(Texture* texture, color32 color, float x, float y, float t
 			dy -= textHeight;
 			continue;
 		}
-		vec2 tx= SpriteAtlas_GetTextureCoordinateChar(font, character); //LOW LEFT!
+		Vector2 tx= SpriteAtlas_GetTextureCoordinateChar(font, character); //LOW LEFT!
 
 
 		// LOW LEFT!
@@ -239,13 +239,13 @@ static int String_FindFirst(const char* str, char character)
 
 RectF SpriteAtlas_GetUVRect(SpriteAtlas* font, char letter)
 {
-	vec2 uv = SpriteAtlas_GetTextureCoordinateChar(font, letter);
+	Vector2 uv = SpriteAtlas_GetTextureCoordinateChar(font, letter);
 	return {V2f_X(uv), V2f_Y(uv), font->uvWidth, font->uvHeight};
 }
 
 RectF DefaultFont_GetUVRectIcon(SpriteAtlas* font, IconSymbol glyph)
 {
-	vec2 uv = DefaultFont_GetTextureCoordinateGlyph(glyph);
+	Vector2 uv = DefaultFont_GetTextureCoordinateGlyph(glyph);
 	return {V2f_X(uv), V2f_Y(uv), font->uvWidth, font->uvHeight};
 }
 // Version that only creates texture coordinates for
@@ -269,10 +269,10 @@ void SpriteAtlas_CreateTextureCoordListSelective (SpriteAtlas* font, short rows,
 
 
 	font->characterCount = textureArraySize;
-	size_t tListSize = sizeof(vec2)*textureArraySize;
+	size_t tListSize = sizeof(Vector2)*textureArraySize;
 	if (font->uvList == NULL)
 	{
-		font->uvList = (vec2*)mgdl_AllocateGeneralMemory(tListSize);
+		font->uvList = (Vector2*)mgdl_AllocateGeneralMemory(tListSize);
 		mgdl_assert_print(font->uvList != nullptr, "Out of memory when allocation font txcord list");
 	}
 
@@ -359,10 +359,10 @@ void SpriteAtlas_CreateTextureCoordList(SpriteAtlas* font, short rows, short cha
 
 	short characterAmount = rows * charactersPerRow;
 	font->characterCount = characterAmount;
-	size_t tListSize = sizeof(vec2)*characterAmount;
+	size_t tListSize = sizeof(Vector2)*characterAmount;
 	if (font->uvList == NULL)
 	{
-		font->uvList = (vec2*)mgdl_AllocateGeneralMemory(tListSize);
+		font->uvList = (Vector2*)mgdl_AllocateGeneralMemory(tListSize);
 		mgdl_assert_print(font->uvList != nullptr, "Out of memory when allocation font txcord list");
 	}
 
@@ -376,17 +376,17 @@ void SpriteAtlas_CreateTextureCoordList(SpriteAtlas* font, short rows, short cha
 	}
 }
 
-vec2 SpriteAtlas_GetTextureCoordinateChar(SpriteAtlas* font, char character)
+Vector2 SpriteAtlas_GetTextureCoordinateChar(SpriteAtlas* font, char character)
 {
 	int	tc = (character - font->firstIndex);
 	return font->uvList[tc];
 }
-vec2 SpriteAtlas_GetTextureCoordinateSprite(SpriteAtlas* font, short sprite)
+Vector2 SpriteAtlas_GetTextureCoordinateSprite(SpriteAtlas* font, short sprite)
 {
 	int	tc = (sprite - font->firstIndex);
 	return font->uvList[tc];
 }
-vec2 DefaultFont_GetTextureCoordinateGlyph(IconSymbol glyph)
+Vector2 DefaultFont_GetTextureCoordinateGlyph(IconSymbol glyph)
 {
 	SpriteAtlas* font = DefaultFont_GetDefaultFont()->spriteAtlas;
 	int	tc = ((short)glyph - font->firstIndex);

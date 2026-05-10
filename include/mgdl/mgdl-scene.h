@@ -57,15 +57,15 @@ extern "C"
 	Node* Scene_GetRootNode(Scene* scene);
 	Material* Scene_GetMaterial(Scene* scene, const char* materialName);
 
-	V3f Scene_GetNodePosition(Scene* scene, Node* node);
-	bool Scene_GetNodeModelMatrix(Scene* scene, Node* node, MTX4x4 modelOut);
+	Vector3 Scene_GetNodePosition(Scene* scene, Node* node);
+	bool Scene_GetNodeModelMatrix(Scene* scene, Node* node, Matrix modelOut);
 
 	void Scene_DebugDrawNode_(Node* node, Menu* menu, short depth, short* index, u32 drawFlags );
 
 	Material* Scene_FindNodeMaterial(Scene* scene, Node* node, const char*  materialName);
 
-	bool Scene_CalculateNodePosition(Node* parent, Node* target, MTX4x4 world, V3f* posOut);
-	bool Scene_CalculateNodeModelMatrix(Node* parent, Node* target, MTX4x4 model);
+	bool Scene_CalculateNodePosition(Node* parent, Node* target, Matrix world, Vector3* posOut);
+	bool Scene_CalculateNodeModelMatrix(Node* parent, Node* target, Matrix model);
 
 
 #ifdef __cplusplus

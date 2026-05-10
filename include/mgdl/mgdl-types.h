@@ -286,7 +286,7 @@ extern "C" {
 #endif
 
 RectF RectF_Create(float x, float y, float w, float h);
-RectF Rect_CreateV2f(vec2 position, vec2 size);
+RectF Rect_CreateV2f(Vector2 position, Vector2 size);
 
 u16 Handle_Index(Handle handle);
 AssetType Handle_Type(Handle handle);

@@ -41,7 +41,7 @@ RectF RectF_Create(float x, float y, float w, float h)
 	return r;
 }
 
-RectF Rect_CreateV2f(vec2 position, vec2 size)
+RectF Rect_CreateV2f(Vector2 position, Vector2 size)
 {
-	return {V2f_X(position), V2f_Y(position), V2f_X(size), V2f_Y(size)};
+	return {(position.x), (position.y), (size.x), (size.y)};
 }

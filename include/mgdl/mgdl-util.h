@@ -101,7 +101,7 @@ u32 Flag_Unset(u32 bitfield, u32 flag);
  */
 u32 Flag_UnsetAll(u32 bitfield, u32 flag);
 
-vec2 CalculateAlignedTopLeft(float x, float y, float width, float height, AlignmentModes alignmentX, AlignmentModes alignmentY);
+Vector2 CalculateAlignedTopLeft(float x, float y, float width, float height, AlignmentModes alignmentX, AlignmentModes alignmentY);
 
 /**
  * @return Buffer containging the text, max size 255 chars.

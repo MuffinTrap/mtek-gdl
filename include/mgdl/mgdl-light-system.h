@@ -19,8 +19,8 @@ struct sun_flare_params
     float screen_aspect;
 
     // Flare and sun parameters
-    vec3 sun_light_direction;
-    vec3 sun_color;
+    Vector3 sun_light_direction;
+    Vector3 sun_color;
     float sun_distance;
     float sun_radius_degrees;
     float sun_core_percentage;

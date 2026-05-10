@@ -17,7 +17,7 @@ void Texture_BeginSpriteBatch(Texture* texture)
 void Texture_DrawBatchedSprite(Texture* texture, u16 spriteIndex, s16 x, s16 y, float scale, color32 tintColor)
 {
 	ASSERT_DEBUG(texture != nullptr);
-	V3f drawPos = vec3New(x,y,0);
+	Vector3 drawPos = Vector3New(x,y,0);
 	SpriteAtlas* atlas = texture->spriteAtlas;
 
 	float width = atlas->aspectRatio * scale;
@@ -26,7 +26,7 @@ void Texture_DrawBatchedSprite(Texture* texture, u16 spriteIndex, s16 x, s16 y, 
 	const float uvH = atlas->uvHeight;
 
 	mgdl_glColor32(tintColor);
-	V2f tx = SpriteAtlas_GetTextureCoordinateSprite(atlas, spriteIndex); //LOW LEFT!
+	Vector2 tx = SpriteAtlas_GetTextureCoordinateSprite(atlas, spriteIndex); //LOW LEFT!
 
 	// LOW LEFT!
 	glTexCoord2f(V2f_X(tx), V2f_Y(tx));

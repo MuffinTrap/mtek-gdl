@@ -59,27 +59,27 @@ void Light_Disable(Light* light)
         mgdl_DisableLightIndex(light->glIndex );
     }
 }
-void Light_SetDirection(Light* light, V3f direction)
+void Light_SetDirection(Light* light, Vector3 direction)
 {
-    light->direction[0] = V3f_X(direction);
-    light->direction[1] = V3f_Y(direction);
-    light->direction[2] = V3f_Z(direction);
+    light->direction[0] = Vector3_X(direction);
+    light->direction[1] = Vector3_Y(direction);
+    light->direction[2] = Vector3_Z(direction);
     light->direction[3] = 0.0f;
 }
 
-V3f Light_GetDirection(Light* light)
+Vector3 Light_GetDirection(Light* light)
 {
-    return V3f_Create(
+    return Vector3New(
         light->direction[0],
         light->direction[1],
         light->direction[2]);
 }
 
-void Light_SetPosition(Light* light, V3f position)
+void Light_SetPosition(Light* light, Vector3 position)
 {
-    light->position[0] = V3f_X(position);
-    light->position[1] = V3f_Y(position);
-    light->position[2] = V3f_Z(position);
+    light->position[0] = Vector3_X(position);
+    light->position[1] = Vector3_Y(position);
+    light->position[2] = Vector3_Z(position);
     light->position[3] = 1.0f;
 }
 

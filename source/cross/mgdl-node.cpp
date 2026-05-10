@@ -82,10 +82,10 @@ Node* Node_Clone(Node* source, NodeFlagField cloningFlags)
 	return clone;
 }
 
-void Node_SetTransform(Node* node, const char* name, V3f position, V3f rotationAngles)
+void Node_SetTransform(Node* node, const char* name, Vector3 position, Vector3 rotationAngles)
 {
 	node->name = name;
-	node->transform = Transform_Create(position, rotationAngles, V3f_Create(1,1,1));
+	node->transform = Transform_Create(position, rotationAngles, Vector3New(1,1,1));
 }
 
 
@@ -140,15 +140,15 @@ Node* Node_FindChildByName (Node* node, const char* nodeName )
 
 void Node_ApplyTransform(Node* node)
 {
-	const V3f t = node->transform->position;
+	const Vector3 t = node->transform->position;
 	glTranslatef(t.x, t.y, t.z);
 
-	const V3f r = node->transform->rotationDegrees;
+	const Vector3 r = node->transform->rotationDegrees;
 	glRotatef(r.x, 1.0f, 0.0f, 0.0f);
 	glRotatef(r.y, 0.0f, 1.0f, 0.0f);
 	glRotatef(r.z, 0.0f, 0.0f, 1.0f);
 
-	const V3f& s = node->transform->scale;
+	const Vector3& s = node->transform->scale;
 	glScalef(s.x, s.y, s.z);
 }
 
@@ -156,15 +156,15 @@ void Node_Draw(Node* node)
 {
 	if (Flag_IsSet(node->enabledElements, NodeTransform) )
 	{
-		const V3f t = node->transform->position;
+		const Vector3 t = node->transform->position;
 		glTranslatef(t.x, t.y, t.z);
 
-		const V3f r = node->transform->rotationDegrees;
+		const Vector3 r = node->transform->rotationDegrees;
 		glRotatef(r.x, 1.0f, 0.0f, 0.0f);
 		glRotatef(r.y, 0.0f, 1.0f, 0.0f);
 		glRotatef(r.z, 0.0f, 0.0f, 1.0f);
 
-		const V3f& s = node->transform->scale;
+		const Vector3& s = node->transform->scale;
 		glScalef(s.x, s.y, s.z);
 	}
 
@@ -178,31 +178,19 @@ void Node_Draw(Node* node)
 			if (node->material->type == MaterialType::Matcap)
 			{
 				// If material is matcap material
-				float modelViewMatrix[16];
+				GLfloat modelViewMatrix[16];
 				glGetFloatv(GL_MODELVIEW_MATRIX, modelViewMatrix);
-				mat4x4 modelView;
-				mat4x4Identity(modelView);
+				Matrix modelView = MatrixFromGL(modelViewMatrix);
 				// Copy the values
+				// TODO
 
 				// Different ways
 				// Normal
 				// transposed
 
-				for (int row = 0; row < 4; row++)
-				{
-					for (int col = 0; col < 4; col++)
-					{
-						modelView[row][col] = modelViewMatrix[row * 4 + col];
-					}
-				}
-				mat4x4 inverseView;
-				mat4x4 normalMatrix;
-				mat4x4Identity(inverseView);
-				mat4x4Identity(normalMatrix);
-
 				// Destination matrix is on the left, source on right
-				mat4x4Inverse(inverseView, modelView);
-				mat4x4Transpose(normalMatrix, inverseView);
+				Matrix inverseView = MatrixInvert(modelView);
+				Matrix normalMatrix = MatrixTranspose(inverseView);
 
 				Mesh_CalculateMatcapUVs(m, modelView, normalMatrix);
 			}

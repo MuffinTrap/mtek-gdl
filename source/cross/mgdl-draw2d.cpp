@@ -28,7 +28,7 @@ void mgdl_DrawRectangle(float x, float y, float w, float h, color32 color)
 		OpenGLRect(x,y,x+w,y-h,color);
 	glEnd();
 }
-void mgdl_DrawRectangleV(vec2 topleft, vec2 size, color32 color)
+void mgdl_DrawRectangleV(Vector2 topleft, Vector2 size, color32 color)
 {
 	glBegin(GL_QUADS);
 		OpenGLRect(topleft.x, topleft.y, topleft.x+size.x, topleft.y-size.y, color);
@@ -60,7 +60,7 @@ void mgdl_DrawLine ( float x, float y, float x2, float y2, color32 color )
 	glEnd();
 }
 
-void mgdl_DrawLineV(vec2 start, vec2 end, color32 color )
+void mgdl_DrawLineV(Vector2 start, Vector2 end, color32 color )
 {
 	glBegin(GL_LINES);
 		mgdl_glColor32(color);
@@ -75,7 +75,7 @@ void mgdl_DrawText(float x, float y, const char* text, float fontSize, color32 c
 	Texture_DrawText(db, color, x, y, fontSize, text);
 }
 
-void mgdl_DrawTextV(vec2 topleft, const char* text, float fontSize, color32 color)
+void mgdl_DrawTextV(Vector2 topleft, const char* text, float fontSize, color32 color)
 {
-	mgdl_DrawText(V2f_X(topleft), V2f_Y(topleft), text, fontSize, color);
+	mgdl_DrawText((topleft.x), (topleft.y), text, fontSize, color);
 }

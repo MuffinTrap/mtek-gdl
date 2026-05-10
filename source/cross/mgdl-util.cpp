@@ -189,9 +189,9 @@ u32 Flag_UnsetAll(u32 bitfield, u32 flags)
 	return (bitfield & ~flags);
 }
 
-vec2 CalculateAlignedTopLeft(float x, float y, float width, float height, AlignmentModes alignmentX, AlignmentModes alignmentY)
+Vector2 CalculateAlignedTopLeft(float x, float y, float width, float height, AlignmentModes alignmentX, AlignmentModes alignmentY)
 {
-	vec2 topleft = vec2New(x, y);
+	Vector2 topleft = Vector2New(x, y);
 	if (alignmentX == RJustify)
 	{
 		topleft.x -= width;
@@ -214,9 +214,8 @@ vec2 CalculateAlignedTopLeft(float x, float y, float width, float height, Alignm
 // ******************************
 // ENDIANNES HANDLING FUNCTION
 // ******************************
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Warray-bounds"
-#pragma GCC diagnostic ignored "-Wstringop-overflow"
+#pragma CXX diagnostic push
+#pragma CXX diagnostic ignored "-Warray-bounds"
 
 void RevBytes(void *var, int size) {
 
@@ -229,4 +228,4 @@ void RevBytes(void *var, int size) {
 		((u8*)var)[i] = temp[(size-1)-i];
 	}
 }
-#pragma GCC diagnostic pop
+#pragma CXX diagnostic pop

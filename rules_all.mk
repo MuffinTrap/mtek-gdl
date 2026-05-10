@@ -22,7 +22,6 @@ CXXFILES	+= $(wildcard source/angelscript/scriptopengl/*.cpp)
 CXXFLAGS 	+= -Isource/angelscript
 
 UFBX_HDR	:= include/mgdl/ufbx/ufbx.h
-CCVEC_HDR	:= include/mgdl/ccVector/ccVector.h
 RANDOM_HDR	:= include/mgdl/wflcg/WFLCG_c.h
 DMON_HDR		:= include/mgdl/dmon/dmon.h
 RAYMATH_HDR	:= include/mgdl/raymath/raymath.h

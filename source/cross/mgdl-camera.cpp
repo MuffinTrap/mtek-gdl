@@ -7,13 +7,13 @@ Camera* Camera_CreateDefault()
 {
 	Camera* camera = (Camera*)malloc(sizeof(Camera));
 	camera->target = mgdl_GetGLWorldForward();
-	camera->position = V3f_Create(0.0f, 0.0f, 0.0f);
+	camera->position = Vector3New(0.0f, 0.0f, 0.0f);
 	camera->up = mgdl_GetGLWorldUp();
 	camera->fovY = 90.0f;
 	camera->nearZ = 0.1f;
 	camera->farZ = 1000.0f;
-	camera->direction = V3f_Create(0.0f, 0.0f, -1.0f);
-	camera->rotations = V3f_Create(0.0f, 0.0f, 0.0f);
+	camera->direction = Vector3New(0.0f, 0.0f, -1.0f);
+	camera->rotations = Vector3New(0.0f, 0.0f, 0.0f);
 
 	return camera;
 }
@@ -41,22 +41,19 @@ void Camera_Apply(Camera* camera)
 		break;
 		case CameraRotation:
 		{
-			V3f unit = mgdl_GetGLWorldForward();
-			V3f target;
-			MTX3x3 transform;
-			MTX3x3_Identity(transform);
-			MTX3x3_RotateX(transform, Deg2Rad( V3f_X(camera->rotations)));
-			MTX3x3_RotateY(transform, Deg2Rad( V3f_Y(camera->rotations)));
-			MTX3x3_RotateZ(transform, Deg2Rad( V3f_Z(camera->rotations)));
-
-			MTX3x3_MultiplyVector(transform, unit, target);
-			V3f_Add(camera->position, target, camera->target);
+			Vector3 unit = mgdl_GetGLWorldForward();
+			Vector3 target;
+			Matrix transform = MatrixIdentity();
+			Vector3 rotationsRad = Vector3Scale(camera->rotations, DEG2RAD);
+			transform = MatrixRotateXYZ(rotationsRad);
+			target = Vector3Transform(unit, transform);
+			camera->target = Vector3Add(camera->position, target);
 			mgdl_InitCamera(camera->position, camera->target, camera->up);
 		}
 		break;
 		case CameraDirection:
 			// Presume direction is set with Camera_SetDirection
-			camera->target = vec3Add(camera->position, camera->direction);
+			camera->target = Vector3Add(camera->position, camera->direction);
 			mgdl_InitCamera(camera->position, camera->target, camera->up);
 		break;
 
@@ -118,13 +115,13 @@ void Camera_DrawOverlayColor(Camera* camera, color32 color, float opacity)
 		Camera_Apply(camera);
 	}
 }
-void Camera_SetPositionV(Camera* camera, V3f position)
+void Camera_SetPositionV(Camera* camera, Vector3 position)
 {
 	ASSERT_DEBUG(camera != nullptr);
 	camera->position = position;
 }
 
-void Camera_SetDirection(Camera* camera, V3f direction)
+void Camera_SetDirection(Camera* camera, Vector3 direction)
 {
 	ASSERT_DEBUG(camera != nullptr);
 	camera->direction = direction;
@@ -133,10 +130,10 @@ void Camera_SetDirection(Camera* camera, V3f direction)
 void Camera_SetPosition(Camera* camera, float x, float y, float z)
 {
 	ASSERT_DEBUG(camera != nullptr);
-	camera->position = V3f_Create(x,y,z);
+	camera->position = Vector3New(x,y,z);
 }
 
-void Camera_SetRotationsV(Camera* camera, V3f rotations)
+void Camera_SetRotationsV(Camera* camera, Vector3 rotations)
 {
 	ASSERT_DEBUG(camera != nullptr);
 	camera->rotations = rotations;
@@ -145,7 +142,7 @@ void Camera_SetRotationsV(Camera* camera, V3f rotations)
 void Camera_SetRotations(Camera* camera, float pitch, float yaw, float roll)
 {
 	ASSERT_DEBUG(camera != nullptr);
-	camera->rotations = V3f_Create(pitch, yaw, roll);
+	camera->rotations = Vector3New(pitch, yaw, roll);
 }
 
 void Camera_SetMode(Camera* camera, CameraMode mode)

@@ -111,14 +111,14 @@ bool WiiController_ButtonHeld(WiiController* controller, u32 buttonEnum);
  * @brief Returns the position of the cursor.
  * @return Position of the cursor in pixels.
  */
-vec2 WiiController_GetCursorPosition(WiiController* controller);
+Vector2 WiiController_GetCursorPosition(WiiController* controller);
 
 /**
  * @brief Returns the direction of the nunchuck joystick.
  * @note The returned vector2 is not normalized. +Y is towards player or down
  * @return Direction of the nunchuck joystick.
  */
-vec2 WiiController_GetNunchukJoystickDirection(WiiController* controller);
+Vector2 WiiController_GetNunchukJoystickDirection(WiiController* controller);
 
 /**
  * @brief Returns the roll reported by the gyroscope in radians.

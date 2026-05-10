@@ -31,7 +31,7 @@ extern "C"
  * @param color Color of the border
  */
 void mgdl_DrawRectangle(float x, float y, float w, float h, color32 color);
-void mgdl_DrawRectangleV(vec2 topleft, vec2 size, color32 color);
+void mgdl_DrawRectangleV(Vector2 topleft, Vector2 size, color32 color);
 void mgdl_DrawRectangleLines(float x, float y, float w, float h, color32 color);
 void mgdl_DrawRectangleLinesEx(RectF rec, float lineThickness, color32 color);
 
@@ -53,8 +53,8 @@ void mgdl_DrawLine( float x, float y, float x2, float y2, color32 color );
  * @param end Start point
  * @param color Color of the line.
  */
-void mgdl_DrawLineV(vec2 start, vec2 end, color32 color );
-void mgdl_DrawLineEx(vec2 start, vec2 end, float lineThickness, color32 color );
+void mgdl_DrawLineV(Vector2 start, Vector2 end, color32 color );
+void mgdl_DrawLineEx(Vector2 start, Vector2 end, float lineThickness, color32 color );
 
 /**
  * @brief Draws text using the default font.
@@ -73,7 +73,7 @@ void mgdl_DrawText(float x, float y, const char* text, float fontSize, color32 c
  * @param text Text to be drawn.
  * @param color Color of the text.
  */
-void mgdl_DrawTextV(vec2 topleft, const char* text, color32 color);
+void mgdl_DrawTextV(Vector2 topleft, const char* text, color32 color);
 
 
 #ifdef __cplusplus

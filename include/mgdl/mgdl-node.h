@@ -52,7 +52,7 @@ extern "C"
 	void Node_SetDisabled(Node* node, NodeFlagField elements);
 	void Node_EnableDrawing(Node* node);
 	void Node_DisableDrawing(Node* node);
-	void Node_SetTransform(Node* node, const char* name, V3f position, V3f rotationAngles);
+	void Node_SetTransform(Node* node, const char* name, Vector3 position, Vector3 rotationAngles);
 	void Node_SetContent(Node* node, const char* name, Mesh* meshParam, Material* materialParam);
 	void Node_Draw(Node* node);
 	void Node_ApplyTransform(Node* node);

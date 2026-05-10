@@ -211,18 +211,19 @@ Game for Retro Game Jam 2024. *mtek-gdl 0.100.0*
 [Wii & Chill](https://github.com/MuffinTrap/combochiller)
 First Demo I did for the Wii. [Demozoo](https://demozoo.org/productions/345939/) *mtek-gdl 0.100.0*
 
-[Pyromancer] (https://github.com/MuffinTrap/pyromancer)
+[Pyromancer](https://github.com/MuffinTrap/pyromancer)
 Incomplete game for Ludum Dare 55. *mtek-gdl 0.100.0*
 
 ## External libraries and resources
 
 This library contains code from the following libraries under these licenses:
-* [WFLCG](https://github.com/WarpRules/WFLCG) MIT license
-* [ufbx](ufbx.github.io) MIT license 
-* [rocket](https://github.com/rocket/rocket) Zlib license
-* [ccVector](https://github.com/jobtalle/ccVector) Public Domain
-* [stb](https://github.com/nothings/stb) Public Domain
+* [AngelScript](https://www.angelcode.com/) zlib license
 * [dr_libs](https://github.com/mackron/dr_libs) Public Domain
+* [raymath](https://www.raylib.com/index.html) zlib/libpng license
+* [rocket](https://github.com/rocket/rocket) zlib license
+* [ufbx](ufbx.github.io) MIT license
+* [stb](https://github.com/nothings/stb) Public Domain
+* [WFLCG](https://github.com/WarpRules/WFLCG) MIT license
 * [zstr.h](https://github.com/z-libs/zstr.h) MIT license
 
 This library contains the following font:

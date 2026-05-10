@@ -62,7 +62,7 @@ void Scene_DebugDrawNode_( Node* node, Menu* menu, short depth, short* index, u3
 	}
 	if (Flag_IsSet(debugFlags, Scene_DebugFlag::Position))
 	{
-		V3f &p = node->transform->position;
+		Vector3 &p = node->transform->position;
 		Menu_TextF(menu, "P(%.1f,%.1f,%.1f)", drawIndex, p.x, p.y, p.z);
 	}
 	// What does this node have?
@@ -141,30 +141,28 @@ Node* Scene_GetRootNode(Scene* scene )
 }
 
 
-V3f Scene_GetNodePosition ( Scene* scene, Node* node )
+Vector3 Scene_GetNodePosition ( Scene* scene, Node* node )
 {
-	mat4x4 matrix;
-	mat4x4Identity(matrix);
-	V3f posOut;
+	Matrix matrix = MatrixIdentity();
+	Vector3 posOut;
 	Scene_CalculateNodePosition(scene->rootNode, node, matrix, &posOut);
 
 	return posOut;
 }
 
-bool Scene_GetNodeModelMatrix ( Scene* scene, Node* node, mat4x4 modelOut )
+bool Scene_GetNodeModelMatrix ( Scene* scene, Node* node, Matrix modelOut )
 {
-	mat4x4Identity(modelOut);
+	modelOut = MatrixIdentity();
 	return Scene_CalculateNodeModelMatrix(scene->rootNode, node, modelOut);
 }
 
 
-bool Scene_CalculateNodeModelMatrix (Node* parent, Node* target, mat4x4 model )
+bool Scene_CalculateNodeModelMatrix (Node* parent, Node* target, Matrix model )
 {
-	V3f p = parent->transform->position;
-	mat4x4Translate(model, V3f_Create(p.x, p.y, p.z));
-	mat4x4RotateX(model, Deg2Rad(parent->transform->rotationDegrees.x));
-	mat4x4RotateY(model, Deg2Rad(parent->transform->rotationDegrees.y));
-	mat4x4RotateZ(model, Deg2Rad(parent->transform->rotationDegrees.z));
+	Vector3 p = parent->transform->position;
+	Vector3 rotationRad = Vector3Scale(parent->transform->rotationDegrees, DEG2RAD);
+	model = MatrixMultiply(model, MatrixTranslate(p.x, p.y, p.z));
+	model = MatrixMultiply(model, MatrixRotateXYZ(rotationRad));
 	if (parent == target)
 	{
 		return true;
@@ -174,8 +172,7 @@ bool Scene_CalculateNodeModelMatrix (Node* parent, Node* target, mat4x4 model )
 	// so that every child starts from the same matrix
 	for(sizetype i = 0; i < DynamicArray_CountNode(parent->children); i++)
 	{
-		mat4x4 accumulated;
-		mat4x4Copy(accumulated, model);
+		Matrix accumulated =  model;
 		if(Scene_CalculateNodeModelMatrix(DynamicArray_GetNode(parent->children, i),
 			target, accumulated))
 		{
@@ -186,19 +183,17 @@ bool Scene_CalculateNodeModelMatrix (Node* parent, Node* target, mat4x4 model )
 }
 
 
-bool Scene_CalculateNodePosition ( Node* parent, Node* target, mat4x4 world, V3f* posOut )
+bool Scene_CalculateNodePosition ( Node* parent, Node* target, Matrix world, Vector3* posOut )
 {
 
-	V3f p = parent->transform->position;
-	mat4x4Translate(world, V3f_Create(p.x, p.y, p.z));
-	mat4x4RotateX(world, Deg2Rad(parent->transform->rotationDegrees.x));
-	mat4x4RotateY(world, Deg2Rad(parent->transform->rotationDegrees.y));
-	mat4x4RotateZ(world, Deg2Rad(parent->transform->rotationDegrees.z));
+	Vector3 p = parent->transform->position;
+	Vector3 rotationRad = Vector3Scale(parent->transform->rotationDegrees, DEG2RAD);
+	world = MatrixMultiply(world, MatrixTranslate(p.x, p.y, p.z));
+	world = MatrixMultiply(world, MatrixRotateXYZ(rotationRad));
 	if (parent == target)
 	{
-		vec4 origo = V4f_Create(0.0f, 0.0f, 0.0f, 1.0f);
-		vec4 pos = mat4x4MultiplyVector(world, origo);
-		*posOut = V3f_Create(pos.x, pos.y, pos.z);
+		Vector3 origo = Vector3Zero();
+		*posOut = Vector3Transform(origo, world);
 		return true;
 	}
 
@@ -206,8 +201,7 @@ bool Scene_CalculateNodePosition ( Node* parent, Node* target, mat4x4 world, V3f
 	// so that every child starts from the same matrix
 	for(sizetype i = 0; i < DynamicArray_CountNode(parent->children); i++)
 	{
-		mat4x4 accumulated;
-		mat4x4Copy(accumulated, world);
+		Matrix accumulated = world;
 		if(Scene_CalculateNodePosition(DynamicArray_GetNode(parent->children, i), target, accumulated, posOut))
 		{
 			return true;

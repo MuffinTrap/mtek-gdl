@@ -103,7 +103,7 @@ void Example::Init()
     {
         musicLooping = Sound_GetLooping(sampleMusic);
     }
-    sceneRotation = V3f_Create(0.0f, 1.0f,0.0f);
+    sceneRotation = Vector3New(0.0f, 1.0f,0.0f);
     //quad->DebugPrint();
 
     cameraDistance = 30.0f;
@@ -240,9 +240,9 @@ void Example::DrawSprites()
 void Example::DrawIcosa()
 {
     cameraDistance = 5.0f;
-    DrawScene(icosaScene, V3f_Create(1.0f, 1.0f, 1.0f));
+    DrawScene(icosaScene, Vector3New(1.0f, 1.0f, 1.0f));
     cameraDistance = 15.0f;
-    DrawScene(wiiScene, V3f_Create(0.1f, 0.1f, 0.1f));
+    DrawScene(wiiScene, Vector3New(0.1f, 0.1f, 0.1f));
 }
 
 void Example::DrawTexture()
@@ -264,11 +264,11 @@ void Example::DrawTexture()
 
 }
 
-void Example::DrawScene ( Scene* scene, V3f scale)
+void Example::DrawScene ( Scene* scene, Vector3 scale)
 {
     // Try to draw Wii 3D model
     mgdl_InitPerspectiveProjection(75.0f, 0.1f, 100.0f);
-    mgdl_InitCamera(V3f_Create(0.0f, 0.0f, cameraDistance), V3f_Create(0.0f, 0.0f, 0.0f), V3f_Create(0.0f, 1.0f, 0.0f));
+    mgdl_InitCamera(Vector3New(0.0f, 0.0f, cameraDistance), Vector3New(0.0f, 0.0f, 0.0f), Vector3New(0.0f, 1.0f, 0.0f));
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -313,11 +313,11 @@ void DrawDPad(short x, short y, short size)
         WiiButtons::ButtonLeft,
         WiiButtons::ButtonRight
     };
-    vec2 directions[] = {
-        vec2New(0,1),
-        vec2New(0,-1),
-        vec2New(-1,0),
-        vec2New(1,0)
+    Vector2 directions[] = {
+        Vector2New(0,1),
+        Vector2New(0,-1),
+        Vector2New(-1,0),
+        Vector2New(1,0)
     };
     Palette* blessing = Palette_GetDefault();
     color32 c = Palette_GetColor(blessing, 5);
@@ -334,7 +334,7 @@ void DrawDPad(short x, short y, short size)
         {
             c = Palette_GetColor(blessing, 5);
         }
-        vec2 d=directions[i];
+        Vector2 d=directions[i];
         mgdl_DrawRectangle(x + d.x * box-h,
                     y + d.y * box-h,
                     box,
@@ -351,7 +351,7 @@ void DrawJoystick(short x, short y, short size)
     short h=box/2;
     Palette* blessing = Palette_GetDefault();
     color32 jc = Palette_GetColor(blessing, 5);
-    vec2 jdir = WiiController_GetNunchukJoystickDirection(mgdl_GetController(0));
+    Vector2 jdir = WiiController_GetNunchukJoystickDirection(mgdl_GetController(0));
     short jleft= x + jsize/2 + jdir.x * box-h;
     short jtop = y - jsize/2 - jdir.y * box-h;
     mgdl_DrawRectangleLines(x-jsize, y, x+jsize*2, y-jsize*3, jc);
@@ -610,7 +610,7 @@ void Example::DrawCameraControls()
     }
     if (Menu_Button(cameraMenu, "Reset "))
     {
-        sceneRotation = V3f_Create(0,0,0);
+        sceneRotation = Vector3New(0,0,0);
     }
 }
 
