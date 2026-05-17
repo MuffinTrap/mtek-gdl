@@ -51,36 +51,51 @@ void mgdl_InitSystem(const char* name,
 				CallbackFunction quitCallback,
 				u32 initFlags);
 
-
-
-
-
-
-// TODO Move all loading to AssetManager to get memory status and other stats
-PNGFile* mgdl_LoadPNGFile(const char* filename);
-Texture* mgdl_LoadTexturePNG(PNGFile* png, TextureFilterModes filterMode);
-
-Sound* mgdl_LoadSoundWav(const char* filename);
-Sound* mgdl_LoadSoundOgg(const char* filename);
-Sound* mgdl_LoadSoundMp3(const char* filename);
-
-Scene* mgdl_LoadFBX(const char* filename);
-
-Texture* mgdl_LoadFont(const char* filename, short characterWidth, short characterHeight, char firstCharacter);
-Texture* mgdl_LoadFontSelective(const char* filename, short characterWidth, short characterHeight, const char* characters);
-
+/**
+ * @brief Gets a controller by number
+ * @param controllerNumber Number of controller 0 - 3
+ * @returns Pointer to controller. Will return the first controller on invalid controller number.
+ */
 WiiController* mgdl_GetController(int controllerNumber);
-
-// TODO mgdl_GetQuitReason(void) HOME pressed, Error or Window closed
-
+/**
+ * @brief Gets the full viewport
+ * @returns Viewport representing the full rendering area. On PC platforms this might be different than window or screen area.
+ */
 Viewport mgdl_GetViewport(void);
+/**
+ * @brief Gets the viewport width
+ * @returns Width of the viewport
+ */
 int mgdl_GetScreenWidth(void);
+/**
+ * @brief Gets the viewport height
+ * @returns Height of the viewport
+ */
 int mgdl_GetScreenHeight(void);
+/**
+ * @brief Gets the viewport aspect ratio
+ * @returns Aspect ratio of the viewport
+ */
 float mgdl_GetAspectRatio(void);
+/**
+ * @brief Returns how many seconds have passed since the first frame
+ * @returns Seconds since first frame callback
+ */
 float mgdl_GetElapsedSeconds(void);
+/**
+ * @brief Returns how many seconds have passed since previous frame
+ * @returns Seconds since previous frame callback
+ */
 float mgdl_GetDeltaTime(void);
+/**
+ * @brief Returns how many frames have been rendered
+ * @returns Amount of frames rendered
+ */
 u32 mgdl_GetElapsedFrames(void);
 
+/**
+ * @brief Quits the program
+ */
 void mgdl_DoProgramExit(void);
 
 #ifdef __cplusplus

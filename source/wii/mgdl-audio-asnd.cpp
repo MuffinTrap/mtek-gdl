@@ -1,6 +1,6 @@
 #ifdef GEKKO
 #include <mgdl/mgdl-audio.h>
-#include <mgdl/mgdl-alloc.h>
+#include <mgdl/mgdl-memory.h>
 #include <mgdl/mgdl-cache.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/wii/mgdl-audio-asnd.h>

@@ -55,53 +55,60 @@ GLint TextureWrapToGLWrap(TextureWrapModes wrapMode);
 
 
 /**
- * @brief Tells if a flag is set.
- * @param bitfield The bitfield containing flags
- * @param flag The flag to inspect
- * @return True if the flag is set.
+ * @brief Tells if any of the bits are set
+ * @param bitfield The bitfield
+ * @param flag The bits to check
+ * @return True if any of the bits is set.
  */
-bool Flag_IsSet(u32 bitfield, u32 flag);
+bool Flag_IsSetAny(u32 bitfield, u32 bits) ;
 
 /**
- * @brief Tells if all given flags are set
- * @param bitfield The bitfield containing flags
- * @param flag The flag to inspect
- * @return True if the flag is set.
+ * @brief Tells if all given bits are set
+ * @param bitfield The bitfield
+ * @param flag The bits to check
+ * @return True if the bits are all set
  */
-bool Flag_IsSetAll(u32 bitfield, u32 flags);
+bool Flag_IsSetAll(u32 bitfield, u32 bits);
 
 /**
- * @brief Sets a flag on bitfield
- * @param bitfield The bitfield containing flags
- * @param flag The flag to set
+ * @brief Sets all given bits
+ * @param bitfield The bitfield
+ * @param flag The bits to set
  * @return The modified bitfield
  */
-u32 Flag_Set(u32 bitfield, u32 flag);
+u32 Flag_SetAll(u32 bitfield, u32 bits);
 
 /**
- * @brief Sets all given flags on bitfield
- * @param bitfield The bitfield containing flags
- * @param flag The flags to set
+ * @brief Unsets all given bits on bitfield
+ * @param bitfield The bitfield
+ * @param flag The bits to unset
  * @return The modified bitfield
  */
-u32 Flag_SetAll(u32 bitfield, u32 flag);
+u32 Flag_UnsetAll(u32 bitfield, u32 bits);
 
 /**
- * @brief Unsets a flag on bitfield
- * @param bitfield The bitfield containing flags
- * @param flag The flag to unset
- * @return The modified bitfield
+ * @brief Tells if bit at given index is set
+ * @param bitfield The bitfield
+ * @param bitIndex The index of the bit to inspect
+ * @returns True if the bit is set
  */
-u32 Flag_Unset(u32 bitfield, u32 flag);
+bool Flag_IsBitSet(u32 bitfield, u8 bitIndex);
 /**
- * @brief Unsets all given flags on bitfield
- * @param bitfield The bitfield containing flags
- * @param flag The flags to unset
- * @return The modified bitfield
+ * @brief Sets a bit in a bitfield
+ * @param bitfield The bitfield
+ * @param bitIndex The index of the bit to set
+ * @returns The modified bitfield
  */
-u32 Flag_UnsetAll(u32 bitfield, u32 flag);
+u32 Flag_SetBit(u32 bitfield, u8 bitIndex);
+/**
+ * @brief Unset a bit in a bitfield
+ * @param bitfield The bitfield
+ * @param bitIndex The index of the bit to unset
+ * @returns The modified bitfield
+ */
+u32 Flag_UnsetBit(u32 bitfield, u8 bitIndex);
 
-Vector2 CalculateAlignedTopLeft(float x, float y, float width, float height, AlignmentModes alignmentX, AlignmentModes alignmentY);
+Vector2 mgdl_CalculateAlignedTopLeft(float x, float y, float width, float height, AlignmentModes alignmentX, AlignmentModes alignmentY);
 
 /**
  * @return Buffer containging the text, max size 255 chars.

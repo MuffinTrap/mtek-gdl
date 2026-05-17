@@ -5,14 +5,13 @@
 
 class Example
 {
-    Texture* barb;
-    Texture* mel_sprites;
-    Texture* fruitSprites;
-    Texture* ibmFont;
-    Texture* debugFont;
-    Sound* sampleMusic;
-    Sound* blip;
-    Sound* testmp3Music;
+    TextureHandle barb;
+    TextureHandle mel_sprites;
+    TextureHandle fruitSprites;
+    TextureHandle ibmFont;
+    SoundHandle sampleMusic;
+    SoundHandle blip;
+    SoundHandle testmp3Music;
     Menu* menu;
     Menu* cameraMenu;
     Menu* controllerMenu;

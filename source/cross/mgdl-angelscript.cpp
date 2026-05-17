@@ -1,7 +1,7 @@
 #include <mgdl/mgdl-angelscript.h>
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-logger.h>
-#include <mgdl/mgdl-alloc.h>
+#include <mgdl/mgdl-memory.h>
 #include <mgdl/mgdl-main.h>
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-console.h>

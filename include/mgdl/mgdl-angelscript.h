@@ -2,6 +2,11 @@
 #include <angelscript.h>
 #include <mgdl/mgdl-types.h>
 
+/**
+ * @file mgdl-angelscript.h
+ * @brief Includes functions for loading and running AngelScript files.
+ */
+
 #if defined(__cplusplus)
 extern "C" {
 #endif

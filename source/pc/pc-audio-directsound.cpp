@@ -273,7 +273,7 @@ void Audio_PauseStaticBuffer(Sound* snd, bool paused)
 		{
 			DWORD statusFlagsOut;
 			soundDatas[snd->voiceNumber].buffer->GetStatus(&statusFlagsOut);
-			if (Flag_IsSet(statusFlagsOut, DSBSTATUS_PLAYING))
+			if (Flag_IsSetAny(statusFlagsOut, DSBSTATUS_PLAYING))
 			{
 				soundDatas[snd->voiceNumber].buffer->Stop();
 			}
@@ -422,7 +422,7 @@ void Audio_Update(void)
 
 	DWORD statusFlagsOut;
 	streamingBuffer->GetStatus(&statusFlagsOut);
-	if (Flag_IsSet(statusFlagsOut, DSBSTATUS_PLAYING) == false)
+	if (Flag_IsSetAny(statusFlagsOut, DSBSTATUS_PLAYING) == false)
 	{
 		// Streaming sound is not playing
 		return;
@@ -581,7 +581,7 @@ mgdlAudioStateEnum Audio_GetStaticBufferStatus(Sound* snd)
 	{
 		DWORD statusFlagsOut;
 		soundDatas[snd->voiceNumber].buffer->GetStatus(&statusFlagsOut);
-		if (Flag_IsSet(statusFlagsOut,DSBSTATUS_PLAYING))
+		if (Flag_IsSetAny(statusFlagsOut,DSBSTATUS_PLAYING))
 		{
 			return Audio_StatePlaying;
 		}

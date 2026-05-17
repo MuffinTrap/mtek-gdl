@@ -35,10 +35,10 @@ void mgdl_DrawRectangleV(Vector2 topleft, Vector2 size, color32 color)
 	glEnd();
 }
 
-void mgdl_DrawRectangleLines(float x, float y, float x2, float y2, color32 color)
+void mgdl_DrawRectangleLines(float x, float y, float w, float h, color32 color)
 {
 	glBegin(GL_LINE_LOOP);
-		OpenGLRect(x,y,x2,y2,color);
+		OpenGLRect(x,y,x+w,y-h,color);
 	glEnd();
 }
 

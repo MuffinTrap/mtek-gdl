@@ -43,13 +43,16 @@ void Example::Init()
     Log_SaveLines(256);
 
     // Sprites, images and fonts
-    barb = Texture_LoadFile("assets/barb.png", TextureFilterModes::Linear);
+    barb = mgdl_LoadTexture("assets/barb.png");
+    mgdl_SetTextureFilter(barb, TextureFilterModes::Linear);
     short spriteHeight = 64;
-    mel_sprites = mgdl_LoadFont("assets/mel_tiles.png", spriteHeight, spriteHeight, 0);
-    fruitSprites = mgdl_LoadFont("assets/fruits.png", 16, 16, 0);
+    mel_sprites = mgdl_LoadTexture("assets/mel_tiles.png");
+    mgdl_CreateSpriteAtlas(mel_sprites, spriteHeight, spriteHeight);
+    fruitSprites = mgdl_LoadTexture("assets/fruits.png");
+    mgdl_CreateSpriteAtlas(fruitSprites, 16, 16);
 
-    ibmFont = mgdl_LoadFont("assets/font8x16.png", 8, 16, ' ');
-    debugFont = DefaultFont_GetDefaultFont();
+    ibmFont = mgdl_LoadTexture("assets/font8x16.png");
+    mgdl_CreateFont(ibmFont, 8, 16, ' ');
 
     /*
 
@@ -90,6 +93,7 @@ void Example::Init()
     */
 
 
+    Texture* debugFont = DefaultFont_GetDefaultFont();
     menu =              Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 128, 256, "MTEK GDL");
     cameraMenu =        Menu_CreateWindowed(debugFont, 2.0f, 1.0f, 128, 256, "Camera");
     controllerMenu =    Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 128, 356, "Controls");
@@ -101,7 +105,7 @@ void Example::Init()
 
     if (sampleMusic)
     {
-        musicLooping = Sound_GetLooping(sampleMusic);
+        musicLooping = mgdl_GetBool(sampleMusic, MGDL_SOUND_LOOPING);
     }
     sceneRotation = Vector3New(0.0f, 1.0f,0.0f);
     //quad->DebugPrint();
@@ -109,11 +113,11 @@ void Example::Init()
     cameraDistance = 30.0f;
 
 
-    /*
     // Audio
-    blip = mgdl_LoadSoundWav("assets/blipSelect.wav");
-    sampleMusic = mgdl_LoadSoundOgg("assets/sample3.ogg");
-    testmp3Music = mgdl_LoadSoundMp3("assets/test_jam.mp3");
+    blip = mgdl_LoadSound("assets/blipSelect.wav");
+    sampleMusic = mgdl_LoadSound("assets/sample3.ogg");
+    testmp3Music = mgdl_LoadSound("assets/test_jam.mp3");
+    /*
 
     #ifdef MGDL_ROCKET
 
@@ -217,14 +221,14 @@ void Example::DrawSprites()
 {
     mgdl_glSetAlphaTest(true);
     mgdl_glSetTransparency(true);
+    int size = mgdl_GetInt(fruitSprites, MGDL_SPRITE_WIDTH) * 2;
     for (int i = 0; i < 16; i++)
     {
-        int size = 64;
-        Texture_DrawSprite (fruitSprites, i, size * (i%4), size + (i/4) * size, size, Debug_White);
+        mgdl_DrawSpriteEx(fruitSprites, i, size * (i%4), size + (i/4) * size, 2.0f, Debug_White);
     }
 
-    const short h = Texture_GetSpriteHeight(mel_sprites);
-    const short w = Texture_GetSpriteWidth(mel_sprites);
+    const short h = mgdl_GetInt(mel_sprites, MGDL_SPRITE_WIDTH);
+    const short w = mgdl_GetInt(mel_sprites, MGDL_SPRITE_HEIGHT);
     float scale = 2.0f;
     short spriteW = w * scale;
     short spriteH = h * scale;
@@ -232,7 +236,7 @@ void Example::DrawSprites()
     short placeY = mgdl_GetScreenHeight();
     for (short i = 0; i < 4; i++)
     {
-        Texture_DrawSprite(mel_sprites, i, placeX, placeY, spriteH, Debug_White);
+        mgdl_DrawSpriteEx(mel_sprites, i, placeX, placeY, scale, Debug_White);
         placeY -= spriteH;
     }
 }
@@ -247,21 +251,8 @@ void Example::DrawIcosa()
 
 void Example::DrawTexture()
 {
-    Texture_Draw(barb, 100, mgdl_GetScreenHeight(), 1.0f);
-    /*
-    // Draw Texture
-    Texture_Draw2DAligned(AssetManager_GetTexture(barb),
-            0,
-            mgdl_GetScreenHeight()/2,
-            1.0f,
-            LJustify, Centered);
-            */
-
-    Texture_Draw(debugFont,
-            0,
-            mgdl_GetScreenHeight()/2,
-            1.0f);
-
+    Vector2 pos = mgdl_CalculateAlignedTopLeft(mgdl_GetScreenWidth()/2, mgdl_GetScreenHeight()/2, mgdl_GetInt(barb, MGDL_TEXTURE_WIDTH), mgdl_GetInt(barb, MGDL_TEXTURE_HEIGHT), Centered, Centered);
+    mgdl_DrawTexture(barb, pos.x, pos.y);
 }
 
 void Example::DrawScene ( Scene* scene, Vector3 scale)
@@ -354,12 +345,14 @@ void DrawJoystick(short x, short y, short size)
     Vector2 jdir = WiiController_GetNunchukJoystickDirection(mgdl_GetController(0));
     short jleft= x + jsize/2 + jdir.x * box-h;
     short jtop = y - jsize/2 - jdir.y * box-h;
-    mgdl_DrawRectangleLines(x-jsize, y, x+jsize*2, y-jsize*3, jc);
+    // Lined Rectangle shows limits
+    mgdl_DrawRectangleLines(x-jsize, y, box*3, box*3, jc);
     if (jdir.x != 0.0f || jdir.y != 0.0f)
     {
         jc = Palette_GetColor(blessing, 2);
     }
-    mgdl_DrawRectangle(jleft, jtop, jleft+box, jtop-box, jc);
+    // Filled rectangle shows position
+    mgdl_DrawRectangle(jleft, jtop, box, box, jc);
 }
 
 
@@ -488,80 +481,61 @@ void Example::DrawAudio()
 {
     Menu_Start(audioMenu, 10, mgdl_GetScreenHeight()-10, 128);
 
-    if (testmp3Music != nullptr)
+    if (Handle_IsValid(testmp3Music))
     {
         // MP3 music
         if (Menu_Button(audioMenu, "Play Mp3"))
         {
-            Audio_PlaySound(testmp3Music);
+            mgdl_PlaySound(testmp3Music);
         }
-        bool paused = Audio_GetSoundStatus(testmp3Music) == Audio_StatePaused;
+        bool paused = mgdl_GetBool(testmp3Music, MGDL_SOUND_PAUSED);
         if (!paused)
         {
             if (Menu_Button(audioMenu, "Pause Mp3"))
             {
-                Audio_PauseSound(testmp3Music);
-            }
-        }
-        else
-        {
-            if (Menu_Button(audioMenu, "Resume Mp3"))
-            {
-                Audio_ResumeSound(testmp3Music);
+                mgdl_PauseSound(testmp3Music);
             }
         }
         if (Menu_Button(audioMenu, "Stop Mp3"))
         {
-            Audio_StopSound(testmp3Music);
+            mgdl_StopSound(testmp3Music);
         }
-            Menu_TextF(audioMenu, "Music elapsed: %.2f", Audio_GetSoundElapsedMs(testmp3Music)/1000.0f);
-            mgdlAudioStateEnum musicStatus = Audio_GetSoundStatus(testmp3Music);
+            Menu_TextF(audioMenu, "Music elapsed: %.2f", mgdl_GetInt(testmp3Music, MGDL_SOUND_ELAPSED_MS)/1000.0f);
+            mgdlAudioStateEnum musicStatus = (mgdlAudioStateEnum)mgdl_GetInt(testmp3Music, MGDL_SOUND_STATUS_ENUM);
             DrawSoundStatus(musicStatus);
-
     }
-
-    if (sampleMusic != nullptr)
-    { // OGG music
+    if (Handle_IsValid(sampleMusic))
+    {
+        // MP3 music
         if (Menu_Button(audioMenu, "Play Ogg"))
         {
-            Audio_PlaySound(sampleMusic);
+            mgdl_PlaySound(sampleMusic);
         }
-        bool paused = Audio_GetSoundStatus(sampleMusic) == Audio_StatePaused;
+        bool paused = mgdl_GetBool(sampleMusic, MGDL_SOUND_PAUSED);
         if (!paused)
         {
             if (Menu_Button(audioMenu, "Pause Ogg"))
             {
-                Audio_PauseSound(sampleMusic);
-            }
-        }
-        else
-        {
-            if (Menu_Button(audioMenu, "Resume Ogg"))
-            {
-                Audio_ResumeSound(sampleMusic);
+                mgdl_PauseSound(sampleMusic);
             }
         }
         if (Menu_Button(audioMenu, "Stop Ogg"))
         {
-            Audio_StopSound(sampleMusic);
+            mgdl_StopSound(sampleMusic);
         }
-        if (Menu_Toggle(audioMenu, "Loop Ogg", &musicLooping ))
-        {
-            // Music_SetLooping(sampleMusic, musicLooping);
-        }
-            Menu_TextF(audioMenu, "Music elapsed: %.2f", Audio_GetSoundElapsedMs(sampleMusic)/1000.0f);
-            mgdlAudioStateEnum musicStatus = Audio_GetSoundStatus(sampleMusic);
+            Menu_TextF(audioMenu, "Music elapsed: %.2f", mgdl_GetInt(sampleMusic, MGDL_SOUND_ELAPSED_MS)/1000.0f);
+            mgdlAudioStateEnum musicStatus = (mgdlAudioStateEnum)mgdl_GetInt(sampleMusic, MGDL_SOUND_STATUS_ENUM);
             DrawSoundStatus(musicStatus);
-
     }
+
 
     if (Menu_Button(audioMenu, "Play Sound"))
     {
-        Audio_PlaySound(blip);
+        mgdl_PlaySound(blip);
     }
-    u32 blipElapsed = Audio_GetSoundElapsedMs(blip);
+    u32 blipElapsed = mgdl_GetInt(blip, MGDL_SOUND_ELAPSED_MS);
     Menu_TextF(audioMenu, "Sound elapsed: %.2f", blipElapsed/1000.0f);
-    mgdlAudioStateEnum soundStatus = Audio_GetSoundStatus(blip);
+    mgdlAudioStateEnum soundStatus = (mgdlAudioStateEnum)mgdl_GetInt(blip, MGDL_SOUND_STATUS_ENUM);
     DrawSoundStatus(soundStatus);
 }
 #if 0

@@ -5,7 +5,7 @@
 
 
 /** @file mgdl-color.h
- * @ingroup core draw2d
+* @ingroup core draw2d
 * @brief Color struct and functions
 */
 
@@ -81,12 +81,46 @@ extern "C"
 #endif
 
 
-
+/**
+ * @brief Creates a new color from normalized values.
+ * @param red Red channel value from 0 to 1
+ * @param green Red channel value from 0 to 1
+ * @param blue Red channel value from 0 to 1
+ * @param alpha Alpha channel value from 0 to 1
+ * @returns The color
+ */
 color32 Color_Create4f(float red, float green, float blue, float alpha);
-color32 Color_Create4b(u8 red, u8 green, u8 blue, u8 alpha);
-RGBAf Color_HexToFloats(u32 color);
-void Color_HexToGLfloats(color32 color, GLfloat* target4f);
+
+/**
+ * @brief Creates a new color from normalized values.
+ * @param componentes Struct containing the components
+ * @returns The color
+ */
 u32 Color_FloatsToHex(RGBAf components);
+
+/**
+ * @brief Creates a new color from byte values
+ * @param red Red channel value from 0 to 255
+ * @param green Red channel value from 0 to 255
+ * @param blue Red channel value from 0 to 255
+ * @param alpha Alpha channel value from 0 to 255
+ * @returns The color
+ */
+
+color32 Color_Create4b(u8 red, u8 green, u8 blue, u8 alpha);
+/**
+ * @brief Decomposes a color to normalized components
+ * @param color The color to decompose
+ * @returns The struct with components
+ */
+RGBAf Color_HexToFloats(u32 color);
+
+/**
+ * @brief Decomposes a color to normalized components in target array
+ * @param color The color to decompose
+ * @param target4f Array of size 4 in order RGBA
+ */
+void Color_HexToGLfloats(color32 color, GLfloat* target4f);
 
 #ifdef __cplusplus
 }

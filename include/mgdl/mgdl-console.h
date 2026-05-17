@@ -6,6 +6,9 @@
 * @brief Functions to use the Wii/Linux/Win/etc console
 */
 
+/**
+ * @brief Enums for colors available in the console
+ */
 enum ConsoleTextColor
 {
     ConsoleText_Black = 30,
@@ -26,8 +29,19 @@ typedef enum ConsoleTextColor ConsoleTextColor;
 extern "C" {
 #endif
 
+/**
+* @brief Print colorful text to console
+* @param color What color to use
+* @param text Text to print
+*/
 void Console_Print(ConsoleTextColor color, const char* text);
 
+/**
+* @brief Print colorful formatted text to console
+* @param color What color to use
+* @param text Formatting string
+* @param VA_ARGS Parameters to format parameters
+*/
 void Console_Printf(ConsoleTextColor color, const char* format, ...);
 
 #define MGDL_CONSOLECOLOR_PRE "\033["

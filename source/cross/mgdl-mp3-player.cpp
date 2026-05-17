@@ -2,14 +2,13 @@
 #include <mgdl/mgdl-mp3-player.h>
 
 
-#include <mgdl/mgdl-alloc.h>
+#include <mgdl/mgdl-memory.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-types.h>
 
 static MusicMp3* musics;
 
 #include <stdio.h>
-#include <mgdl/mgdl-cache.h>
 static FILE* mp3FilePtr = nullptr;
 static void* mp3FileBuffer = nullptr;
 static sizetype mp3FileSize = 0;

@@ -71,10 +71,10 @@ float Platform_GetAspectRatio(void)
 
 WiiController* Platform_GetController(int controllerNumber)
 {
-	if (controllerNumber >= 0 && controllerNumber < MGDL_MAX_CONTROLLERS)
+	if (controllerNumber < 0 && controllerNumber >= MGDL_MAX_CONTROLLERS)
 	{
-		Platform* platform = Platform_GetSingleton();
-		return &platform->controllers[controllerNumber];
+        controllerNumber = 0;
 	}
-	return nullptr;
+    Platform* platform = Platform_GetSingleton();
+    return &platform->controllers[controllerNumber];
 }

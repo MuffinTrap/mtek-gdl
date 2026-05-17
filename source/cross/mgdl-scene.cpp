@@ -60,7 +60,7 @@ void Scene_DebugDrawNode_( Node* node, Menu* menu, short depth, short* index, u3
 	{
 		Menu_TextF(menu, "%d: %s", drawIndex, "ROOT");
 	}
-	if (Flag_IsSet(debugFlags, Scene_DebugFlag::Position))
+	if (Flag_IsSetAny(debugFlags, Scene_DebugFlag::Position))
 	{
 		Vector3 &p = node->transform->position;
 		Menu_TextF(menu, "P(%.1f,%.1f,%.1f)", drawIndex, p.x, p.y, p.z);
@@ -97,7 +97,7 @@ void Scene_DrawNode ( Node* node )
 {
 	glPushMatrix();
 		Node_Draw(node);
-		if (Flag_IsSet(node->enabledElements, NodeChildren))
+		if (Flag_IsSetAny(node->enabledElements, NodeChildren))
 		{
 			for(sizetype i = 0; i < DynamicArray_CountNode(node->children); i++)
 			{

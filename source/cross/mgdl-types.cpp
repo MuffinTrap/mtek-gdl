@@ -9,6 +9,11 @@ AssetType Handle_Type(Handle handle)
 	return (AssetType)((u32)handle >> 16);
 }
 
+bool Handle_IsValid(Handle handle)
+{
+	return (u32)handle != MGDL_INVALID_HANDLE;
+}
+
 static u32 CreateHandle(AssetType assetType, u16 index)
 {
 	return (u32)((u32)assetType << 16 | (u32)index);

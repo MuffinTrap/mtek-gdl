@@ -1,6 +1,6 @@
 #include <mgdl/mgdl-scene.h>
 #include <mgdl/mgdl-opengl_util.h>
-#include <mgdl/mgdl-alloc.h>
+#include <mgdl/mgdl-memory.h>
 #include <cstring>
 
 static GLfloat whiteSpecular[4] = {1.0f, 1.0f, 1.0f, 1.0f};

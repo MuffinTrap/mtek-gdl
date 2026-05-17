@@ -159,37 +159,42 @@ char* mgdl_BufferPrintf(const char* format, ...)
 // BITFIELD FUNCTIONS FOR FLAG PARAMETERS
 // **************************************
 
-bool Flag_IsSet(u32 bitfield, u32 flag)
+bool Flag_IsSetAny(u32 bitfield, u32 bits)
 {
-	return (bitfield & flag) != 0;
+	return (bitfield & bits) != 0;
 }
 
-bool Flag_IsSetAll(u32 bitfield, u32 flags)
+bool Flag_IsSetAll(u32 bitfield, u32 bits)
 {
-	return (bitfield & flags) == flags;
+	return (bitfield & bits) == bits;
 }
 
-u32 Flag_Set(u32 bitfield, u32 flag)
+u32 Flag_SetAll(u32 bitfield, u32 bits)
 {
-	return (bitfield | flag);
+	return (bitfield | bits);
 }
 
-u32 Flag_SetAll(u32 bitfield, u32 flags)
+u32 Flag_UnsetAll(u32 bitfield, u32 bits)
 {
-	return (bitfield | flags);
+	return (bitfield & ~bits);
 }
 
-u32 Flag_Unset(u32 bitfield, u32 flag)
+bool Flag_IsBitSet(u32 bitfield, u8 bitIndex)
 {
-	return (bitfield & ~flag);
+	return (bitfield & (1<<bitIndex)) != 0;
 }
 
-u32 Flag_UnsetAll(u32 bitfield, u32 flags)
+u32 Flag_SetBit(u32 bitfield, u8 bitIndex)
 {
-	return (bitfield & ~flags);
+	return (bitfield | (1<<bitIndex));
 }
 
-Vector2 CalculateAlignedTopLeft(float x, float y, float width, float height, AlignmentModes alignmentX, AlignmentModes alignmentY)
+u32 Flag_UnsetBit(u32 bitfield, u8 bitIndex)
+{
+	return (bitfield & ~(1<<bitIndex));
+}
+
+Vector2 mgdl_CalculateAlignedTopLeft(float x, float y, float width, float height, AlignmentModes alignmentX, AlignmentModes alignmentY)
 {
 	Vector2 topleft = Vector2New(x, y);
 	if (alignmentX == RJustify)
@@ -214,8 +219,8 @@ Vector2 CalculateAlignedTopLeft(float x, float y, float width, float height, Ali
 // ******************************
 // ENDIANNES HANDLING FUNCTION
 // ******************************
-#pragma CXX diagnostic push
-#pragma CXX diagnostic ignored "-Warray-bounds"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warray-bounds"
 
 void RevBytes(void *var, int size) {
 
@@ -228,4 +233,4 @@ void RevBytes(void *var, int size) {
 		((u8*)var)[i] = temp[(size-1)-i];
 	}
 }
-#pragma CXX diagnostic pop
+#pragma clang diagnostic pop

@@ -44,7 +44,7 @@ Node* Node_Clone(Node* source, NodeFlagField cloningFlags)
 {
 	Node* clone = nullptr;
 	sizetype childAmount = 1;
-	if (Flag_IsSet(cloningFlags, NodeChildren))
+	if (Flag_IsSetAny(cloningFlags, NodeChildren))
 	{
 		sizetype childCount = DynamicArray_CountNode(source->children);
 		if (childCount > 1)
@@ -54,7 +54,7 @@ Node* Node_Clone(Node* source, NodeFlagField cloningFlags)
 	}
 	clone = Node_Create(childAmount);
 
-	if (Flag_IsSet(cloningFlags, NodeChildren))
+	if (Flag_IsSetAny(cloningFlags, NodeChildren))
 	{
 		for(sizetype i = 0; i < DynamicArray_CountNode(source->children); i++)
 		{
@@ -66,7 +66,7 @@ Node* Node_Clone(Node* source, NodeFlagField cloningFlags)
 		}
 	}
 
-	if (Flag_IsSet(cloningFlags, NodeTransform))
+	if (Flag_IsSetAny(cloningFlags, NodeTransform))
 	{
 		clone->transform = Transform_Clone(source->transform);
 	}
@@ -154,7 +154,7 @@ void Node_ApplyTransform(Node* node)
 
 void Node_Draw(Node* node)
 {
-	if (Flag_IsSet(node->enabledElements, NodeTransform) )
+	if (Flag_IsSetAny(node->enabledElements, NodeTransform) )
 	{
 		const Vector3 t = node->transform->position;
 		glTranslatef(t.x, t.y, t.z);
@@ -169,9 +169,9 @@ void Node_Draw(Node* node)
 	}
 
 	Mesh* m = node->mesh;
-	if (m != nullptr && Flag_IsSet(node->enabledElements, NodeMesh))
+	if (m != nullptr && Flag_IsSetAny(node->enabledElements, NodeMesh))
 	{
-		if (node->material != nullptr && Flag_IsSet(node->enabledElements, NodeMaterial))
+		if (node->material != nullptr && Flag_IsSetAny(node->enabledElements, NodeMaterial))
 		{
 			// TODO do not reapply same material
 			Material_Apply(node->material);

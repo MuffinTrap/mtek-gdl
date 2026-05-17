@@ -2,9 +2,8 @@
 #include <mgdl/mgdl-spriteatlas.h>
 #include <mgdl/mgdl-defaultfont.h>
 #include <mgdl/mgdl-opengl_util.h>
-#include <mgdl/mgdl-cache.h>
 #include <mgdl/mgdl-assert.h>
-#include <mgdl/mgdl-alloc.h>
+#include <mgdl/mgdl-memory.h>
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-texture.h>
@@ -34,9 +33,9 @@ s16 Texture_GetCharacterHeight(Texture* texture) { return texture->spriteAtlas->
 void SpriteAtlas_MapSimple(Texture* texture, short charw, short charh, char firstCharacter )
 {
 	mgdl_assert_print(texture != nullptr, "SpriteAtlas_MapSimple got nullptr for texture\n");
+	mgdl_assert_print(texture->spriteAtlas == nullptr, "SpriteAtlas_MapSimple Already mapped\n");
 
-	SpriteAtlas* font = SpriteAtlas_Create();
-	texture->spriteAtlas = font;
+	texture->spriteAtlas = SpriteAtlas_Create();
 
 	SpriteAtlas_Bind(texture, charw, charh, firstCharacter);
 }

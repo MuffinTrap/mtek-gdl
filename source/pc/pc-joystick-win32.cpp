@@ -150,7 +150,7 @@ void Joystick_ReadInputs()
                 u32 wiiButton = ButtonToWiiButton(GamepadButtons[buttonIndex]);
                 bool isDown = WiiController_ButtonHeld(c, wiiButton);
 
-                if (Flag_IsSet(stateOut.Gamepad.wButtons, GamepadButtons[buttonIndex]))
+                if (Flag_IsSetAny(stateOut.Gamepad.wButtons, GamepadButtons[buttonIndex]))
                 {
                     // If this button is not down, check the controller state
                     if (isDown == false)

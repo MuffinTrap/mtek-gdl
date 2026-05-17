@@ -2,7 +2,7 @@
 #include <mgdl/mgdl-audio.h>
 #include <mgdl/mgdl-dynamic_array.h>
 #include <mgdl/mgdl-logger.h>
-#include <mgdl/mgdl-alloc.h>
+#include <mgdl/mgdl-memory.h>
 
 // TODO Singleton
 static AssetManager m_manager;
@@ -131,9 +131,9 @@ TextureHandle AssetManager_LoadTexture(const char* filename)
 	TextureFilterModes filterMode = TextureFilterModes::Linear;
 	Texture* texture = Texture_LoadFile(filename, filterMode);
 	ASSERT_DEBUG(texture != nullptr);
-	Log_InfoF("Texture %s size is %d %d\n", filename, texture->width, texture->height);
 	if (texture != nullptr)
 	{
+		Log_InfoF("Texture %s size is %d %d\n", filename, texture->width, texture->height);
 		// TODO how much memory the image data takes extracted
 		// TODO Convert from image format to bytes per pixe;
 		// TODO add a function to texture that tells the memory usage
@@ -143,6 +143,10 @@ TextureHandle AssetManager_LoadTexture(const char* filename)
 		handle = Handle_CreateTexture((u16)DynamicArray_AddTextureAsset(array, ta));
 
 		Log_InfoF("Texture %s got handle %u\n", filename, Handle_Index(handle));
+	}
+	else
+	{
+		handle = MGDL_INVALID_HANDLE;
 	}
 	return handle;
 }
@@ -200,6 +204,10 @@ ImageHandle AssetManager_LoadPNG(const char* filename)
 		ImageAsset ta = AssetManager_CreateImageAsset(image, filename);
 		handle = Handle_CreateImage((u16)DynamicArray_AddImageAsset(array, ta));
 	}
+	else
+	{
+		handle = MGDL_INVALID_HANDLE;
+	}
 	return handle;
 }
 
@@ -227,6 +235,10 @@ SoundHandle AssetManager_LoadSound(const char* filename, SoundFileType fileType)
 
 		SoundAsset ta = AssetManager_CreateSoundAsset(snd, filename);
 		handle = Handle_CreateSound( (u16) DynamicArray_AddSoundAsset(array, ta));
+	}
+	else
+	{
+		handle = MGDL_INVALID_HANDLE;
 	}
 	return handle;
 }
@@ -268,6 +280,10 @@ PaletteHandle AssetManager_LoadPalette(const char* filename)
 
 		PaletteAsset ta = AssetManager_CreatePaletteAsset(pal, filename);
 		handle = Handle_CreatePalette((u16) DynamicArray_AddPaletteAsset(array, ta));
+	}
+	else
+	{
+		handle = MGDL_INVALID_HANDLE;
 	}
 	return handle;
 }

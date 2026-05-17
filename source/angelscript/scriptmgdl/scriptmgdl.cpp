@@ -29,6 +29,9 @@ static void RegisterTypes(asIScriptEngine* as_engine)
 	as_engine->RegisterTypedef("u8", "uint8");
 	as_engine->RegisterTypedef("s8", "int8");
 
+	// AngelScript does not have char
+	as_engine->RegisterTypedef("char", "uint8");
+
 	as_engine->RegisterTypedef("u16", "uint16");
 	as_engine->RegisterTypedef("s16", "int16");
 
@@ -83,6 +86,13 @@ static void RegisterDrawing(asIScriptEngine* as_engine)
 	as_engine->RegisterGlobalProperty("const color32 Debug_White", (void*)&Debug_White);
 
 
+	// Font and Sprite Atlas
+	as_engine->RegisterGlobalFunction("void mgdl_CreateFont(TextureHandle texture, s16 characterWidth, s16 characterHeight, char firstCharacter)", asFUNCTION(mgdl_CreateFont), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_CreateSpriteAtlas(TextureHandle texture, s16 spriteWidth, s16 spriteHeight)", asFUNCTION(mgdl_CreateSpriteAtlas), asCALL_CDECL);
+
+
+	as_engine->RegisterGlobalFunction("void mgdl_DrawSprite(TextureHandle texture, u16 spriteIndex, float x, float y, color32 color)", asFUNCTION(mgdl_DrawSprite), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_DrawSprite(TextureHandle texture, u16 spriteIndex, float x, float y, float scale, color32 color)", asFUNCTION(mgdl_DrawSpriteEx), asCALL_CDECL);
 
 	// Palette functions
 	as_engine->RegisterGlobalFunction("PaletteHandle mgdl_GetDefaultPalette()", asFUNCTION(mgdl_GetDefaultPalette), asCALL_CDECL);
@@ -122,12 +132,21 @@ static void RegisterController(asIScriptEngine* as_engine)
 	as_engine->RegisterGlobalFunction("bool mgdl_IsButtonPressed(int controller, WiiButtons button)", asFUNCTION(mgdl_IsButtonPressed), asCALL_CDECL);
 }
 
+static void RegisterSound(asIScriptEngine* as_engine)
+{
+	as_engine->RegisterGlobalFunction("void mgdl_PlaySound(SoundHandle soundHandle)", asFUNCTION(mgdl_PlaySound), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_PauseSound(SoundHandle soundHandle)", asFUNCTION(mgdl_PauseSound), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_StopSound(SoundHandle soundHandle)", asFUNCTION(mgdl_StopSound), asCALL_CDECL);
+
+}
+
 
 void RegisterMGDL(asIScriptEngine* as_engine)
 {
 	RegisterTypes(as_engine);
 	RegisterMain(as_engine);
 	RegisterDrawing(as_engine);
+	RegisterSound(as_engine);
 	RegisterController(as_engine);
 	RegisterOpenGLUtilsAndGlut(as_engine);
 }

@@ -1,5 +1,5 @@
 #include <mgdl/mgdl-palette.h>
-#include <mgdl/mgdl-alloc.h>
+#include <mgdl/mgdl-memory.h>
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-png.h>
 #include <mgdl/mgdl-assert.h>

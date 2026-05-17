@@ -1,6 +1,5 @@
 #include <mgdl/mgdl-texture.h>
-#include <mgdl/mgdl-cache.h>
-#include <mgdl/mgdl-alloc.h>
+#include <mgdl/mgdl-memory.h>
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-png.h>
 #include <mgdl/mgdl-logger.h>

@@ -288,8 +288,11 @@ extern "C" {
 RectF RectF_Create(float x, float y, float w, float h);
 RectF Rect_CreateV2f(Vector2 position, Vector2 size);
 
+#define MGDL_INVALID_HANDLE 0xdead0bee
 u16 Handle_Index(Handle handle);
 AssetType Handle_Type(Handle handle);
+bool Handle_IsValid(Handle handle);
+
 TextureHandle Handle_CreateTexture(u16 index);
 SoundHandle Handle_CreateSound(u16 index);
 PaletteHandle Handle_CreatePalette(u16 index);

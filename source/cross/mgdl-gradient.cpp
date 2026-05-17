@@ -28,7 +28,7 @@ void Gradient_PushColor(struct Gradient* gradient, color32 color, float stop)
 }
 
 
-void Gradient_PushColorArray(struct Gradient* gradient, color32* colors, short amount)
+void Gradient_PushColorArray(struct Gradient* gradient, color32* colors, u8 amount)
 {
     ASSERT_DEBUG(gradient != nullptr);
     if (amount < GRADIENT_SIZE)

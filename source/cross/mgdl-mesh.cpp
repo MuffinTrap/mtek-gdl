@@ -40,7 +40,7 @@ sizetype Mesh_Init (Mesh* mesh, sizetype vertexCount, sizetype indexCount, u32 c
 		byteCount += positionFloats * sizeof(float);
 	}
 
-	if (Flag_IsSet(creationFlags, FlagNormals))
+	if (Flag_IsSetAny(creationFlags, FlagNormals))
 	{
 		// 3 floats per normal
 		sizetype normalFloats = vertexCount * 3;
@@ -48,7 +48,7 @@ sizetype Mesh_Init (Mesh* mesh, sizetype vertexCount, sizetype indexCount, u32 c
 		byteCount += normalFloats * sizeof(float);
 	}
 
-	if (Flag_IsSet(creationFlags, FlagUVs))
+	if (Flag_IsSetAny(creationFlags, FlagUVs))
 	{
 		// 2 floats per uv
 		sizetype uvFloats = vertexCount * 2;
@@ -56,7 +56,7 @@ sizetype Mesh_Init (Mesh* mesh, sizetype vertexCount, sizetype indexCount, u32 c
 		byteCount += uvFloats * sizeof(float);
 	}
 
-	if (Flag_IsSet(creationFlags, FlagColors))
+	if (Flag_IsSetAny(creationFlags, FlagColors))
 	{
 		// 3 floats per color
 		sizetype colorFloats = vertexCount * 3;
@@ -385,7 +385,7 @@ Mesh* Mesh_CreateIcosahedron(u32 creationFlags)
 		 Z, -X,  N,
 		-Z, -X,  N};
 
-    if (Flag_IsSet(creationFlags, FlagNormals))
+    if (Flag_IsSetAny(creationFlags, FlagNormals))
 	{
 		delete[] icosa->normals;
 		icosa->normals = icosa->positions;
@@ -439,7 +439,7 @@ Mesh * Mesh_CreateQuad (u32 creationFlags)
 		sz, sz, 0.0f,
 		-sz, sz, 0.0f};
 
-	if (Flag_IsSet(creationFlags, FlagNormals))
+	if (Flag_IsSetAny(creationFlags, FlagNormals))
 	{
 		for (int i = 0; i < 4*3; i+=3)
 		{
@@ -449,7 +449,7 @@ Mesh * Mesh_CreateQuad (u32 creationFlags)
 		}
 	}
 
-	if (Flag_IsSet(creationFlags, FlagUVs))
+	if (Flag_IsSetAny(creationFlags, FlagUVs))
 	{
 		Mesh_SetUVToArray(quad, 0, Vector2New(0.0f, 0.0f));
 		Mesh_SetUVToArray(quad, 1, Vector2New(1.0f, 0.0f));

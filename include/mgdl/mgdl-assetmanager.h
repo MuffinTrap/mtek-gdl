@@ -67,8 +67,23 @@ extern "C"
 {
 #endif
 
+	/**
+	 * @brief Initializes the asset manager and reservers space for assets. Loads the default assets. Must be called before loading anything.
+	 */
 void AssetManager_Init();
+
+/**
+ * @brief Loads a texture from file. Will not load again if a texture with same name is already loaded.
+ * @param filename Path to the texture relative to the executable
+ * @returns Handle to the loaded texture
+ */
 TextureHandle AssetManager_LoadTexture(const char* filename);
+
+/**
+ * @brief Returns the texture asset associated with the given handle.
+ * @param handle Handle to the texture. If handle is invalid, the default texture is returned.
+ * @returns Pointer to the texture.
+ */
 Texture* AssetManager_GetTexture(TextureHandle handle);
 ImageHandle AssetManager_LoadPNG(const char* filename);
 SoundHandle AssetManager_LoadSound(const char* filename, SoundFileType fileType);

@@ -23,7 +23,7 @@ static void CheckForQuit()
 {
     WiiController* firstController = Platform_GetController(0);
     // Test for ESC unless game handles it
-	if (Flag_IsSet(platformWii.initFlags, FlagGameHandlesHOME) == false)
+	if (Flag_IsSetAny(platformWii.initFlags, FlagGameHandlesHOME) == false)
 	{
 		if (WiiController_ButtonPress(firstController, ButtonHome))
 		{

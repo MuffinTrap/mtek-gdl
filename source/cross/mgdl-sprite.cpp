@@ -20,8 +20,8 @@ void Texture_DrawBatchedSprite(Texture* texture, u16 spriteIndex, s16 x, s16 y, 
 	Vector3 drawPos = Vector3New(x,y,0);
 	SpriteAtlas* atlas = texture->spriteAtlas;
 
-	float width = atlas->aspectRatio * scale;
-	float height = scale;
+	float width = atlas->spriteWidth * scale;
+	float height = atlas->spriteHeight * scale;
 	const float uvW = atlas->uvWidth;
 	const float uvH = atlas->uvHeight;
 
@@ -49,11 +49,14 @@ void Texture_DrawBatchedSprite(Texture* texture, u16 spriteIndex, s16 x, s16 y, 
 void Texture_DrawSprite(Texture* texture, u16 spriteIndex, s16 x, s16 y, float scale, color32 tintColor)
 {
 	ASSERT_DEBUG(texture != nullptr);
-	Texture_BeginSpriteBatch(texture);
+	if (texture->spriteAtlas != nullptr)
+	{
+		Texture_BeginSpriteBatch(texture);
 
-	Texture_DrawBatchedSprite(texture, spriteIndex, x, y, scale, tintColor);
+		Texture_DrawBatchedSprite(texture, spriteIndex, x, y, scale, tintColor);
 
-	Texture_EndSpriteBatch();
+		Texture_EndSpriteBatch();
+	}
 }
 
 void Texture_EndSpriteBatch(void)

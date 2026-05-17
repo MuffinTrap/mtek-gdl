@@ -65,7 +65,7 @@ static void CheckForQuit()
 {
     WiiController* firstController = Platform_GetController(0);
     // Test for ESC unless game handles it
-	if (Flag_IsSet(platformWin32.initFlags, FlagGameHandlesHOME) == false)
+	if (Flag_IsSetAny(platformWin32.initFlags, FlagGameHandlesHOME) == false)
 	{
 		if (WiiController_ButtonPress(firstController, ButtonHome))
 		{
@@ -467,8 +467,8 @@ void Platform_Init(const char* windowName,
 
 
 	// Set up splash screen
-	const bool SplashFlag = Flag_IsSet(initFlags, PlatformInitFlag::FlagSplashScreen);
-    const bool HoldAFlag = Flag_IsSet(initFlags, PlatformInitFlag::FlagPauseUntilA);
+	const bool SplashFlag = Flag_IsSetAny(initFlags, PlatformInitFlag::FlagSplashScreen);
+    const bool HoldAFlag = Flag_IsSetAny(initFlags, PlatformInitFlag::FlagPauseUntilA);
     // Set up A hold variables
 
     if (HoldAFlag||SplashFlag)

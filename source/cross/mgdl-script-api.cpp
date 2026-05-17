@@ -25,7 +25,7 @@ void mgdl_DrawText(const zstr& text, float x, float y,  float fontSize, color32 
 {
 	mgdl_DrawText(x, y, zstr_cstr(&text), fontSize, color);
 }
-void mgdl_DrawTextV(const zstr& text, Vector2 topleft,  float fontSize, color32 color)
+void mgdl_DrawTextV(const zstr& text, const Vector2& topleft,  float fontSize, color32 color)
 {
 	mgdl_DrawText(topleft.x, topleft.y, zstr_cstr(&text), fontSize, color);
 }
@@ -36,7 +36,7 @@ void mgdl_DrawTextEx(TextureHandle font, const zstr& text, float x, float y,  fl
 	ASSERT_DEBUG(fontTexture->spriteAtlas != nullptr);
 	Texture_DrawText(fontTexture, color, x, y, fontSize, zstr_cstr(&text));
 }
-void mgdl_DrawTextVEx(TextureHandle font, const zstr& text, Vector2 topleft,  float fontSize, color32 color)
+void mgdl_DrawTextVEx(TextureHandle font, const zstr& text, const Vector2& topleft,  float fontSize, color32 color)
 {
 	mgdl_DrawTextEx(font, text, topleft.x, topleft.y, fontSize, color);
 }
@@ -49,9 +49,7 @@ TextureHandle mgdl_LoadTexture(const zstr& filename)
 }
 TextureHandle mgdl_LoadTexture(const char* filename)
 {
-	Log_InfoF("Angel Load texture from file %s\n", filename);
 	TextureHandle handle = AssetManager_LoadTexture(filename);
-	Log_InfoF("Angel got texture handle %u\n", handle);
 	return handle;
 }
 
@@ -68,11 +66,18 @@ void mgdl_SetTextureWrap(TextureHandle texture, TextureWrapModes mode)
 	Texture_SetWrapMode(tex, mode);
 }
 
-void mgdl_CreateFontUVs(TextureHandle texture, s16 characterWidth, s16 characterHeight, char firstCharacter)
+void mgdl_CreateFont(TextureHandle texture, s16 characterWidth, s16 characterHeight, char firstCharacter)
 {
 	Texture* tex = AssetManager_GetTexture(texture);
 	ASSERT_DEBUG(tex != nullptr);
 	SpriteAtlas_MapSimple(tex, characterWidth, characterHeight, firstCharacter);
+}
+
+void mgdl_CreateSpriteAtlas(TextureHandle texture, s16 spriteWidth, s16 spriteHeight)
+{
+	Texture* tex = AssetManager_GetTexture(texture);
+	ASSERT_DEBUG(tex != nullptr);
+	SpriteAtlas_MapSimple(tex, spriteWidth, spriteHeight, 0);
 }
 
 void mgdl_DrawTexture(TextureHandle handle, float x, float y)
@@ -82,9 +87,23 @@ void mgdl_DrawTexture(TextureHandle handle, float x, float y)
 	Texture_Draw(tex, x, y, 1.0f);
 }
 
-void mgdl_DrawTextureV(TextureHandle handle, Vector2 position)
+void mgdl_DrawTextureV(TextureHandle handle, const Vector2& topLeft)
 {
-	mgdl_DrawTexture(handle, position.x, position.y);
+	mgdl_DrawTexture(handle, topLeft.x, topLeft.y);
+}
+
+
+void mgdl_DrawSprite(TextureHandle handle, u16 spriteIndex,float x, float y, color32 color)
+{
+	Texture* tex = AssetManager_GetTexture(handle);
+	ASSERT_DEBUG(tex != nullptr);
+	Texture_DrawSprite(tex, spriteIndex, x, y, 1.0f, color);
+}
+void mgdl_DrawSpriteEx(TextureHandle handle, u16 spriteIndex,float x, float y, float scale, color32 color)
+{
+	Texture* tex = AssetManager_GetTexture(handle);
+	ASSERT_DEBUG(tex != nullptr);
+	Texture_DrawSprite(tex, spriteIndex, x, y, scale, color);
 }
 
 // IMAGES
@@ -100,7 +119,26 @@ void mgdl_PlaySound(SoundHandle handle)
 {
 	Sound* snd = AssetManager_GetSound(handle);
 	ASSERT_DEBUG(snd != nullptr);
-	Audio_PlaySound(snd);
+	if (Audio_GetSoundStatus(snd) == Audio_StatePaused)
+	{
+		Audio_ResumeSound(snd);
+	}
+	else
+	{
+		Audio_PlaySound(snd);
+	}
+}
+void mgdl_PauseSound(SoundHandle handle)
+{
+	Sound* snd = AssetManager_GetSound(handle);
+	ASSERT_DEBUG(snd != nullptr);
+	Audio_PauseSound(snd);
+}
+void mgdl_StopSound(SoundHandle handle)
+{
+	Sound* snd = AssetManager_GetSound(handle);
+	ASSERT_DEBUG(snd != nullptr);
+	Audio_StopSound(snd);
 }
 
 
@@ -190,4 +228,141 @@ bool mgdl_IsButtonPressed(int controller, WiiButtons button)
 		}
 	}
 	return false;
+}
+
+bool mgdl_GetBool(Handle handle, mgdlParameter parameter)
+{
+	switch(parameter)
+	{
+		case MGDL_SOUND_LOOPING:
+		{
+			Sound* snd = AssetManager_GetSound(handle);
+			if (snd != nullptr)
+			{
+				return Sound_GetLooping(snd);
+			}
+		}
+			break;
+		case MGDL_SOUND_PAUSED:
+		{
+			Sound* snd = AssetManager_GetSound(handle);
+			if (snd != nullptr)
+			{
+				return Audio_GetSoundStatus(snd) == Audio_StatePaused;
+			}
+		}
+			break;
+		default:
+			Log_ErrorF("mgdl_GetBool no result for parameter %d\n", parameter);
+			return false;
+	}
+	return false;
+}
+void mgdl_SetBool(Handle handle, mgdlParameter parameter, bool value)
+{
+	switch(parameter)
+	{
+		case MGDL_SOUND_LOOPING:
+		{
+			Sound* snd = AssetManager_GetSound(handle);
+			ASSERT_DEBUG(snd != nullptr);
+			Sound_SetLooping(snd, true);
+		}
+		default:
+			Log_ErrorF("mgdl_SetBool no action for parameter %d\n", parameter);
+			break;
+	}
+}
+
+float mgdl_GetFloat(Handle handle, mgdlParameter parameter)
+{
+	return 0.0f;
+}
+void mgdl_SetFloat(Handle handle, mgdlParameter parameter, float value)
+{
+
+}
+
+int mgdl_GetInt(Handle handle, mgdlParameter parameter)
+{
+	switch(parameter)
+	{
+		case MGDL_TEXTURE_WIDTH:
+		{
+			Texture* tex = AssetManager_GetTexture(handle);
+			ASSERT_DEBUG(tex != nullptr);
+			return tex->width;
+		}
+		break;
+		case MGDL_TEXTURE_HEIGHT:
+		{
+			Texture* tex = AssetManager_GetTexture(handle);
+			ASSERT_DEBUG(tex != nullptr);
+			return tex->height;
+		}
+		break;
+		case MGDL_SPRITE_WIDTH:
+		{
+			Texture* tex = AssetManager_GetTexture(handle);
+			ASSERT_DEBUG(tex != nullptr);
+			if (tex->spriteAtlas != nullptr)
+			{
+				return tex->spriteAtlas->spriteWidth;
+			}
+		}
+		break;
+		case MGDL_SPRITE_HEIGHT:
+		{
+			Texture* tex = AssetManager_GetTexture(handle);
+			ASSERT_DEBUG(tex != nullptr);
+			if (tex->spriteAtlas != nullptr)
+			{
+				return tex->spriteAtlas->spriteHeight;
+			}
+		}
+		break;
+		case MGDL_SOUND_ELAPSED_MS:
+		{
+			Sound* snd = AssetManager_GetSound(handle);
+			ASSERT_DEBUG(snd != nullptr);
+			return Audio_GetSoundElapsedMs(snd);
+		}
+		case MGDL_SOUND_STATUS_ENUM:
+		{
+			Sound* snd = AssetManager_GetSound(handle);
+			ASSERT_DEBUG(snd != nullptr);
+			return (int)Audio_GetSoundStatus(snd);
+		}
+		default:
+			Log_ErrorF("mgdl_GetInt no result for parameter %d\n", parameter);
+			break;
+
+	}
+	return 0;
+}
+void mgdl_SetInt(Handle handle, mgdlParameter parameter, int value)
+{
+
+	switch(parameter)
+	{
+		case MGDL_SOUND_ELAPSED_MS:
+		{
+			Sound* snd = AssetManager_GetSound(handle);
+			ASSERT_DEBUG(snd != nullptr);
+			return Audio_SetSoundElapsedMs(snd, value);
+		}
+		break;
+		default:
+			Log_ErrorF("mgdl_SetInt no action for parameter %d\n", parameter);
+			break;
+
+	}
+}
+
+bool mgdl_GetVector2(Handle handle, mgdlParameter parameter, Vector2& vOut){
+	return false;
+}
+void mgdl_SetVector2(Handle handle, mgdlParameter parameter, const Vector2& value)
+{
+
 }

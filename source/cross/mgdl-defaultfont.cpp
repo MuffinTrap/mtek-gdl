@@ -1,11 +1,9 @@
 
 #include <mgdl/mgdl-defaultfont.h>
 #include <mgdl/mgdl-opengl.h>
-#include <mgdl/mgdl-cache.h>
+#include <mgdl/mgdl-memory.h>
 #include <mgdl/mgdl-texture.h>
 #include <mgdl/mgdl-spriteatlas.h>
-
-#include <mgdl/mgdl-alloc.h>
 
 /* This font is taken from https://int10h.org/oldschool-pc-fonts/fontlist/font?toshibasat_8x8
  * and converted to a header with Gimp.

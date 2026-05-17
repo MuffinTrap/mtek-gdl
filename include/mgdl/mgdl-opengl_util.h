@@ -21,29 +21,88 @@ extern "C"
      */
     void mgdl_glClear(GLbitfield flags);
 
-    // NOTE: This exists just to make it easier
-    // to init correctly, because Wii needs more setup than PC
-    // platforms to get the same result
+    /**
+     * @brief Inits the perspective projection correctly on all platforms
+     * @param flovy Vertical field of view
+     * @param nearZ Near plane of camera
+     * @param farZ Far plane of camera
+     */
     void mgdl_InitPerspectiveProjection(float fovy, float nearZ, float farZ);
+    /**
+     * @brief Inits the orthographic projection. The current viewport is used to set the size and position
+     */
     void mgdl_InitOrthoProjection(void);
 
-    // Helper functions to do common OpenGL things
+    /**
+     * @brief Enables or disables the default transparency settings
+     * @param enabled Is transparency on or off
+     */
     void mgdl_glSetTransparency(bool enabled);
+    /**
+     * @brief Enables or disables the alpha test with default treshold
+     * @param enabled Is alpha test on or off
+     */
     void mgdl_glSetAlphaTest(bool enabled);
+    /**
+     * @brief Enables or disables the alpha test with custom treshold
+     * @param enabled Is alpha test on or off
+     * @param treshold What alpha values are discarded
+     */
     void mgdl_glSetAlphaTestTreshold(bool enabled, float treshold);
 
+    /**
+     * @brief Sets the drawing color
+     * @param color The RGBA color
+     */
     void mgdl_glColor32(color32 color);
+    /**
+     * @brief Sets the drawing color with custom alpha
+     * @param color The RGBA color
+     * @param color The alpha that overrides the color's alpha
+     */
     void mgdl_glColor32a(color32 color, float alpha);
+    /**
+     * @brief Sets the clearing color
+     * @param color The RGBA color
+     */
     void mgdl_glClearColor32(color32 color);
 
-    void mgdl_glVertexV3F(Vector3);
-    void mgdl_glVertexV3F_xy(Vector3);
+    /**
+     * @brief Push a vertex
+     * @param v The vertex position
+     */
+    void mgdl_glVertexV3F(Vector3 v);
+    /**
+     * @brief Push a 2D vertex
+     * @param v The vertex position, z is set to 0
+     */
+    void mgdl_glVertexV3F_xy(Vector3 v);
 
+    /**
+     * @brief Push three vertices of a triangle
+     * @param a Point A
+     * @param b Point B
+     * @param c Point C
+     */
     void mgdl_glTriangleV3F(Vector3 a, Vector3 b, Vector3 c);
+    /**
+     * @brief Push three 2D vertices of a triangle. Z is set to 0
+     * @param a Point A
+     * @param b Point B
+     * @param c Point C
+     */
     void mgdl_glTriangleV3F_xy(Vector3 a, Vector3 b, Vector3 c);
 
+    /**
+     * @brief Set face culling enabled or disabled
+     * @param enabled Is back face culling enabled or not
+     */
     void mgdl_SetFaceCulling(bool enabled);
 
+    /**
+     * @brief Set depth testing enabled or disabled
+     * @param enabled Is depth testing enabled or not
+     */
     void mgdl_SetDepthTest(bool enabled);
 
     Vector3 mgdl_GetGLWorldForward();
@@ -58,7 +117,7 @@ extern "C"
     void mgdl_DisableLightIndex(GLint index);
 
 /** NOTE!!!!
-* @brief Sets up the camera.
+* @brief Sets up the camera correctly on all platforms.
 * @details Without this setup the Dolphin is all messed up with the rendering.
 * @note Must have gluLookAt for anything to be visible on Wii when using OpenGX.
 */

@@ -1,10 +1,9 @@
 #include <mgdl/mgdl-ogg-player.h>
 #include <mgdl/mgdl-audio.h>
-#include <mgdl/mgdl-alloc.h>
+#include <mgdl/mgdl-memory.h>
 #include <mgdl/mgdl-sound.h>
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-logger.h>
-#include <mgdl/mgdl-cache.h>
 
 #include <stdio.h>
 

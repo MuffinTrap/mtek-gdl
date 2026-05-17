@@ -50,16 +50,16 @@ Vector3 Vector3HexToColorFunc(int rx, int gx, int bx)
 	return Vector3New(r,g,b);
 }
 
-float Vector3_BezierFuncF( float s, float P0, float C0, float C1, float P1)
+static inline float BezierFuncF( float s, float P0, float C0, float C1, float P1)
 {
 	return ( pow(P0*(1-s),3) + pow(3*C0*s*(1-s),2) + pow(3*C1*s,2)*(1-s) + pow(P1*s,3));
 }
 
-Vector3 Vector3_BezierFuncV3(float s, Vector3 P0, Vector3 C0, Vector3 C1, Vector3 P1)
+Vector3 Vector3SampelBezier(float s, Vector3 P0, Vector3 C0, Vector3 P1, Vector3 C1)
 {
-	float currentX = Vector3_BezierFuncF(s, Vector3_X(P0), Vector3_X(C0), Vector3_X(C1), Vector3_X(P1));
-	float currentY = Vector3_BezierFuncF(s, Vector3_Y(P0), Vector3_Y(C0), Vector3_Y(C1), Vector3_Y(P1));
-	float currentZ = Vector3_BezierFuncF(s, Vector3_Z(P0), Vector3_Z(C0), Vector3_Z(C1), Vector3_Z(P1));
+	float currentX = BezierFuncF(s, Vector3_X(P0), Vector3_X(C0), Vector3_X(C1), Vector3_X(P1));
+	float currentY = BezierFuncF(s, Vector3_Y(P0), Vector3_Y(C0), Vector3_Y(C1), Vector3_Y(P1));
+	float currentZ = BezierFuncF(s, Vector3_Z(P0), Vector3_Z(C0), Vector3_Z(C1), Vector3_Z(P1));
 
 	Vector3 current = Vector3New(currentX, currentY, currentZ);
 	return current;

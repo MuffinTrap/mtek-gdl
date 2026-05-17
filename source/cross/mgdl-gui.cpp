@@ -388,7 +388,7 @@ void Menu_Flag(Menu* menu, const char* text, bool enabled)
     }
     mgdl_DrawRectangle(x, y, x + w, y - h, background);
 
-    Vector2 pos = CalculateAlignedTopLeft(x+w/2, y, strlen(text) * menu->font->spriteAtlas->characterWidth ,menu->textSize, Centered, LJustify);
+    Vector2 pos = mgdl_CalculateAlignedTopLeft(x+w/2, y, strlen(text) * menu->font->spriteAtlas->characterWidth ,menu->textSize, Centered, LJustify);
 
     Texture_DrawText(menu->font, pen, pos.x, pos.y, menu->textSize, text);
 
