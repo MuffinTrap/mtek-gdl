@@ -528,8 +528,7 @@ void gdl::SetClearColor(u_char red, u_char grn, u_char blu, u_char alp) {
 
 void gdl::SetClearColor(u_int color)
 {
-	Color4b comp = Color_HexToBytes(color);
-	SetClearColor(comp.red, comp.green, comp.blue, comp.alpha);
+	SetClearColor(RED(color), GREEN(color), BLUE(color), ALPHA(color));
 
 }
 

@@ -266,8 +266,9 @@ void mgdl_SetBool(Handle handle, mgdlParameter parameter, bool value)
 		{
 			Sound* snd = AssetManager_GetSound(handle);
 			ASSERT_DEBUG(snd != nullptr);
-			Sound_SetLooping(snd, true);
+			Sound_SetLooping(snd, value);
 		}
+		break;
 		default:
 			Log_ErrorF("mgdl_SetBool no action for parameter %d\n", parameter);
 			break;
@@ -276,8 +277,25 @@ void mgdl_SetBool(Handle handle, mgdlParameter parameter, bool value)
 
 float mgdl_GetFloat(Handle handle, mgdlParameter parameter)
 {
+	switch(parameter)
+	{
+		case MGDL_SPRITE_ASPECT:
+		{
+			Texture* tex = AssetManager_GetTexture(handle);
+			ASSERT_DEBUG(tex != nullptr && tex->spriteAtlas != nullptr);
+			return tex->spriteAtlas ->aspectRatio;
+		}
+		break;
+		default:
+			Log_ErrorF("mgdl_GetFloat no result for parameter %d\n", parameter);
+			break;
+	}
 	return 0.0f;
 }
+
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 void mgdl_SetFloat(Handle handle, mgdlParameter parameter, float value)
 {
 
@@ -366,3 +384,5 @@ void mgdl_SetVector2(Handle handle, mgdlParameter parameter, const Vector2& valu
 {
 
 }
+
+	#pragma GCC diagnostic pop

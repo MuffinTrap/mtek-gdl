@@ -6,7 +6,7 @@
 /**
  * @file mgdl-audio.h
  * @ingroup audio
- * @brief Functions to use the sound system of the platform
+ * @brief Interface to the audio system.
  * @details These functions are implemented differently on different platforms: Wii uses ASND, Linux and Mac use OpenAL and Windows uses DirectSound
  */
 

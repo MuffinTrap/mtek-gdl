@@ -89,7 +89,7 @@ namespace gdl {
 		GX_SetChanCtrl(GX_COLOR0A0, GX_DISABLE, GX_SRC_VTX, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
 
 
-		u32 colx = Color_FloatsToHex(*col);
+		u32 colx = (u32)(col);
 		GXColor	TempCol;
 		TempCol.r = RED(colx);	TempCol.g = GREEN(colx);
 		TempCol.b = BLUE(colx);	TempCol.a = ALPHA(colx);
@@ -159,7 +159,7 @@ namespace gdl {
 		// Set color channel 0 for color translation
 		GX_SetChanCtrl(GX_COLOR0A0, GX_DISABLE, GX_SRC_VTX, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
 
-		u32 colx = Color_FloatsToHex(*col);
+		u32 colx = u32(col);
 		GXColor	TempCol;
 		TempCol.r = RED(colx);	TempCol.g = GREEN(colx);
 		TempCol.b = BLUE(colx);	TempCol.a = ALPHA(colx);

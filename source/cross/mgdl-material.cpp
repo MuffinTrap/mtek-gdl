@@ -18,7 +18,7 @@ Material* Material_Load (const char* name, Texture* texture, MaterialType type)
 	return material;
 }
 
-Material* Material_CreateColor(color32 color, GLfloat shininess, GLfloat emissionPower)
+Material* Material_CreateColor(color32 color, GLfloat shininess)
 {
 	Material* material = (Material*)mgdl_AllocateGraphicsMemory(sizeof(Material));
 	material->name = nullptr;

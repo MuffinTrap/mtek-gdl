@@ -1176,8 +1176,8 @@ string GetAbsolutePath(const string &file)
 
 string GetCurrentDir()
 {
-	char buffer[1024];
 #if defined(_MSC_VER) || defined(_WIN32)
+	char buffer[1024];
 	#ifdef _WIN32_WCE
 	static TCHAR apppath[MAX_PATH] = TEXT("");
 	if (!apppath[0])
@@ -1221,6 +1221,7 @@ string GetCurrentDir()
 	return _getcwd(buffer, (int)1024);
 	#endif // _MSC_VER
 #elif defined(__APPLE__) || defined(__linux__)
+	char buffer[1024];
 	return getcwd(buffer, 1024);
 #else
 	return "";

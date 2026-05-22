@@ -139,6 +139,9 @@ GLint TextureWrapToGLWrap(TextureWrapModes wrapMode)
 		case TextureWrapModes::Repeat:
 			return GL_REPEAT;
 			break;
+		default:
+			return GL_CLAMP;
+			break;
 	}
 }
 
@@ -219,8 +222,15 @@ Vector2 mgdl_CalculateAlignedTopLeft(float x, float y, float width, float height
 // ******************************
 // ENDIANNES HANDLING FUNCTION
 // ******************************
+#ifdef GEKKO
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
+#else
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warray-bounds"
+#endif
 
 void RevBytes(void *var, int size) {
 
@@ -233,4 +243,8 @@ void RevBytes(void *var, int size) {
 		((u8*)var)[i] = temp[(size-1)-i];
 	}
 }
+#ifdef GEKKO
+#pragma GCC diagnostic pop
+#else
 #pragma clang diagnostic pop
+#endif

@@ -1,5 +1,5 @@
-/*!	\file mgdl-sound.h
- *	\brief Sound module header
+/*!	\file mgdl-audio-asnd.h
+ *	\brief Wii Audio system.
  */
 #ifndef _GDL_WII_SOUND_H
 #define _GDL_WII_SOUND_H
@@ -14,34 +14,16 @@
 #include <mgdl/mgdl-sound.h>
 #include <mgdl/wii/mgdl-wii-config.h>
 
-
 struct SoundASND
 {
 	short	format;
 	u16		freq;
-	void	*buffer;
+	void	*	buffer;
 	short	voiceNumber; // ASND voice number
 	int		sSize;
 	int		channels;
 	bool	inUse;
 }; typedef struct SoundASND SoundASND;
-
-struct MusicASND
-{
-	FILE* oggFile;
-};
-
-namespace gdl {
-	//! Plays a sound with 2D stereo panning.
-	/*!
-	 *	\param[in]	pitch	Pitch of sound (1.0 is normal pitch).
-	 *	\param[in]	volume	Volume of sound (100 is full volume).
-	 *	\param[in]	x		X position of sound (relative to screen).
-	 *	\param[in]	y		Y position of sound (this parameter does nothing for now).
-	 */
-	void Play2D(float pitch, float volume, float x, float y);
-};
-
 
 //! Sets master sound volumes.
 /*!

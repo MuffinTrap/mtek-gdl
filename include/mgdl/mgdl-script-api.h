@@ -97,8 +97,14 @@ enum mgdlParameter
 
 	MGDL_TEXTURE_WIDTH,
 	MGDL_TEXTURE_HEIGHT,
+	MGDL_TEXTURE_ASPECT,
 	MGDL_SPRITE_WIDTH,
-	MGDL_SPRITE_HEIGHT
+	MGDL_SPRITE_HEIGHT,
+	MGDL_SPRITE_ASPECT,
+
+	MGDL_FONT_WIDTH= MGDL_SPRITE_WIDTH,
+	MGDL_FONT_HEIGHT = MGDL_SPRITE_HEIGHT,
+	MGDL_FONT_ASPECT = MGDL_SPRITE_ASPECT
 };
 bool mgdl_GetBool(Handle handle, mgdlParameter parameter);
 void mgdl_SetBool(Handle handle, mgdlParameter parameter, bool value);

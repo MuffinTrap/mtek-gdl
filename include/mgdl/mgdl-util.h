@@ -143,4 +143,16 @@ void RevBytes(void *var, int size);
 
 char* mgdl_BufferPrintf(const char* format, ...);
 
+#ifdef GEKKO
+#	define MGDL_COMPILER GCC
+#else
+#	define MGDL_COMPILER clang
+#endif
+
+#define MGDL_DIAGNOSTIC_PUSH #pragma MGDL_COMPILER diagnostic push
+#define MGDL_IGNORE_UNUSED_PARAMETER #pragma MGDL_COMPILER diagnostic ignored "-Wunused-parameter"
+#define MGDL_DIAGNOSTIC_POP #pragma MGDL_COMPILER diagnostic pop \
+
+#undef MGDL_COMPILER
+
 /*! @} */
