@@ -13,6 +13,7 @@ void Scene_Init(Scene* scene)
 	scene->materials = DynamicArray_CreatePtrMaterial(4);
 	scene->meshes = DynamicArray_CreatePtrMesh(4);
 	scene->lights = nullptr;
+	scene->ufbx = nullptr;
 }
 
 Scene* Scene_CreateEmpty()

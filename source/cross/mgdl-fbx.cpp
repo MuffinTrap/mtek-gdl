@@ -5,13 +5,23 @@
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-dynamic_array.h>
+#include <mgdl/mgdl-assetmanager.h>
 #include <stdio.h>
 
 ufbx_scene* FBX_LoadScene(const char* fbxFile)
 {
 	ufbx_load_opts opts = {};
+	// Right handed for OpenGL
+	// Y is up
 	opts.target_axes = ufbx_axes_right_handed_y_up;
+	opts.target_camera_axes = ufbx_axes_right_handed_y_up;
+	opts.target_light_axes = ufbx_axes_right_handed_y_up;
 	opts.target_unit_meters = 1.0f;
+
+	// Different 3D Programs export differently
+	// This is the best setting for Blender
+	opts.space_conversion = UFBX_SPACE_CONVERSION_ADJUST_TRANSFORMS;
+
 	ufbx_error error;
 	Log_InfoF("Reading fbx file %s\n", fbxFile);
 	ufbx_scene* scene = ufbx_load_file(fbxFile, &opts, &error);
@@ -22,20 +32,15 @@ ufbx_scene* FBX_LoadScene(const char* fbxFile)
 
 Scene* FBX_Load(const char* fbxFile)
 {
-	// Right handed for OpenGL
-	// Y is up
 	ufbx_scene* scene = FBX_LoadScene(fbxFile);
 
 	Scene* gdlScene = Scene_CreateEmpty();
 	// What is in this file?
+	gdlScene->ufbx = scene;
 
 	// Start from the root
 	ufbx_node* root = scene->root_node;
 	m_FBX_LoadNode(gdlScene, Scene_GetRootNode(gdlScene), root, 0);
-
-	// DANGER ZONE
-	// TODO copy only the necessary data so that this can be freed
-	//ufbx_free_scene(scene);
 
 	return gdlScene;
 }
@@ -125,11 +130,27 @@ bool m_FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short 
 				// Has this material been loaded already?
 				mgdl_assert_print(gdlScene->materials != nullptr, "No materials array in scene");
 				mgdl_assert_print(gdlScene->materials->data != nullptr, "Scene materials array is nullptr");
+
+
 				Material* mat = Scene_GetMaterial(gdlScene, material->name.data);
 
 				if (mat == nullptr)
 				{
-					mat = Material_Load(material->name.data, nullptr, MaterialType::Diffuse);
+					Log_InfoF("Trying to load material from assets\n");
+					// Try to load from assets folder
+					mgdl_BufferPrintf("%s/%s", "assets", material->name.data);
+					TextureHandle materialTexture = AssetManager_LoadTexture(mgdl_GetPrintfBuffer());
+					Texture* text = nullptr;
+					if (Handle_IsValid(materialTexture))
+					{
+						Log_InfoF("Material texture loaded\n");
+						text = AssetManager_GetTexture(materialTexture);
+					}
+					else
+					{
+						Log_InfoF("Material texture not found\n");
+					}
+					mat = Material_Load(material->name.data, text, MaterialType::Diffuse);
 					Scene_AddMaterial(gdlScene, mat);
 				}
 				else

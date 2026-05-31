@@ -7,6 +7,12 @@ CXXFLAGS += -Wno-c99-extensions -Wno-c++20-designator
 # Options for ufbx
 CXXFLAGS += -DUFBX_REAL_IS_FLOAT
 
+ifdef DEBUG
+CXXFLAGS += -g
+else
+CXXFLAGS += -O3
+endif
+
 # Optional: Use AngelScript either as script or compiled as c++
 ifdef ANGEL
 # Read from $(ANGELSCRIPT_SDK) environment value directory

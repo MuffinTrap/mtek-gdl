@@ -5,6 +5,7 @@
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-draw2d.h>
 #include <mgdl/mgdl-assert.h>
+#include <mgdl/mgdl-scene.h>
 
 static Palette* s_activePalette = nullptr;
 static PaletteHandle s_defaultPaletteHandle = Handle_CreatePalette(0);
@@ -106,6 +107,21 @@ void mgdl_DrawSpriteEx(TextureHandle handle, u16 spriteIndex,float x, float y, f
 	Texture_DrawSprite(tex, spriteIndex, x, y, scale, color);
 }
 
+void mgdl_DrawSceneV(SceneHandle handle, const Vector3& position, float scale, color32 color)
+{
+	mgdl_DrawScene(handle, position.x, position.y, position.z, scale, color);
+}
+
+void mgdl_DrawScene(SceneHandle handle, float x, float y, float z, float scale, color32 color)
+{
+	Scene* scene = AssetManager_GetScene(handle);
+	if (scene != nullptr)
+	{
+		Scene_Draw(scene);
+	}
+}
+
+
 // IMAGES
 
 ImageHandle mgdl_LoadPNG(const char* filename)
@@ -199,6 +215,19 @@ color32 mgdl_GetPaletteColor(PaletteHandle palette, u8 colorIndex)
 {
 	return Palette_GetColor(AssetManager_GetPalette(palette), colorIndex);
 }
+
+// SCENES
+SceneHandle mgdl_LoadScene(const char* filename)
+{
+	return AssetManager_LoadScene(filename);
+}
+
+SceneHandle mgdl_LoadScene(const zstr& filename)
+{
+	return mgdl_LoadScene(zstr_cstr(&filename));
+}
+
+
 
 // INPUT
 

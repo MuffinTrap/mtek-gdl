@@ -11,12 +11,15 @@ TextureHandle mgdl_LoadTexture(const zstr& filename);
 TextureHandle mgdl_LoadTexture(const char* filename);
 SoundHandle mgdl_LoadSound(const zstr& filename);
 SoundHandle mgdl_LoadSound(const char* filename);
+SceneHandle mgdl_LoadScene(const zstr& filename);
+SceneHandle mgdl_LoadScene(const char* filename);
 
 void mgdl_DrawText(const zstr& text, float x, float y, float fontSize, color32 color);
 void mgdl_DrawTextEx(TextureHandle font, const zstr& text, float x, float y,  float fontSize, color32 color);
 void mgdl_DrawTextVEx(TextureHandle font, const zstr& text, const Vector2 & topleft,  float fontSize, color32 color);
 
 void mgdl_DrawTextureV(TextureHandle texture, const Vector2& topLeft);
+void mgdl_DrawSceneV(SceneHandle scene, const Vector3& position, float scale, color32 color);
 
 #ifdef __cplusplus
 extern "C" {
@@ -64,7 +67,7 @@ void mgdl_CreateSpriteAtlas(TextureHandle texture, s16 spriteWidth, s16 spriteHe
 void mgdl_DrawTexture(TextureHandle handle, float x, float y);
 void mgdl_DrawSprite(TextureHandle handle, u16 spriteIndex, float x, float y, color32 color);
 void mgdl_DrawSpriteEx(TextureHandle handle, u16 spriteIndex, float x, float y, float scale, color32 color);
-
+void mgdl_DrawScene(SceneHandle handle, float x, float y, float z, float scale, color32 color);
 
 
 // SOUNDS

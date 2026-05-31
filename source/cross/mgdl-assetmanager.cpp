@@ -3,6 +3,7 @@
 #include <mgdl/mgdl-dynamic_array.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-memory.h>
+#include <mgdl/mgdl-fbx.h>
 
 // TODO Singleton
 static AssetManager m_manager;
@@ -33,12 +34,15 @@ void AssetManager_Init()
 	}
 
 	m_manager.m_paletteAssets= DynamicArray_CreatePaletteAsset(4);
+
+	m_manager.m_sceneAssets = DynamicArray_CreateSceneAsset(4);
 }
 
 DYNAMIC_ARRAY_IMPL(TextureAsset)
 DYNAMIC_ARRAY_IMPL(SoundAsset)
 DYNAMIC_ARRAY_IMPL(ImageAsset)
 DYNAMIC_ARRAY_IMPL(PaletteAsset)
+DYNAMIC_ARRAY_IMPL(SceneAsset)
 
 TextureAsset AssetManager_CreateTextureAsset(Texture* data, const char* filename)
 {
@@ -90,6 +94,22 @@ PaletteAsset AssetManager_CreatePaletteAsset(Palette* data, const char* filename
 {
 	ASSERT_DEBUG(data != nullptr);
 	PaletteAsset ta;
+	ta.data = data;
+	if (filename != nullptr)
+	{
+		ta.filename = zstr_from(filename);
+	}
+	else
+	{
+		ta.filename = zstr_init();
+	}
+	return ta;
+}
+
+SceneAsset AssetManager_CreateSceneAsset(Scene* data, const char* filename)
+{
+	ASSERT_DEBUG(data != nullptr);
+	SceneAsset ta;
 	ta.data = data;
 	if (filename != nullptr)
 	{
@@ -339,4 +359,50 @@ Palette* AssetManager_GetPalette(PaletteHandle handle)
 		Log_ErrorF("AssetManager_GetPalette got invalid handle %u\n", Handle_Index(handle));
 		return DynamicArray_GetPaletteAsset(m_manager.m_paletteAssets, 0)->data;
 	}
+}
+
+Scene* AssetManager_GetScene(SceneHandle handle)
+{
+	if (Handle_Index(handle) < DynamicArray_CountSceneAsset(m_manager.m_sceneAssets) && Handle_Type(handle) == Type_Scene)
+	{
+		return DynamicArray_GetSceneAsset(m_manager.m_sceneAssets, Handle_Index(handle))->data;
+	}
+	else
+	{
+		Log_ErrorF("AssetManager_GetScene got invalid handle %u\n", Handle_Index(handle));
+		return nullptr; // NO default asset
+	}
+}
+
+SceneHandle AssetManager_LoadScene(const char* filename)
+{
+	SceneHandle handle = Handle_CreateScene(0);
+	DynamicArray* array = m_manager.m_sceneAssets;
+	// Check if already loaded
+	zstr_view filenameView = zstr_view_from(filename);
+	for(sizetype i = 0; i < DynamicArray_CountSceneAsset(array); i++)
+	{
+		SceneAsset* m = DynamicArray_GetSceneAsset(array, i);
+		zstr_view handleView = zstr_as_view(&m->filename);
+		if (zstr_view_eq_view(filenameView, handleView))
+		{
+			handle= Handle_CreateScene(i);
+			return handle;
+		}
+	}
+	Scene* scene = FBX_Load(filename);
+	ASSERT_DEBUG(scene != nullptr);
+	if (scene != nullptr)
+	{
+		// TODO
+		// m_manager.m_memoryInUse += Palette_GetColorAmount(pal) * sizeof(color32) + sizeof(Palette);
+
+		SceneAsset ta = AssetManager_CreateSceneAsset(scene, filename);
+		handle = Handle_CreateScene((u16) DynamicArray_AddSceneAsset(array, ta));
+	}
+	else
+	{
+		handle = MGDL_INVALID_HANDLE;
+	}
+	return handle;
 }

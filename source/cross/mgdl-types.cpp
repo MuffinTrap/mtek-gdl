@@ -36,6 +36,11 @@ ImageHandle Handle_CreateImage(u16 index)
 	return (TextureHandle)CreateHandle(Type_Image, index);
 }
 
+SceneHandle Handle_CreateScene(u16 index)
+{
+	return (TextureHandle)CreateHandle(Type_Scene, index);
+}
+
 RectF RectF_Create(float x, float y, float w, float h)
 {
 	RectF r;

@@ -20,6 +20,7 @@ const float circleSize = 10.0f;
 
 TextureHandle barb;
 PaletteHandle debugPalette;
+SceneHandle wiiScene;
 
 void angelscript_init()
 {
@@ -34,6 +35,20 @@ void angelscript_init()
     glDepthFunc(GL_LEQUAL);
 
 	debugPalette = mgdl_GetDebugPalette();
+
+	wiiScene = mgdl_LoadScene("assets/wii_console.fbx");
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+	glDepthMask(GL_TRUE); //  is this needed?
+
+	// This is the other way around on Wii, but
+	// hopefully OpenGX handles it
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glShadeModel(GL_FLAT);
+
+    glColor3f(1.0f, 1.0f, 1.0f);
 }
 
 void angelscript_quit()
@@ -65,7 +80,7 @@ void effect_2d(float deltatime)
 	mgdl_DrawRectangle(deltaCircle.x, deltaCircle.y, circleSize, circleSize, mgdl_GetPaletteColor(debugPalette,3) );
 	mgdl_DrawRectangle(frameCircle.x, frameCircle.y, circleSize, circleSize, mgdl_GetPaletteColor(debugPalette,4) );
 
-	mgdl_DrawText(100, 300 + sin(mgdl_GetElapsedSeconds() * 2) * 130, "Henlo!",  64, Debug_Yellow);
+	mgdl_DrawText("Henlo!", 100, 300 + sin(mgdl_GetElapsedSeconds() * 2) * 130, 64, Debug_Yellow);
 }
 void Quad(
     Vector3 A,
@@ -84,6 +99,35 @@ void Quad(
 
 	glVertex3f(B.x, B.y, B.z);
 }
+
+void effect_scene(float deltatime)
+{
+	elapsed += deltatime;
+	glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+	int screenWidth = mgdl_GetScreenWidth();
+	int screenHeight = mgdl_GetScreenHeight();
+	float aspect = float(screenWidth)/float(screenHeight);
+	float nearZ = 0.01f;
+	float farZ = 100.0f;
+    gluPerspective(60.0f, aspect, nearZ, farZ);
+
+	glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+	gluLookAt(0.0f, 0.0f, 15.0f,
+				 0.0f, 0.0f, 0.0f,
+				 0.0f, 1.0f, 0.0);
+
+	glPushMatrix();
+
+	glRotatef(elapsed * 90.0f, 1.0f, 0.0f, 0.3f);
+	glScalef(0.1f, 0.1f, 0.1f);
+	mgdl_DrawScene(wiiScene, 0,0,0, 1.0f, Debug_White);
+	glPopMatrix();
+
+}
+
 void effect_3d(float deltatime)
 {
 	elapsed += deltatime;
@@ -144,7 +188,8 @@ void effect_3d(float deltatime)
 void angelscript_frame(float deltatime)
 {
 	//effect_3d(deltatime);
-	effect_2d(deltatime);
+	//effect_2d(deltatime);
+	effect_scene(deltatime);
 }
 
 #if USE_ANGEL_AS_CPP

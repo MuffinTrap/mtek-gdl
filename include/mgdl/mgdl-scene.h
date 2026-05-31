@@ -7,6 +7,7 @@
 #include <mgdl/mgdl-node.h>
 #include <mgdl/mgdl-gui.h>
 #include <mgdl/mgdl-vectorfunctions.h>
+#include <mgdl/ufbx/ufbx.h>
 
 /**
  * @file mgdl-scene.h
@@ -24,6 +25,7 @@ enum Scene_DebugFlag : u32
 struct DynamicArray;
 struct Scene
 {
+	ufbx_scene* ufbx;
 	Node* rootNode;
 	// Multiple nodes can refer to same material
 	struct DynamicArray* materials;

@@ -13,6 +13,25 @@ static const int LINE_LENGTH  = 256;
 
 static char empty[1] = "";
 
+// Own buffer for logger
+static char logBuffer[MGDL_PRINTF_BUFFER_SIZE];
+
+char* mgdl_GetLogBuffer()
+{
+	return logBuffer;
+}
+
+/*
+ * @brief Writes the formatted text to a buffer.
+ * @param format Format string.
+ */
+#define MGDL_PRINTF_TO_LOGBUFFER(format) \
+	memset(mgdl_GetLogBuffer(), '\0', MGDL_PRINTF_BUFFER_SIZE);\
+	va_list args;\
+	va_start(args, format); \
+	vsnprintf(mgdl_GetLogBuffer(), MGDL_PRINTF_BUFFER_SIZE, format, args); \
+	va_end(args);\
+
 static void Log_Print(LogLevel lvl, const char* text)
 {
 	if (saveLinesOn)
@@ -103,8 +122,8 @@ void Log_InfoF(const char* fmt, ...)
 {
 	if (level_ >= Info)
 	{
-		MGDL_PRINTF_TO_BUFFER(fmt);
-		Log_Print(Info, mgdl_GetPrintfBuffer());
+		MGDL_PRINTF_TO_LOGBUFFER(fmt);
+		Log_Print(Info, mgdl_GetLogBuffer());
 	}
 }
 
@@ -120,8 +139,8 @@ void Log_WarningF(const char* fmt, ...)
 {
 	if (level_ >= Warning)
 	{
-		MGDL_PRINTF_TO_BUFFER(fmt);
-		Log_Print(Warning, mgdl_GetPrintfBuffer());
+		MGDL_PRINTF_TO_LOGBUFFER(fmt);
+		Log_Print(Warning, mgdl_GetLogBuffer());
 	}
 }
 
@@ -137,8 +156,8 @@ void Log_ErrorF(const char* fmt, ...)
 {
 	if (level_ >= Error)
 	{
-		MGDL_PRINTF_TO_BUFFER(fmt);
-		Log_Print(Error, mgdl_GetPrintfBuffer());
+		MGDL_PRINTF_TO_LOGBUFFER(fmt);
+		Log_Print(Error, mgdl_GetLogBuffer());
 	}
 }
 
