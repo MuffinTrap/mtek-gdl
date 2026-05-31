@@ -1,6 +1,6 @@
 #pragma once
 
-#if USE_ANGEL_AS_CPP
+#if defined(USE_ANGEL_AS_CPP)
 #	ifdef __cplusplus
 	extern "C" {
 #	endif

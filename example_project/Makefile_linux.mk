@@ -17,35 +17,12 @@ EXE_SUFFIX = .elf
 # Include directories
 
 
-
-
-
-
-
-
-
-
-
-
-
 # Link libraries
 
 # Create a list of libraries that need to be linked
 # Link statically to mgdl
 LDFLAGS += -Wl,-Bstatic -lmgdl  -Wl,-Bdynamic -lopenal -lGL -lGLU -lglut -lm -Wno-unused-function -z muldefs
 LDFLAGS += -langelscript
-
-
-
-
-
-
-
-
-
-
-
-
 
 # Add mgdl library search directory
 LDFLAGS += -L$(MGDL_DIR)/lib

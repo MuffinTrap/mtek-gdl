@@ -1,12 +1,17 @@
+# Makefile copied from riptutorial https://riptutorial.com/makefile/example/21376/building-from-different-source-folders-to-different-target-folders
+
+
+ifeq ($(strip $(DEVKITPPC)),)
+$(error "Please set DEVKITPPC in your environment. export DEVKITPPC=<path to>devkitPPC")
+endif
+
+include $(DEVKITPPC)/wii_rules
 
 # ALL RULES
 include ../build_rules/rules_all.mk
 
-# PC RULES
-include ../build_rules/rules_pc.mk
-
-# LINUX RULES
-include ../build_rules/rules_linux.mk
+# Our Wii rules
+include ../build_rules/rules_wii.mk
 
 
 # GENERAL MAKEFILE
@@ -81,12 +86,14 @@ endef
 
 .PHONY: all clean directories
 
-all: directories $(TARGET)
+all: directories $(TARGET).dol
+	@mv $(TARGET).dol boot.dol
 
-$(TARGET): $(OBJS)
+$(TARGET).dol: $(TARGET).elf # Convert elf to dol
+
+$(TARGET).elf: $(OBJS)
 	$(HIDE)echo Linking $@
-	$(HIDE)$(CXX) $(OBJS) $(CXXFLAGS) $(INCLUDES) $(LDFLAGS) $(LDLIBS) -o $(TARGET)
-	mv $(TARGET) ..
+	$(HIDE)$(CXX) $(OBJS) $(CXXFLAGS) $(INCLUDES) $(LDFLAGS) $(LDLIBS) -o $(TARGET).elf
 
 # Include dependencies
 -include $(DEPS)

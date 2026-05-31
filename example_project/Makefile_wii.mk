@@ -26,7 +26,7 @@ include $(DEVKITPPC)/wii_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	./ rocket
+SOURCES		:=	./ rocket scripts
 DATA		:=	data
 TEXTURES	:=	
 INCLUDES	:=	include
@@ -35,8 +35,9 @@ INCLUDES	:=	include
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-CFLAGS	= -g -Wall -Wextra -DMGDL_PLATFORM_WII -DMGDL_USE_CCVECTOR -std=c++11 $(MACHDEP) $(INCLUDE)
+CFLAGS	= -g -Wall -Wextra -DMGDL_PLATFORM_WII -std=c++11 $(MACHDEP) $(INCLUDE)
 CXXFLAGS	= -Wwrite-strings $(CFLAGS) -DUFBX_REAL_IS_FLOAT
+CXXFLAGS += -DUSE_ANGEL_AS_CPP
 
 # If you use rocket, uncomment this
 #CXXFLAGS += -DMGDL_ROCKET

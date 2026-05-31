@@ -9,5 +9,10 @@ CXXFLAGS += -DMGDL_PLATFORM_LINUX
 
 TARGET_POSTFIX += _lnx.elf
 
+# Add AngelScript library directory
+ifdef ANGEL
+LDFLAGS += -L$(ANGELSCRIPT_SDK)/angelscript/lib/$(PLATFORM_NAME)
+endif
+
 # Name the compiler
 CXX = clang++

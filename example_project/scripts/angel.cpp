@@ -1,6 +1,5 @@
 #include "mgdl.angel"
 #include "raymath.angel"
-#include "mgdl.angel"
 
 #if USE_ANGEL_AS_CPP
 #	include <mgdl.h>
@@ -66,7 +65,7 @@ void effect_2d(float deltatime)
 	mgdl_DrawRectangle(deltaCircle.x, deltaCircle.y, circleSize, circleSize, mgdl_GetPaletteColor(debugPalette,3) );
 	mgdl_DrawRectangle(frameCircle.x, frameCircle.y, circleSize, circleSize, mgdl_GetPaletteColor(debugPalette,4) );
 
-	mgdl_DrawText("Henlo!", 100, 300 + sin(mgdl_GetElapsedSeconds() * 2) * 130,  64, Debug_Yellow);
+	mgdl_DrawText(100, 300 + sin(mgdl_GetElapsedSeconds() * 2) * 130, "Henlo!",  64, Debug_Yellow);
 }
 void Quad(
     Vector3 A,

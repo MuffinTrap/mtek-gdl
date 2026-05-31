@@ -13,6 +13,9 @@ build
 # Changed by muffintrap:
 # Added KDevelop files etc. for version 0.100.1-muffintrap
 
+# Build folders
+buid_wii/
+
 # Mac folder files?
 .DS_Store
 
