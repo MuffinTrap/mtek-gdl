@@ -6,6 +6,7 @@
 #include <mgdl/mgdl-dynamic_array.h>
 #include <mgdl/mgdl-palette.h>
 #include <mgdl/mgdl-scene.h>
+#include <mgdl/mgdl-model.h>
 
 /**
  * @file mgdl-assetmanager.h
@@ -24,6 +25,7 @@ struct AssetManager
 	struct DynamicArray* m_imageAssets = nullptr;
 	struct DynamicArray* m_paletteAssets = nullptr;
 	struct DynamicArray* m_sceneAssets = nullptr;
+	struct DynamicArray* m_modelAssets = nullptr;
 };
 typedef struct AssetManager AssetManager;
 
@@ -72,6 +74,15 @@ typedef struct SceneAsset SceneAsset;
 
 DYNAMIC_ARRAY(SceneAsset)
 
+struct ModelAsset
+{
+	Model* data;
+	zstr filename;
+};
+typedef struct ModelAsset ModelAsset;
+
+DYNAMIC_ARRAY(ModelAsset)
+
 
 #ifdef __cplusplus
 extern "C"
@@ -111,11 +122,15 @@ bool AssetManager_HasPalette(const char* filename);
 SceneHandle AssetManager_LoadScene(const char* filename);
 Scene* AssetManager_GetScene(SceneHandle handle);
 
+ModelHandle AssetManager_LoadModel(const char* filename);
+Model* AssetManager_GetModel(ModelHandle handle);
+
 TextureAsset AssetManager_CreateTextureAsset(Texture* data, const char* filename);
 SoundAsset AssetManager_CreateSoundAsset(Sound* data, const char* filename);
 ImageAsset AssetManager_CreateImageAsset(PNGFile* data, const char* filename);
 PaletteAsset AssetManager_CreatePaletteAsset(Palette* data, const char* filename);
 SceneAsset AssetManager_CreateSceneAsset(Scene* data, const char* filename);
+ModelAsset AssetManager_CreateModelAsset(Model* data, const char* filename);
 
 
 void AssetManager_PrintLoadedTextures();

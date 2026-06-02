@@ -6,6 +6,7 @@
 #include <mgdl/mgdl-draw2d.h>
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-scene.h>
+#include <mgdl/mgdl-opengl_util.h>
 
 static Palette* s_activePalette = nullptr;
 static PaletteHandle s_defaultPaletteHandle = Handle_CreatePalette(0);
@@ -40,6 +41,48 @@ void mgdl_DrawTextEx(TextureHandle font, const zstr& text, float x, float y,  fl
 void mgdl_DrawTextVEx(TextureHandle font, const zstr& text, const Vector2& topleft,  float fontSize, color32 color)
 {
 	mgdl_DrawTextEx(font, text, topleft.x, topleft.y, fontSize, color);
+}
+
+void mgdl_DrawModel(ModelHandle handle, float x, float y, float z, float scale, color32 color)
+{
+	Model* model = AssetManager_GetModel(handle);
+	if (model)
+	{
+		glTranslatef(x, y, z);
+		glScalef(scale, scale, scale);
+		if (model->m_material == nullptr)
+		{
+			mgdl_glColor32(color);
+		}
+		Model_Draw(model);
+	}
+}
+
+void mgdl_DrawModelRotated(ModelHandle handle, const float x, float y, float z, float xdeg, float ydeg, float zdeg, float scale, color32 color)
+{
+	Model* model = AssetManager_GetModel(handle);
+	if (model)
+	{
+		glTranslatef(x, y, z);
+		if (xdeg != 0.0f)
+		{
+			glRotatef(xdeg, 1.0f, 0.0f, 0.0f);
+		}
+		if (ydeg != 0.0f)
+		{
+			glRotatef(ydeg, 0.0f, 1.0f, 0.0f);
+		}
+		if (zdeg != 0.0f)
+		{
+			glRotatef(zdeg, 0.0f, 0.0f, 1.0f);
+		}
+		glScalef(scale, scale, scale);
+		if (model->m_material == nullptr)
+		{
+			mgdl_glColor32(color);
+		}
+		Model_Draw(model);
+	}
 }
 
 // TEXTURES
@@ -117,6 +160,8 @@ void mgdl_DrawScene(SceneHandle handle, float x, float y, float z, float scale, 
 	Scene* scene = AssetManager_GetScene(handle);
 	if (scene != nullptr)
 	{
+		glTranslatef(x, y, z);
+		glScalef(scale, scale, scale);
 		Scene_Draw(scene);
 	}
 }
@@ -225,6 +270,17 @@ SceneHandle mgdl_LoadScene(const char* filename)
 SceneHandle mgdl_LoadScene(const zstr& filename)
 {
 	return mgdl_LoadScene(zstr_cstr(&filename));
+}
+
+// MODELS
+ModelHandle mgdl_LoadModel(const char* filename)
+{
+	return AssetManager_LoadModel(filename);
+}
+
+ModelHandle mgdl_LoadModel(const zstr& filename)
+{
+	return mgdl_LoadModel(zstr_cstr(&filename));
 }
 
 

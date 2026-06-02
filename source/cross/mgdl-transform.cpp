@@ -50,4 +50,17 @@ void Transform_SetScalef (Transform* transform, float scale )
 	transform->scale = Vector3New(scale, scale, scale);
 }
 
+void Transform_Apply(Transform* transform)
+{
+	const Vector3 t = transform->position;
+	glTranslatef(t.x, t.y, t.z);
+
+	const Vector3 r = transform->rotationDegrees;
+	glRotatef(r.x, 1.0f, 0.0f, 0.0f);
+	glRotatef(r.y, 0.0f, 1.0f, 0.0f);
+	glRotatef(r.z, 0.0f, 0.0f, 1.0f);
+
+	const Vector3& s = transform->scale;
+	glScalef(s.x, s.y, s.z);
+}
 

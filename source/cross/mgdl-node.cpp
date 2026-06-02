@@ -140,32 +140,14 @@ Node* Node_FindChildByName (Node* node, const char* nodeName )
 
 void Node_ApplyTransform(Node* node)
 {
-	const Vector3 t = node->transform->position;
-	glTranslatef(t.x, t.y, t.z);
-
-	const Vector3 r = node->transform->rotationDegrees;
-	glRotatef(r.x, 1.0f, 0.0f, 0.0f);
-	glRotatef(r.y, 0.0f, 1.0f, 0.0f);
-	glRotatef(r.z, 0.0f, 0.0f, 1.0f);
-
-	const Vector3& s = node->transform->scale;
-	glScalef(s.x, s.y, s.z);
+	Transform_Apply(node->transform);
 }
 
 void Node_Draw(Node* node)
 {
 	if (Flag_IsSetAny(node->enabledElements, NodeTransform) )
 	{
-		const Vector3 t = node->transform->position;
-		glTranslatef(t.x, t.y, t.z);
-
-		const Vector3 r = node->transform->rotationDegrees;
-		glRotatef(r.x, 1.0f, 0.0f, 0.0f);
-		glRotatef(r.y, 0.0f, 1.0f, 0.0f);
-		glRotatef(r.z, 0.0f, 0.0f, 1.0f);
-
-		const Vector3& s = node->transform->scale;
-		glScalef(s.x, s.y, s.z);
+		Transform_Apply(node->transform);
 	}
 
 	Mesh* m = node->mesh;

@@ -16,4 +16,12 @@ void mgdl_DrawSceneV(SceneHandle handle, Vector3 position, float scale, color32 
 {
 	mgdl_DrawScene(handle, position.x, position.y, position.z, scale, color);
 }
+void mgdl_DrawModelV(ModelHandle handle, Vector3 position, float scale, color32 color)
+{
+	mgdl_DrawModel(handle, position.x, position.y, position.z, scale, color);
+}
+void mgdl_DrawModelRotatedV(ModelHandle handle, Vector3 position, Vector3 rotationDeg, float scale, color32 color)
+{
+	mgdl_DrawModelRotated(handle, position.x, position.y, position.z, rotationDeg.x, rotationDeg.y, rotationDeg.z, scale, color);
+}
 #endif

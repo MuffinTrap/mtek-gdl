@@ -2,12 +2,15 @@
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-opengl.h>
 #include <mgdl/mgdl-texture.h>
-#include <mgdl/mgdl-mesh.h>
 #include <mgdl/mgdl-material.h>
-#include <mgdl/mgdl-node.h>
+#include <mgdl/mgdl-mesh.h>
+#include <mgdl/mgdl-light.h>
 #include <mgdl/mgdl-gui.h>
 #include <mgdl/mgdl-vectorfunctions.h>
 #include <mgdl/ufbx/ufbx.h>
+#include <mgdl/mgdl-dynamic_array.h>
+
+struct Node;
 
 /**
  * @file mgdl-scene.h
@@ -22,7 +25,7 @@ enum Scene_DebugFlag : u32
 	Position = 4,
 	Rotation = 8
 };
-struct DynamicArray;
+
 struct Scene
 {
 	ufbx_scene* ufbx;

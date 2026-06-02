@@ -20,7 +20,7 @@ const float circleSize = 10.0f;
 
 TextureHandle barb;
 PaletteHandle debugPalette;
-SceneHandle wiiScene;
+ModelHandle wiiModel;
 
 void angelscript_init()
 {
@@ -36,7 +36,7 @@ void angelscript_init()
 
 	debugPalette = mgdl_GetDebugPalette();
 
-	wiiScene = mgdl_LoadScene("assets/wii_console.fbx");
+	wiiModel = mgdl_LoadModel("assets/wii_console.fbx");
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -123,7 +123,7 @@ void effect_scene(float deltatime)
 
 	glRotatef(elapsed * 90.0f, 1.0f, 0.0f, 0.3f);
 	glScalef(0.1f, 0.1f, 0.1f);
-	mgdl_DrawScene(wiiScene, 0,0,0, 1.0f, Debug_White);
+	mgdl_DrawModel(wiiModel, 0,0,0, 1.0f, Debug_White);
 	glPopMatrix();
 
 }

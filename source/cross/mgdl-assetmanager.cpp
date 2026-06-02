@@ -35,7 +35,9 @@ void AssetManager_Init()
 
 	m_manager.m_paletteAssets= DynamicArray_CreatePaletteAsset(4);
 
-	m_manager.m_sceneAssets = DynamicArray_CreateSceneAsset(4);
+	m_manager.m_sceneAssets = DynamicArray_CreateSceneAsset(2);
+
+	m_manager.m_modelAssets = DynamicArray_CreateModelAsset(4);
 }
 
 DYNAMIC_ARRAY_IMPL(TextureAsset)
@@ -43,6 +45,7 @@ DYNAMIC_ARRAY_IMPL(SoundAsset)
 DYNAMIC_ARRAY_IMPL(ImageAsset)
 DYNAMIC_ARRAY_IMPL(PaletteAsset)
 DYNAMIC_ARRAY_IMPL(SceneAsset)
+DYNAMIC_ARRAY_IMPL(ModelAsset)
 
 TextureAsset AssetManager_CreateTextureAsset(Texture* data, const char* filename)
 {
@@ -110,6 +113,21 @@ SceneAsset AssetManager_CreateSceneAsset(Scene* data, const char* filename)
 {
 	ASSERT_DEBUG(data != nullptr);
 	SceneAsset ta;
+	ta.data = data;
+	if (filename != nullptr)
+	{
+		ta.filename = zstr_from(filename);
+	}
+	else
+	{
+		ta.filename = zstr_init();
+	}
+	return ta;
+}
+ModelAsset AssetManager_CreateModelAsset(Model* data, const char* filename)
+{
+	ASSERT_DEBUG(data != nullptr);
+	ModelAsset ta;
 	ta.data = data;
 	if (filename != nullptr)
 	{
@@ -378,6 +396,8 @@ SceneHandle AssetManager_LoadScene(const char* filename)
 {
 	SceneHandle handle = Handle_CreateScene(0);
 	DynamicArray* array = m_manager.m_sceneAssets;
+	ASSERT_DEBUG(array != nullptr);
+
 	// Check if already loaded
 	zstr_view filenameView = zstr_view_from(filename);
 	for(sizetype i = 0; i < DynamicArray_CountSceneAsset(array); i++)
@@ -405,4 +425,52 @@ SceneHandle AssetManager_LoadScene(const char* filename)
 		handle = MGDL_INVALID_HANDLE;
 	}
 	return handle;
+}
+
+ModelHandle AssetManager_LoadModel(const char* filename)
+{
+	ModelHandle handle = Handle_CreateModel(0);
+	DynamicArray* array = m_manager.m_modelAssets;
+	ASSERT_DEBUG(array != nullptr);
+	// Check if already loaded
+	zstr_view filenameView = zstr_view_from(filename);
+
+	for(sizetype i = 0; i < DynamicArray_CountModelAsset(array); i++)
+	{
+		ModelAsset* m = DynamicArray_GetModelAsset(array, i);
+		zstr_view handleView = zstr_as_view(&m->filename);
+		if (zstr_view_eq_view(filenameView, handleView))
+		{
+			handle= Handle_CreateModel(i);
+			return handle;
+		}
+	}
+	Model* model = FBX_LoadFirstModel(filename);
+	ASSERT_DEBUG(model != nullptr);
+	if (model != nullptr)
+	{
+		// TODO
+		// m_manager.m_memoryInUse += Palette_GetColorAmount(pal) * sizeof(color32) + sizeof(Palette);
+
+		ModelAsset ta = AssetManager_CreateModelAsset(model, filename);
+		handle = Handle_CreateModel((u16) DynamicArray_AddModelAsset(array, ta));
+	}
+	else
+	{
+		handle = MGDL_INVALID_HANDLE;
+	}
+	return handle;
+
+}
+Model* AssetManager_GetModel(ModelHandle handle)
+{
+	if (Handle_Index(handle) < DynamicArray_CountModelAsset(m_manager.m_modelAssets) && Handle_Type(handle) == Type_Model)
+	{
+		return DynamicArray_GetModelAsset(m_manager.m_modelAssets, Handle_Index(handle))->data;
+	}
+	else
+	{
+		Log_ErrorF("AssetManager_GetModel got invalid handle %u\n", Handle_Index(handle));
+		return nullptr; // NO default asset
+	}
 }

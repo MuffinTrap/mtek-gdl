@@ -6,6 +6,9 @@
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-dynamic_array.h>
 #include <mgdl/mgdl-assetmanager.h>
+#include <mgdl/mgdl-model.h>
+#include <mgdl/mgdl-scene.h>
+#include <mgdl/mgdl-node.h>
 #include <stdio.h>
 
 ufbx_scene* FBX_LoadScene(const char* fbxFile)
@@ -53,7 +56,7 @@ void Indent(short depth)
 	}
 }
 
-bool m_FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short depth )
+bool m_FBX_LoadNode(Scene* gdlScene, Node* parentNode, ufbx_node* node, s16 depth)
 {
 	mgdl_assert_print(node != nullptr, "Tried to load null node");
 	mgdl_assert_print(gdlScene != nullptr, "No scene to load nodes to");
@@ -121,6 +124,7 @@ bool m_FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short 
 				// or if loaded later, match them to the meshes?
 
 				ufbx_material* material = node->materials[mi];
+
 				if (true)
 				{
 					Indent(depth);
@@ -133,24 +137,9 @@ bool m_FBX_LoadNode ( Scene* gdlScene, Node* parentNode, ufbx_node* node, short 
 
 
 				Material* mat = Scene_GetMaterial(gdlScene, material->name.data);
-
 				if (mat == nullptr)
 				{
-					Log_InfoF("Trying to load material from assets\n");
-					// Try to load from assets folder
-					mgdl_BufferPrintf("%s/%s", "assets", material->name.data);
-					TextureHandle materialTexture = AssetManager_LoadTexture(mgdl_GetPrintfBuffer());
-					Texture* text = nullptr;
-					if (Handle_IsValid(materialTexture))
-					{
-						Log_InfoF("Material texture loaded\n");
-						text = AssetManager_GetTexture(materialTexture);
-					}
-					else
-					{
-						Log_InfoF("Material texture not found\n");
-					}
-					mat = Material_Load(material->name.data, text, MaterialType::Diffuse);
+					mat = FBX_LoadNodeMaterial(node, mi, nullptr);
 					Scene_AddMaterial(gdlScene, mat);
 				}
 				else
@@ -297,27 +286,119 @@ void PushVertex(ufbx_mesh* fbxMesh, Mesh* mesh, uint32_t faceIndex, size_t array
 }
 ufbx_mesh* FBX_GetFirstMesh(ufbx_scene* scene)
 {
-	for (size_t i = 0; i < scene->nodes.count; i++) {
-            ufbx_node *node = scene->nodes.data[i];
-            Log_InfoF("Node %d : %s", i, node->name.data);
-            if (node->mesh != nullptr)
-            {
-                ufbx_mesh* mesh = node->mesh;
+	for (size_t i = 0; i < scene->nodes.count; i++)
+	{
+		ufbx_node *node = scene->nodes.data[i];
+		if (node->mesh != nullptr)
+		{
+			Log_InfoF("Node %d : %s ", i, node->name.data);
+			ufbx_mesh* mesh = node->mesh;
 
-                Log_InfoF("Mesh %s (%u) with %zu faces", mesh->name.data, mesh->element_id, mesh->faces.count);
-                if (mesh->vertex_normal.exists)
-                {
-                    Log_InfoF(", %zu normals", mesh->vertex_normal.values.count);
-                }
-                if (mesh->vertex_uv.exists)
-                {
-                    Log_InfoF(",%zu uvs", mesh->vertex_uv.values.count);
-                }
-                Log_Info("\n");
-                return mesh;
-            }
-        }
+			Log_InfoF("Mesh %s (%u) with %zu faces", mesh->name.data, mesh->element_id, mesh->faces.count);
+			if (mesh->vertex_normal.exists)
+			{
+				Log_InfoF(", %zu normals", mesh->vertex_normal.values.count);
+			}
+			if (mesh->vertex_uv.exists)
+			{
+				Log_InfoF(",%zu uvs", mesh->vertex_uv.values.count);
+			}
+			Log_Info("\n");
+			return mesh;
+		}
+	}
     return nullptr;
+}
+
+Model* FBX_LoadFirstModel(const char* fbxFile)
+{
+	ufbx_scene* scene = FBX_LoadScene(fbxFile);
+	if (scene == nullptr)
+	{
+		return nullptr;
+	}
+
+	ufbx_mesh* mesh = FBX_GetFirstMesh(scene);
+	Material* material = nullptr;
+
+	// Extract folder from file path
+	zstr filepath = zstr_from(fbxFile);
+
+	// Find '/'
+	ptrdiff_t index = zstr_find(&filepath, "/");
+	if (index > 0)
+	{
+		zstr_view pathview = zstr_as_view(&filepath);
+		zstr_view filetype = zstr_sub(pathview, 0, index);
+		zstr folder = zstr_from_view(filetype);
+		material = FBX_LoadFirstMaterial(scene, zstr_cstr(&folder));
+		zstr_free(&folder);
+	}
+	zstr_free(&filepath);
+
+	if (material == nullptr)
+	{
+		material = FBX_LoadFirstMaterial(scene, nullptr);
+	}
+
+	if (mesh != nullptr)
+	{
+		Model* model = Model_Create();
+		model->m_mesh = m_FBX_LoadMesh(mesh);
+		model->m_material = material;
+		return model;
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+Material* FBX_LoadFirstMaterial(ufbx_scene* scene, const char* searchfolder)
+{
+	for (size_t i = 0; i < scene->nodes.count; i++)
+	{
+		ufbx_node *node = scene->nodes.data[i];
+		if (node->mesh != nullptr && node->materials.count > 0)
+		{
+			return FBX_LoadNodeMaterial(node, 0, searchfolder);
+		}
+	}
+	return nullptr;
+}
+
+Material* FBX_LoadNodeMaterial(ufbx_node* node, int materialIndex, const char* searchfolder)
+{
+	ufbx_material* material = node->materials[materialIndex];
+	if (material != nullptr)
+	{
+		// Try to load from assets folder
+
+
+		TextureHandle materialTexture = MGDL_INVALID_HANDLE;
+		if (searchfolder != nullptr)
+		{
+			Log_InfoF("Trying to load material from %s\n", searchfolder);
+			mgdl_BufferPrintf("%s/%s", searchfolder, material->name.data);
+			materialTexture = AssetManager_LoadTexture(mgdl_GetPrintfBuffer());
+		}
+		else
+		{
+			materialTexture = AssetManager_LoadTexture(material->name.data);
+		}
+		Texture* texture = nullptr;
+		if (Handle_IsValid(materialTexture))
+		{
+			Log_InfoF("Material texture loaded\n");
+			texture = AssetManager_GetTexture(materialTexture);
+		}
+		else
+		{
+			Log_InfoF("Material texture not found\n");
+		}
+		return Material_Load(material->name.data, texture, MaterialType::Diffuse);
+	}
+	return nullptr;
 }
 
 Mesh* FBX_LoadMeshTrianglesOnly(ufbx_mesh* fbxMesh)

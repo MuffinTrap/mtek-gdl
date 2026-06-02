@@ -267,7 +267,8 @@ enum AssetType
     Type_Sound,
     Type_Palette,
     Type_Image,
-    Type_Scene
+    Type_Scene,
+    Type_Model
 };
 typedef enum AssetType AssetType;
 // high word is asset type
@@ -282,6 +283,8 @@ typedef Handle PaletteHandle;
 typedef Handle ImageHandle;
 
 typedef Handle SceneHandle;
+
+typedef Handle ModelHandle;
 
 // FUNCTIONS
 #if defined(__cplusplus)
@@ -301,6 +304,7 @@ SoundHandle Handle_CreateSound(u16 index);
 PaletteHandle Handle_CreatePalette(u16 index);
 ImageHandle Handle_CreateImage(u16 index);
 SceneHandle Handle_CreateScene(u16 index);
+ModelHandle Handle_CreateModel(u16 index);
 
 #if defined(__cplusplus)
 }

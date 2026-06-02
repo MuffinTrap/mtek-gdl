@@ -12,7 +12,8 @@ TextureHandle mgdl_LoadTexture(const char* filename);
 SoundHandle mgdl_LoadSound(const zstr& filename);
 SoundHandle mgdl_LoadSound(const char* filename);
 SceneHandle mgdl_LoadScene(const zstr& filename);
-SceneHandle mgdl_LoadScene(const char* filename);
+ModelHandle mgdl_LoadModel(const char* filename);
+ModelHandle mgdl_LoadModel(const zstr& filename);
 
 void mgdl_DrawText(const zstr& text, float x, float y, float fontSize, color32 color);
 void mgdl_DrawTextEx(TextureHandle font, const zstr& text, float x, float y,  float fontSize, color32 color);
@@ -20,6 +21,9 @@ void mgdl_DrawTextVEx(TextureHandle font, const zstr& text, const Vector2 & topl
 
 void mgdl_DrawTextureV(TextureHandle texture, const Vector2& topLeft);
 void mgdl_DrawSceneV(SceneHandle scene, const Vector3& position, float scale, color32 color);
+
+void mgdl_DrawModelV(ModelHandle handle, const Vector3& position, float scale, color32 color);
+void mgdl_DrawModelRotatedV(ModelHandle handle, const Vector3& position, const Vector3& anglesDeg, float scale, color32 color);
 
 #ifdef __cplusplus
 extern "C" {
@@ -68,6 +72,8 @@ void mgdl_DrawTexture(TextureHandle handle, float x, float y);
 void mgdl_DrawSprite(TextureHandle handle, u16 spriteIndex, float x, float y, color32 color);
 void mgdl_DrawSpriteEx(TextureHandle handle, u16 spriteIndex, float x, float y, float scale, color32 color);
 void mgdl_DrawScene(SceneHandle handle, float x, float y, float z, float scale, color32 color);
+void mgdl_DrawModel(ModelHandle handle, float x, float y, float z, float scale, color32 color);
+void mgdl_DrawModelRotated(ModelHandle handle, const float x, float y, float z, float xdeg, float ydeg, float zdeg, float scale, color32 color);
 
 
 // SOUNDS

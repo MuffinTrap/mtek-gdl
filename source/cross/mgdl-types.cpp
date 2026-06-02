@@ -25,20 +25,24 @@ TextureHandle Handle_CreateTexture(u16 index)
 }
 SoundHandle Handle_CreateSound(u16 index)
 {
-	return (TextureHandle)CreateHandle(Type_Sound, index);
+	return (SoundHandle)CreateHandle(Type_Sound, index);
 }
 PaletteHandle Handle_CreatePalette(u16 index)
 {
-	return (TextureHandle)CreateHandle(Type_Palette, index);
+	return (PaletteHandle)CreateHandle(Type_Palette, index);
 }
 ImageHandle Handle_CreateImage(u16 index)
 {
-	return (TextureHandle)CreateHandle(Type_Image, index);
+	return (ImageHandle)CreateHandle(Type_Image, index);
 }
 
 SceneHandle Handle_CreateScene(u16 index)
 {
-	return (TextureHandle)CreateHandle(Type_Scene, index);
+	return (SceneHandle)CreateHandle(Type_Scene, index);
+}
+ModelHandle Handle_CreateModel(u16 index)
+{
+	return (ModelHandle)CreateHandle(Type_Model, index);
 }
 
 RectF RectF_Create(float x, float y, float w, float h)

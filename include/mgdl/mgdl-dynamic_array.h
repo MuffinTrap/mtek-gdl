@@ -16,6 +16,8 @@ struct DynamicArray {
 };
 typedef struct DynamicArray DynamicArray;
 
+// TODO General void* functions for assetmanager
+
 #define DYNAMIC_ARRAY(TYPE) \
 DynamicArray* DynamicArray_Create##TYPE(sizetype capacity); \
 DynamicArray* DynamicArray_CreatePtr##TYPE(sizetype capacity); \

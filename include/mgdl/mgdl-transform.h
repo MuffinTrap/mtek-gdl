@@ -28,6 +28,12 @@ extern "C"
 	void Transform_SetScalef(Transform*, float scale);
 	void Transform_SetScale3f(Transform*, Vector3 scale);
 
+	/**
+	 * @brief Applies a transform to OpenGL ModelViewMatrix
+	 * @param transform The Transform to apply
+	 */
+	void Transform_Apply(Transform* transform);
+
 #ifdef __cplusplus
 }
 #endif

@@ -2,6 +2,7 @@
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-dynamic_array.h>
 #include <mgdl/mgdl-assert.h>
+#include <mgdl/mgdl-node.h>
 
 // TODO Move materials and meshes to AssetManager
 DYNAMIC_ARRAY_IMPL(Mesh)
