@@ -48,6 +48,9 @@ install: $(ARC)
 # file change watching library
 	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/dmon
 	@cp $(DMON_HDR) $(INSTALL_DIR)/include/$(LIB)/dmon
+# string library
+	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/zstrh
+	@cp $(ZSTR_HDR) $(INSTALL_DIR)/include/$(LIB)/zstrh
 # raymath library
 	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/raymath
 	@cp $(RAYMATH_HDR) $(INSTALL_DIR)/include/$(LIB)/raymath

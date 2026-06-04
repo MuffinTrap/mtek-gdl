@@ -9,7 +9,7 @@ Light* Light_Create()
     l->constantAttenuation = 1.0f;
     l->LinearAttenuation = 0.0f;
     l->QuadraticAttenuation = 0.0f;
-    l->name = nullptr;
+    l->name = zstr_init();
     l->glIndex = -1;
 
     l->ambient[0] = 0.0f;

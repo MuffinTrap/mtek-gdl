@@ -20,7 +20,7 @@ const float circleSize = 10.0f;
 
 TextureHandle barb;
 PaletteHandle debugPalette;
-ModelHandle wiiModel;
+SceneHandle wiiModel;
 
 void angelscript_init()
 {
@@ -36,7 +36,7 @@ void angelscript_init()
 
 	debugPalette = mgdl_GetDebugPalette();
 
-	wiiModel = mgdl_LoadModel("assets/wii_console.fbx");
+	wiiModel = mgdl_LoadScene("assets/wii_console.fbx");
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -188,8 +188,8 @@ void effect_3d(float deltatime)
 void angelscript_frame(float deltatime)
 {
 	//effect_3d(deltatime);
-	//effect_2d(deltatime);
-	effect_scene(deltatime);
+	effect_2d(deltatime);
+	//effect_scene(deltatime);
 }
 
 #if USE_ANGEL_AS_CPP

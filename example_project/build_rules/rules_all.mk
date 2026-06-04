@@ -26,4 +26,6 @@ CXXFLAGS += -DUSE_ANGEL_AS_CPP
 else
 $(error Variable ANGEL must be defined either as 'script' or 'cpp' e.g. ANGEL=script)
 endif # ifeq ANGEL
-endif # ifdef ANGEL
+else
+$(error Variable ANGEL must be defined either as 'script' or 'cpp' e.g. ANGEL=script)
+endif # idef ANGEL

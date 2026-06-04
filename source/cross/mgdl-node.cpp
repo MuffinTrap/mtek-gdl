@@ -13,7 +13,7 @@ Node* Node_Create(u8 childCapacity)
 	node->mesh = nullptr;
 	node->material = nullptr;
 	node->light = nullptr;
-	node->name = nullptr;
+	node->name = zstr_init();
 	node->enabledElements = (NodeTransform |NodeMesh| NodeMaterial| NodeLight| NodeChildren);
 	node->children = DynamicArray_CreatePtrNode(childCapacity);
 
@@ -78,13 +78,13 @@ Node* Node_Clone(Node* source, NodeFlagField cloningFlags)
 	clone->mesh = source->mesh;
 	clone->material = source->material;
 	clone->light = source->light;
-	clone->name = source->name;
+	clone->name = zstr_dup(&source->name);
 	return clone;
 }
 
 void Node_SetTransform(Node* node, const char* name, Vector3 position, Vector3 rotationAngles)
 {
-	node->name = name;
+	node->name = zstr_from(name);
 	node->transform = Transform_Create(position, rotationAngles, Vector3New(1,1,1));
 }
 
@@ -92,7 +92,7 @@ void Node_SetTransform(Node* node, const char* name, Vector3 position, Vector3 r
 void Node_SetContent (Node* node, const char* name, Mesh* meshParam, Material* materialParam )
 {
 	node->transform = Transform_CreateZero();
-	node->name = name;
+	node->name = zstr_from(name);
 	node->mesh = meshParam;
 	node->material = materialParam;
 }
@@ -123,7 +123,8 @@ Node* Node_FindChildByIndexRecursive_ (Node* parent, short index, short* indexCo
 
 Node* Node_FindChildByName (Node* node, const char* nodeName )
 {
-	if (strcmp(node->name, nodeName) == 0)
+	zstr_view myname = zstr_as_view(&node->name);
+	if (zstr_view_eq(myname, nodeName) == 0)
 	{
 		return node;
 	}

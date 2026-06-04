@@ -23,7 +23,7 @@ struct Mesh
 	GLfloat* normals;
 	GLfloat* uvs;
 	GLfloat* colors;
-	const char* name;
+	zstr name;
 };
 typedef struct Mesh Mesh;
 

@@ -25,6 +25,7 @@ UFBX_HDR	:= include/mgdl/ufbx/ufbx.h
 RANDOM_HDR	:= include/mgdl/wflcg/WFLCG_c.h
 DMON_HDR		:= include/mgdl/dmon/dmon.h
 RAYMATH_HDR	:= include/mgdl/raymath/raymath.h
+ZSTR_HDR	:= include/mgdl/zstrh/zstr.h
 
 
 # Silence zstr warnings

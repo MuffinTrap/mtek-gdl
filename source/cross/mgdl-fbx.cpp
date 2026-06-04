@@ -301,7 +301,7 @@ ufbx_mesh* FBX_GetFirstMesh(ufbx_scene* scene)
 			}
 			if (mesh->vertex_uv.exists)
 			{
-				Log_InfoF(",%zu uvs", mesh->vertex_uv.values.count);
+				Log_InfoF(", %zu uvs", mesh->vertex_uv.values.count);
 			}
 			Log_Info("\n");
 			return mesh;
@@ -346,10 +346,13 @@ Model* FBX_LoadFirstModel(const char* fbxFile)
 		Model* model = Model_Create();
 		model->m_mesh = m_FBX_LoadMesh(mesh);
 		model->m_material = material;
+
+		ufbx_free_scene(scene);
 		return model;
 	}
 	else
 	{
+		ufbx_free_scene(scene);
 		return nullptr;
 	}
 }
@@ -369,11 +372,14 @@ Material* FBX_LoadFirstMaterial(ufbx_scene* scene, const char* searchfolder)
 
 Material* FBX_LoadNodeMaterial(ufbx_node* node, int materialIndex, const char* searchfolder)
 {
+	if (materialIndex >= node->materials.count)
+	{
+		return nullptr;
+	}
 	ufbx_material* material = node->materials[materialIndex];
 	if (material != nullptr)
 	{
 		// Try to load from assets folder
-
 
 		TextureHandle materialTexture = MGDL_INVALID_HANDLE;
 		if (searchfolder != nullptr)
@@ -433,7 +439,7 @@ Mesh* FBX_LoadMeshTrianglesOnly(ufbx_mesh* fbxMesh)
 			indexIndex++;
 		}
 	}
-	mesh->name = fbxMesh->name.data;
+	mesh->name = zstr_from(fbxMesh->name.data);
 	return mesh;
 }
 
@@ -506,7 +512,7 @@ Mesh * m_FBX_LoadMesh(ufbx_mesh* fbxMesh)
 	{
 		printf("Loaded mesh\n");
 	}
-	mesh->name = fbxMesh->name.data;
+	mesh->name = zstr_from(fbxMesh->name.data);
 	return mesh;
 }
 
@@ -517,7 +523,7 @@ Light* m_FBX_LoadLight(ufbx_light* fbxLight)
 	color32 c = Color_Create4f(fbxLight->color.x, fbxLight->color.y, fbxLight->color.z, 1.0f);
 	Light_SetColor(light, c);
 	light->intensity = fbxLight->intensity;
-	light->name = fbxLight->name.data;
+	light->name = zstr_from(fbxLight->name.data);
 
 	// Light is a spot in OpenGL if this is less than 90
 	// Light is point or directional if this is 180

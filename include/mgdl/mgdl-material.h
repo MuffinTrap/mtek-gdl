@@ -16,7 +16,7 @@
  */
 struct Material
 {
-	char* name;
+	zstr name;
 	GLfloat shininess;
 	GLfloat emissiveColor[4];
 	GLfloat diffuseColor[4];

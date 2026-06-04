@@ -29,7 +29,7 @@ struct Light
 	float constantAttenuation;
 	float LinearAttenuation;
 	float QuadraticAttenuation;
-	const char* name;
+	zstr name;
 
 	//
 	GLfloat position[4];

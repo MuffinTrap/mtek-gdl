@@ -9,9 +9,7 @@ static GLfloat blackEmissive[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 Material* Material_Load (const char* name, Texture* texture, MaterialType type)
 {
 	Material* material = (Material*)mgdl_AllocateGraphicsMemory(sizeof(Material));
-	sizetype nameSize = strlen(name);
-	material->name = new char[nameSize+1];
-	strncpy(material->name,  name, nameSize+1);
+	material->name = zstr_from(name);
 	material->texture = texture;
 	material->shininess = 1.0f;
 	material->type = type;
@@ -21,7 +19,7 @@ Material* Material_Load (const char* name, Texture* texture, MaterialType type)
 Material* Material_CreateColor(color32 color, GLfloat shininess)
 {
 	Material* material = (Material*)mgdl_AllocateGraphicsMemory(sizeof(Material));
-	material->name = nullptr;
+	material->name = zstr_init();
 	material->texture = nullptr;
 	material->shininess = shininess;
 	Color_HexToGLfloats(color, material->diffuseColor);

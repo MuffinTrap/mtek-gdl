@@ -54,7 +54,7 @@ void Scene_DebugDrawNode_( Node* node, Menu* menu, short depth, short* index, u3
 		return;
 	}
 	short drawIndex = *index;
-	if (strlen(node->name) > 0)
+	if (zstr_len(&node->name) > 0)
 	{
 		Menu_TextF(menu, "%d: %s", drawIndex, node->name);
 	}
@@ -220,8 +220,9 @@ Material* Scene_GetMaterial (Scene* scene, const char* materialName )
 	{
 		Material* m = DynamicArray_GetMaterial(scene->materials, mi);
 		mgdl_assert_print(m != nullptr, "No material");
-		mgdl_assert_print(m->name != nullptr, "No name on material");
-		if (strcmp(m->name, materialName) == 0)
+		mgdl_assert_print(zstr_is_empty(&m->name) == false, "No name on material");
+		zstr_view matname = zstr_as_view(&m->name);
+		if (zstr_view_eq(matname, materialName))
 		{
 			return m;
 		}
@@ -233,7 +234,9 @@ Material* Scene_FindMaterial ( Scene* scene, Node* node, const char* materialNam
 {
 	if (node->material != nullptr)
 	{
-		if (strcmp(node->material->name, materialName) == 0)
+
+		zstr_view matname = zstr_as_view(&node->material->name);
+		if (zstr_view_eq(matname, materialName))
 		{
 			return node->material;
 		}

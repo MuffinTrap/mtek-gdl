@@ -19,7 +19,7 @@ Mesh* Mesh_CreateEmpty(void)
 	mesh->vertexCount = 0;
 	mesh->indexCounter = 0;
 
-	mesh->name = nullptr;
+	mesh->name = zstr_init();
 	return mesh;
 }
 
@@ -403,14 +403,14 @@ Mesh* Mesh_CreateIcosahedron(u32 creationFlags)
 
 	icosa->indexCount = 60;
 
-	icosa->name = "Icosahedron";
+	icosa->name = zstr_from("Icosahedron");
 
     return icosa;
 }
 
 void Mesh_DebugPrint(Mesh* mesh)
 {
-	Log_InfoF("%s mesh has %u vertices and %u indices\n", mesh->name, mesh->vertexCount, mesh->indexCount);
+	Log_InfoF("%s mesh has %u vertices and %u indices\n", zstr_cstr(&mesh->name), mesh->vertexCount, mesh->indexCount);
 	for (sizetype i = 0; i < mesh->vertexCount; i++)
 	{
 		sizetype vi = i*3;
@@ -464,7 +464,7 @@ Mesh * Mesh_CreateQuad (u32 creationFlags)
 	quad->indices[4] = 3;
 	quad->indices[5] = 0;
 
-	quad->name = "Quad";
+	quad->name = zstr_from("Quad");
 
 	return quad;
 }

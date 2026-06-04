@@ -30,7 +30,7 @@ struct Node
 	Mesh* mesh;
 	Material* material;
 	Light* light;
-	const char* name;
+	zstr name;
 	NodeFlagField enabledElements;
 	struct DynamicArray* children;
 };
