@@ -15,6 +15,12 @@ struct Scene;
 struct Node;
 struct Material;
 
+// UFBX vertex used in mesh loading
+typedef struct Vertex {
+    ufbx_vec3 position;
+    ufbx_vec3 normal;
+    ufbx_vec2 uv;
+} Vertex;
 #ifdef __cplusplus
 extern "C"
 {
@@ -32,6 +38,7 @@ Model* FBX_LoadFirstModel(const char* fbxFile);
 
 Mesh* m_FBX_AllocateMesh(ufbx_mesh* fbxMesh);
 Mesh* m_FBX_LoadMesh(ufbx_mesh* fbxMesh);
+Mesh* m_FBX_LoadMeshUFBX(ufbx_mesh* fbxMesh);
 Light* m_FBX_LoadLight(ufbx_light* fbxLight);
 bool m_FBX_LoadNode(Scene* gdlScene, Node* parentNode, ufbx_node* node, s16 depth);
 

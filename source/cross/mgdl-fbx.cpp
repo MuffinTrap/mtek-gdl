@@ -112,7 +112,7 @@ bool m_FBX_LoadNode(Scene* gdlScene, Node* parentNode, ufbx_node* node, s16 dept
 		// Cannot use name: if multiple meshes have the same name
 		// the ufbx will postfix _1 etc.
 		// element_id is not unique either. Need to compare ufbx* mesh directly?
-		n->mesh = m_FBX_LoadMesh(mesh);
+		n->mesh = m_FBX_LoadMeshUFBX(mesh);
 
 
 		// Does this node have materials?
@@ -259,7 +259,7 @@ Mesh * m_FBX_AllocateMesh ( ufbx_mesh* fbxMesh )
 	sizetype vertices = fbxMesh->num_triangles * 3;
 	bool normals = fbxMesh->vertex_normal.exists;
 	bool uvs = fbxMesh->vertex_uv.exists;
-	sizetype indices = fbxMesh->num_indices;
+	sizetype indices = fbxMesh->max_face_triangles * 3; // NOTE This handles Quads
 	u32 creationFlags = 0;
 	if (normals)
 	{
@@ -344,7 +344,7 @@ Model* FBX_LoadFirstModel(const char* fbxFile)
 	if (mesh != nullptr)
 	{
 		Model* model = Model_Create();
-		model->m_mesh = m_FBX_LoadMesh(mesh);
+		model->m_mesh = m_FBX_LoadMeshUFBX(mesh);
 		model->m_material = material;
 
 		ufbx_free_scene(scene);
@@ -442,6 +442,87 @@ Mesh* FBX_LoadMeshTrianglesOnly(ufbx_mesh* fbxMesh)
 	mesh->name = zstr_from(fbxMesh->name.data);
 	return mesh;
 }
+
+// Loads the mesh like in ufbx example
+Mesh* m_FBX_LoadMeshUFBX(ufbx_mesh* fbxMesh)
+{
+	// TODO Use general memory for allocations
+
+	ufbx_mesh_part* part = &fbxMesh->material_parts[0];
+	size_t num_triangles = part->num_triangles;
+	Vertex *vertices = (Vertex*)calloc(num_triangles * 3, sizeof(Vertex));
+    size_t num_vertices = 0;
+
+    // Reserve space for the maximum triangle indices.
+    size_t num_tri_indices = fbxMesh->max_face_triangles * 3;
+    uint32_t *tri_indices = (uint32_t*)calloc(num_tri_indices, sizeof(uint32_t));
+
+    // Iterate over each face using the specific material.
+    for (size_t face_ix = 0; face_ix < part->num_faces; face_ix++) {
+        ufbx_face face = fbxMesh->faces.data[part->face_indices.data[face_ix]];
+
+        // Triangulate the face into `tri_indices[]`.
+        uint32_t num_tris = ufbx_triangulate_face(tri_indices, num_tri_indices, fbxMesh, face);
+
+        // Iterate over each triangle corner contiguously.
+        for (size_t i = 0; i < num_tris * 3; i++) {
+            uint32_t index = tri_indices[i];
+
+            Vertex *v = &vertices[num_vertices++];
+            v->position = ufbx_get_vertex_vec3(&fbxMesh->vertex_position, index);
+            v->normal = ufbx_get_vertex_vec3(&fbxMesh->vertex_normal, index);
+            v->uv = ufbx_get_vertex_vec2(&fbxMesh->vertex_uv, index);
+
+        }
+    }
+
+
+    // Should have written all the vertices.
+    free(tri_indices);
+    assert(num_vertices == num_triangles * 3);
+
+    // Generate the index buffer.
+    ufbx_vertex_stream streams[1] = {
+        { vertices, num_vertices, sizeof(Vertex) },
+    };
+    size_t num_indices = num_triangles * 3;
+    uint32_t *indices = (uint32_t*)calloc(num_indices, sizeof(uint32_t));
+
+    // This call will deduplicate vertices, modifying the arrays passed in `streams[]`,
+    // indices are written in `indices[]` and the number of unique vertices is returned.
+    num_vertices = ufbx_generate_indices(streams, 1, indices, num_indices, NULL, NULL);
+
+    // create_vertex_buffer(vertices, num_vertices);
+    //create_index_buffer(indices, num_indices);
+    // Copy over the indices
+	Mesh* m_mesh = Mesh_CreateEmpty();
+	m_mesh->indices = new GLushort[num_indices];
+	m_mesh->indexCount = num_indices;
+    for(size_t i = 0; i < num_indices; i++)
+	{
+		m_mesh->indices[i] = (GLushort)indices[i];
+	}
+	m_mesh->positions = new GLfloat[num_vertices * 3];
+	m_mesh->normals = new GLfloat[num_vertices * 3];
+	m_mesh->uvs = new GLfloat[num_vertices * 2];
+
+	for (size_t i = 0; i < num_vertices; i++)
+	{
+		Vertex* v = &vertices[i];
+
+		Mesh_AddPosition(m_mesh, Vector3New(v->position.x, v->position.y, v->position.z));
+		Mesh_AddNormal(m_mesh, Vector3New(v->normal.x, v->normal.y, v->normal.z));
+		Mesh_AddUV(m_mesh, Vector2New(v->uv.x, v->uv.y));
+	}
+
+    free(indices);
+    free(vertices);
+
+	return m_mesh;
+}
+
+
+
 
 Mesh * m_FBX_LoadMesh(ufbx_mesh* fbxMesh)
 {

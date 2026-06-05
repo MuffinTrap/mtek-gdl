@@ -20,12 +20,15 @@ const float circleSize = 10.0f;
 
 TextureHandle barb;
 PaletteHandle debugPalette;
-SceneHandle wiiModel;
+ModelHandle wiiModel;
 
 void angelscript_init()
 {
 	int screenWidth = mgdl_GetScreenWidth();
 	int screenHeight = mgdl_GetScreenHeight();
+
+	wiiModel = mgdl_LoadModel("assets/wii_console.fbx");
+
 	deltaCircle = Vector2New(0, screenHeight/4.0f );
 	frameCircle = Vector2New(0, screenHeight*(2.0f/3.0f) );
 
@@ -36,7 +39,6 @@ void angelscript_init()
 
 	debugPalette = mgdl_GetDebugPalette();
 
-	wiiModel = mgdl_LoadScene("assets/wii_console.fbx");
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -110,19 +112,19 @@ void effect_scene(float deltatime)
 	int screenHeight = mgdl_GetScreenHeight();
 	float aspect = float(screenWidth)/float(screenHeight);
 	float nearZ = 0.01f;
-	float farZ = 100.0f;
+	float farZ = 200.0f;
     gluPerspective(60.0f, aspect, nearZ, farZ);
 
 	glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-	gluLookAt(0.0f, 0.0f, 15.0f,
+	gluLookAt(0.0f, 0.0f, 45.0f,
 				 0.0f, 0.0f, 0.0f,
 				 0.0f, 1.0f, 0.0);
 
 	glPushMatrix();
 
 	glRotatef(elapsed * 90.0f, 1.0f, 0.0f, 0.3f);
-	glScalef(0.1f, 0.1f, 0.1f);
+	glScalef(0.01f, 0.01f, 0.01f);
 	mgdl_DrawModel(wiiModel, 0,0,0, 1.0f, Debug_White);
 	glPopMatrix();
 
@@ -187,9 +189,9 @@ void effect_3d(float deltatime)
 
 void angelscript_frame(float deltatime)
 {
+	//effect_2d(deltatime);
 	//effect_3d(deltatime);
-	effect_2d(deltatime);
-	//effect_scene(deltatime);
+	effect_scene(deltatime);
 }
 
 #if USE_ANGEL_AS_CPP

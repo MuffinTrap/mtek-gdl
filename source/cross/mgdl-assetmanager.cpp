@@ -453,7 +453,8 @@ ModelHandle AssetManager_LoadModel(const char* filename)
 		// m_manager.m_memoryInUse += Palette_GetColorAmount(pal) * sizeof(color32) + sizeof(Palette);
 
 		ModelAsset ta = AssetManager_CreateModelAsset(model, filename);
-		handle = Handle_CreateModel((u16) DynamicArray_AddModelAsset(array, ta));
+		u16 indexInArray = (u16) DynamicArray_AddModelAsset(array, ta);
+		handle = Handle_CreateModel(indexInArray);
 	}
 	else
 	{
