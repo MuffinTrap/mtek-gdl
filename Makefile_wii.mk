@@ -40,7 +40,7 @@ CXXFLAGS	 += -DMGDL_PLATFORM=\"Wii\"
 CXXFLAGS	 += -DMGDL_PLATFORM_WII
 
 # Add own include files so that #include <...> works
-MGDL_INCLUDE = -Iinclude/
+MGDL_INCLUDE = -Iinclude -I$(DEVKITPRO)/../lib$(LIB)/include
 CXXFLAGS += $(MGDL_INCLUDE)
 # NOTE: The order matters. Add OGC last so that includes are
 # searched first from local include/
@@ -80,6 +80,9 @@ install :
 # random generation library
 	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/wflcg
 	@cp $(RANDOM_HDR) $(INSTALL_DIR)/include/$(LIB)/wflcg
+# string library
+	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/zstrh
+	@cp $(ZSTR_HDR) $(INSTALL_DIR)/include/$(LIB)/zstrh
 # raymath library
 	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/raymath
 	@cp $(RAYMATH_HDR) $(INSTALL_DIR)/include/$(LIB)/raymath

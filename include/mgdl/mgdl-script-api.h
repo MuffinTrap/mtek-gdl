@@ -69,6 +69,7 @@ void mgdl_CreateSpriteAtlas(TextureHandle texture, s16 spriteWidth, s16 spriteHe
 // DRAWING
 // ----------------------------
 void mgdl_DrawTexture(TextureHandle handle, float x, float y);
+void mgdl_DrawTextureEx(TextureHandle handle, float x, float y, float rotationDeg, float scale);
 void mgdl_DrawSprite(TextureHandle handle, u16 spriteIndex, float x, float y, color32 color);
 void mgdl_DrawSpriteEx(TextureHandle handle, u16 spriteIndex, float x, float y, float scale, color32 color);
 void mgdl_DrawScene(SceneHandle handle, float x, float y, float z, float scale, color32 color);

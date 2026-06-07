@@ -17,6 +17,8 @@ static void RegisterOpenGLUtilsAndGlut(asIScriptEngine* as_engine)
 
 	// mgdl utils
 	as_engine->RegisterGlobalFunction("void mgdl_InitOrthoProjection()", asFUNCTION(mgdl_InitOrthoProjection), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_glSetAlphaTest(bool enabled)", asFUNCTION(mgdl_glSetAlphaTest), asCALL_CDECL);
+
 }
 
 
@@ -105,7 +107,8 @@ static void RegisterDrawing(asIScriptEngine* as_engine)
 	as_engine->RegisterGlobalFunction("color32 mgdl_GetPaletteColor(PaletteHandle palette, u8 colorIndex)", asFUNCTION(mgdl_GetPaletteColor), asCALL_CDECL);
 
 	// Register drawing functions
-	as_engine->RegisterGlobalFunction("void mgdl_DrawTexture(TextureHandle textureHandle, float y, float w)", asFUNCTION(mgdl_DrawTexture), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_DrawTexture(TextureHandle textureHandle, float x, float y)", asFUNCTION(mgdl_DrawTexture), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_DrawTextureEx(TextureHandle textureHandle, float x, float y, float rotationDeg, float scale)", asFUNCTION(mgdl_DrawTextureEx), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("void mgdl_DrawRectangle(float x, float y, float w, float h, color32 color)", asFUNCTION(mgdl_DrawRectangle), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("void mgdl_DrawText(const zstr &in text, float x, float y, float fontSize, color32 color)", asFUNCTIONPR(mgdl_DrawText, (const zstr&, float, float, float, color32), void), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("void mgdl_DrawTextEx(TextureHandle font,  const zstr &in text, float x, float y, float fontSize, color32 color)", asFUNCTIONPR(mgdl_DrawTextEx, (TextureHandle, const zstr&, float, float, float, color32), void), asCALL_CDECL);

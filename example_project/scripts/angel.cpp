@@ -190,7 +190,7 @@ void effect_3d(float deltatime)
 void angelscript_frame(float deltatime)
 {
 	//effect_2d(deltatime);
-	//effect_3d(deltatime);
+	effect_3d(deltatime);
 	effect_scene(deltatime);
 }
 

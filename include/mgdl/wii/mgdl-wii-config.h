@@ -44,7 +44,7 @@
  * @{
  */
 
-#include <valloc.h>
+#include <valloc/valloc.h>
 
 #define malloc2(s)	(valloc(s))	/*!< MEM2 version of malloc(). Its actually an alias for valloc() by default. */
 #define free2(s)	(vfree(s))	/*!< MEM2 version of free(). Its actually an alias for vfree() by default. */

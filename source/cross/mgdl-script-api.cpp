@@ -136,6 +136,19 @@ void mgdl_DrawTextureV(TextureHandle handle, const Vector2& topLeft)
 	mgdl_DrawTexture(handle, topLeft.x, topLeft.y);
 }
 
+void mgdl_DrawTextureEx(TextureHandle handle, float x, float y, float rotationDeg, float scale)
+{
+	Texture* tex = AssetManager_GetTexture(handle);
+	const float wh = tex->width/2;
+	const float hh = tex->height/2;
+	ASSERT_DEBUG(tex != nullptr);
+	glPushMatrix();
+	glTranslatef(x, y, 0);
+	glRotatef(rotationDeg, 0.0f, 0.0f, 1.0f);
+	Texture_Draw(tex, -wh, hh, scale);
+	glPopMatrix();
+}
+
 
 void mgdl_DrawSprite(TextureHandle handle, u16 spriteIndex,float x, float y, color32 color)
 {

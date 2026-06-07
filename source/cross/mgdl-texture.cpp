@@ -128,10 +128,9 @@ void Texture_DrawRectF(Texture* img, RectF area)
 void Texture_Draw(Texture* img, float x, float y, float scale)
 {
 	ASSERT_DEBUG(img != nullptr);
-	float w = img->width * scale;
-	float h = img->height * scale;
+	glScalef(scale, scale, 1.0f);
 
-	Texture_DrawRectF(img, RectF_Create(x, y, w, h));
+	Texture_DrawRectF(img, RectF_Create(x, y, img->width, img->height));
 }
 
 static GLuint PixelsToOpenGL(u32 width, u32 height, void* pixels, GLenum colorFormat, GLenum dataType)

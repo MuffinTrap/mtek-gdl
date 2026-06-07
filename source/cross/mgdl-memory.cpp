@@ -6,7 +6,7 @@ static sizetype allocatedGraphicsMemory = 0;
 static sizetype allocatedGeneralMemory = 0;
 
 #ifdef GEKKO
-#include <valloc.h>
+#include <valloc/valloc.h>
 
 void* mgdl_AllocateAlignedMemory(sizetype size) {
 	return aligned_alloc(32, size);
