@@ -1,4 +1,5 @@
 #if defined(MGDL_PLATFORM_MSYS2) || defined(MGDL_PLATFORM_MAC)
+#include <stdlib.h>
 #include <mgdl/pc/mgdl-joystick.h>
 #include <mgdl/pc/mgdl-pc-input.h>
 #include <mgdl/mgdl-logger.h>

@@ -1,4 +1,4 @@
-
+#include <stdlib.h>
 #include <mgdl/pc/mgdl-joystick.h>
 #include <mgdl/mgdl-controller.h>
 #include <mgdl/mgdl-logger.h>

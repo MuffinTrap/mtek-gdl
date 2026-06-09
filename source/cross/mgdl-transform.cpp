@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <mgdl/mgdl-transform.h>
 
 Transform* Transform_CreateZero()

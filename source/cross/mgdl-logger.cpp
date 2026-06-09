@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-util.h>

@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <mgdl/mgdl-light.h>
 #include <mgdl/mgdl-opengl_util.h>
 

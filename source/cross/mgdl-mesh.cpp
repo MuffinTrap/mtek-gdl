@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <mgdl/mgdl-mesh.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-util.h>

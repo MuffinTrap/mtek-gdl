@@ -50,7 +50,7 @@ install: $(ARC)
 	@cp $(HDRS_PC) $(INSTALL_DIR)/include/$(LIB)/pc
 
 # UFBX library
-	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/fbx
+	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/ufbx
 	@cp $(UFBX_HDR) $(INSTALL_DIR)/include/$(LIB)/ufbx
 # ccVector library
 	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/ccVector
