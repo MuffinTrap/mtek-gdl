@@ -51,13 +51,20 @@ extern "C"
 	Scene* Scene_CreateEmpty(void);
 	void Scene_Init(Scene* scene);
 
-	void Scene_Draw(Scene* scene);
+	void Scene_DrawNodes(Scene* scene);
+	void Scene_DrawFbx(Scene* scene);
 	void Scene_DrawNode(Node* node);
 	void Scene_DebugDraw(Scene* scene, Menu* menu, short x, short y, u32 debugFlags);
-	void Scene_AddChildNode(Scene* scene, Node* parent, Node* child);
-	void Scene_AddMaterial(Scene* scene, Material* material);
+
+
 	void Scene_SetMaterialTexture(Scene* scene, const char* materialName, Texture* texture);
 	void Scene_SetAllMaterialTextures(Scene* scene, Texture* texture);
+
+	void Scene_AddMaterial(Scene* scene, Material* material);
+	void Scene_AddLight(Scene* scene, Light* light);
+	void Scene_AddMesh(Scene* scene, Mesh* mesh);
+
+	void Scene_AddChildNode(Scene* scene, Node* parent, Node* child);
 
 	Node* Scene_GetRootNode(Scene* scene);
 	Material* Scene_GetMaterial(Scene* scene, const char* materialName);

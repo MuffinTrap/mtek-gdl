@@ -153,7 +153,7 @@ TextureHandle AssetManager_LoadTexture(const char* filename)
 	DynamicArray* array = m_manager.m_textureAssets;
 	// Check if already loaded
 	zstr_view filenameView = zstr_view_from(filename);
-	for(sizetype i = 0; i < DynamicArray_CountTextureAsset(array); i++)
+	for(sizetype i = 0; i < DynamicArray_Count(array); i++)
 	{
 		TextureAsset* m = DynamicArray_GetTextureAsset(array, i);
 		zstr_view handleView = zstr_as_view(&m->filename);
@@ -191,7 +191,7 @@ TextureHandle AssetManager_LoadTexture(const char* filename)
 
 void AssetManager_PrintLoadedTextures()
 {
-	for(sizetype i = 0; i < DynamicArray_CountTextureAsset(m_manager.m_textureAssets); i++)
+	for(sizetype i = 0; i < DynamicArray_Count(m_manager.m_textureAssets); i++)
 	{
 		TextureAsset* m = DynamicArray_GetTextureAsset(m_manager.m_textureAssets, i);
 		mgdl_assert_printf(m !=nullptr, "Null asset in dynamic array index %u", i);
@@ -203,7 +203,7 @@ void AssetManager_PrintLoadedTextures()
 
 Texture* AssetManager_GetTexture(TextureHandle handle)
 {
-	if (Handle_Index(handle) < DynamicArray_CountTextureAsset(m_manager.m_textureAssets) && Handle_Type(handle) == Type_Texture)
+	if (Handle_Index(handle) < DynamicArray_Count(m_manager.m_textureAssets) && Handle_Type(handle) == Type_Texture)
 	{
 		return DynamicArray_GetTextureAsset(m_manager.m_textureAssets, Handle_Index(handle))->data;
 	}
@@ -220,7 +220,7 @@ ImageHandle AssetManager_LoadPNG(const char* filename)
 	DynamicArray* array = m_manager.m_imageAssets;
 	// Check if already loaded
 	zstr_view filenameView = zstr_view_from(filename);
-	for(sizetype i = 0; i < DynamicArray_CountImageAsset(array); i++)
+	for(sizetype i = 0; i < DynamicArray_Count(array); i++)
 	{
 		ImageAsset* m = DynamicArray_GetImageAsset(array, i);
 		zstr_view handleView = zstr_as_view(&m->filename);
@@ -255,7 +255,7 @@ SoundHandle AssetManager_LoadSound(const char* filename, SoundFileType fileType)
 	DynamicArray* array = m_manager.m_soundAssets;
 	// Check if already loaded
 	zstr_view filenameView = zstr_view_from(filename);
-	for(sizetype i = 0; i < DynamicArray_CountSoundAsset(array); i++)
+	for(sizetype i = 0; i < DynamicArray_Count(array); i++)
 	{
 		SoundAsset* m = DynamicArray_GetSoundAsset(array, i);
 		zstr_view handleView = zstr_as_view(&m->filename);
@@ -283,7 +283,7 @@ SoundHandle AssetManager_LoadSound(const char* filename, SoundFileType fileType)
 
 Sound* AssetManager_GetSound(SoundHandle handle)
 {
-	if (Handle_Index(handle) < DynamicArray_CountSoundAsset(m_manager.m_soundAssets) && Handle_Type(handle) == Type_Sound)
+	if (Handle_Index(handle) < DynamicArray_Count(m_manager.m_soundAssets) && Handle_Type(handle) == Type_Sound)
 	{
 		return DynamicArray_GetSoundAsset(m_manager.m_soundAssets, Handle_Index(handle))->data;
 	}
@@ -300,7 +300,7 @@ PaletteHandle AssetManager_LoadPalette(const char* filename)
 	DynamicArray* array = m_manager.m_paletteAssets;
 	// Check if already loaded
 	zstr_view filenameView = zstr_view_from(filename);
-	for(sizetype i = 0; i < DynamicArray_CountPaletteAsset(array); i++)
+	for(sizetype i = 0; i < DynamicArray_Count(array); i++)
 	{
 		PaletteAsset* m = DynamicArray_GetPaletteAsset(array, i);
 		zstr_view handleView = zstr_as_view(&m->filename);
@@ -331,7 +331,7 @@ bool AssetManager_HasPalette(const char* filename)
 	DynamicArray* array = m_manager.m_paletteAssets;
 	// Check if already loaded
 	zstr_view filenameView = zstr_view_from(filename);
-	for(sizetype i = 0; i < DynamicArray_CountPaletteAsset(array); i++)
+	for(sizetype i = 0; i < DynamicArray_Count(array); i++)
 	{
 		PaletteAsset* m = DynamicArray_GetPaletteAsset(array, i);
 		zstr_view handleView = zstr_as_view(&m->filename);
@@ -368,7 +368,7 @@ PaletteHandle AssetManager_LoadDebugPalette()
 
 Palette* AssetManager_GetPalette(PaletteHandle handle)
 {
-	if (Handle_Index(handle) < DynamicArray_CountPaletteAsset(m_manager.m_paletteAssets) && Handle_Type(handle) == Type_Palette)
+	if (Handle_Index(handle) < DynamicArray_Count(m_manager.m_paletteAssets) && Handle_Type(handle) == Type_Palette)
 	{
 		return DynamicArray_GetPaletteAsset(m_manager.m_paletteAssets, Handle_Index(handle))->data;
 	}
@@ -381,7 +381,7 @@ Palette* AssetManager_GetPalette(PaletteHandle handle)
 
 Scene* AssetManager_GetScene(SceneHandle handle)
 {
-	if (Handle_Index(handle) < DynamicArray_CountSceneAsset(m_manager.m_sceneAssets) && Handle_Type(handle) == Type_Scene)
+	if (Handle_Index(handle) < DynamicArray_Count(m_manager.m_sceneAssets) && Handle_Type(handle) == Type_Scene)
 	{
 		return DynamicArray_GetSceneAsset(m_manager.m_sceneAssets, Handle_Index(handle))->data;
 	}
@@ -400,7 +400,7 @@ SceneHandle AssetManager_LoadScene(const char* filename)
 
 	// Check if already loaded
 	zstr_view filenameView = zstr_view_from(filename);
-	for(sizetype i = 0; i < DynamicArray_CountSceneAsset(array); i++)
+	for(sizetype i = 0; i < DynamicArray_Count(array); i++)
 	{
 		SceneAsset* m = DynamicArray_GetSceneAsset(array, i);
 		zstr_view handleView = zstr_as_view(&m->filename);
@@ -435,7 +435,7 @@ ModelHandle AssetManager_LoadModel(const char* filename)
 	// Check if already loaded
 	zstr_view filenameView = zstr_view_from(filename);
 
-	for(sizetype i = 0; i < DynamicArray_CountModelAsset(array); i++)
+	for(sizetype i = 0; i < DynamicArray_Count(array); i++)
 	{
 		ModelAsset* m = DynamicArray_GetModelAsset(array, i);
 		zstr_view handleView = zstr_as_view(&m->filename);
@@ -465,7 +465,7 @@ ModelHandle AssetManager_LoadModel(const char* filename)
 }
 Model* AssetManager_GetModel(ModelHandle handle)
 {
-	if (Handle_Index(handle) < DynamicArray_CountModelAsset(m_manager.m_modelAssets) && Handle_Type(handle) == Type_Model)
+	if (Handle_Index(handle) < DynamicArray_Count(m_manager.m_modelAssets) && Handle_Type(handle) == Type_Model)
 	{
 		return DynamicArray_GetModelAsset(m_manager.m_modelAssets, Handle_Index(handle))->data;
 	}

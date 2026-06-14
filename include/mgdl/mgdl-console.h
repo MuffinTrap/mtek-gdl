@@ -44,6 +44,9 @@ void Console_Print(ConsoleTextColor color, const char* text);
 */
 void Console_Printf(ConsoleTextColor color, const char* format, ...);
 
+void Console_SetTextColor(ConsoleTextColor color);
+void Console_ResetTextColor();
+
 #define MGDL_CONSOLECOLOR_PRE "\033["
 #define MGDL_CONSOLECOLOR_POST "m"
 #define MGDL_CONSOLECOLOR_RESET "\033[0m"

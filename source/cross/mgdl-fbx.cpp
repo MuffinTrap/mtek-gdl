@@ -9,6 +9,7 @@
 #include <mgdl/mgdl-model.h>
 #include <mgdl/mgdl-scene.h>
 #include <mgdl/mgdl-node.h>
+#include <mgdl/mgdl-console.h>
 #include <stdio.h>
 
 ufbx_scene* FBX_LoadScene(const char* fbxFile)
@@ -23,12 +24,16 @@ ufbx_scene* FBX_LoadScene(const char* fbxFile)
 
 	// Different 3D Programs export differently
 	// This is the best setting for Blender
-	opts.space_conversion = UFBX_SPACE_CONVERSION_ADJUST_TRANSFORMS;
+	opts.space_conversion = UFBX_SPACE_CONVERSION_MODIFY_GEOMETRY;
 
 	ufbx_error error;
 	Log_InfoF("Reading fbx file %s\n", fbxFile);
 	ufbx_scene* scene = ufbx_load_file(fbxFile, &opts, &error);
-	mgdl_assert_printf(scene != nullptr, "Cannot load fbx: %s\n", error.description.data);
+	if (scene == nullptr)
+	{
+		Log_ErrorF("Cannot load fbx: %s\n", error.description.data);
+	}
+
 	return scene;
 
 }
@@ -36,6 +41,10 @@ ufbx_scene* FBX_LoadScene(const char* fbxFile)
 Scene* FBX_Load(const char* fbxFile)
 {
 	ufbx_scene* scene = FBX_LoadScene(fbxFile);
+	if (scene == nullptr)
+	{
+		return nullptr;
+	}
 
 	Scene* gdlScene = Scene_CreateEmpty();
 	// What is in this file?
@@ -43,7 +52,7 @@ Scene* FBX_Load(const char* fbxFile)
 
 	// Start from the root
 	ufbx_node* root = scene->root_node;
-	m_FBX_LoadNode(gdlScene, Scene_GetRootNode(gdlScene), root, 0);
+	m_FBX_LoadNode(gdlScene, Scene_GetRootNode(gdlScene), root, 0, false);
 
 	return gdlScene;
 }
@@ -52,26 +61,29 @@ void Indent(short depth)
 {
 	for (short i = 0; i < depth; i++)
 	{
-		Log_Info("\t");
+		Log_Info("  ");
 	}
 }
 
-bool m_FBX_LoadNode(Scene* gdlScene, Node* parentNode, ufbx_node* node, s16 depth)
+bool m_FBX_LoadNode(Scene* gdlScene, Node* parentNode, ufbx_node* node, s16 depth, const bool createNodes)
 {
 	mgdl_assert_print(node != nullptr, "Tried to load null node");
 	mgdl_assert_print(gdlScene != nullptr, "No scene to load nodes to");
 	ufbx_vec3 t = node->local_transform.translation;
-	ufbx_vec3 r = node->euler_rotation;
+	ufbx_vec3 r = ufbx_quat_to_euler(node->local_transform.rotation, UFBX_ROTATION_ORDER_XYZ);
+	ufbx_vec3 s = node->local_transform.scale;
 
 	if (true)
 	{
 		Indent(depth);
+		Console_SetTextColor(ConsoleText_Cyan);
 		Log_InfoF("Node: %s\n", node->name.data);
 
+		Console_ResetTextColor();
 		Indent(depth);
-		Log_Info("Transform:");
-		Log_InfoF("position: (%.2f, %.2f, %.2f)", t.x, t.y, t.z);
-		Log_InfoF("rotation: (%.2f, %.2f, %.2f)", r.x, r.y, r.z);
+		Log_InfoF("position: (%.2f, %.2f, %.2f) ", t.x, t.y, t.z);
+		Log_InfoF("rotation: (%.2f, %.2f, %.2f) ", r.x, r.y, r.z);
+		Log_InfoF("scale: (%.2f, %.2f, %.2f) ", s.x, s.y, s.z);
 		Log_Info("\n");
 	}
 
@@ -81,13 +93,17 @@ bool m_FBX_LoadNode(Scene* gdlScene, Node* parentNode, ufbx_node* node, s16 dept
 	{
 		childAmount = 1;
 	}
-	Node* n = Node_Create((u8)childAmount);
-	mgdl_assert_print(n != nullptr, "Could not create new Node");
+	Node* n = nullptr;
+	if (createNodes)
+	{
+		n = Node_Create((u8)childAmount);
+		mgdl_assert_print(n != nullptr, "Could not create new Node");
 
-	Node_SetTransform(n, node->name.data,
-								 Vector3New(t.x, t.y, t.z),
-								 Vector3New(r.x, r.y, r.z));
+		Node_SetTransform(n, node->name.data,
+									Vector3New(t.x, t.y, t.z),
+									Vector3New(r.x, r.y, r.z));
 
+	}
 	Indent(depth);
 	if (node->mesh != nullptr)
 	{
@@ -100,11 +116,11 @@ bool m_FBX_LoadNode(Scene* gdlScene, Node* parentNode, ufbx_node* node, s16 dept
 		}
 		if (mesh->vertex_uv.exists)
 		{
-			Log_InfoF(",%zu uvs", mesh->vertex_uv.values.count);
+			Log_InfoF(", %zu uvs", mesh->vertex_uv.values.count);
 		}
 		if (mesh->num_indices > 0)
 		{
-			Log_InfoF(",%zu indices", mesh->num_indices);
+			Log_InfoF(", %zu indices", mesh->num_indices);
 		}
 		Log_Info("\n");
 
@@ -112,7 +128,14 @@ bool m_FBX_LoadNode(Scene* gdlScene, Node* parentNode, ufbx_node* node, s16 dept
 		// Cannot use name: if multiple meshes have the same name
 		// the ufbx will postfix _1 etc.
 		// element_id is not unique either. Need to compare ufbx* mesh directly?
-		n->mesh = m_FBX_LoadMeshUFBX(mesh);
+		if (createNodes)
+		{
+			n->mesh = m_FBX_LoadMeshUFBX(mesh);
+		}
+		else
+		{
+			Scene_AddMesh(gdlScene, m_FBX_LoadMeshUFBX(mesh));
+		}
 
 
 		// Does this node have materials?
@@ -146,10 +169,14 @@ bool m_FBX_LoadNode(Scene* gdlScene, Node* parentNode, ufbx_node* node, s16 dept
 				{
 					Log_InfoF("Material was already loaded\n");
 				}
-				n->material = mat;
+				if (createNodes)
+				{
+					n->material = mat;
+				}
 			}
 		}
-		else {
+		else if (createNodes)
+		{
 			// Set default material for safety?
 			Log_Warning("Node has mesh but no material, setting default material");
 			Log_InfoF("Creating default material\n");
@@ -187,7 +214,14 @@ bool m_FBX_LoadNode(Scene* gdlScene, Node* parentNode, ufbx_node* node, s16 dept
 		}
 
 		Light* gdlLight = m_FBX_LoadLight(light);
-		n->light = gdlLight;
+		if (createNodes)
+		{
+			n->light = gdlLight;
+		}
+		else
+		{
+			Scene_AddLight(gdlScene, gdlLight);
+		}
 
 		Log_Info("\n");
 
@@ -203,16 +237,18 @@ bool m_FBX_LoadNode(Scene* gdlScene, Node* parentNode, ufbx_node* node, s16 dept
 		Log_InfoF("\tBone %s, radius: %.2f relative length: %.2f\n", bone->name.data, bone->radius, bone->relative_length);
 	}
 
-	Scene_AddChildNode(gdlScene, parentNode, n);
+	if (createNodes)
+	{
+		Scene_AddChildNode(gdlScene, parentNode, n);
+	}
 
 	if (childAmount > 0)
 	{
-		for(size_t i = 0; i < node->children.count; i++)
+		for(size_t i = node->children.count; i > 0; i--)
 		{
-			m_FBX_LoadNode(gdlScene, n, node->children[i], depth+1);
+			m_FBX_LoadNode(gdlScene, n, node->children[i-1], depth+1, createNodes);
 		}
 	}
-
 
 	return true;
 }
@@ -370,7 +406,7 @@ Material* FBX_LoadFirstMaterial(ufbx_scene* scene, const char* searchfolder)
 	return nullptr;
 }
 
-Material* FBX_LoadNodeMaterial(ufbx_node* node, int materialIndex, const char* searchfolder)
+Material* FBX_LoadNodeMaterial(ufbx_node* node, sizetype materialIndex, const char* searchfolder)
 {
 	if (materialIndex >= node->materials.count)
 	{
@@ -402,7 +438,9 @@ Material* FBX_LoadNodeMaterial(ufbx_node* node, int materialIndex, const char* s
 		{
 			Log_InfoF("Material texture not found\n");
 		}
-		return Material_Load(material->name.data, texture, MaterialType::Diffuse);
+		Material* mat = Material_Load(material->name.data, texture, MaterialType::Diffuse);
+		mat->ufbx_id = material->typed_id;
+		return mat;
 	}
 	return nullptr;
 }
@@ -447,6 +485,8 @@ Mesh* FBX_LoadMeshTrianglesOnly(ufbx_mesh* fbxMesh)
 Mesh* m_FBX_LoadMeshUFBX(ufbx_mesh* fbxMesh)
 {
 	// TODO Use general memory for allocations
+	Vector3 minPos = Vector3New(10000, 10000, 10000);
+	Vector3 maxPos = Vector3New(-10000, -10000, -10000);
 
 	ufbx_mesh_part* part = &fbxMesh->material_parts[0];
 	size_t num_triangles = part->num_triangles;
@@ -473,6 +513,13 @@ Mesh* m_FBX_LoadMeshUFBX(ufbx_mesh* fbxMesh)
             v->normal = ufbx_get_vertex_vec3(&fbxMesh->vertex_normal, index);
             v->uv = ufbx_get_vertex_vec2(&fbxMesh->vertex_uv, index);
 
+			if (v->position.x > maxPos.x) { maxPos.x = v->position.x;}
+			if (v->position.x > maxPos.y) { maxPos.y = v->position.y;}
+			if (v->position.x > maxPos.z) { maxPos.z = v->position.z;}
+			if (v->position.x < minPos.x) { minPos.x = v->position.x;}
+			if (v->position.x < minPos.y) { minPos.y = v->position.y;}
+			if (v->position.x < minPos.z) { minPos.z = v->position.z;}
+
         }
     }
 
@@ -496,15 +543,15 @@ Mesh* m_FBX_LoadMeshUFBX(ufbx_mesh* fbxMesh)
     //create_index_buffer(indices, num_indices);
     // Copy over the indices
 	Mesh* m_mesh = Mesh_CreateEmpty();
-	m_mesh->indices = new GLushort[num_indices];
-	m_mesh->indexCount = num_indices;
+	u32 flags = 0;
+	flags = Flag_SetAll(flags, FlagNormals);
+	flags = Flag_SetAll(flags, FlagUVs);
+	Mesh_Init(m_mesh, num_vertices, num_indices, flags);
     for(size_t i = 0; i < num_indices; i++)
 	{
 		m_mesh->indices[i] = (GLushort)indices[i];
 	}
-	m_mesh->positions = new GLfloat[num_vertices * 3];
-	m_mesh->normals = new GLfloat[num_vertices * 3];
-	m_mesh->uvs = new GLfloat[num_vertices * 2];
+	m_mesh->ufbx_id = fbxMesh->typed_id;
 
 	for (size_t i = 0; i < num_vertices; i++)
 	{
@@ -518,12 +565,21 @@ Mesh* m_FBX_LoadMeshUFBX(ufbx_mesh* fbxMesh)
     free(indices);
     free(vertices);
 
+	Log_InfoF("Mesh bounding box (%.2f, %.2f, %.2f) (%.2f, %.2f, %.2f)\n",
+			  maxPos.x,
+			  maxPos.y,
+			  maxPos.z,
+			  minPos.x,
+			  minPos.y,
+			  minPos.z
+			  );
+
 	return m_mesh;
 }
 
 
 
-
+// DANGER Delete this, has memory errors with quads
 Mesh * m_FBX_LoadMesh(ufbx_mesh* fbxMesh)
 {
 	Mesh* mesh = m_FBX_AllocateMesh(fbxMesh);
@@ -657,5 +713,6 @@ Light* m_FBX_LoadLight(ufbx_light* fbxLight)
 
 		break;
 	}
+	light->ufbx_id = fbxLight->typed_id;
 	return light;
 }

@@ -15,15 +15,21 @@
  */
 struct Mesh
 {
+	// OpenGL data
 	GLushort* indices;
 	GLsizei indexCount;
 	u32 vertexCount;
-	GLushort indexCounter; /**< Used when creating a mesh */
 	GLfloat* positions;
 	GLfloat* normals;
 	GLfloat* uvs;
 	GLfloat* colors;
+
+	// mgdl data
+	GLushort indexCounter; /**< Used when creating a mesh */
 	zstr name;
+
+	// ufbx connection
+	uint32_t ufbx_id;
 };
 typedef struct Mesh Mesh;
 

@@ -3,17 +3,21 @@
 #include <mgdl/mgdl-dynamic_array.h>
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-node.h>
+#include <mgdl/mgdl-camera.h>
+#include <mgdl/mgdl-opengl_util.h>
+
 
 // TODO Move materials and meshes to AssetManager
 DYNAMIC_ARRAY_IMPL(Mesh)
 DYNAMIC_ARRAY_IMPL(Material)
+DYNAMIC_ARRAY_IMPL(Light)
 
 void Scene_Init(Scene* scene)
 {
 	scene->rootNode = nullptr;
 	scene->materials = DynamicArray_CreatePtrMaterial(4);
 	scene->meshes = DynamicArray_CreatePtrMesh(4);
-	scene->lights = nullptr;
+	scene->lights = DynamicArray_CreatePtrLight(8); // Wii has max 8 lights
 	scene->ufbx = nullptr;
 }
 
@@ -24,6 +28,125 @@ Scene* Scene_CreateEmpty()
 	return scene;
 }
 
+void Scene_LoadUFBX(Scene* scene, ufbx_scene* ufbx)
+{
+	scene->ufbx = ufbx;
+
+
+}
+
+static Mesh* GetMeshById(Scene* scene, uint32_t mesh_id)
+{
+	for(sizetype i = 0; i < DynamicArray_Count(scene->meshes); i++)
+	{
+		Mesh* mptr = DynamicArray_GetPtrMesh(scene->meshes, i);
+		if(mptr->ufbx_id == mesh_id)
+		{
+			return mptr;
+		}
+	}
+	return nullptr;
+}
+
+static Material* GetMaterialById(Scene* scene, uint32_t material_id)
+{
+
+	for(sizetype i = 0; i < DynamicArray_Count(scene->materials); i++)
+	{
+		Material* mptr = DynamicArray_GetPtrMaterial(scene->materials, i);
+		if(mptr->ufbx_id == material_id)
+		{
+			return mptr;
+		}
+	}
+	return nullptr;
+}
+
+static Light* GetLightById(Scene* scene, uint32_t light_id)
+{
+	for(sizetype i = 0; i < DynamicArray_Count(scene->lights); i++)
+	{
+		Light* mptr = DynamicArray_GetPtrLight(scene->lights, i);
+		if(mptr->ufbx_id == light_id)
+		{
+			return mptr;
+		}
+	}
+	return nullptr;
+}
+
+static void ApplyUFBXTransform(ufbx_transform* transform)
+{
+	ufbx_vec3 rotations = ufbx_quat_to_euler(transform->rotation, UFBX_ROTATION_ORDER_XYZ);
+	glTranslatef(transform->translation.x, transform->translation.y, transform->translation.z);
+	glRotatef(rotations.x, 1.0f, 0.0f, 0.0f);
+	glRotatef(rotations.y, 0.0f, 1.0f, 0.0f);
+	glRotatef(rotations.z, 0.0f, 0.0f, 1.0f);
+	glScalef(transform->scale.x, transform->scale.y, transform->scale.z);
+}
+
+static void DrawUFBXNode(Scene* scene, ufbx_node* node)
+{
+	glPushMatrix();
+	ApplyUFBXTransform(&node->local_transform);
+
+	if (node->mesh != nullptr)
+	{
+		if (node->materials.count > 0)
+		{
+			ufbx_material* uMaterial = node->materials[0];
+			Material* mMaterial = GetMaterialById(scene, uMaterial->typed_id);
+			if (mMaterial != nullptr)
+			{
+				Material_Apply(mMaterial);
+			}
+			else
+			{
+				glColor3f(1.0f, 1.0f, 1.0f);
+			}
+		}
+
+		// Find mesh with this id
+		uint32_t mesh_id = node->mesh->typed_id;
+		Mesh* mesh = GetMeshById(scene, mesh_id);
+		if (mesh != nullptr)
+		{
+			Mesh_DrawElements(mesh);
+		}
+	}
+	else if(node->light != nullptr)
+	{
+		Light* mLight = GetLightById(scene, node->light->typed_id);
+		if (mLight != nullptr)
+		{
+			Light_Apply(mLight);
+		}
+	}
+	else if(node->camera != nullptr)
+	{
+		// TODO apply camera
+		Vector3 position;
+		Vector3 target;
+		Vector3 up;
+		mgdl_InitCamera(position, target, up);
+	}
+
+	for(size_t i = 0; i < node->children.count; i++)
+	{
+		DrawUFBXNode(scene, node->children[i]);
+	}
+	glPopMatrix();
+}
+
+
+// NOTE
+// New system. Store minimal amount of information
+// use the ufbx scene for everything else
+void Scene_DrawFbx(Scene* scene)
+{
+	ufbx_node* root = scene->ufbx->root_node;
+	DrawUFBXNode(scene, root);
+}
 
 void Scene_AddChildNode (Scene* scene, Node* parent, Node* child )
 {
@@ -36,6 +159,10 @@ void Scene_AddChildNode (Scene* scene, Node* parent, Node* child )
 		DynamicArray_AddPtrNode(parent->children, child);
 	}
 }
+
+
+// NOTE
+// Old system with own nodes
 
 void Scene_DebugDraw(Scene* scene,  Menu* menu, short x, short y, u32 debugFlags )
 {
@@ -77,7 +204,7 @@ void Scene_DebugDrawNode_( Node* node, Menu* menu, short depth, short* index, u3
 		Menu_Text(menu, "- Light");
 	}
 
-	for(sizetype i = 0; i < DynamicArray_CountNode(node->children); i++)
+	for(sizetype i = 0; i < DynamicArray_Count(node->children); i++)
 	{
 		drawIndex += 1;
 		*index = drawIndex;
@@ -85,7 +212,7 @@ void Scene_DebugDrawNode_( Node* node, Menu* menu, short depth, short* index, u3
 	}
 }
 
-void Scene_Draw(Scene* scene)
+void Scene_DrawNodes(Scene* scene)
 {
 	if (scene->rootNode != nullptr)
 	{
@@ -101,7 +228,7 @@ void Scene_DrawNode ( Node* node )
 		Node_Draw(node);
 		if (Flag_IsSetAny(node->enabledElements, NodeChildren))
 		{
-			for(sizetype i = 0; i < DynamicArray_CountNode(node->children); i++)
+			for(sizetype i = 0; i < DynamicArray_Count(node->children); i++)
 			{
 				Scene_DrawNode(DynamicArray_GetPtrNode(node->children, i));
 			}
@@ -125,7 +252,7 @@ void Scene_SetMaterialTexture (Scene* scene, const char* materialName, Texture* 
 
 void Scene_SetAllMaterialTextures (Scene* scene, Texture* texture )
 {
-	for(sizetype i = 0; i < DynamicArray_CountMaterial(scene->materials); i++)
+	for(sizetype i = 0; i < DynamicArray_Count(scene->materials); i++)
 	{
 		Material* m = DynamicArray_GetPtrMaterial(scene->materials, i);
 		m->texture = texture;
@@ -135,6 +262,15 @@ void Scene_SetAllMaterialTextures (Scene* scene, Texture* texture )
 void Scene_AddMaterial ( Scene* scene, Material* material )
 {
 	DynamicArray_AddPtrMaterial(scene->materials, material);
+}
+
+void Scene_AddLight(Scene* scene, Light* light)
+{
+	DynamicArray_AddPtrLight(scene->lights, light);
+}
+void Scene_AddMesh(Scene* scene, Mesh* mesh)
+{
+	DynamicArray_AddPtrMesh(scene->meshes, mesh);
 }
 
 Node* Scene_GetRootNode(Scene* scene )
@@ -172,7 +308,7 @@ bool Scene_CalculateNodeModelMatrix (Node* parent, Node* target, Matrix model )
 
 	// Need to store the matrix at this state
 	// so that every child starts from the same matrix
-	for(sizetype i = 0; i < DynamicArray_CountNode(parent->children); i++)
+	for(sizetype i = 0; i < DynamicArray_Count(parent->children); i++)
 	{
 		Matrix accumulated =  model;
 		if(Scene_CalculateNodeModelMatrix(DynamicArray_GetNode(parent->children, i),
@@ -201,7 +337,7 @@ bool Scene_CalculateNodePosition ( Node* parent, Node* target, Matrix world, Vec
 
 	// Need to store the matrix at this state
 	// so that every child starts from the same matrix
-	for(sizetype i = 0; i < DynamicArray_CountNode(parent->children); i++)
+	for(sizetype i = 0; i < DynamicArray_Count(parent->children); i++)
 	{
 		Matrix accumulated = world;
 		if(Scene_CalculateNodePosition(DynamicArray_GetNode(parent->children, i), target, accumulated, posOut))
@@ -216,7 +352,7 @@ Material* Scene_GetMaterial (Scene* scene, const char* materialName )
 {
 	mgdl_assert_print(materialName != nullptr, "Null material name");
 	mgdl_assert_print(scene->materials != nullptr, "No materials array in scene");
-	for(sizetype mi = 0; mi < DynamicArray_CountMaterial(scene->materials); mi++)
+	for(sizetype mi = 0; mi < DynamicArray_Count(scene->materials); mi++)
 	{
 		Material* m = DynamicArray_GetMaterial(scene->materials, mi);
 		mgdl_assert_print(m != nullptr, "No material");
@@ -242,7 +378,7 @@ Material* Scene_FindMaterial ( Scene* scene, Node* node, const char* materialNam
 		}
 	}
 	Material* childMat = nullptr;
-	for(sizetype i = 0; i < DynamicArray_CountNode(node->children); i++)
+	for(sizetype i = 0; i < DynamicArray_Count(node->children); i++)
 	{
 		childMat = Scene_FindMaterial(scene, DynamicArray_GetNode(node->children, i), materialName);
 		if (childMat != nullptr)

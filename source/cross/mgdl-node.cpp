@@ -46,7 +46,7 @@ Node* Node_Clone(Node* source, NodeFlagField cloningFlags)
 	sizetype childAmount = 1;
 	if (Flag_IsSetAny(cloningFlags, NodeChildren))
 	{
-		sizetype childCount = DynamicArray_CountNode(source->children);
+		sizetype childCount = DynamicArray_Count(source->children);
 		if (childCount > 1)
 		{
 			childAmount = childCount;
@@ -56,7 +56,7 @@ Node* Node_Clone(Node* source, NodeFlagField cloningFlags)
 
 	if (Flag_IsSetAny(cloningFlags, NodeChildren))
 	{
-		for(sizetype i = 0; i < DynamicArray_CountNode(source->children); i++)
+		for(sizetype i = 0; i < DynamicArray_Count(source->children); i++)
 		{
 			Node* childNode = DynamicArray_GetPtrNode(source->children, i);
 			if (childNode != nullptr)
@@ -109,7 +109,7 @@ Node* Node_FindChildByIndexRecursive_ (Node* parent, short index, short* indexCo
 	{
 		return parent;
 	}
-	for(sizetype i = 0; i < DynamicArray_CountNode(parent->children); i++)
+	for(sizetype i = 0; i < DynamicArray_Count(parent->children); i++)
 	{
 		(*indexCounter) += 1;
 		Node* childNode =  Node_FindChildByIndexRecursive_(DynamicArray_GetNode(parent->children, i), index, indexCounter);
@@ -128,7 +128,7 @@ Node* Node_FindChildByName (Node* node, const char* nodeName )
 	{
 		return node;
 	}
-	for(sizetype i = 0; i < DynamicArray_CountNode(node->children); i++)
+	for(sizetype i = 0; i < DynamicArray_Count(node->children); i++)
 	{
 		Node* childNode = Node_FindChildByName(DynamicArray_GetNode(node->children, i), nodeName);
 		if (childNode != nullptr)

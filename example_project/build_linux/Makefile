@@ -1,4 +1,8 @@
 
+ifndef ANGEL
+ANGEL := script
+endif
+
 # ALL RULES
 include ../build_rules/rules_all.mk
 

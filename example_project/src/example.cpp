@@ -282,7 +282,7 @@ void Example::DrawScene ( Scene* scene, Vector3 scale)
     glRotatef(elp * sceneRotation.z * 10.0f, 0.0f, 0.0f, 1.0f);
     glScalef(scale.x, scale.y, scale.z);
 
-    Scene_Draw(scene);
+    Scene_DrawNodes(scene);
 
     glPopMatrix();
     glDisable(GL_DEPTH_TEST);

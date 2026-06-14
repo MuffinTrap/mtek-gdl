@@ -17,6 +17,8 @@ struct DynamicArray {
 typedef struct DynamicArray DynamicArray;
 
 // TODO General void* functions for assetmanager
+sizetype DynamicArray_Count(DynamicArray* array);
+void* DynamicArray_Get(DynamicArray* array, sizetype index);
 
 #define DYNAMIC_ARRAY(TYPE) \
 DynamicArray* DynamicArray_Create##TYPE(sizetype capacity); \
@@ -83,6 +85,3 @@ sizetype DynamicArray_Add##TYPE ( DynamicArray* array, TYPE item ) {\
     array->count += 1; \
     return  array->count-1; \
 } \
-sizetype DynamicArray_Count##TYPE(DynamicArray* array) { \
-    return array->count; \
-}

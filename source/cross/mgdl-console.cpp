@@ -14,3 +14,12 @@ void Console_Printf(ConsoleTextColor color, const char* format, ...)
 
     Console_Print(color, mgdl_GetPrintfBuffer());
 }
+
+void Console_SetTextColor(ConsoleTextColor color)
+{
+    printf("\033[%dm", (int)color);
+}
+void Console_ResetTextColor()
+{
+    printf(MGDL_CONSOLECOLOR_RESET);
+}

@@ -194,9 +194,11 @@ void mgdl_DrawScene(SceneHandle handle, float x, float y, float z, float scale, 
 	Scene* scene = AssetManager_GetScene(handle);
 	if (scene != nullptr)
 	{
+		glPushMatrix();
 		glTranslatef(x, y, z);
 		glScalef(scale, scale, scale);
-		Scene_Draw(scene);
+		Scene_DrawFbx(scene);
+		glPopMatrix();
 	}
 }
 

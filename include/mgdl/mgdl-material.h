@@ -22,6 +22,9 @@ struct Material
 	GLfloat diffuseColor[4];
 	Texture* texture;
 	MaterialType type;
+
+	// ufbx connection
+	uint32_t ufbx_id;
 };
 typedef struct Material Material;
 

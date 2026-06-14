@@ -40,12 +40,12 @@ Mesh* m_FBX_AllocateMesh(ufbx_mesh* fbxMesh);
 Mesh* m_FBX_LoadMesh(ufbx_mesh* fbxMesh);
 Mesh* m_FBX_LoadMeshUFBX(ufbx_mesh* fbxMesh);
 Light* m_FBX_LoadLight(ufbx_light* fbxLight);
-bool m_FBX_LoadNode(Scene* gdlScene, Node* parentNode, ufbx_node* node, s16 depth);
+bool m_FBX_LoadNode(Scene* gdlScene, Node* parentNode, ufbx_node* node, s16 depth, const bool createNodes);
 
 Mesh* FBX_LoadMeshTrianglesOnly(ufbx_mesh* mesh);
 
 Material* FBX_LoadFirstMaterial(ufbx_scene* scene, const char* searchfolder);
-Material* FBX_LoadNodeMaterial(ufbx_node* node, int materialIndex, const char* searchfolder);
+Material* FBX_LoadNodeMaterial(ufbx_node* node, sizetype materialIndex, const char* searchfolder);
 
 ufbx_scene* FBX_LoadScene(const char* fbxFile);
 ufbx_mesh* FBX_GetFirstMesh(ufbx_scene* scene);

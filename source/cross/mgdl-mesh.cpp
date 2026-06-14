@@ -218,6 +218,10 @@ GLushort Mesh_AddPosition(Mesh* mesh, Vector3 position)
 		mesh->positions[i+1] = Vector3_Y(position);
 		mesh->positions[i+2] = Vector3_Z(position);
 	}
+	else
+	{
+		Log_Error("No space for more positions in Mesh\n");
+	}
 	GLushort last = mesh->indexCounter;
 	mesh->indexCounter += 1;
 	return last;
@@ -233,6 +237,10 @@ void Mesh_AddNormal(Mesh* mesh, Vector3 normal)
 		mesh->normals[i+1] = Vector3_Y(normal);
 		mesh->normals[i+2] = Vector3_Z(normal);
 	}
+	else
+	{
+		Log_Error("No space for more normals in Mesh\n");
+	}
 }
 
 void Mesh_AddUV(Mesh* mesh, Vector2 uv)
@@ -245,6 +253,10 @@ void Mesh_AddUV(Mesh* mesh, Vector2 uv)
 		mesh->uvs[i+0] = Vector3_X(uv);
 		mesh->uvs[i+1] = Vector3_Y(uv);
 	}
+	else
+	{
+		Log_Error("No space for more uvs in Mesh\n");
+	}
 }
 
 void Mesh_AddColor(Mesh* mesh, Vector3 color)
@@ -256,6 +268,10 @@ void Mesh_AddColor(Mesh* mesh, Vector3 color)
 		mesh->colors[i+0] = Vector3_X(color);
 		mesh->colors[i+1] = Vector3_Y(color);
 		mesh->colors[i+2] = Vector3_Z(color);
+	}
+	else
+	{
+		Log_Error("No space for more colors in Mesh\n");
 	}
 }
 

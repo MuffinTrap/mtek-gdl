@@ -31,6 +31,9 @@ struct Light
 	float QuadraticAttenuation;
 	zstr name;
 
+	// ufbx connection
+	uint32_t ufbx_id;
+
 	//
 	GLfloat position[4];
 	GLfloat direction[4];
