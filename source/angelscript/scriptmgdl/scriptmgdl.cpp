@@ -18,6 +18,7 @@ static void RegisterOpenGLUtilsAndGlut(asIScriptEngine* as_engine)
 	// mgdl utils
 	as_engine->RegisterGlobalFunction("void mgdl_InitOrthoProjection()", asFUNCTION(mgdl_InitOrthoProjection), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("void mgdl_glSetAlphaTest(bool enabled)", asFUNCTION(mgdl_glSetAlphaTest), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_glColor32(color32 color)", asFUNCTION(mgdl_glColor32), asCALL_CDECL);
 
 }
 
@@ -61,6 +62,9 @@ static void RegisterTypes(asIScriptEngine* as_engine)
 	as_engine->RegisterTypedef("ModelHandle", "uint32");
 
 	as_engine->RegisterTypedef("color32", "uint32");
+
+	// Register constants
+	    // Register a boolean flag that can be read, but not modified by the script.
 }
 
 static void RegisterMain(asIScriptEngine* as_engine)
@@ -70,6 +74,9 @@ static void RegisterMain(asIScriptEngine* as_engine)
 	as_engine->RegisterGlobalFunction("int mgdl_GetScreenWidth()", asFUNCTION(mgdl_GetScreenWidth), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("float mgdl_GetElapsedSeconds()", asFUNCTION(mgdl_GetElapsedSeconds), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("float mgdl_GetDeltaTime()", asFUNCTION(mgdl_GetDeltaTime), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("float mgdl_DoProgramExit()", asFUNCTION(mgdl_DoProgramExit), asCALL_CDECL);
+
+
 
 	// Asset handling
 	as_engine->RegisterGlobalFunction("TextureHandle mgdl_LoadTexture(const zstr &in filename)", asFUNCTIONPR(mgdl_LoadTexture, (const zstr&), TextureHandle), asCALL_CDECL);

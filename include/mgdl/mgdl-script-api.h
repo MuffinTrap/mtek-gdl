@@ -15,7 +15,12 @@ SceneHandle mgdl_LoadScene(const zstr& filename);
 ModelHandle mgdl_LoadModel(const char* filename);
 ModelHandle mgdl_LoadModel(const zstr& filename);
 
+void mgdl_DrawText(const char* text, float x, float y, float fontSize, color32 color);
+void mgdl_DrawTextEx(TextureHandle font, const char* text, float x, float y,  float fontSize, color32 color);
+void mgdl_DrawTextVEx(TextureHandle font, const char* text, const Vector2 & topleft,  float fontSize, color32 color);
+
 void mgdl_DrawText(const zstr& text, float x, float y, float fontSize, color32 color);
+void mgdl_DrawTextV(const zstr& text, const Vector2& topleft, float fontSize, color32 color);
 void mgdl_DrawTextEx(TextureHandle font, const zstr& text, float x, float y,  float fontSize, color32 color);
 void mgdl_DrawTextVEx(TextureHandle font, const zstr& text, const Vector2 & topleft,  float fontSize, color32 color);
 

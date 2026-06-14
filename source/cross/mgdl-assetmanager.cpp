@@ -166,7 +166,7 @@ TextureHandle AssetManager_LoadTexture(const char* filename)
 
 	// TODO Read settings from asset configuration file
 
-	TextureFilterModes filterMode = TextureFilterModes::Linear;
+	TextureFilterModes filterMode = TextureFilterModes::Nearest;
 	Texture* texture = Texture_LoadFile(filename, filterMode);
 	ASSERT_DEBUG(texture != nullptr);
 	if (texture != nullptr)
