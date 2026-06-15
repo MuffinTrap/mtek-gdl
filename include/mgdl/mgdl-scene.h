@@ -22,18 +22,16 @@ struct Scene
 {
 	ufbx_scene* ufbx;
 	Node* rootNode;
-	// Multiple nodes can refer to same material
-	struct DynamicArray* materials;
-	// Multiple nodes can refer to same mesh
-	struct DynamicArray* meshes;
-	struct DynamicArray* lights;
+	PointerArray* materials;
+	PointerArray* meshes;
+	PointerArray* lights;
 
 };
 typedef struct Scene Scene;
 
-DYNAMIC_ARRAY(Mesh)
-DYNAMIC_ARRAY(Light)
-DYNAMIC_ARRAY(Material)
+POINTER_ARRAY_DECLARE(Mesh)
+POINTER_ARRAY_DECLARE(Light)
+POINTER_ARRAY_DECLARE(Material)
 
 #ifdef __cplusplus
 extern "C"

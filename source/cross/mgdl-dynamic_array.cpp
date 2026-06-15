@@ -1,18 +1,11 @@
 #include <mgdl/mgdl-dynamic_array.h>
 
-sizetype DynamicArray_Count(DynamicArray* array)
+sizetype ObjectArray_Count(ObjectArray* array)
 {
 	return array->count;
 }
-void* DynamicArray_Get(DynamicArray* array, sizetype index)
+sizetype PointerArray_Count(PointerArray* array)
 {
-	if (index < array->count)
-	{
-		return &((void**)array->data)[index];
-	}
-	else
-	{
-		return nullptr;
-	}
+	return array->count;
 }
 

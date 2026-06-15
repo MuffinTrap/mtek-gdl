@@ -43,11 +43,11 @@ struct Node
 	NodeFlagField flags; /**< What flags are on. All by default */
 	Transform transform; /**< Transform of the node relative to parent */
 	Node* parent; /**< Node's parent. Null if root node */
-	struct DynamicArray* childNodes; /**< Children of the node */
+	PointerArray* childNodes; /**< Children of the node */
 };
 typedef struct Node Node;
 
-DYNAMIC_ARRAY(Node)
+POINTER_ARRAY_DECLARE(Node)
 
 #ifdef __cplusplus
 extern "C"

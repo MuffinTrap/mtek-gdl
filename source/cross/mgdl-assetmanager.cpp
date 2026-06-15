@@ -11,41 +11,41 @@ static AssetManager m_manager;
 void AssetManager_Init()
 {
 	m_manager.m_memoryInUse = 0;
-	m_manager.m_textureAssets = DynamicArray_CreateTextureAsset(16);
+	m_manager.m_textureAssets = ObjectArray_Create_TextureAsset(16);
 	{
 		Texture* white = Texture_GenerateColorTexture(Debug_White);
 		TextureAsset ta = AssetManager_CreateTextureAsset(white, nullptr);
-		DynamicArray_AddTextureAsset(m_manager.m_textureAssets, ta);
+		ObjectArray_Add_TextureAsset(m_manager.m_textureAssets, ta);
 	}
 
-	m_manager.m_soundAssets = DynamicArray_CreateSoundAsset(16);
+	m_manager.m_soundAssets = ObjectArray_Create_SoundAsset(16);
 	{
 		Sound* silent = Sound_Create();
 		Sound_InitEmpty(silent);
 		SoundAsset ta = AssetManager_CreateSoundAsset(silent, nullptr);
-		DynamicArray_AddSoundAsset(m_manager.m_soundAssets, ta);
+		ObjectArray_Add_SoundAsset(m_manager.m_soundAssets, ta);
 	}
 
-	m_manager.m_imageAssets = DynamicArray_CreateImageAsset(4);
+	m_manager.m_imageAssets = ObjectArray_Create_ImageAsset(4);
 	{
 		PNGFile* white = PNG_GenerateColorImage(Debug_White);
 		ImageAsset ta = AssetManager_CreateImageAsset(white, nullptr);
-		DynamicArray_AddImageAsset(m_manager.m_imageAssets, ta);
+		ObjectArray_Add_ImageAsset(m_manager.m_imageAssets, ta);
 	}
 
-	m_manager.m_paletteAssets= DynamicArray_CreatePaletteAsset(4);
+	m_manager.m_paletteAssets= ObjectArray_Create_PaletteAsset(4);
 
-	m_manager.m_sceneAssets = DynamicArray_CreateSceneAsset(2);
+	m_manager.m_sceneAssets = ObjectArray_Create_SceneAsset(2);
 
-	m_manager.m_modelAssets = DynamicArray_CreateModelAsset(4);
+	m_manager.m_modelAssets = ObjectArray_Create_ModelAsset(4);
 }
 
-DYNAMIC_ARRAY_IMPL(TextureAsset)
-DYNAMIC_ARRAY_IMPL(SoundAsset)
-DYNAMIC_ARRAY_IMPL(ImageAsset)
-DYNAMIC_ARRAY_IMPL(PaletteAsset)
-DYNAMIC_ARRAY_IMPL(SceneAsset)
-DYNAMIC_ARRAY_IMPL(ModelAsset)
+OBJECT_ARRAY_IMPLEMENT(TextureAsset)
+OBJECT_ARRAY_IMPLEMENT(SoundAsset)
+OBJECT_ARRAY_IMPLEMENT(ImageAsset)
+OBJECT_ARRAY_IMPLEMENT(PaletteAsset)
+OBJECT_ARRAY_IMPLEMENT(SceneAsset)
+OBJECT_ARRAY_IMPLEMENT(ModelAsset)
 
 TextureAsset AssetManager_CreateTextureAsset(Texture* data, const char* filename)
 {
@@ -150,12 +150,12 @@ TextureHandle AssetManager_LoadTexture(const char* filename)
 {
 	mgdl_assert_print(m_manager.m_textureAssets != nullptr, "AssetManager not initialized!");
 	TextureHandle handle = Handle_CreateTexture(0);
-	DynamicArray* array = m_manager.m_textureAssets;
+	ObjectArray* array = m_manager.m_textureAssets;
 	// Check if already loaded
 	zstr_view filenameView = zstr_view_from(filename);
-	for(sizetype i = 0; i < DynamicArray_Count(array); i++)
+	for(sizetype i = 0; i < ObjectArray_Count(array); i++)
 	{
-		TextureAsset* m = DynamicArray_GetTextureAsset(array, i);
+		TextureAsset* m = ObjectArray_Get_TextureAsset(array, i);
 		zstr_view handleView = zstr_as_view(&m->filename);
 		if (zstr_view_eq_view(filenameView, handleView))
 		{
@@ -178,7 +178,7 @@ TextureHandle AssetManager_LoadTexture(const char* filename)
 		m_manager.m_memoryInUse += texture->width * texture->height *4;
 
 		TextureAsset ta = AssetManager_CreateTextureAsset(texture, filename);
-		handle = Handle_CreateTexture((u16)DynamicArray_AddTextureAsset(array, ta));
+		handle = Handle_CreateTexture((u16)ObjectArray_Add_TextureAsset(array, ta));
 
 		Log_InfoF("Texture %s got handle %u\n", filename, Handle_Index(handle));
 	}
@@ -191,9 +191,9 @@ TextureHandle AssetManager_LoadTexture(const char* filename)
 
 void AssetManager_PrintLoadedTextures()
 {
-	for(sizetype i = 0; i < DynamicArray_Count(m_manager.m_textureAssets); i++)
+	for(sizetype i = 0; i < ObjectArray_Count(m_manager.m_textureAssets); i++)
 	{
-		TextureAsset* m = DynamicArray_GetTextureAsset(m_manager.m_textureAssets, i);
+		TextureAsset* m = ObjectArray_Get_TextureAsset(m_manager.m_textureAssets, i);
 		mgdl_assert_printf(m !=nullptr, "Null asset in dynamic array index %u", i);
 		Texture* texture = m->data;
 		mgdl_assert_print(texture !=nullptr, "Null pointer in asset struct");
@@ -203,26 +203,26 @@ void AssetManager_PrintLoadedTextures()
 
 Texture* AssetManager_GetTexture(TextureHandle handle)
 {
-	if (Handle_Index(handle) < DynamicArray_Count(m_manager.m_textureAssets) && Handle_Type(handle) == Type_Texture)
+	if (Handle_Index(handle) < ObjectArray_Count(m_manager.m_textureAssets) && Handle_Type(handle) == Type_Texture)
 	{
-		return DynamicArray_GetTextureAsset(m_manager.m_textureAssets, Handle_Index(handle))->data;
+		return ObjectArray_Get_TextureAsset(m_manager.m_textureAssets, Handle_Index(handle))->data;
 	}
 	else
 	{
 		Log_ErrorF("AssetManager_GetTexture got invalid handle %u\n", Handle_Index(handle));
-		return DynamicArray_GetTextureAsset(m_manager.m_textureAssets, 0)->data;
+		return ObjectArray_Get_TextureAsset(m_manager.m_textureAssets, 0)->data;
 	}
 }
 
 ImageHandle AssetManager_LoadPNG(const char* filename)
 {
 	ImageHandle handle = Handle_CreateImage(0);
-	DynamicArray* array = m_manager.m_imageAssets;
+	ObjectArray* array = m_manager.m_imageAssets;
 	// Check if already loaded
 	zstr_view filenameView = zstr_view_from(filename);
-	for(sizetype i = 0; i < DynamicArray_Count(array); i++)
+	for(sizetype i = 0; i < ObjectArray_Count(array); i++)
 	{
-		ImageAsset* m = DynamicArray_GetImageAsset(array, i);
+		ImageAsset* m = ObjectArray_Get_ImageAsset(array, i);
 		zstr_view handleView = zstr_as_view(&m->filename);
 		if (zstr_view_eq_view(filenameView, handleView))
 		{
@@ -240,7 +240,7 @@ ImageHandle AssetManager_LoadPNG(const char* filename)
 		m_manager.m_memoryInUse += image->width * image->height * image->bytesPerPixel;
 
 		ImageAsset ta = AssetManager_CreateImageAsset(image, filename);
-		handle = Handle_CreateImage((u16)DynamicArray_AddImageAsset(array, ta));
+		handle = Handle_CreateImage((u16)ObjectArray_Add_ImageAsset(array, ta));
 	}
 	else
 	{
@@ -252,12 +252,12 @@ ImageHandle AssetManager_LoadPNG(const char* filename)
 SoundHandle AssetManager_LoadSound(const char* filename, SoundFileType fileType)
 {
 	SoundHandle handle = Handle_CreateSound(0);
-	DynamicArray* array = m_manager.m_soundAssets;
+	ObjectArray* array = m_manager.m_soundAssets;
 	// Check if already loaded
 	zstr_view filenameView = zstr_view_from(filename);
-	for(sizetype i = 0; i < DynamicArray_Count(array); i++)
+	for(sizetype i = 0; i < ObjectArray_Count(array); i++)
 	{
-		SoundAsset* m = DynamicArray_GetSoundAsset(array, i);
+		SoundAsset* m = ObjectArray_Get_SoundAsset(array, i);
 		zstr_view handleView = zstr_as_view(&m->filename);
 		if (zstr_view_eq_view(filenameView, handleView))
 		{
@@ -272,7 +272,7 @@ SoundHandle AssetManager_LoadSound(const char* filename, SoundFileType fileType)
 		m_manager.m_memoryInUse += Audio_GetSoundSizeBytes(snd);
 
 		SoundAsset ta = AssetManager_CreateSoundAsset(snd, filename);
-		handle = Handle_CreateSound( (u16) DynamicArray_AddSoundAsset(array, ta));
+		handle = Handle_CreateSound( (u16) ObjectArray_Add_SoundAsset(array, ta));
 	}
 	else
 	{
@@ -283,26 +283,26 @@ SoundHandle AssetManager_LoadSound(const char* filename, SoundFileType fileType)
 
 Sound* AssetManager_GetSound(SoundHandle handle)
 {
-	if (Handle_Index(handle) < DynamicArray_Count(m_manager.m_soundAssets) && Handle_Type(handle) == Type_Sound)
+	if (Handle_Index(handle) < ObjectArray_Count(m_manager.m_soundAssets) && Handle_Type(handle) == Type_Sound)
 	{
-		return DynamicArray_GetSoundAsset(m_manager.m_soundAssets, Handle_Index(handle))->data;
+		return ObjectArray_Get_SoundAsset(m_manager.m_soundAssets, Handle_Index(handle))->data;
 	}
 	else
 	{
 		Log_ErrorF("AssetManager_GetSound got invalid handle %u\n", Handle_Index(handle));
-		return DynamicArray_GetSoundAsset(m_manager.m_soundAssets, 0)->data;
+		return ObjectArray_Get_SoundAsset(m_manager.m_soundAssets, 0)->data;
 	}
 }
 
 PaletteHandle AssetManager_LoadPalette(const char* filename)
 {
 	PaletteHandle handle = Handle_CreatePalette(0);
-	DynamicArray* array = m_manager.m_paletteAssets;
+	ObjectArray* array = m_manager.m_paletteAssets;
 	// Check if already loaded
 	zstr_view filenameView = zstr_view_from(filename);
-	for(sizetype i = 0; i < DynamicArray_Count(array); i++)
+	for(sizetype i = 0; i < ObjectArray_Count(array); i++)
 	{
-		PaletteAsset* m = DynamicArray_GetPaletteAsset(array, i);
+		PaletteAsset* m = ObjectArray_Get_PaletteAsset(array, i);
 		zstr_view handleView = zstr_as_view(&m->filename);
 		if (zstr_view_eq_view(filenameView, handleView))
 		{
@@ -317,7 +317,7 @@ PaletteHandle AssetManager_LoadPalette(const char* filename)
 		m_manager.m_memoryInUse += Palette_GetColorAmount(pal) * sizeof(color32) + sizeof(Palette);
 
 		PaletteAsset ta = AssetManager_CreatePaletteAsset(pal, filename);
-		handle = Handle_CreatePalette((u16) DynamicArray_AddPaletteAsset(array, ta));
+		handle = Handle_CreatePalette((u16) ObjectArray_Add_PaletteAsset(array, ta));
 	}
 	else
 	{
@@ -328,12 +328,12 @@ PaletteHandle AssetManager_LoadPalette(const char* filename)
 
 bool AssetManager_HasPalette(const char* filename)
 {
-	DynamicArray* array = m_manager.m_paletteAssets;
+	ObjectArray* array = m_manager.m_paletteAssets;
 	// Check if already loaded
 	zstr_view filenameView = zstr_view_from(filename);
-	for(sizetype i = 0; i < DynamicArray_Count(array); i++)
+	for(sizetype i = 0; i < ObjectArray_Count(array); i++)
 	{
-		PaletteAsset* m = DynamicArray_GetPaletteAsset(array, i);
+		PaletteAsset* m = ObjectArray_Get_PaletteAsset(array, i);
 		zstr_view handleView = zstr_as_view(&m->filename);
 		if (zstr_view_eq_view(filenameView, handleView))
 		{
@@ -352,7 +352,7 @@ PaletteHandle AssetManager_LoadDefaultPalette()
 	}
 	Palette* defaultPal = Palette_GetDefault();
 	PaletteAsset pa = AssetManager_CreatePaletteAsset(defaultPal, "Default");
-	return Handle_CreatePalette((u16)DynamicArray_AddPaletteAsset(m_manager.m_paletteAssets, pa));
+	return Handle_CreatePalette((u16)ObjectArray_Add_PaletteAsset(m_manager.m_paletteAssets, pa));
 }
 PaletteHandle AssetManager_LoadDebugPalette()
 {
@@ -363,27 +363,27 @@ PaletteHandle AssetManager_LoadDebugPalette()
 	}
 	Palette* debugPal = Palette_GetDebug();
 	PaletteAsset pa = AssetManager_CreatePaletteAsset(debugPal, "Debug");
-	return Handle_CreatePalette( (u16)DynamicArray_AddPaletteAsset(m_manager.m_paletteAssets, pa));
+	return Handle_CreatePalette( (u16)ObjectArray_Add_PaletteAsset(m_manager.m_paletteAssets, pa));
 }
 
 Palette* AssetManager_GetPalette(PaletteHandle handle)
 {
-	if (Handle_Index(handle) < DynamicArray_Count(m_manager.m_paletteAssets) && Handle_Type(handle) == Type_Palette)
+	if (Handle_Index(handle) < ObjectArray_Count(m_manager.m_paletteAssets) && Handle_Type(handle) == Type_Palette)
 	{
-		return DynamicArray_GetPaletteAsset(m_manager.m_paletteAssets, Handle_Index(handle))->data;
+		return ObjectArray_Get_PaletteAsset(m_manager.m_paletteAssets, Handle_Index(handle))->data;
 	}
 	else
 	{
 		Log_ErrorF("AssetManager_GetPalette got invalid handle %u\n", Handle_Index(handle));
-		return DynamicArray_GetPaletteAsset(m_manager.m_paletteAssets, 0)->data;
+		return ObjectArray_Get_PaletteAsset(m_manager.m_paletteAssets, 0)->data;
 	}
 }
 
 Scene* AssetManager_GetScene(SceneHandle handle)
 {
-	if (Handle_Index(handle) < DynamicArray_Count(m_manager.m_sceneAssets) && Handle_Type(handle) == Type_Scene)
+	if (Handle_Index(handle) < ObjectArray_Count(m_manager.m_sceneAssets) && Handle_Type(handle) == Type_Scene)
 	{
-		return DynamicArray_GetSceneAsset(m_manager.m_sceneAssets, Handle_Index(handle))->data;
+		return ObjectArray_Get_SceneAsset(m_manager.m_sceneAssets, Handle_Index(handle))->data;
 	}
 	else
 	{
@@ -395,14 +395,14 @@ Scene* AssetManager_GetScene(SceneHandle handle)
 SceneHandle AssetManager_LoadScene(const char* filename)
 {
 	SceneHandle handle = Handle_CreateScene(0);
-	DynamicArray* array = m_manager.m_sceneAssets;
+	ObjectArray* array = m_manager.m_sceneAssets;
 	ASSERT_DEBUG(array != nullptr);
 
 	// Check if already loaded
 	zstr_view filenameView = zstr_view_from(filename);
-	for(sizetype i = 0; i < DynamicArray_Count(array); i++)
+	for(sizetype i = 0; i < ObjectArray_Count(array); i++)
 	{
-		SceneAsset* m = DynamicArray_GetSceneAsset(array, i);
+		SceneAsset* m = ObjectArray_Get_SceneAsset(array, i);
 		zstr_view handleView = zstr_as_view(&m->filename);
 		if (zstr_view_eq_view(filenameView, handleView))
 		{
@@ -418,7 +418,7 @@ SceneHandle AssetManager_LoadScene(const char* filename)
 		// m_manager.m_memoryInUse += Palette_GetColorAmount(pal) * sizeof(color32) + sizeof(Palette);
 
 		SceneAsset ta = AssetManager_CreateSceneAsset(scene, filename);
-		handle = Handle_CreateScene((u16) DynamicArray_AddSceneAsset(array, ta));
+		handle = Handle_CreateScene((u16) ObjectArray_Add_SceneAsset(array, ta));
 	}
 	else
 	{
@@ -430,14 +430,14 @@ SceneHandle AssetManager_LoadScene(const char* filename)
 ModelHandle AssetManager_LoadModel(const char* filename)
 {
 	ModelHandle handle = Handle_CreateModel(0);
-	DynamicArray* array = m_manager.m_modelAssets;
+	ObjectArray* array = m_manager.m_modelAssets;
 	ASSERT_DEBUG(array != nullptr);
 	// Check if already loaded
 	zstr_view filenameView = zstr_view_from(filename);
 
-	for(sizetype i = 0; i < DynamicArray_Count(array); i++)
+	for(sizetype i = 0; i < ObjectArray_Count(array); i++)
 	{
-		ModelAsset* m = DynamicArray_GetModelAsset(array, i);
+		ModelAsset* m = ObjectArray_Get_ModelAsset(array, i);
 		zstr_view handleView = zstr_as_view(&m->filename);
 		if (zstr_view_eq_view(filenameView, handleView))
 		{
@@ -453,7 +453,7 @@ ModelHandle AssetManager_LoadModel(const char* filename)
 		// m_manager.m_memoryInUse += Palette_GetColorAmount(pal) * sizeof(color32) + sizeof(Palette);
 
 		ModelAsset ta = AssetManager_CreateModelAsset(model, filename);
-		u16 indexInArray = (u16) DynamicArray_AddModelAsset(array, ta);
+		u16 indexInArray = (u16) ObjectArray_Add_ModelAsset(array, ta);
 		handle = Handle_CreateModel(indexInArray);
 	}
 	else
@@ -465,9 +465,9 @@ ModelHandle AssetManager_LoadModel(const char* filename)
 }
 Model* AssetManager_GetModel(ModelHandle handle)
 {
-	if (Handle_Index(handle) < DynamicArray_Count(m_manager.m_modelAssets) && Handle_Type(handle) == Type_Model)
+	if (Handle_Index(handle) < ObjectArray_Count(m_manager.m_modelAssets) && Handle_Type(handle) == Type_Model)
 	{
-		return DynamicArray_GetModelAsset(m_manager.m_modelAssets, Handle_Index(handle))->data;
+		return ObjectArray_Get_ModelAsset(m_manager.m_modelAssets, Handle_Index(handle))->data;
 	}
 	else
 	{

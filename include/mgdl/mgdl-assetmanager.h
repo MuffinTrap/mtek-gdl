@@ -20,12 +20,12 @@
 struct AssetManager
 {
 	sizetype m_memoryInUse = 0;
-	struct DynamicArray* m_textureAssets = nullptr;
-	struct DynamicArray* m_soundAssets = nullptr;
-	struct DynamicArray* m_imageAssets = nullptr;
-	struct DynamicArray* m_paletteAssets = nullptr;
-	struct DynamicArray* m_sceneAssets = nullptr;
-	struct DynamicArray* m_modelAssets = nullptr;
+	ObjectArray* m_textureAssets = nullptr;
+	ObjectArray* m_soundAssets = nullptr;
+	ObjectArray* m_imageAssets = nullptr;
+	ObjectArray* m_paletteAssets = nullptr;
+	ObjectArray* m_sceneAssets = nullptr;
+	ObjectArray* m_modelAssets = nullptr;
 };
 typedef struct AssetManager AssetManager;
 
@@ -36,7 +36,7 @@ struct TextureAsset
 };
 typedef struct TextureAsset TextureAsset;
 
-DYNAMIC_ARRAY(TextureAsset)
+OBJECT_ARRAY_DECLARE(TextureAsset)
 
 struct SoundAsset
 {
@@ -45,7 +45,7 @@ struct SoundAsset
 };
 typedef struct SoundAsset SoundAsset;
 
-DYNAMIC_ARRAY(SoundAsset)
+OBJECT_ARRAY_DECLARE(SoundAsset)
 
 struct ImageAsset
 {
@@ -54,7 +54,7 @@ struct ImageAsset
 };
 typedef struct ImageAsset ImageAsset;
 
-DYNAMIC_ARRAY(ImageAsset)
+OBJECT_ARRAY_DECLARE(ImageAsset)
 
 struct PaletteAsset
 {
@@ -63,7 +63,7 @@ struct PaletteAsset
 };
 typedef struct PaletteAsset PaletteAsset;
 
-DYNAMIC_ARRAY(PaletteAsset)
+OBJECT_ARRAY_DECLARE(PaletteAsset)
 
 struct SceneAsset
 {
@@ -72,7 +72,7 @@ struct SceneAsset
 };
 typedef struct SceneAsset SceneAsset;
 
-DYNAMIC_ARRAY(SceneAsset)
+OBJECT_ARRAY_DECLARE(SceneAsset)
 
 struct ModelAsset
 {
@@ -81,7 +81,7 @@ struct ModelAsset
 };
 typedef struct ModelAsset ModelAsset;
 
-DYNAMIC_ARRAY(ModelAsset)
+OBJECT_ARRAY_DECLARE(ModelAsset)
 
 
 #ifdef __cplusplus

@@ -7,20 +7,20 @@
 #include <mgdl/mgdl-opengl_util.h>
 #include <mgdl/mgdl-console.h>
 
-DYNAMIC_ARRAY_IMPL(Mesh)
-DYNAMIC_ARRAY_IMPL(Material)
-DYNAMIC_ARRAY_IMPL(Light)
+POINTER_ARRAY_IMPLEMENT(Mesh)
+POINTER_ARRAY_IMPLEMENT(Material)
+POINTER_ARRAY_IMPLEMENT(Light)
 
 void Scene_InitArrays(Scene* scene, int meshCapacity, int materialCapacity, int lightCapacity)
 {
-	scene->materials = DynamicArray_CreatePtrMaterial(materialCapacity);
-	scene->meshes = DynamicArray_CreatePtrMesh(meshCapacity);
+	scene->materials = PointerArray_Create_Material(materialCapacity);
+	scene->meshes = PointerArray_Create_Mesh(meshCapacity);
 	// Wii has max 8 lights
 	if (lightCapacity > 8)
 	{
 		lightCapacity = 8;
 	}
-	scene->lights = DynamicArray_CreatePtrLight(lightCapacity);
+	scene->lights = PointerArray_Create_Light(lightCapacity);
 }
 
 Scene* Scene_CreateEmpty()
@@ -41,9 +41,9 @@ void Scene_SetUFBX(Scene* scene, ufbx_scene* ufbx)
 
 static Mesh* m_GetMeshById(Scene* scene, uint32_t mesh_id)
 {
-	for(sizetype i = 0; i < DynamicArray_Count(scene->meshes); i++)
+	for(sizetype i = 0; i < PointerArray_Count(scene->meshes); i++)
 	{
-		Mesh* mptr = DynamicArray_GetPtrMesh(scene->meshes, i);
+		Mesh* mptr = PointerArray_Get_Mesh(scene->meshes, i);
 		if (mptr != nullptr)
 		{
 			if(mptr->ufbx_id == mesh_id)
@@ -58,9 +58,9 @@ static Mesh* m_GetMeshById(Scene* scene, uint32_t mesh_id)
 static Material* m_GetMaterialById(Scene* scene, uint32_t material_id)
 {
 
-	for(sizetype i = 0; i < DynamicArray_Count(scene->materials); i++)
+	for(sizetype i = 0; i < PointerArray_Count(scene->materials); i++)
 	{
-		Material* mptr = DynamicArray_GetPtrMaterial(scene->materials, i);
+		Material* mptr = PointerArray_Get_Material(scene->materials, i);
 		if (mptr != nullptr)
 		{
 			if(mptr->ufbx_id == material_id)
@@ -74,9 +74,9 @@ static Material* m_GetMaterialById(Scene* scene, uint32_t material_id)
 
 static Light* m_GetLightById(Scene* scene, uint32_t light_id)
 {
-	for(sizetype i = 0; i < DynamicArray_Count(scene->lights); i++)
+	for(sizetype i = 0; i < PointerArray_Count(scene->lights); i++)
 	{
-		Light* mptr = DynamicArray_GetPtrLight(scene->lights, i);
+		Light* mptr = PointerArray_Get_Light(scene->lights, i);
 		if(mptr->ufbx_id == light_id)
 		{
 			return mptr;
@@ -184,13 +184,13 @@ void Scene_DrawFbx(Scene* scene)
 
 	// If the scene has lights, enable lighting
 	// and all the lights
-	const bool hasLights = DynamicArray_Count(scene->lights) > 0;
+	const bool hasLights = PointerArray_Count(scene->lights) > 0;
 	if (hasLights)
 	{
 		mgdl_SetLightingEnabled(true);
-		for (sizetype i = 0; i < DynamicArray_Count(scene->lights); i++)
+		for (sizetype i = 0; i < PointerArray_Count(scene->lights); i++)
 		{
-			Light* l = DynamicArray_GetPtrLight(scene->lights, i);
+			Light* l = PointerArray_Get_Light(scene->lights, i);
 			Light_Apply(l);
 		}
 	}
@@ -199,10 +199,10 @@ void Scene_DrawFbx(Scene* scene)
 
 	if (hasLights)
 	{
-		for (sizetype i = 0; i < DynamicArray_Count(scene->lights); i++)
+		for (sizetype i = 0; i < PointerArray_Count(scene->lights); i++)
 		{
 			// TODO Do we need to disable the lights?
-			// Light* l = DynamicArray_GetLight(scene->lights, i);
+			// Light* l = PointerArray_GetLight(scene->lights, i);
 		}
 		mgdl_SetLightingEnabled(false);
 	}
@@ -210,19 +210,19 @@ void Scene_DrawFbx(Scene* scene)
 
 void Scene_AddMaterial ( Scene* scene, Material* material )
 {
-	DynamicArray_AddPtrMaterial(scene->materials, material);
+	PointerArray_Add_Material(scene->materials, material);
 }
 
 void Scene_AddLight(Scene* scene, Light* light)
 {
 	Log_Info("Scene got light\n");
 	Light_LogInfo(light);
-	DynamicArray_AddPtrLight(scene->lights, light);
+	PointerArray_Add_Light(scene->lights, light);
 }
 
 void Scene_AddMesh(Scene* scene, Mesh* mesh)
 {
-	DynamicArray_AddPtrMesh(scene->meshes, mesh);
+	PointerArray_Add_Mesh(scene->meshes, mesh);
 }
 
 bool Scene_HasMaterial(Scene* scene, uint32_t ufbx_id)
@@ -252,9 +252,9 @@ void Scene_SetMaterialTexture (Scene* scene, uint32_t ufbx_id, Texture* texture 
 
 void Scene_SetAllMaterialTextures (Scene* scene, Texture* texture )
 {
-	for(sizetype i = 0; i < DynamicArray_Count(scene->materials); i++)
+	for(sizetype i = 0; i < PointerArray_Count(scene->materials); i++)
 	{
-		Material* m = DynamicArray_GetPtrMaterial(scene->materials, i);
+		Material* m = PointerArray_Get_Material(scene->materials, i);
 		m->texture = texture;
 	}
 }
@@ -265,9 +265,9 @@ void Scene_LogInfo(Scene* scene)
 	Log_Info("Scene Info\n");
 	Console_ResetTextColor();
 	Log_Info("Lights:\n");
-		for (sizetype i = 0; i < DynamicArray_Count(scene->lights); i++)
+		for (sizetype i = 0; i < PointerArray_Count(scene->lights); i++)
 		{
-			Light* l = DynamicArray_GetPtrLight(scene->lights, i);
+			Light* l = PointerArray_Get_Light(scene->lights, i);
 			Light_LogInfo(l);
 		}
 }

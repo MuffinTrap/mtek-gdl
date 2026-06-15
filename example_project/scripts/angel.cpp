@@ -21,6 +21,7 @@ const float circleSize = 10.0f;
 TextureHandle barb;
 PaletteHandle debugPalette;
 ModelHandle wiiModel;
+SceneHandle lightScene;
 
 void angelscript_init()
 {
@@ -33,13 +34,21 @@ void angelscript_init()
 	frameCircle = Vector2New(0, screenHeight*(2.0f/3.0f) );
 
 	barb = mgdl_LoadTexture("assets/barb.png");
+	lightScene = mgdl_LoadScene("assets/light_test.fbx");
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
 	debugPalette = mgdl_GetDebugPalette();
+}
 
+void angelscript_quit()
+{
 
+}
+
+void setup_3d()
+{
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 	glDepthMask(GL_TRUE); //  is this needed?
@@ -48,13 +57,42 @@ void angelscript_init()
 	// hopefully OpenGX handles it
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    glShadeModel(GL_FLAT);
+    glShadeModel(GL_SMOOTH);
+
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	mgdl_SetGlobalAmbientColor32(Debug_White, 0.2f);
 
     glColor3f(1.0f, 1.0f, 1.0f);
+
+	glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+	int screenWidth = mgdl_GetScreenWidth();
+	int screenHeight = mgdl_GetScreenHeight();
+	float aspect = float(screenWidth)/float(screenHeight);
+	float nearZ = 0.01f;
+	float farZ = 100.0f;
+    gluPerspective(60.0f, aspect, nearZ, farZ);
+
+	glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+	gluLookAt(0.0f, 5.0f, 10.0f,
+				 0.0f, 0.0f, 0.0f,
+				 0.0f, 1.0f, 0.0);
+
 }
 
-void angelscript_quit()
+void scene_test_scene(float deltatime)
 {
+
+	elapsed += deltatime;
+	setup_3d();
+
+	glPushMatrix();
+	glRotatef(elapsed * 90.0f, 0.0f, 1.0f, 0.0f);
+
+	mgdl_DrawScene(lightScene, 0,0,0, 1.0f, Debug_White);
+	glPopMatrix();
 
 }
 
@@ -102,7 +140,7 @@ void Quad(
 	glVertex3f(B.x, B.y, B.z);
 }
 
-void effect_scene(float deltatime)
+void effect_wii_scene(float deltatime)
 {
 	elapsed += deltatime;
 	glMatrixMode(GL_PROJECTION);
@@ -133,22 +171,27 @@ void effect_scene(float deltatime)
 void effect_3d(float deltatime)
 {
 	elapsed += deltatime;
-	glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
+	setup_3d();
 
-	int screenWidth = mgdl_GetScreenWidth();
-	int screenHeight = mgdl_GetScreenHeight();
-	float aspect = float(screenWidth)/float(screenHeight);
-	float nearZ = 0.01f;
-	float farZ = 10.0f;
-    gluPerspective(60.0f, aspect, nearZ, farZ);
+	// Lighting done with OpenGL
+	glEnable(GL_LIGHTING);
+	GLfloat[] white = {1.0f, 1.0f, 1.0f, 1.0f};
+	GLfloat[] zero = {0.0f, 0.0f, 0.0f, 1.0f};
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
+	glLightfv(GL_LIGHT0, GL_POSITION, zero);
+	glEnable(GL_LIGHT0);
 
-	glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-	gluLookAt(0.0f, 0.0f, 4.0f,
-				 0.0f, 0.0f, 0.0f,
-				 0.0f, 1.0f, 0.0);
+	GLfloat[] green = {0.0f, 1.0f, 0.0f, 1.0f};
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, green);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, green);
 
+
+	glPushMatrix();
+	glRotatef(elapsed * 90.0f, 1.0f, 0.0f, 0.0f);
+
+
+	glPushMatrix();
+	glTranslatef(1.0f, 0.0f, 0.0f);
 	glRotatef(elapsed * 90.0f, 1.0f, 0.0f, 0.3f);
 
 	float size = 1.0f;
@@ -163,35 +206,47 @@ void effect_3d(float deltatime)
 	Vector3 tfl = Vector3New(-hs, hs, hs); //  top forward left
 	Vector3 tfr = Vector3New( hs, hs, hs);
 
+	// NOTE
+	// Normals are needed for lighting to work
 	glBegin(GL_QUADS);
 		// left side
 		glColor3f(0.5f, 0.5f, 0.1f);
+		glNormal3f(-1.0f, 0.0f, 0.0);
 		Quad(bl, tbl, tfl, fl);
 		// right
+		glNormal3f(1.0f, 0.0f, 0.0);
 		glColor3f(0.2f, 0.8f, 0.4f);
 		Quad(fr, tfr, tbr, br);
 
 		// front
+		glNormal3f(0.0f, 0.0f, -1.0);
 		glColor3f(0.9f, 0.2f, 0.1f);
 		Quad(fl, tfl, tfr, fr);
 		// back
+		glNormal3f(0.0f, 0.0f, 1.0);
 		glColor3f(0.5f, 0.4f, 0.2f);
 		 Quad(br, tbr, tbl, bl);
 
          // top
+		glNormal3f(0.0f, 1.0f, 0.0);
 		glColor3f(0.7f, 0.1f, 0.5f);
         Quad(tfl, tbl, tbr, tfr);
 		 // bottom
+		glNormal3f(0.0f, -1.0f, 0.0);
 		glColor3f(0.8f, 0.8f, 0.4f);
 		Quad(fr, br, bl, fl);
 	glEnd();
+	glPopMatrix();
+	glPopMatrix();
+	glDisable(GL_LIGHTING);
 }
 
 void angelscript_frame(float deltatime)
 {
+	//effect_3d(deltatime);
 	//effect_2d(deltatime);
-	effect_3d(deltatime);
-	effect_scene(deltatime);
+	scene_test_scene(deltatime);
+	//effect_scene(deltatime);
 }
 
 #if USE_ANGEL_AS_CPP

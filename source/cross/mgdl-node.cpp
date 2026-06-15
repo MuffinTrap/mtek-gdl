@@ -5,7 +5,7 @@
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-gui.h>
 
-DYNAMIC_ARRAY_IMPL(Node)
+POINTER_ARRAY_IMPLEMENT(Node)
 
 static const s16 MGDL_EMPTY_CONTENT = -1;
 
@@ -17,7 +17,7 @@ Node* Node_Create(u8 childCapacity, u16 id)
 	node->flags = (NodeActive | NodeApplyTransform);
 	node->transform = Transform_CreateZero();
 	node->parent = nullptr;
-	node->childNodes = DynamicArray_CreatePtrNode(childCapacity);
+	node->childNodes = PointerArray_Create_Node(childCapacity);
 
 	return node;
 }
@@ -30,7 +30,7 @@ Node* Node_AddChild(Node* parent, u8 childCapacity, u16 id, s16 contentId, Trans
 		child->contentId = contentId;
 		child->parent = parent;
 		child->transform = transform;
-		DynamicArray_AddPtrNode(parent->childNodes, child);
+		PointerArray_Add_Node(parent->childNodes, child);
 		return child;
 	}
 	return nullptr;
@@ -49,7 +49,7 @@ void Node_SetDisabled(Node* node, NodeFlagField elements)
 
 Node* Node_Clone(Node* source, NodeFlagField cloningFlags, u16 id)
 {
-	sizetype childAmount = DynamicArray_Count(source->childNodes);
+	sizetype childAmount = PointerArray_Count(source->childNodes);
 	Node* clone = Node_Create(childAmount, id);
 	clone->parent = source->parent;
 	clone->transform = Transform_Clone(&source->transform);
@@ -59,10 +59,10 @@ Node* Node_Clone(Node* source, NodeFlagField cloningFlags, u16 id)
 	{
 		for(sizetype i = 0; i < childAmount; i++)
 		{
-			Node* childNode = DynamicArray_GetPtrNode(source->childNodes, i);
+			Node* childNode = PointerArray_Get_Node(source->childNodes, i);
 			if (childNode != nullptr)
 			{
-				DynamicArray_AddPtrNode(clone->childNodes, Node_Clone(childNode, cloningFlags, id+i+1));
+				PointerArray_Add_Node(clone->childNodes, Node_Clone(childNode, cloningFlags, id+i+1));
 			}
 		}
 	}
@@ -93,10 +93,10 @@ Node* Node_FindChildByIndexRecursive (Node* parent, s16 index, s16* indexCounter
 	{
 		return parent;
 	}
-	for(sizetype i = 0; i < DynamicArray_Count(parent->childNodes); i++)
+	for(sizetype i = 0; i < PointerArray_Count(parent->childNodes); i++)
 	{
 		(*indexCounter) += 1;
-		Node* childNode =  Node_FindChildByIndexRecursive(DynamicArray_GetNode(parent->childNodes, i), index, indexCounter);
+		Node* childNode =  Node_FindChildByIndexRecursive(PointerArray_Get_Node(parent->childNodes, i), index, indexCounter);
 		if (childNode != nullptr)
 		{
 			return childNode;
@@ -111,9 +111,9 @@ Node* Node_FindChildById (Node* node, u16 id)
 	{
 		return node;
 	}
-	for(sizetype i = 0; i < DynamicArray_Count(node->childNodes); i++)
+	for(sizetype i = 0; i < PointerArray_Count(node->childNodes); i++)
 	{
-		Node* childNode = Node_FindChildById(DynamicArray_GetNode(node->childNodes, i), id);
+		Node* childNode = Node_FindChildById(PointerArray_Get_Node(node->childNodes, i), id);
 		if (childNode != nullptr)
 		{
 			return childNode;
@@ -145,9 +145,9 @@ void Node_WalkGraph(Node* node, HandleContentIdCallback contentCallback)
 		{
 			contentCallback(node->contentId);
 		}
-		for (sizetype i = 0; i < DynamicArray_Count(node->childNodes); i++)
+		for (sizetype i = 0; i < PointerArray_Count(node->childNodes); i++)
 		{
-			Node* child = DynamicArray_GetPtrNode(node->childNodes, i);
+			Node* child = PointerArray_Get_Node(node->childNodes, i);
 			Node_WalkGraph(child, contentCallback);
 		}
 		if (Flag_IsSetAll(node->flags, NodeApplyTransform))
@@ -185,11 +185,11 @@ void m_DebugDrawNode( Node* node, Menu* menu, short depth, short* index, u32 deb
 		Menu_TextF(menu, "%d", node->contentId);
 	}
 
-	for(sizetype i = 0; i < DynamicArray_Count(node->childNodes); i++)
+	for(sizetype i = 0; i < PointerArray_Count(node->childNodes); i++)
 	{
 		drawIndex += 1;
 		*index = drawIndex;
-		m_DebugDrawNode(DynamicArray_GetPtrNode(node->childNodes, i), menu, depth+1, index, debugFlags);
+		m_DebugDrawNode(PointerArray_Get_Node(node->childNodes, i), menu, depth+1, index, debugFlags);
 	}
 }
 
@@ -239,11 +239,11 @@ bool Node_CalculateModelMatrix (Node* parent, Node* target, Matrix model )
 
 	// Need to store the matrix at this state
 	// so that every child starts from the same matrix
-	for(sizetype i = 0; i < DynamicArray_Count(parent->childNodes); i++)
+	for(sizetype i = 0; i < PointerArray_Count(parent->childNodes); i++)
 	{
 		Matrix accumulated =  model;
 		if(Node_CalculateModelMatrix(
-			DynamicArray_GetNode(parent->childNodes, i), // New parent
+			PointerArray_Get_Node(parent->childNodes, i), // New parent
 			target,
 			accumulated))
 		{
@@ -270,10 +270,10 @@ bool Node_CalculatePosition ( Node* parent, Node* target, Matrix world, Vector3*
 
 	// Need to store the matrix at this state
 	// so that every child starts from the same matrix
-	for(sizetype i = 0; i < DynamicArray_Count(parent->childNodes); i++)
+	for(sizetype i = 0; i < PointerArray_Count(parent->childNodes); i++)
 	{
 		Matrix accumulated = world;
-		if(Node_CalculatePosition(DynamicArray_GetNode(parent->childNodes, i), target, accumulated, posOut))
+		if(Node_CalculatePosition(PointerArray_Get_Node(parent->childNodes, i), target, accumulated, posOut))
 		{
 			return true;
 		}
@@ -285,11 +285,11 @@ bool Node_IsRoot(Node* node){
 	return node->parent == nullptr;
 }
 bool Node_IsLeaf(Node* node){
-	return DynamicArray_Count(node->childNodes) == 0;
+	return PointerArray_Count(node->childNodes) == 0;
 }
 bool Node_IsEmpty(Node* node) {
 	return node->contentId == MGDL_EMPTY_CONTENT;
 }
 sizetype Node_GetChildCount(Node* node) {
-	return DynamicArray_Count(node->childNodes);
+	return PointerArray_Count(node->childNodes);
 }
