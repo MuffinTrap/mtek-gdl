@@ -20,6 +20,10 @@ static void RegisterOpenGLUtilsAndGlut(asIScriptEngine* as_engine)
 	as_engine->RegisterGlobalFunction("void mgdl_glSetAlphaTest(bool enabled)", asFUNCTION(mgdl_glSetAlphaTest), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("void mgdl_glColor32(color32 color)", asFUNCTION(mgdl_glColor32), asCALL_CDECL);
 
+	as_engine->RegisterGlobalFunction("void mgdl_SetGlobalAmbientColor32(color32 color, float strength)", asFUNCTION(mgdl_SetGlobalAmbientColor32), asCALL_CDECL);
+
+
+
 }
 
 

@@ -18,14 +18,6 @@ struct Node;
  * @brief This file contains types that represent a 3D scene
  */
 
-enum Scene_DebugFlag : u32
-{
-	Index = 1,
-	UniqueId = 2,
-	Position = 4,
-	Rotation = 8
-};
-
 struct Scene
 {
 	ufbx_scene* ufbx;
@@ -49,35 +41,27 @@ extern "C"
 #endif
 
 	Scene* Scene_CreateEmpty(void);
-	void Scene_Init(Scene* scene);
+	/**
+	 * @brief Initializes scene with empty dynamic arrays
+	 * @param meshCapacity How many meshes
+	 * @param materialCapacity How many materials
+	 * @param lightCapacity How many lights. Maximum value is 8
+	 */
+	void Scene_InitArrays(Scene* scene, int meshCapacity, int materialCapacity, int lightCapacity);
 
-	void Scene_DrawNodes(Scene* scene);
 	void Scene_DrawFbx(Scene* scene);
-	void Scene_DrawNode(Node* node);
-	void Scene_DebugDraw(Scene* scene, Menu* menu, short x, short y, u32 debugFlags);
+	void Scene_SetUFBX(Scene* scene, ufbx_scene* ufbxScene);
 
-
-	void Scene_SetMaterialTexture(Scene* scene, const char* materialName, Texture* texture);
-	void Scene_SetAllMaterialTextures(Scene* scene, Texture* texture);
-
-	void Scene_AddMaterial(Scene* scene, Material* material);
-	void Scene_AddLight(Scene* scene, Light* light);
 	void Scene_AddMesh(Scene* scene, Mesh* mesh);
+	void Scene_AddLight(Scene* scene, Light* light);
+	void Scene_AddMaterial ( Scene* scene, Material* material );
 
-	void Scene_AddChildNode(Scene* scene, Node* parent, Node* child);
+	bool Scene_HasMaterial(Scene* scene, uint32_t ufbx_id);
+	bool Scene_HasMesh(Scene* scene, uint32_t ufbx_id);
+	void Scene_SetMaterialTexture (Scene* scene, uint32_t ufbx_id, Texture* texture );
+	void Scene_SetAllMaterialTextures (Scene* scene, Texture* texture );
 
-	Node* Scene_GetRootNode(Scene* scene);
-	Material* Scene_GetMaterial(Scene* scene, const char* materialName);
-
-	Vector3 Scene_GetNodePosition(Scene* scene, Node* node);
-	bool Scene_GetNodeModelMatrix(Scene* scene, Node* node, Matrix modelOut);
-
-	void Scene_DebugDrawNode_(Node* node, Menu* menu, short depth, short* index, u32 drawFlags );
-
-	Material* Scene_FindNodeMaterial(Scene* scene, Node* node, const char*  materialName);
-
-	bool Scene_CalculateNodePosition(Node* parent, Node* target, Matrix world, Vector3* posOut);
-	bool Scene_CalculateNodeModelMatrix(Node* parent, Node* target, Matrix model);
+	void Scene_LogInfo(Scene* scene);
 
 
 #ifdef __cplusplus

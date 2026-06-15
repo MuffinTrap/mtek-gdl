@@ -13,6 +13,14 @@ Material* Material_Load (const char* name, Texture* texture, MaterialType type)
 	material->texture = texture;
 	material->shininess = 1.0f;
 	material->type = type;
+	material->diffuseColor[0] = 1.0f;
+	material->diffuseColor[1] = 1.0f;
+	material->diffuseColor[2] = 1.0f;
+	material->diffuseColor[3] = 1.0f;
+	material->emissiveColor[0] = 0.0f;
+	material->emissiveColor[1] = 0.0f;
+	material->emissiveColor[2] = 0.0f;
+	material->emissiveColor[3] = 1.0f;
 	return material;
 }
 
@@ -39,11 +47,29 @@ void Material_Apply(Material* material)
 	if( mgdl_GetLightingEnabled())
 	{
 		glMaterialfv(GL_FRONT, GL_SPECULAR, whiteSpecular);
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, material->diffuseColor);
+		glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, material->diffuseColor);
 		glMaterialf(GL_FRONT, GL_SHININESS, material->shininess);
 		glMaterialfv(GL_FRONT, GL_EMISSION, material->emissiveColor);
 	}
 }
+
+void Material_UnApply(Material* material)
+{
+	if (material->texture != nullptr)
+	{
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisable(GL_TEXTURE_2D);
+	}
+
+	if( mgdl_GetLightingEnabled())
+	{
+		glMaterialfv(GL_FRONT, GL_SPECULAR, whiteSpecular);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, whiteSpecular);
+		glMaterialf(GL_FRONT, GL_SHININESS, 0.0f);
+		glMaterialfv(GL_FRONT, GL_EMISSION, blackEmissive);
+	}
+}
+
 void Material_SetDiffuseColor(Material* material, color32 color)
 {
 	Color_HexToGLfloats(color, material->diffuseColor);

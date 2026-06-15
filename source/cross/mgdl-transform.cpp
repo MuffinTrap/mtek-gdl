@@ -1,6 +1,6 @@
 #include <mgdl/mgdl-transform.h>
 
-Transform* Transform_CreateZero()
+Transform Transform_CreateZero()
 {
 	Vector3 position = Vector3New(0.0f, 0.0f, 0.0f);
 	Vector3 rotationDegrees = Vector3New(0.0f, 0.0f, 0.0f);
@@ -8,16 +8,16 @@ Transform* Transform_CreateZero()
 	return Transform_Create(position, rotationDegrees, scale);
 }
 
-Transform* Transform_Create(Vector3 position, Vector3 rotationDegrees, Vector3 scale)
+Transform Transform_Create(Vector3 position, Vector3 rotationDegrees, Vector3 scale)
 {
-	Transform* transform = (Transform*)malloc(sizeof(Transform));
-	transform->position = position;
-	transform->rotationDegrees = rotationDegrees;
-	transform->scale = scale;
+	Transform transform;
+	transform.position = position;
+	transform.rotationDegrees = rotationDegrees;
+	transform.scale = scale;
 	return transform;
 }
 
-Transform* Transform_Clone(Transform* source)
+Transform Transform_Clone(Transform* source)
 {
 	return Transform_Create(source->position, source->rotationDegrees, source->scale);
 }
@@ -63,4 +63,3 @@ void Transform_Apply(Transform* transform)
 	const Vector3& s = transform->scale;
 	glScalef(s.x, s.y, s.z);
 }
-

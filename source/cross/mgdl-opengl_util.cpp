@@ -6,6 +6,7 @@
 static bool lightingEnabled_ = false;
 static bool lightsOn_[8] = {false, false, false, false,
 							false, false, false, false};
+static GLfloat globalAmbient[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 
 static const Vector3 FORWARD = Vector3New(0, 0, -1);
 static const Vector3 UP = Vector3New(0, 1, 0);
@@ -141,27 +142,33 @@ bool mgdl_GetLightingEnabled(void)
 	return lightingEnabled_;
 }
 
-GLint mgdl_EnableLightGetIndex(void)
+GLint mgdl_ReserveLightIndex(void)
 {
 	for (GLint i = 0; i < 8; i++)
 	{
 		if (lightsOn_[i] == false)
 		{
 			lightsOn_[i] = true;
-			glEnable(GL_LIGHT0 + i);
 			return i;
 		}
 	}
 	return -1;
 }
 
-void mgdl_DisableLightIndex(GLint index)
+void mgdl_FreeLightIndex(GLint index)
 {
 	if (index >=0 && index < 8)
 	{
 		lightsOn_[index] = false;
-		glDisable(GL_LIGHT0 + index);
 	}
+}
+void mgdl_SetGlobalAmbientColor32(color32 color, float strength)
+{
+	RGBAf ambient = Color_HexToFloats(color);
+	globalAmbient[0]=ambient.red * strength;
+	globalAmbient[1]=ambient.green * strength;
+	globalAmbient[2]=ambient.blue * strength;
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmbient);
 }
 
 void mgdl_glColor3f(color32 color)

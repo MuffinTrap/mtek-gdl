@@ -120,7 +120,7 @@ RGBAf Color_HexToFloats(u32 color);
  * @param color The color to decompose
  * @param target4f Array of size 4 in order RGBA
  */
-void Color_HexToGLfloats(color32 color, GLfloat* target4f);
+void Color_HexToGLfloats(color32 color, GLfloat target4f[4]);
 
 #ifdef __cplusplus
 }

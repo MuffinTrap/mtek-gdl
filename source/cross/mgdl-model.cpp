@@ -22,4 +22,8 @@
 			Material_Apply(model->m_material);
 		}
 		Mesh_DrawElements(model->m_mesh);
+		if (model->m_material != nullptr)
+		{
+			Material_UnApply(model->m_material);
+		}
 	}

@@ -29,6 +29,7 @@ extern "C"
 
 /**
  * @brief Loads a FBX file and returns the contents as a Scene.
+ * @note If you are exporting fbx from Blockbench, set the Model Export Scale to 1.0
  *
  * @param fbxFile Filename of the file.
  * @return Loaded scene.
@@ -40,7 +41,7 @@ Mesh* m_FBX_AllocateMesh(ufbx_mesh* fbxMesh);
 Mesh* m_FBX_LoadMesh(ufbx_mesh* fbxMesh);
 Mesh* m_FBX_LoadMeshUFBX(ufbx_mesh* fbxMesh);
 Light* m_FBX_LoadLight(ufbx_light* fbxLight);
-bool m_FBX_LoadNode(Scene* gdlScene, Node* parentNode, ufbx_node* node, s16 depth, const bool createNodes);
+bool m_FBX_LoadNode(Scene* gdlScene, ufbx_node* node, s16 depth);
 
 Mesh* FBX_LoadMeshTrianglesOnly(ufbx_mesh* mesh);
 

@@ -20,9 +20,9 @@ typedef struct Transform Transform;
 extern "C"
 {
 #endif
-	Transform* Transform_CreateZero(void);
-	Transform* Transform_Create(Vector3 position, Vector3 rotationDegrees, Vector3 scale);
-	Transform* Transform_Clone(Transform* source);
+	Transform Transform_CreateZero(void);
+	Transform Transform_Create(Vector3 position, Vector3 rotationDegrees, Vector3 scale);
+	Transform Transform_Clone(Transform* source);
 	void Transform_Translate(Transform*, Vector3 t);
 	void Transform_Rotate(Transform*, short axis, float angle);
 	void Transform_SetScalef(Transform*, float scale);

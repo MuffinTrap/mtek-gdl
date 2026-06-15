@@ -113,8 +113,9 @@ extern "C"
     // Light status
     void mgdl_SetLightingEnabled(bool enabled);
     bool mgdl_GetLightingEnabled(void);
-    GLint mgdl_EnableLightGetIndex(void);
-    void mgdl_DisableLightIndex(GLint index);
+    GLint mgdl_ReserveLightIndex();
+    void mgdl_FreeLightIndex(GLint index);
+    void mgdl_SetGlobalAmbientColor32(color32 color, float strength);
 
 /** NOTE!!!!
 * @brief Sets up the camera correctly on all platforms.

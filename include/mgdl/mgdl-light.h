@@ -55,12 +55,14 @@ extern "C"
 	void Light_SetPosition(Light* light, Vector3 position);
 	void Light_SetDirection(Light* light, Vector3 direction);
 	void Light_SetColor(Light* light, color32 color);
+	void Light_SetColorV(Light* light, Vector3 color);
 	void Light_SetAmbientColor(Light* light, color32 color);
 	void Light_Enable(Light* light);
 	void Light_Disable(Light* light);
 	void Light_Apply(Light* light);
 
 	Vector3 Light_GetDirection(Light* light);
+	void Light_LogInfo(Light* light);
 
 
 #ifdef __cplusplus

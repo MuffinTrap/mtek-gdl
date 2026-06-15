@@ -49,6 +49,11 @@ extern "C"
 	 * @param material The material properties to use.
 	 */
 	void Material_Apply(Material* material);
+	/**
+	 * @brief Reverts the material properties
+	 * @param material The material properties to use.
+	 */
+	void Material_UnApply(Material* material);
 	void Material_Reset(void);
 	void Material_Free(Material* material);
 

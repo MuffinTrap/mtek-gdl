@@ -28,7 +28,7 @@ RGBAf Color_HexToFloats(u32 color)
     return components;
 }
 
-void Color_HexToGLfloats(color32 color, GLfloat* target4f)
+void Color_HexToGLfloats(color32 color, GLfloat target4f[4])
 {
     target4f[0]= (float)RED(color)/255.0f;
     target4f[1]= (float)GREEN(color)/255.0f;
