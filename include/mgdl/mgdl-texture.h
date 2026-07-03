@@ -41,7 +41,7 @@ extern "C"
 	/**
 		* @brief Sets the GL name and dimenions of the image.
 		*
-		* This is used when the image data has already been loaded using OpenGL.
+		* @note This is used when the image data has already been loaded using OpenGL.
 		*
 		* @param textureName GL name of the texture.
 		* @param width Width of the image in pixels.
@@ -104,7 +104,17 @@ extern "C"
 
 	Texture* Texture_CreateFromArray(u16 width, u16 height, void* pixels, GLenum colorFormat, GLenum dataFormat);
 
+	/**
+	 * @brief Sets the filtering mode of the texture
+	 * @param texture The texture
+	 * @param mode The mode to use
+	 */
 	void Texture_SetFilterMode(Texture* texture, TextureFilterModes mode);
+	/**
+	 * @brief Sets the wrapping mode of the texture
+	 * @param texture The texture
+	 * @param mode The mode to use
+	 */
 	void Texture_SetWrapMode(Texture* texture, TextureWrapModes mode);
 
 

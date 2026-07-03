@@ -75,7 +75,7 @@ void Material_SetDiffuseColor(Material* material, color32 color)
 	Color_HexToGLfloats(color, material->diffuseColor);
 }
 
-void Material_Reset(void)
+void Material_ResetToOpenGLDefaults(void)
 {
 	if( mgdl_GetLightingEnabled())
 	{

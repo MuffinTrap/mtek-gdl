@@ -2,6 +2,7 @@
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-console.h>
 #include <mgdl/mgdl-util.h>
+#include <mgdl/mgdl-memory.h>
 
 static LogLevel level_ = All;
 #define LINE_COUNT 256
@@ -65,7 +66,7 @@ void Log_SetLevel(LogLevel lvl)
 	level_ = lvl;
 }
 
-void Log_ResetLineIndexTo(int index)
+void Log_SetLineIndexTo(int index)
 {
 	if (index >=0 && index < lineAmount)
 	{
@@ -83,7 +84,7 @@ void Log_SaveLines(int amount)
 	lineAmount = amount;
 	for (int i = 0; i < lineAmount; i++)
 	{
-		messages[i] = (char*)malloc(sizeof(char) * LINE_LENGTH);
+		messages[i] = (char*)mgdl_AllocateGeneralMemory(sizeof(char) * LINE_LENGTH);
 		messages[i][0] = '\0';
 	}
 	saveLinesOn = true;

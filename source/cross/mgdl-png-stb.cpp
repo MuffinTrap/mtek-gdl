@@ -32,7 +32,7 @@ PNGFile* PNG_ReadFile(const char* filename)
 	Log_InfoF("Loaded Png file w:%d h:%d channels:%d\n", width, height, channels);
 
 	// Flip picture on X axis
-	unsigned char* tmpRow = (unsigned char*)malloc(width * channels);
+	unsigned char* tmpRow = (unsigned char*)mgdl_AllocateGraphicsMemory(width * channels);
 	for (int r = 0; r < height/2; r++)
 	{
 		// First row to temp

@@ -28,8 +28,8 @@ void Platform_SetWindowNameAndAspect(const char* windowName, ScreenAspect aspect
     };
     platform->viewport.left = 0;
     platform->viewport.bottom = 0;
-    platform->viewport.width = platform->windowWidth;
-    platform->viewport.height = platform->windowHeight;
+    platform->viewport.width = platform->screenWidth;
+    platform->viewport.height = platform->screenHeight;
 }
 
 void Platform_UpdateDeltaTime(u32 elapsedTimeMilliseconds)

@@ -81,7 +81,7 @@ void Audio_Platform_Init(void* platformData)
 	HWND windowHandle = *(HWND*)platformData;
 	OutputDebugStringA("Initializing DirectSound\n");
 
-	soundDatas = (SoundDirectSound*)malloc(sizeof(SoundDirectSound) * MGDL_AUDIO_MAX_SOUNDS);
+	soundDatas = (SoundDirectSound*)mgdl_AllocateGraphicsMemory(sizeof(SoundDirectSound) * MGDL_AUDIO_MAX_SOUNDS);
 	for (int i = 0; i < MGDL_AUDIO_MAX_SOUNDS; i++)
 	{
 		soundDatas[i].channels = 0;

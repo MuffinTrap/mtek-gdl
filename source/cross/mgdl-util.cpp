@@ -88,14 +88,15 @@ u32 maxU32(u32 a, u32 b)
 	return (a > b ? a : b);
 }
 
+
 float Deg2Rad(float degrees)
 {
-    return degrees * (M_PI / 180.0f);
+    return degrees * DEG2RAD;
 }
 
 float Rad2Deg(float radians)
 {
-    return radians * (180.0f / M_PI);
+    return radians * RAD2DEG;
 }
 
 GLint TextureFilterToGLFilter(TextureFilterModes filterMode)
@@ -208,7 +209,7 @@ Vector2 mgdl_CalculateAlignedTopLeft(float x, float y, float width, float height
 	{
 		topleft.x -= width / 2;
 	}
-	if (alignmentY == RJustify)
+	if (alignmentY == BJustify)
 	{
 		topleft.y += height;
 	}

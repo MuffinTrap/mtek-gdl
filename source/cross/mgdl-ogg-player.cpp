@@ -138,7 +138,7 @@ static MusicOgg LoadOgg(MusicOgg m, Sound* inout_snd, const char* filename, s32 
 
 void OggPlayer_Init()
 {
-    musics = (MusicOgg*)malloc(sizeof(struct MusicOgg) * MGDL_AUDIO_MAX_SOUNDS);
+    musics = (MusicOgg*)mgdl_AllocateGraphicsMemory(sizeof(MusicOgg) * MGDL_AUDIO_MAX_SOUNDS);
     for (int i = 0; i < MGDL_AUDIO_MAX_SOUNDS; i++)
     {
 		musics[i].vorbisfile = nullptr;

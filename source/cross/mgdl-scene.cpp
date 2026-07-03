@@ -6,6 +6,7 @@
 #include <mgdl/mgdl-camera.h>
 #include <mgdl/mgdl-opengl_util.h>
 #include <mgdl/mgdl-console.h>
+#include <mgdl/mgdl-memory.h>
 
 POINTER_ARRAY_IMPLEMENT(Mesh)
 POINTER_ARRAY_IMPLEMENT(Material)
@@ -25,8 +26,7 @@ void Scene_InitArrays(Scene* scene, int meshCapacity, int materialCapacity, int 
 
 Scene* Scene_CreateEmpty()
 {
-	Scene* scene = (Scene*)malloc(sizeof(Scene));
-	scene->rootNode = nullptr;
+	Scene* scene = (Scene*)mgdl_AllocateGraphicsMemory(sizeof(Scene));
 	scene->materials = nullptr;
 	scene->meshes = nullptr;
 	scene->lights = nullptr;
@@ -142,7 +142,7 @@ static void DrawUFBXNode(Scene* scene, ufbx_node* node)
 
 		if (mesh != nullptr)
 		{
-			Mesh_DrawElements(mesh);
+			Mesh_DrawArrays(mesh);
 		}
 	}
 	else if(node->light != nullptr)
@@ -155,16 +155,7 @@ static void DrawUFBXNode(Scene* scene, ufbx_node* node)
 			ufbx_vec3 p = node->local_transform.translation;
 			Vector3 position = Vector3New(p.x, p.y, p.z);
 			Light_SetPosition(mLight, position);
-			//Light_Apply(mLight);
 		}
-	}
-	else if(node->camera != nullptr)
-	{
-		// TODO apply camera
-		Vector3 position;
-		Vector3 target;
-		Vector3 up;
-		//mgdl_InitCamera(position, target, up);
 	}
 
 	for(size_t i = 0; i < node->children.count; i++)
@@ -174,6 +165,42 @@ static void DrawUFBXNode(Scene* scene, ufbx_node* node)
 	glPopMatrix();
 }
 
+void Scene_ApplyCamera(Scene* scene, u32 index)
+{
+	if (index < scene->ufbx->cameras.count)
+	{
+		ufbx_camera* camera = scene->ufbx->cameras.data[index];
+		ufbx_node* cameraNode = camera->instances.data[0];
+		ufbx_transform cameraTransform = cameraNode->local_transform;
+
+		ufbx_vec3 forward_dir;
+		forward_dir.x = 0.0f;
+		forward_dir.y = 0.0f;
+		forward_dir.z = -1.0f;
+		ufbx_vec3 up_dir;
+		up_dir.x = 0.0f;
+		up_dir.y = 1.0f;
+		up_dir.z = 0.0f;
+		ufbx_vec3 cameraDir = ufbx_quat_rotate_vec3(cameraTransform.rotation, forward_dir);
+		ufbx_vec3 cameraUp = ufbx_quat_rotate_vec3(cameraTransform.rotation, up_dir);
+
+		mgdl_InitPerspectiveProjection(camera->field_of_view_deg.y, camera->near_plane, camera->far_plane);
+
+		mgdl_InitCameraF(
+			cameraTransform.translation.x,
+			cameraTransform.translation.y,
+			cameraTransform.translation.z,
+
+			cameraTransform.translation.x + cameraDir.x,
+			cameraTransform.translation.y + cameraDir.y,
+			cameraTransform.translation.z + cameraDir.z,
+
+			cameraUp.x,
+			cameraUp.y,
+			cameraUp.z
+		);
+	}
+}
 
 // NOTE
 // New system. Store minimal amount of information

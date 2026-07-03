@@ -12,6 +12,8 @@
 extern "C" {
 #endif
 
+// TODO Implement glutTorus etc. for the Wii
+
 /**
  * @brief Draws a solid cube with the current OpenGL state
  * @param size Width, height and depth of the cube

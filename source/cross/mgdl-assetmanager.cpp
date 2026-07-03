@@ -475,3 +475,8 @@ Model* AssetManager_GetModel(ModelHandle handle)
 		return nullptr; // NO default asset
 	}
 }
+
+void AssetManager_UnloadAll(void)
+{
+	// TODO
+}

@@ -55,14 +55,14 @@ void Audio_Platform_Init(void* platformData)
     }
 
     Log_Info("OpenAL context created\n");
-	soundDatas = (SoundOpenAL*)malloc(sizeof(SoundOpenAL) * MGDL_AUDIO_MAX_SOUNDS);
+	soundDatas = (SoundOpenAL*)mgdl_AllocateGraphicsMemory(sizeof(SoundOpenAL) * MGDL_AUDIO_MAX_SOUNDS);
 	for (int i = 0; i < MGDL_AUDIO_MAX_SOUNDS; i++)
 	{
         soundDatas[i].inUse = false;
     }
 	for (int i = 0; i < MGDL_NUM_STREAMING_BUFFERS; i++)
 	{
-        streamingBuffers[i].tempBuffer = malloc(MGDL_AUDIO_CALLBACK_BUFFER_SIZE);
+        streamingBuffers[i].tempBuffer = mgdl_AllocateGraphicsMemory(MGDL_AUDIO_CALLBACK_BUFFER_SIZE);
         alGenBuffers(1, &streamingBuffers[i].bufferName);
     }
     alGenSources(1, &streamingSource);
@@ -135,7 +135,7 @@ void* Audio_OpenStaticBuffer(Sound* inout_snd, sizetype byteCount, u16 samplerat
 
     inout_snd->voiceNumber = voiceNumber;
 
-    snd->tempBuffer = (ALvoid*)malloc(byteCount);
+    snd->tempBuffer = (ALvoid*)mgdl_AllocateGraphicsMemory(byteCount);
     return snd->tempBuffer;
 }
 

@@ -6,7 +6,7 @@
 #include <mgdl/mgdl-defaultfont.h>
 #include <mgdl/mgdl-config.h>
 #include <mgdl/mgdl-platform.h>
-#include <mgdl/mgdl-draw2d.h>
+#include <mgdl/mgdl-script-api.h>
 
 #include <string.h>
 

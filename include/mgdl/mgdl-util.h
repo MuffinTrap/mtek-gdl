@@ -17,14 +17,37 @@ extern "C"
 {
 #endif
 
+/**
+ * @brief Creates the random number generator. This is done automatically on init.
+ */
 void Random_CreateGenerator(void);
+
+/**
+ * @brief Sets the random generation seed
+ * @param seed The seed number
+ */
 void Random_SetSeed(u32 seed);
+/**
+ * @brief Returns random floating point number between given limits
+ * @note Limits are inclusive
+ * @param min Minimum allowed value
+ * @param max Maximum allowed value
+ * @returns Randon number
+ */
 float Random_Float(float min, float max);
 
 /**
  * @brief Returns a number between [0, 1.0]
  */
 float Random_FloatNormalized(void);
+
+/**
+ * @brief Returns a random integer number between given limits
+ * @note Limits are inclusive
+ * @param min Minimum allowed value
+ * @param max Maximum allowed value
+ * @returns Random integer
+ */
 int Random_Int(int min, int max);
 
 s16 clampS16(s16 val, s16 minVal, s16 maxVal);
@@ -108,10 +131,21 @@ u32 Flag_SetBit(u32 bitfield, u8 bitIndex);
  */
 u32 Flag_UnsetBit(u32 bitfield, u8 bitIndex);
 
+/**
+ * @brief Calculates the aligned top left point
+ * @details If you want to center image on (x,y), set both alignments to Center. Aligning to Left/Bottom does nothing. Aligning to right means that the right edge of image lies on the given x coordinate. Aligning to bottom means that the bottom edge of the image lies on the given y coordinate.
+ * @param x Top left x coordinate
+ * @param y Top left y coordinate
+ * @param width Width to align
+ * @param height to align
+ * @param alignmentX How to align on X axis
+ * @param alignmentY How to align on Y axis.
+ * @returns New coordinates for top left point
+ */
 Vector2 mgdl_CalculateAlignedTopLeft(float x, float y, float width, float height, AlignmentModes alignmentX, AlignmentModes alignmentY);
 
 /**
- * @return Buffer containging the text, max size 255 chars.
+ * @return Buffer containging the buffered text, max size 255 chars.
  */
 char* mgdl_GetPrintfBuffer(void);
 
@@ -154,5 +188,3 @@ char* mgdl_BufferPrintf(const char* format, ...);
 #define MGDL_DIAGNOSTIC_POP #pragma MGDL_COMPILER diagnostic pop \
 
 #undef MGDL_COMPILER
-
-/*! @} */

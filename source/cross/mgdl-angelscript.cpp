@@ -19,6 +19,8 @@
 
 // static AngelScript variables
 static bool s_compileErrorFlag = false;
+static int s_errorCount = 0;
+static const int ERROR_LIMIT = 10;
 
 static void AngelScriptMessageCallback(const asSMessageInfo *msg)
 {
@@ -43,8 +45,12 @@ static void AngelScriptMessageCallback(const asSMessageInfo *msg)
     switch(msg->type)
     {
         case asMSGTYPE_ERROR:
-            Log_ErrorF("%s:%d:%d %s\n", file, msg->row, msg->col, msg->message);
 			s_compileErrorFlag = true;
+			if (s_errorCount < ERROR_LIMIT)
+			{
+				Log_ErrorF("%s:%d:%d %s\n", file, msg->row, msg->col, msg->message);
+				s_errorCount += 1;
+			}
             break;
         case asMSGTYPE_WARNING:
             Log_WarningF("%s:%d:%d %s\n", file, msg->row, msg->col, msg->message);
@@ -92,12 +98,12 @@ static bool ReloadAngelScriptCode(mgdl_AngelScript* angel)
 	// If this process sends an error to angelscript message
 	// callback the s_compileErrorFlag is set
 	s_compileErrorFlag = false;
+	s_errorCount = 0;
     result = builder.BuildModule();
 
 	if (result < 0 && s_compileErrorFlag)
 	{
 		// Code had errors
-		s_compileErrorFlag = false;
 		return false;
 	}
     else if (result < 0)

@@ -21,7 +21,6 @@ struct Node;
 struct Scene
 {
 	ufbx_scene* ufbx;
-	Node* rootNode;
 	PointerArray* materials;
 	PointerArray* meshes;
 	PointerArray* lights;
@@ -53,6 +52,7 @@ extern "C"
 	void Scene_AddMesh(Scene* scene, Mesh* mesh);
 	void Scene_AddLight(Scene* scene, Light* light);
 	void Scene_AddMaterial ( Scene* scene, Material* material );
+	void Scene_ApplyCamera(Scene* scene, u32 index);
 
 	bool Scene_HasMaterial(Scene* scene, uint32_t ufbx_id);
 	bool Scene_HasMesh(Scene* scene, uint32_t ufbx_id);

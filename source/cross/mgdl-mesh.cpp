@@ -4,11 +4,12 @@
 #include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-opengl_util.h>
 #include <mgdl/mgdl-assert.h>
+#include <mgdl/mgdl-memory.h>
 
 
 Mesh* Mesh_CreateEmpty(void)
 {
-	Mesh* mesh = (Mesh*)malloc(sizeof(Mesh));
+	Mesh* mesh = (Mesh*)mgdl_AllocateGraphicsMemory(sizeof(Mesh));
 	mesh->positions = nullptr;
 	mesh->indices = nullptr;
 	mesh->normals = nullptr;
@@ -105,12 +106,16 @@ void Mesh_SetupVertexArrays(Mesh* mesh)
 	return;
 }
 
-void Mesh_DrawElements(Mesh* mesh)
+void Mesh_DrawElements(Mesh* mesh, GLsizei indexCount)
 {
 	Mesh_SetupVertexArrays(mesh);
 	// NOTE OpenGX does not impelement glDrawRangeElements()
 	//glDrawRangeElements(GL_TRIANGLES, 0, vertexCount-1, indexCount, GL_UNSIGNED_SHORT, indices);
-	glDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_SHORT, mesh->indices);
+	if (indexCount > mesh->indexCount)
+	{
+		indexCount = mesh->indexCount;
+	}
+	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_SHORT, mesh->indices);
 }
 
 void Mesh_DrawArrays(Mesh* mesh)

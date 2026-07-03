@@ -122,7 +122,8 @@ extern "C"
 * @details Without this setup the Dolphin is all messed up with the rendering.
 * @note Must have gluLookAt for anything to be visible on Wii when using OpenGX.
 */
-void mgdl_InitCamera(Vector3 cameraPos, Vector3 cameraTarget, Vector3 cameraUp);
+void mgdl_InitCameraV(Vector3 cameraPos, Vector3 cameraTarget, Vector3 cameraUp);
+void mgdl_InitCameraF(float px, float py, float pz, float tx, float ty, float tz, float ux, float uy, float uz);
 
 #ifdef __cplusplus
 }

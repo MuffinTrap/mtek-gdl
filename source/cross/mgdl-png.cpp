@@ -3,6 +3,7 @@
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-logger.h>
+#include <mgdl/mgdl-memory.h>
 
 #if defined(GEKKO)
 /** Old implementation that used
@@ -296,7 +297,7 @@ PNGFile* _PNG_ReadFilePointer(FILE* fp)
 
 	// Danger. Wii only has 20 megabytes of texture memoy
 	Log_InfoF("\tAllocating %zu bytes\n", imageDataSize);
-	texelPtr = (GLubyte*)mgdl_AllocateAlignedMemory(imageDataSize);
+	texelPtr = (GLubyte*)mgdl_AllocateGraphicsMemory(imageDataSize);
 
 	if (texelPtr == nullptr)
 	{
@@ -306,7 +307,7 @@ PNGFile* _PNG_ReadFilePointer(FILE* fp)
 		return nullptr;
 	}
 
-	PNGFile* png = (PNGFile*)malloc(sizeof(PNGFile));
+	PNGFile* png = (PNGFile*)mgdl_AllocateGraphicsMemory(sizeof(PNGFile));
 	png->width = width;
 	png->height = height;
 	png->bytesPerPixel = bpp;
@@ -315,7 +316,7 @@ PNGFile* _PNG_ReadFilePointer(FILE* fp)
 
 	// Set up array for rows to read
 	size_t rowPointersSize = sizeof(png_bytep) * h;
-	row_pointers = (png_bytep*)mgdl_AllocateAlignedMemory(rowPointersSize);
+	row_pointers = (png_bytep*)mgdl_AllocateGraphicsMemory(rowPointersSize);
 
 	// Read all rows
 	size_t rowSize = w * png->bytesPerPixel;

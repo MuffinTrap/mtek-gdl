@@ -4,6 +4,7 @@
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-gui.h>
+#include <mgdl/mgdl-memory.h>
 
 POINTER_ARRAY_IMPLEMENT(Node)
 
@@ -11,7 +12,7 @@ static const s16 MGDL_EMPTY_CONTENT = -1;
 
 Node* Node_Create(u8 childCapacity, u16 id)
 {
-	Node* node = (Node*)malloc(sizeof(Node));
+	Node* node = (Node*)mgdl_AllocateGraphicsMemory(sizeof(Node));
 	node->id = id;
 	node->contentId = MGDL_EMPTY_CONTENT;
 	node->flags = (NodeActive | NodeApplyTransform);

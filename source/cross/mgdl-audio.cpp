@@ -5,6 +5,7 @@
 #include <mgdl/mgdl-wav-player.h>
 #include <mgdl/mgdl-mp3-player.h>
 #include <mgdl/mgdl-assert.h>
+#include <mgdl/mgdl-memory.h>
 
 
 // TODO these are not used
@@ -20,7 +21,7 @@ static int firstFreeVoice = 0;
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 void Audio_Init(void* platformData)
 {
-    sounds = (Sound*)malloc(sizeof(struct Sound) * MGDL_AUDIO_MAX_SOUNDS);
+    sounds = (Sound*)mgdl_AllocateGraphicsMemory(sizeof(struct Sound) * MGDL_AUDIO_MAX_SOUNDS);
     for (int i = 0; i < MGDL_AUDIO_MAX_SOUNDS; i++)
     {
 		Sound_InitEmpty(&sounds[i]);

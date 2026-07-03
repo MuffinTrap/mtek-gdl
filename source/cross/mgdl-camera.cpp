@@ -5,7 +5,7 @@
 
 Camera* Camera_CreateDefault()
 {
-	Camera* camera = (Camera*)malloc(sizeof(Camera));
+	Camera* camera = (Camera*)mgdl_AllocateGraphicsMemory(sizeof(Camera));
 	camera->target = mgdl_GetGLWorldForward();
 	camera->position = Vector3New(0.0f, 0.0f, 0.0f);
 	camera->up = mgdl_GetGLWorldUp();
@@ -37,7 +37,7 @@ void Camera_Apply(Camera* camera)
 	switch (camera->mode)
 	{
 		case CameraTarget:
-			mgdl_InitCamera(camera->position, camera->target, camera->up);
+			mgdl_InitCameraV(camera->position, camera->target, camera->up);
 		break;
 		case CameraRotation:
 		{
@@ -48,13 +48,13 @@ void Camera_Apply(Camera* camera)
 			transform = MatrixRotateXYZ(rotationsRad);
 			target = Vector3Transform(unit, transform);
 			camera->target = Vector3Add(camera->position, target);
-			mgdl_InitCamera(camera->position, camera->target, camera->up);
+			mgdl_InitCameraV(camera->position, camera->target, camera->up);
 		}
 		break;
 		case CameraDirection:
 			// Presume direction is set with Camera_SetDirection
 			camera->target = Vector3Add(camera->position, camera->direction);
-			mgdl_InitCamera(camera->position, camera->target, camera->up);
+			mgdl_InitCameraV(camera->position, camera->target, camera->up);
 		break;
 
 	}

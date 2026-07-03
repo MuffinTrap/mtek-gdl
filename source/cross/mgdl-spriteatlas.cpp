@@ -13,7 +13,7 @@
 
 SpriteAtlas* SpriteAtlas_Create(void)
 {
-	SpriteAtlas* font = (SpriteAtlas*)malloc(sizeof(SpriteAtlas));
+	SpriteAtlas* font = (SpriteAtlas*)mgdl_AllocateGraphicsMemory(sizeof(SpriteAtlas));
 	font->uvList = nullptr;
 	font->characterWidth = 0;
 	font->characterHeight = 0;

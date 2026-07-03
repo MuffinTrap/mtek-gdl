@@ -2,10 +2,11 @@
 #include <mgdl/mgdl-opengl_util.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-console.h>
+#include <mgdl/mgdl-memory.h>
 
 Light* Light_Create()
 {
-    Light* l = (Light*)malloc(sizeof(Light));
+    Light* l = (Light*)mgdl_AllocateGraphicsMemory(sizeof(Light));
     l->type = LightType::Point;
     l->spotHalfAngle = 180.0f;
     l->constantAttenuation = 1.0f;

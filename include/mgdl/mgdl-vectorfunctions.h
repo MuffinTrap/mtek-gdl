@@ -5,7 +5,7 @@
 /**
  * @file mgdl-vectorfunctions.h
  * @ingroup core
- * @brief Macro definitions for vector and matrix operations
+ * @brief Extra functions and Macro definitions for vector and matrix operations
  */
 
 

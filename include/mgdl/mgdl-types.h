@@ -142,15 +142,14 @@ typedef enum MaterialType MaterialType;
 /**
  * @brief Alignment modes
  *
- * @details Alignment modes for different drawing functions. For vertical (y) alignment the LJustify means top and RJustify means bottom
+ * @details Alignment modes for calculating aligned coordinates for drawing.
  */
 enum AlignmentModes {
     Centered	= 0x7ff0,	/**< Centered. */
-    PCentered	= 0x7ff1,	/**< Pixel centered (most noticable when image is zoomed in). */
-    Pivot       = 0x7ff2,	/**< Aligned according to its pivot coordinate (only applicable to gdl::SpriteSet functions). */
-    CPivot      = 0x7ff3,	/**< Aligned according to its pivot coordinate and pixel centered (only applicable to gdl::SpriteSet functions). */
-    RJustify	= 0x7ff4,	/**< Right justified (also bottom justified when used for the Y pivot axis). */
-    LJustify    = 0x7ff5    /**< Left justified (also top justified when used for the Y axis) The default alignment; */
+    RJustify	= 0x7ff4,	/**< Right justified*/
+    BJustify = RJustify, /**< Bottom justified. */
+    LJustify    = 0x7ff5,    /**< Left justified. The default alignment on X axis */
+    TJustify = LJustify /**< Top justified. The default alignment on Y axis */
 };
 typedef enum AlignmentModes AlignmentModes;
 

@@ -18,8 +18,9 @@ enum LightType
 };
 typedef enum LightType LightType;
 
-/* Representes a light in a 3D scene.
- * Contains color and light properties
+/**
+ * @brief Representes a light in a 3D scene.
+ * Contains color and light properties in format suitable for OpenGL
  */
 struct Light
 {

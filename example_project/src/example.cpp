@@ -1,6 +1,6 @@
 
 #include "example.h"
-#include <mgdl/mgdl-draw2d.h>
+#include <mgdl/mgdl-script-api.h>
 #include <string>
 
 #if defined(MGDL_ROCKET)
@@ -259,7 +259,9 @@ void Example::DrawScene ( Scene* scene, Vector3 scale)
 {
     // Try to draw Wii 3D model
     mgdl_InitPerspectiveProjection(75.0f, 0.1f, 100.0f);
-    mgdl_InitCamera(Vector3New(0.0f, 0.0f, cameraDistance), Vector3New(0.0f, 0.0f, 0.0f), Vector3New(0.0f, 1.0f, 0.0f));
+    mgdl_InitCameraF(0.0f, 0.0f, cameraDistance,
+                     0.0f, 0.0f, 0.0f,
+                     0.0f, 1.0f, 0.0f);
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);

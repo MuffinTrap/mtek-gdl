@@ -53,6 +53,16 @@ void mgdl_InitOrthoProjection()
 	glTranslatef(0.375f, 0.375f, 0.0f);
 }
 
+void mgdl_InitCameraF(float px, float py, float pz, float tx, float ty, float tz, float ux, float uy, float uz)
+{
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+	gluLookAt(px, py, pz,
+				 tx, ty, tz,
+				 ux, uy, uz);
+
+}
+
 void mgdl_InitCamera(Vector3 cameraPos, Vector3 cameraTarget, Vector3 cameraUp)
 {
     glMatrixMode(GL_MODELVIEW);

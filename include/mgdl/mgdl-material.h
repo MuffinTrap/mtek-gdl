@@ -33,7 +33,7 @@ extern "C"
 {
 #endif
 	/**
-	 * @brief Creates a material from an image.
+	 * @brief Creates a material from a texture.
 	 * @param name Name for the material.
 	 * @param texture Texture to use for the material.
 	 * @param type What kind of material this is.
@@ -54,7 +54,17 @@ extern "C"
 	 * @param material The material properties to use.
 	 */
 	void Material_UnApply(Material* material);
-	void Material_Reset(void);
+
+	/**
+	 * @brief Resets the OpenGL material settings to default values
+	 */
+	void Material_ResetToOpenGLDefaults(void);
+
+	/**
+	 * @brief Frees the memory used by the material.
+	 * @note Will not free the memory used by the texture
+	 * @param material The material to free.
+	 */
 	void Material_Free(Material* material);
 
 #ifdef __cplusplus

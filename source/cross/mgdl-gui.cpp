@@ -2,12 +2,13 @@
 #include <mgdl/mgdl-texture.h>
 #include <mgdl/mgdl-spriteatlas.h>
 #include <mgdl/mgdl-defaultfont.h>
-#include <mgdl/mgdl-draw2d.h>
+#include <mgdl/mgdl-script-api.h>
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-controller.h>
 #include <mgdl/mgdl-platform.h>
 #include <mgdl/mgdl-palette.h>
 #include <mgdl/mgdl-main.h>
+#include <mgdl/mgdl-memory.h>
 
 
 void Menu_ReadDefaultInputs(Menu* menu)
@@ -26,7 +27,7 @@ Menu* Menu_CreateDefault()
 
 Menu* Menu_Create(Texture* font, float textHeight, float rowHeightEm)
 {
-    Menu* menu = (Menu*)malloc(sizeof(Menu));
+    Menu* menu = (Menu*)mgdl_AllocateGeneralMemory(sizeof(Menu));
 
     menu->font = font;
     menu->textHeight = textHeight;

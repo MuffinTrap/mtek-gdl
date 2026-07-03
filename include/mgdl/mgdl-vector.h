@@ -3,8 +3,7 @@
 /**
  * @file mgdl-vector.h
  * @ingroup core
- * @brief Header for including the ccvector library.
- * by providing macro definitions.
+ * @brief Header for including the raymath library.
  */
 
 #define RAYMATH_IMPLEMENTATION

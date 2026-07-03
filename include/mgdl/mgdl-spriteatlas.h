@@ -155,18 +155,25 @@ RectF SpriteAtlas_GetUVRect(SpriteAtlas* font, char letter);
 /**
  * @brief Get the texture coordinate corners of an IconSymbol
  * @note Only combatible with the Default SpriteAtlas. Other fonts may support the icons too but they are not
- * @param font SpriteAtlas to read coordinates from
  * @param glyph The icon
  * @return The rectangle for uv coordinates.
  */
 RectF DefaultFont_GetUVRectIcon(IconSymbol glyph);
 
+// Private functions
 void SpriteAtlas_Bind(Texture* font, short charw, short charh, char firstCharacter);
 void SpriteAtlas_BindSelective(Texture* font, short charw, short charh, const char* characters);
 void SpriteAtlas_CreateTextureCoordList(SpriteAtlas* font, short rows, short charactersPerRow, short texW, short texH);
 void SpriteAtlas_CreateTextureCoordListSelective(SpriteAtlas* font, short rows, short charactersPerRow, short texW, short texH, const char* characters);
 
 void SpriteAtlas_CreateCoordinatesForGlyph(SpriteAtlas* font, u32 textureIndex, short cx, short cy, short texW, short texH);
+
+/**
+ * @brief Gets the texture coordinates for given character in a font
+ * @param font The font
+ * @param character The character
+ * @returns Texture coordinates of top left point
+ */
 Vector2 SpriteAtlas_GetTextureCoordinateChar(SpriteAtlas* font, char character);
 Vector2 SpriteAtlas_GetTextureCoordinateSprite(SpriteAtlas* font, short sprite);
 Vector2 DefaultFont_GetTextureCoordinateGlyph(IconSymbol glyph);

@@ -27,7 +27,6 @@
 #include "mgdl/mgdl-controller.h"
 #include "mgdl/mgdl-platform.h"
 #include "mgdl/mgdl-palette.h"
-#include "mgdl/mgdl-draw2d.h"
 #include "mgdl/mgdl-draw3d.h"
 #include "mgdl/mgdl-splash.h"
 #include "mgdl/mgdl-console.h"

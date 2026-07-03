@@ -113,15 +113,36 @@ Palette* Palette_FromPNG(const char* filename)
 {
 	PNGFile* png = PNG_ReadFile(filename);
 	ASSERT_DEBUG(png !=  nullptr);
+	sizetype colorIndex = 0;
+	bool duplicate = false;
 	if (png != nullptr)
 	{
-		Palette* pal = Palette_CreateEmpty(png->width);
-		for (GLsizei i = 0; i < png->width; i++)
+		Palette* pal = Palette_CreateEmpty(png->width * png->width);
+		for (GLsizei row = 0; row < png->height; row++)
 		{
-			color32 col = PNG_GetRGBA(png, i, 0);
-			Palette_SetColor(pal, i, col);
+			for (GLsizei i = 0; i < png->width; i++)
+			{
+				color32 col = PNG_GetRGBA(png, i, row);
+
+				// Check for duplicates
+				for (sizetype index = 0; index < colorIndex; index++)
+				{
+					if (Palette_GetColor(pal, index) == col)
+					{
+						duplicate = true;
+						break;
+					}
+				}
+				if (duplicate == false)
+				{
+					Palette_SetColor(pal, colorIndex, col);
+					colorIndex += 1;
+				}
+				duplicate = false;
+			}
 		}
 		PNG_DeleteData(png);
+		pal->m_size = colorIndex;
 		return pal;
 	}
 	return nullptr;

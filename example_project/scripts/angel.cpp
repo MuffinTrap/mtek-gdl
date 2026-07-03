@@ -34,7 +34,6 @@ void angelscript_init()
 	frameCircle = Vector2New(0, screenHeight*(2.0f/3.0f) );
 
 	barb = mgdl_LoadTexture("assets/barb.png");
-	lightScene = mgdl_LoadScene("assets/light_test.fbx");
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -244,8 +243,8 @@ void effect_3d(float deltatime)
 void angelscript_frame(float deltatime)
 {
 	//effect_3d(deltatime);
-	//effect_2d(deltatime);
-	scene_test_scene(deltatime);
+	effect_2d(deltatime);
+	//scene_test_scene(deltatime);
 	//effect_scene(deltatime);
 }
 

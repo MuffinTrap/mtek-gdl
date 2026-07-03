@@ -14,8 +14,23 @@ SoundHandle mgdl_LoadSound(const char* filename);
 SceneHandle mgdl_LoadScene(const zstr& filename);
 ModelHandle mgdl_LoadModel(const char* filename);
 ModelHandle mgdl_LoadModel(const zstr& filename);
-
+/**
+ * @brief Draws text using the default font.
+ *
+ * @param x Upper left x of first letter.
+ * @param y Upper left y of first letter.
+ * @param text Text to be drawn.
+ * @param color Color of the text.
+ */
 void mgdl_DrawText(const char* text, float x, float y, float fontSize, color32 color);
+/**
+ * @brief Draws text using the default font.
+ *
+ * @param position Upper left corner of first letter
+ * @param text Text to be drawn.
+ * @param color Color of the text.
+ */
+void mgdl_DrawTextV(const char* text, const Vector2& topleft, float fontSize, color32 color);
 void mgdl_DrawTextEx(TextureHandle font, const char* text, float x, float y,  float fontSize, color32 color);
 void mgdl_DrawTextVEx(TextureHandle font, const char* text, const Vector2 & topleft,  float fontSize, color32 color);
 
@@ -33,6 +48,42 @@ void mgdl_DrawModelRotatedV(ModelHandle handle, const Vector3& position, const V
 #ifdef __cplusplus
 extern "C" {
 #endif
+/**
+ * @brief Draws a box border.
+ *
+ * @details The box is drawn using GL_LINES so the width is 1 pixel by default
+ *
+ * @param x Top left corner x in screen units.
+ * @param y Top left corner y in screen units.
+ * @param w Width
+ * @param h Height
+ * @param color Color of the border
+ */
+void mgdl_DrawRectangle(float x, float y, float w, float h, color32 color);
+void mgdl_DrawRectangleV(Vector2 topleft, Vector2 size, color32 color);
+void mgdl_DrawRectangleLines(float x, float y, float w, float h, color32 color);
+void mgdl_DrawRectangleLinesEx(RectF rec, float lineThickness, color32 color);
+
+/**
+ * @brief Draws a line.
+ *
+ * @param x Start point x
+ * @param y Start point y
+ * @param x2 End point x
+ * @param y2 End point y
+ * @param color Color of the line.
+ */
+void mgdl_DrawLine( float x, float y, float x2, float y2, color32 color );
+
+/**
+ * @brief Draws a line.
+ *
+ * @param start Start point
+ * @param end Start point
+ * @param color Color of the line.
+ */
+void mgdl_DrawLineV(Vector2 start, Vector2 end, color32 color );
+void mgdl_DrawLineEx(Vector2 start, Vector2 end, float lineThickness, color32 color );
 
 
 /**
