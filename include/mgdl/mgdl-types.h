@@ -240,6 +240,29 @@ enum CameraProjection
 };
 typedef enum CameraProjection CameraProjection;
 
+/**
+* @brief Enumeration for state of any Sound.
+*/
+enum mgdlAudioStateEnum
+{
+    Audio_StatePlaying,
+    Audio_StatePaused,
+    Audio_StateStopped,
+    Audio_StateInvalid
+};
+typedef enum mgdlAudioStateEnum mgdlAudioStateEnum;
+
+/**
+ * @brief Enumeration for play mode of SoundBank
+ */
+enum mgdlSoundBankPlayMode
+{
+    SoundBank_RunThrough,
+    SoundBank_Shuffle,
+    SoundBank_Random,
+};
+typedef enum mgdlSoundBankPlayMode mgdlSoundBankPlayMode;
+
 // Windows uses Rectangle
 struct RectF
 {

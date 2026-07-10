@@ -53,7 +53,7 @@ void Audio_Deinit()
 	firstFreeVoice = 0;
 }
 
-Sound* Audio_LoadSound(const char* filename, SoundFileType filetype)
+Sound* Sound_Load(const char* filename, SoundFileType filetype)
 {
 	// Find first voice that is not in use
 	int loadedIndex = firstFreeVoice;
@@ -99,7 +99,7 @@ Sound* Audio_LoadSound(const char* filename, SoundFileType filetype)
 	return &sounds[loadedIndex];
 }
 
-void Audio_PlaySound(Sound* s)
+void Sound_Play(Sound* s)
 {
 	ASSERT_DEBUG(s!=nullptr);
 	switch(s->type)
@@ -121,7 +121,7 @@ void Audio_PlaySound(Sound* s)
 		break;
 	}
 }
-void Audio_PauseSound(Sound* s)
+void Sound_Pause(Sound* s)
 {
 	ASSERT_DEBUG(s!=nullptr);
 	switch(s->type)
@@ -143,7 +143,7 @@ void Audio_PauseSound(Sound* s)
 		break;
 	}
 }
-void Audio_ResumeSound(Sound* s)
+void Sound_Resume(Sound* s)
 {
 	ASSERT_DEBUG(s!=nullptr);
 	switch(s->type)
@@ -165,7 +165,7 @@ void Audio_ResumeSound(Sound* s)
 		break;
 	}
 }
-void Audio_StopSound(Sound* s)
+void Sound_Stop(Sound* s)
 {
 	ASSERT_DEBUG(s!=nullptr);
 	switch(s->type)
@@ -205,7 +205,7 @@ sizetype Audio_GetSoundSizeBytes(Sound* snd)
 	}
 	return 0;
 }
-u32 Audio_GetSoundElapsedMs(Sound* snd)
+u32 Sound_GetElapsedMs(Sound* snd)
 {
 	ASSERT_DEBUG(snd!=nullptr);
 	switch (snd->type)
@@ -224,7 +224,18 @@ u32 Audio_GetSoundElapsedMs(Sound* snd)
 
 }
 
-mgdlAudioStateEnum Audio_GetSoundStatus(Sound* snd)
+bool Sound_GetLooping(Sound* snd)
+{
+	ASSERT_DEBUG(snd!=nullptr);
+	return snd->isLooping;
+}
+void Sound_SetLooping(Sound* snd, bool looping)
+{
+	ASSERT_DEBUG(snd!=nullptr);
+	snd->isLooping = looping;
+}
+
+mgdlAudioStateEnum Sound_GetStatus(Sound* snd)
 {
 	ASSERT_DEBUG(snd!=nullptr);
 	switch (snd->type)
@@ -244,7 +255,7 @@ mgdlAudioStateEnum Audio_GetSoundStatus(Sound* snd)
 }
 // Sound system functions
 
-void Audio_SetSoundElapsedMs(Sound* snd, s32 milliseconds)
+void Sound_SetElapsedMs(Sound* snd, s32 milliseconds)
 {
 	ASSERT_DEBUG(snd!=nullptr);
 	switch (snd->type)
@@ -259,6 +270,26 @@ void Audio_SetSoundElapsedMs(Sound* snd, s32 milliseconds)
 		return Mp3Player_SetSoundElapsedMs(snd, milliseconds);
 		break;
 	}
+}
+
+void Sound_SetVolume(Sound* snd, float normalizedVolume)
+{
+	ASSERT_DEBUG(snd!=nullptr);
+
+	normalizedVolume = Clamp(normalizedVolume, 0.0f, 1.0f);
+	switch (snd->type)
+	{
+	case SoundWav:
+		return WavPlayer_SetSoundVolume(snd, normalizedVolume);
+		break;
+	case SoundOgg:
+		return OggPlayer_SetSoundVolume(snd, normalizedVolume);
+		break;
+	case SoundMp3:
+		return Mp3Player_SetSoundVolume(snd, normalizedVolume);
+		break;
+	}
+	snd->normalizedVolume = normalizedVolume;
 }
 
 void Audio_SetSoundMasterVolume(float normalizedVolume)

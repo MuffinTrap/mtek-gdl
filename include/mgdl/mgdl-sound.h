@@ -39,6 +39,7 @@
 struct Sound
 {
 	s32 voiceNumber; // index to array in each platform, -1 if invalid
+	float normalizedVolume; /**< Volume between 0 and 1 */
 	SoundFileType type;
 	bool isLooping;
 };
@@ -58,32 +59,27 @@ Sound* Sound_Create(void);
 void Sound_InitEmpty(Sound* sound);
 void Sound_Init(Sound* snd, s32 voiceNumber, SoundFileType filetype);
 
-Sound* Sound_Load(const char* filename);
-
-//! Deletes the sound data stored in the object
-/*!
- *	\details Deallocates the memory buffer containing the loaded sound data.
- */
-
-void Sound_DeleteData(Sound* sound);
-
-//! Plays a sound with extended paramters.
-/*!
- *  \details Plays a sound with pitch control and its own volume level.
- *
- *	\param[in]	pitch	Pitch of sound (1.0 is normal pitch).
- *	\param[in]	volume	Volume of sound (100 is full volume).
- */
-void Sound_PlayEx(Sound* sound, float pitchOffset, float volumePercent) ;
-
-//! Pauses the playback of the sound
-/*!
- *	\details This function pauses the sound if it is playing
- */
-void Sound_SetPaused(Sound* sound, bool pause) ;
-void Sound_SetLooping(Sound* sound, bool looping) ;
-bool Sound_GetLooping(Sound* sound );
 void Sound_ToString(Sound* sound);
+
+/**
+ * @brief Structure to have multiple sounds collected together
+ */
+struct SoundBank
+{
+	u8 soundAmount;
+	u8 currentIndex;
+	mgdlSoundBankPlayMode playmode;
+	Sound** sounds;
+};
+typedef struct SoundBank SoundBank;
+
+SoundBank* SoundBank_Create(u8 soundAmount);
+SoundBank* SoundBank_Destroy(SoundBank* bank);
+void SoundBank_SetSound(SoundBank* bank, u8 index, Sound* sound);
+void SoundBank_SetMode(SoundBank* bank, mgdlSoundBankPlayMode mode);
+void SoundBank_PlayNext(SoundBank* bank);
+void SoundBank_Stop(SoundBank* bank);
+bool SoundBank_IsPlaying(SoundBank* bank);
 
 
 #ifdef __cplusplus

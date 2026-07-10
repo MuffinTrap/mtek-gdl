@@ -162,6 +162,11 @@ void WavPlayer_StopSound(Sound* snd)
 	Audio_StopStaticBuffer(snd);
 }
 
+void WavPlayer_SetSoundVolume(Sound* snd, float normalizedVolume)
+{
+	Audio_SetStaticBufferNormalizedVolume(snd, normalizedVolume);
+}
+
 sizetype WavPlayer_GetSoundSizeBytes(Sound* snd) 
 {
 	return Audio_GetStaticBufferSize(snd);

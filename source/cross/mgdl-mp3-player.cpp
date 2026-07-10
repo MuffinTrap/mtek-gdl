@@ -183,6 +183,11 @@ void Mp3Player_SetSoundElapsedMs(Sound* snd, u32 milliseconds)
 	drmp3_seek_to_pcm_frame(m->mp3, targetFrame);
 }
 
+void Mp3Player_SetSoundVolume(Sound* snd, float normalizedVolume)
+{
+	Audio_Platform_SetStreamVolume(snd, normalizedVolume);
+}
+
 mgdlAudioStateEnum Mp3Player_GetSoundStatus(Sound* snd)
 {
 	return musics[snd->voiceNumber].state;

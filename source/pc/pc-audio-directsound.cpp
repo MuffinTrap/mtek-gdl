@@ -69,6 +69,8 @@ static void PrintDirectSoundError(HRESULT error)
 
 static s32 activeStreamingSound = -1;
 
+static bool s_audioPaused = false;
+
 static DWORD ringBufferWritePoint;
 
 void Audio_Platform_SetCallback(AudioCallbackFunction callbackFunction)
@@ -343,6 +345,7 @@ void Audio_Platform_StartStream(Sound* snd, s32 sampleRate, SoundSampleFormat fo
 	activeStreamingSound = snd->voiceNumber;
 	WriteToStream(streamingBufferSize / 2); // Write half the buffer in advance
 	streamingBuffer->Play(0,0,DSBPLAY_LOOPING);
+	Audio_Platform_SetStreamVolume(snd, snd->normalizedVolume);
 }
 
 
@@ -542,12 +545,47 @@ void Audio_Platform_Deinit(void)
 
 void Audio_SetPaused(bool paused)
 {
-	// TODO
+	DWORD statusFlagsOut;
+	if (activeStreamingSound >= 0)
+	{
+		streamingBuffer->GetStatus(&statusFlagsOut);
+		if (paused && Flag_IsSetAny(statusFlagsOut,DSBSTATUS_LOOPING))
+		{
+			streamingBuffer->Stop();
+		}
+		else if (paused == false)
+		{
+			streamingBuffer->Play(0,0,DSBPLAY_LOOPING);
+		}
+	}
+
+	for (int i = 0; i < MGDL_AUDIO_MAX_SOUNDS; i++)
+	{
+		if (soundDatas[i].buffer != nullptr)
+		{
+			if (paused)
+			{
+				soundDatas[i].buffer->GetStatus(&statusFlagsOut);
+				if (Flag_IsSetAny(statusFlagsOut,DSBSTATUS_PLAYING))
+				{
+					soundDatas[i].buffer->Stop();
+				}
+			}
+			else
+			{
+				// NOTE resume only those buffers that have had any playback
+				if (Audio_GetStaticBufferElapsedMs(soundDatas[i]->buffer) > 0)
+				{
+					soundDatas[i].buffer->Play(0,0,0);
+				}
+			}
+		}
+	}
+	s_audioPaused = paused;
 }
 bool Audio_IsPaused(void)
 {
-	// TODO
-	return false;
+	return s_audioPaused;
 }
 
 void Audio_Platform_PauseStream(Sound* snd)
@@ -575,6 +613,23 @@ void Audio_Platform_StopStream(Sound* snd)
 	}
 }
 
+static void s_SetBufferVolume(IDirectSoundBuffer* buffer), float normalizedVolume)
+{
+		// In DirectAudio max is 0 : DSBVOLUME_MAX
+		// and min is -10 000 : DSBVOLUME_MIN
+		float decreaseFromNormal = 1.0f - normalizedVolume;
+		buffer->SetVolume(LONG(DSBVOLUME_MAX + DSBVOLUME_MIN * decreaseFromNormal));
+
+}
+
+void Audio_Platform_SetStreamVolume(Sound* snd, float normalizedVolume)
+{
+	if (snd->voiceNumber == activeStreamingSound)
+	{
+		s_SetBufferVolume(streamingBuffer, normalizedVolume);
+	}
+}
+
 mgdlAudioStateEnum Audio_GetStaticBufferStatus(Sound* snd)
 {
 	if (snd != nullptr && snd->voiceNumber >= 0 && snd->voiceNumber < MGDL_AUDIO_MAX_SOUNDS)
@@ -593,9 +648,12 @@ mgdlAudioStateEnum Audio_GetStaticBufferStatus(Sound* snd)
 	return Audio_StateInvalid;
 }
 
-mgdlAudioStateEnum Audio_SetVoiceVolume(s32 voiceNumber, float normalizedVolume)
+mgdlAudioStateEnum Audio_SetStaticBufferNormalizedVolume(Sound* snd, float normalizedVolume)
 {
-	return Audio_StateInvalid;
+	if (snd != nullptr && snd->voiceNumber > 0 && snd->voiceNumber < MGDL_AUDIO_MAX_SOUNDS)
+	{
+		s_SetBufferVolume(soundDatas[snd->voiceNumber].buffer, normalizedVolume);
+	}
 }
 
 void Audio_SetStaticBufferElapsedMs(Sound* snd, u32 milliseconds)

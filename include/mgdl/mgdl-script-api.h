@@ -131,6 +131,11 @@ void mgdl_DrawSpriteEx(TextureHandle handle, u16 spriteIndex, float x, float y, 
 void mgdl_DrawScene(SceneHandle handle, float x, float y, float z, float scale, color32 color);
 void mgdl_DrawModel(ModelHandle handle, float x, float y, float z, float scale, color32 color);
 void mgdl_DrawModelRotated(ModelHandle handle, const float x, float y, float z, float xdeg, float ydeg, float zdeg, float scale, color32 color);
+int mgdl_GetTextureWidth(TextureHandle handle);
+int mgdl_GetTextureHeight(TextureHandle handle);
+int mgdl_GetSpriteWidth(TextureHandle handle);
+int mgdl_GetSpriteHeight(TextureHandle handle);
+float mgdl_GetSpriteAspect(TextureHandle handle);
 
 
 // SOUNDS
@@ -138,6 +143,11 @@ void mgdl_DrawModelRotated(ModelHandle handle, const float x, float y, float z, 
 void mgdl_PlaySound(SoundHandle handle);
 void mgdl_PauseSound(SoundHandle handle);
 void mgdl_StopSound(SoundHandle handle);
+
+mgdlAudioStateEnum mgdl_GetSoundStatus(SoundHandle handle);
+int mgdl_GetSoundElapsedMs(SoundHandle handle);
+void mgdl_SetSoundLooping(SoundHandle handle, bool looping);
+bool mgdl_GetSoundLooping(SoundHandle handle);
 
 // PALETTES
 // ---------------------------------------
@@ -152,38 +162,6 @@ color32 mgdl_GetPaletteColor(PaletteHandle palette, u8 colorIndex);
 bool mgdl_IsButtonDown(int controller, WiiButtons button);
 bool mgdl_IsButtonPressed(int controller, WiiButtons button);
 
-// ABSTRACT
-// //////////////////////////////////
-enum mgdlParameter
-{
-	MGDL_SOUND_LOOPING,
-	MGDL_SOUND_PAUSED,
-	MGDL_SOUND_ELAPSED_MS,
-	MGDL_SOUND_STATUS_ENUM,
-
-	MGDL_TEXTURE_WIDTH,
-	MGDL_TEXTURE_HEIGHT,
-	MGDL_TEXTURE_ASPECT,
-	MGDL_SPRITE_WIDTH,
-	MGDL_SPRITE_HEIGHT,
-	MGDL_SPRITE_ASPECT,
-
-	MGDL_FONT_WIDTH= MGDL_SPRITE_WIDTH,
-	MGDL_FONT_HEIGHT = MGDL_SPRITE_HEIGHT,
-	MGDL_FONT_ASPECT = MGDL_SPRITE_ASPECT
-};
-bool mgdl_GetBool(Handle handle, mgdlParameter parameter);
-void mgdl_SetBool(Handle handle, mgdlParameter parameter, bool value);
-
-float mgdl_GetFloat(Handle handle, mgdlParameter parameter);
-void mgdl_SetFloat(Handle handle, mgdlParameter parameter, float value);
-
-int mgdl_GetInt(Handle handle, mgdlParameter parameter);
-void mgdl_SetInt(Handle handle, mgdlParameter parameter, int value);
-
 #ifdef __cplusplus
 }
 #endif
-
-bool mgdl_GetVector2(Handle handle, mgdlParameter parameter, Vector2& vOut);
-void mgdl_SetVector2(Handle handle, mgdlParameter parameter, const Vector2& value);

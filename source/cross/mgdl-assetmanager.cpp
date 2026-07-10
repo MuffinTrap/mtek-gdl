@@ -265,7 +265,7 @@ SoundHandle AssetManager_LoadSound(const char* filename, SoundFileType fileType)
 			return handle;
 		}
 	}
-	Sound* snd = Audio_LoadSound(filename, fileType);
+	Sound* snd = Sound_Load(filename, fileType);
 	ASSERT_DEBUG(snd != nullptr);
 	if (snd != nullptr)
 	{

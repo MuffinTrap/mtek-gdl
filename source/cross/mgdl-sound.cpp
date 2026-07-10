@@ -1,9 +1,12 @@
 #include <mgdl/mgdl-sound.h>
 #include <mgdl/mgdl-logger.h>
+#include <mgdl/mgdl-memory.h>
+#include <mgdl/mgdl-audio.h>
+#include <mgdl/mgdl-util.h>
 
 Sound* Sound_Create(void)
 {
-    Sound* sound = (Sound*)malloc(sizeof(Sound));
+    Sound* sound = (Sound*)mgdl_AllocateGraphicsMemory(sizeof(Sound));
     Sound_InitEmpty(sound);
     return sound;
 }
@@ -51,4 +54,90 @@ void Sound_ToString(Sound* sound)
     {
         Log_InfoF("Sound: voice: %d, type %s\n", sound->voiceNumber, soundType(sound->type));
     }
+}
+
+SoundBank* SoundBank_Create(u8 soundAmount)
+{
+    SoundBank* bank = (SoundBank*)mgdl_AllocateGraphicsMemory(sizeof(SoundBank));
+    bank->sounds = (Sound**)mgdl_AllocateGraphicsMemory(sizeof(Sound*) * soundAmount);
+    for(int i = 0; i < soundAmount; i++)
+    {
+        bank->sounds[i] = nullptr;
+    }
+    bank->playmode = SoundBank_Random;
+    bank->currentIndex = 0;
+    return bank;
+}
+
+SoundBank* SoundBank_Destroy(SoundBank* bank)
+{
+   mgdl_FreeGraphicsMemory(bank->sounds);
+   mgdl_FreeGraphicsMemory(bank);
+   return nullptr;
+}
+void SoundBank_SetSound(SoundBank* bank, u8 index, Sound* sound)
+{
+    if (index < bank->soundAmount)
+    {
+        bank->sounds[index] = sound;
+    }
+}
+void SoundBank_SetMode(SoundBank* bank, mgdlSoundBankPlayMode mode)
+{
+    bank->playmode = mode;
+
+}
+void SoundBank_PlayNext(SoundBank* bank)
+{
+    u8 nextIndex = 0;
+    switch(bank->playmode)
+    {
+        case SoundBank_Random:
+        {
+            nextIndex = Random_Int(0, bank->soundAmount-1);
+        }
+        break;
+        case SoundBank_RunThrough:
+        {
+            nextIndex = bank->currentIndex + 1;
+            nextIndex = nextIndex % bank->soundAmount;
+        }
+        break;
+        case SoundBank_Shuffle:
+        {
+            if (bank->soundAmount > 2)
+            {
+                u8 test = bank->currentIndex;
+                while(test == bank->currentIndex)
+                {
+                    test = Random_Int(0, bank->soundAmount-1);
+                }
+                nextIndex = test;
+            }
+            else
+            {
+                nextIndex = bank->currentIndex + 1;
+                nextIndex = nextIndex % bank->soundAmount;
+            }
+        }
+        break;
+    }
+
+    if (bank->sounds[nextIndex] != nullptr)
+    {
+        Sound_Play(bank->sounds[nextIndex]);
+        bank->currentIndex = nextIndex;
+    }
+}
+
+void SoundBank_Stop(SoundBank* bank)
+{
+    Sound* playing = bank->sounds[bank->currentIndex];
+    Sound_Stop(playing);
+}
+
+bool SoundBank_IsPlaying(SoundBank* bank)
+{
+    Sound* playing = bank->sounds[bank->currentIndex];
+    return Sound_GetStatus(playing) == Audio_StatePlaying;
 }

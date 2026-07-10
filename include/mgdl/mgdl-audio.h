@@ -15,17 +15,6 @@ extern "C"
 {
 #endif
 
-	/**
-	* @brief Enumeration for state of any Sound.
-	*/
-	enum mgdlAudioStateEnum
-	{
-		Audio_StatePlaying,
-		Audio_StatePaused,
-		Audio_StateStopped,
-		Audio_StateInvalid
-	};
-	typedef enum mgdlAudioStateEnum mgdlAudioStateEnum;
 
 	// TODO What if the audio is not s16?
 	/**
@@ -88,48 +77,51 @@ extern "C"
 	* @brief Plays a given sound once
 	* @param snd The sound to play
 	*/
-	void Audio_PlaySound(Sound* s);
+	void Sound_Play(Sound* s);
 	/**
 	@brief Stops the given sound
 	@param Sound The sound to stop
 	*/
-	void Audio_StopSound(Sound* snd);
+	void Sound_Stop(Sound* snd);
 	/**
 	@brief Pauses the given sound.
 	@param Sound The sound 
 	*/
-	void Audio_PauseSound(Sound* snd);
+	void Sound_Pause(Sound* snd);
 	/**
 	@brief Resumes playback of paused sound
 	@param Sound The sound
 	*/
-	void Audio_ResumeSound(Sound* snd);
+	void Sound_Resume(Sound* snd);
 	/**
 	@brief Gets the status of the given sound
 	@param Sound The sound 
 	@return Status of the sound, or Invalid if the sound number is not in use
 	*/
-	mgdlAudioStateEnum Audio_GetSoundStatus(Sound* snd);
+	mgdlAudioStateEnum Sound_GetStatus(Sound* snd);
+
+	bool Sound_GetLooping(Sound* snd);
+	void Sound_SetLooping(Sound* snd, bool looping);
 
 	/**
 	@brief Sets volume for given sound
 	@param Sound The sound 
 	@param normalizedVolume New volume between 0.0f and 1.0f
 	*/
-	mgdlAudioStateEnum Audio_SetVoiceVolume(Sound* snd, float normalizedVolume);
+	void Sound_SetVolume(Sound* snd, float normalizedVolume);
 	/**
 	@brief Returns how many milliseconds the given sound has been playing
 	@param Sound The sound 
 	@return Elapsed playback duration in milliseconds
 	*/
-	u32 Audio_GetSoundElapsedMs(Sound* snd);
+	u32 Sound_GetElapsedMs(Sound* snd);
 
 	/**
 	@brief Sets the playback position of the sound to given milliseconds from beginning
 	@param Sound The sound to adjust
 	@param milliseconds The new playback position
 	*/
-	void Audio_SetSoundElapsedMs(Sound* snd, s32 milliseconds);
+	void Sound_SetElapsedMs(Sound* snd, s32 milliseconds);
 
 	/**
 	 * @brief Set global maximum volume of sounds
@@ -162,7 +154,7 @@ void Audio_SetMasterAudioVolume(float normalizedVolume);
  *
  *	@returns Pointer if the sound file was successfully loaded, otherwise a null pointer
  */
-Sound* Audio_LoadSound(const char* filename, SoundFileType filetype);
+Sound* Sound_Load(const char* filename, SoundFileType filetype);
 
 // *****************************************
 // NOTE Static buffers used by short sounds
@@ -183,6 +175,7 @@ void* Audio_OpenStaticBuffer(Sound* inout_snd, sizetype byteCount, u16 samplerat
 * @return Size of the buffer in bytes. If buffer is not found returns 0.
 */
 sizetype Audio_GetStaticBufferSize(Sound* snd);
+
 mgdlAudioStateEnum Audio_GetStaticBufferStatus(Sound* snd);
 
 /**
@@ -225,6 +218,13 @@ u32 Audio_GetStaticBufferElapsedMs(Sound* snd);
 void Audio_SetStaticBufferElapsedMs(Sound* snd, u32 milliseconds);
 
 /**
+* @brief Sets the normalized volume of static buffer
+* @param snd The sound associated with the buffer
+* @param volume New volume between 0 and 1
+*/
+void Audio_SetStaticBufferNormalizedVolume(Sound* snd, float volume);
+
+/**
 * @brief Returns size of the sound's data in bytes.
 * @note For streaming format this is the size needed by the player, not the full size of the song.
 * @param snd The sound
@@ -249,6 +249,7 @@ void Audio_Platform_StartStream(Sound* s, s32 sampleRate, SoundSampleFormat form
 void Audio_Platform_StopStream(Sound* s);
 void Audio_Platform_PauseStream(Sound* s);
 void Audio_Platform_ResumeStream(Sound* s);
+void Audio_Platform_SetStreamVolume(Sound* s, float normalizedVolume);
 
 #ifdef __cplusplus
 }

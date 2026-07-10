@@ -184,6 +184,11 @@ void Audio_SetStaticBufferElapsedMs(Sound* snd, u32 milliseconds)
 	alSourcef(soundDatas[snd->voiceNumber].source, AL_SEC_OFFSET, (float)milliseconds/1000.0f);
 }
 
+void Audio_SetStaticBufferNormalizedVolume(Sound* snd, float volume)
+{
+    alSourcef(soundDatas[snd->voiceNumber].source, AL_GAIN, volume);
+}
+
 void Audio_PauseStaticBuffer(Sound* sound, bool pause) {
 	if (pause)
     {
@@ -255,6 +260,7 @@ void Audio_Platform_StartStream(Sound* snd, s32 sampleRate, SoundSampleFormat fo
         FillAndQueue(&streamingBuffers[i]);
     }
 
+    Audio_Platform_SetStreamVolume(snd, snd->normalizedVolume);
     alSourcePlay(streamingSource);
 }
 void Audio_Platform_PauseStream(Sound* snd)
@@ -269,6 +275,14 @@ void Audio_Platform_ResumeStream(Sound* snd)
     if (snd->voiceNumber == streamingVoiceNumber)
     {
         alSourcePlay(streamingSource);
+    }
+}
+
+void Audio_Platform_SetStreamVolume(Sound* snd, float normalizedVolume)
+{
+    if (snd->voiceNumber == streamingVoiceNumber)
+    {
+        alSourcef(streamingSource, AL_GAIN, normalizedVolume);
     }
 }
 

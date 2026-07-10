@@ -134,6 +134,13 @@ static void RegisterDrawing(asIScriptEngine* as_engine)
 					  float, float, float,
 					float, color32), void), asCALL_CDECL);
 
+	// TEXTURE AND SPRITE
+
+	as_engine->RegisterGlobalFunction("int mgdl_GetTextureWidth(TextureHandle handle)", asFUNCTION(mgdl_GetTextureWidth), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("int mgdl_GetTextureHeight(TextureHandle handle)", asFUNCTION(mgdl_GetTextureHeight), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("int mgdl_GetSpriteWidth(TextureHandle handle)", asFUNCTION(mgdl_GetSpriteWidth), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("int mgdl_GetSpriteHeight(TextureHandle handle)", asFUNCTION(mgdl_GetSpriteHeight), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("float mgdl_GetSpriteAspect(TextureHandle handle)", asFUNCTION(mgdl_GetSpriteAspect), asCALL_CDECL);
 }
 
 static void RegisterController(asIScriptEngine* as_engine)
@@ -161,9 +168,19 @@ static void RegisterController(asIScriptEngine* as_engine)
 
 static void RegisterSound(asIScriptEngine* as_engine)
 {
+	as_engine->RegisterEnum("mgdlAudioStateEnum");
+	as_engine->RegisterEnumValue("mgdlAudioStateEnum", "Audio_StatePlaying", 	(int)Audio_StatePlaying);
+	as_engine->RegisterEnumValue("mgdlAudioStateEnum", "Audio_StatePaused",	(int)Audio_StatePaused);
+	as_engine->RegisterEnumValue("mgdlAudioStateEnum", "Audio_StateStopped",	(int)Audio_StateStopped);
+	as_engine->RegisterEnumValue("mgdlAudioStateEnum", "Audio_StateInvalid",	(int)Audio_StateInvalid);
+
 	as_engine->RegisterGlobalFunction("void mgdl_PlaySound(SoundHandle soundHandle)", asFUNCTION(mgdl_PlaySound), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("void mgdl_PauseSound(SoundHandle soundHandle)", asFUNCTION(mgdl_PauseSound), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("void mgdl_StopSound(SoundHandle soundHandle)", asFUNCTION(mgdl_StopSound), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("mgdlAudioStateEnum mgdl_GetSoundStatus(SoundHandle handle)", asFUNCTION(mgdl_GetSoundStatus), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("int mgdl_GetSoundElapsedMs(SoundHandle handle)", asFUNCTION(mgdl_GetSoundElapsedMs), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_SetSoundLooping(SoundHandle handle, bool looping)", asFUNCTION(mgdl_SetSoundLooping), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("bool mgdl_GetSoundLooping(SoundHandle handle)", asFUNCTION(mgdl_GetSoundLooping), asCALL_CDECL);
 
 }
 

@@ -25,6 +25,7 @@ void Mp3Player_PlaySound(Sound* snd);
 void Mp3Player_PauseSound(Sound* snd);
 void Mp3Player_ResumeSound(Sound* snd);
 void Mp3Player_StopSound(Sound* snd);
+void Mp3Player_SetSoundVolume(Sound* snd, float normalizedVolume);
 
 
 sizetype Mp3Player_GetSoundSizeBytes(Sound* snd);

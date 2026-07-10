@@ -105,7 +105,7 @@ void Example::Init()
 
     if (sampleMusic)
     {
-        musicLooping = mgdl_GetBool(sampleMusic, MGDL_SOUND_LOOPING);
+        musicLooping = mgdl_GetSoundLooping(sampleMusic);
     }
     sceneRotation = Vector3New(0.0f, 1.0f,0.0f);
     //quad->DebugPrint();
@@ -221,14 +221,14 @@ void Example::DrawSprites()
 {
     mgdl_glSetAlphaTest(true);
     mgdl_glSetTransparency(true);
-    int size = mgdl_GetInt(fruitSprites, MGDL_SPRITE_WIDTH) * 2;
+    int size = mgdl_GetSpriteWidth(fruitSprites) * 2;
     for (int i = 0; i < 16; i++)
     {
         mgdl_DrawSpriteEx(fruitSprites, i, size * (i%4), size + (i/4) * size, 2.0f, Debug_White);
     }
 
-    const short h = mgdl_GetInt(mel_sprites, MGDL_SPRITE_WIDTH);
-    const short w = mgdl_GetInt(mel_sprites, MGDL_SPRITE_HEIGHT);
+    const short h = mgdl_GetSpriteWidth(mel_sprites);
+    const short w = mgdl_GetSpriteHeight(mel_sprites);
     float scale = 2.0f;
     short spriteW = w * scale;
     short spriteH = h * scale;
@@ -251,7 +251,7 @@ void Example::DrawIcosa()
 
 void Example::DrawTexture()
 {
-    Vector2 pos = mgdl_CalculateAlignedTopLeft(mgdl_GetScreenWidth()/2, mgdl_GetScreenHeight()/2, mgdl_GetInt(barb, MGDL_TEXTURE_WIDTH), mgdl_GetInt(barb, MGDL_TEXTURE_HEIGHT), Centered, Centered);
+    Vector2 pos = mgdl_CalculateAlignedTopLeft(mgdl_GetScreenWidth()/2, mgdl_GetScreenHeight()/2, mgdl_GetTextureWidth(barb), mgdl_GetTextureWidth(barb), Centered, Centered);
     mgdl_DrawTexture(barb, pos.x, pos.y);
 }
 
@@ -490,7 +490,7 @@ void Example::DrawAudio()
         {
             mgdl_PlaySound(testmp3Music);
         }
-        bool paused = mgdl_GetBool(testmp3Music, MGDL_SOUND_PAUSED);
+        bool paused = mgdl_GetSoundStatus(testmp3Music) == Audio_StatePaused;
         if (!paused)
         {
             if (Menu_Button(audioMenu, "Pause Mp3"))
@@ -502,8 +502,8 @@ void Example::DrawAudio()
         {
             mgdl_StopSound(testmp3Music);
         }
-            Menu_TextF(audioMenu, "Music elapsed: %.2f", mgdl_GetInt(testmp3Music, MGDL_SOUND_ELAPSED_MS)/1000.0f);
-            mgdlAudioStateEnum musicStatus = (mgdlAudioStateEnum)mgdl_GetInt(testmp3Music, MGDL_SOUND_STATUS_ENUM);
+            Menu_TextF(audioMenu, "Music elapsed: %.2f", mgdl_GetSoundElapsedMs(testmp3Music)/1000.0f);
+            mgdlAudioStateEnum musicStatus = mgdl_GetSoundStatus(testmp3Music);
             DrawSoundStatus(musicStatus);
     }
     if (Handle_IsValid(sampleMusic))
@@ -513,7 +513,7 @@ void Example::DrawAudio()
         {
             mgdl_PlaySound(sampleMusic);
         }
-        bool paused = mgdl_GetBool(sampleMusic, MGDL_SOUND_PAUSED);
+        bool paused = mgdl_GetSoundStatus(sampleMusic) == Audio_StatePaused;
         if (!paused)
         {
             if (Menu_Button(audioMenu, "Pause Ogg"))
@@ -525,8 +525,8 @@ void Example::DrawAudio()
         {
             mgdl_StopSound(sampleMusic);
         }
-            Menu_TextF(audioMenu, "Music elapsed: %.2f", mgdl_GetInt(sampleMusic, MGDL_SOUND_ELAPSED_MS)/1000.0f);
-            mgdlAudioStateEnum musicStatus = (mgdlAudioStateEnum)mgdl_GetInt(sampleMusic, MGDL_SOUND_STATUS_ENUM);
+            Menu_TextF(audioMenu, "Music elapsed: %.2f", mgdl_GetSoundElapsedMs(sampleMusic)/1000.0f);
+            mgdlAudioStateEnum musicStatus = mgdl_GetSoundStatus(sampleMusic);
             DrawSoundStatus(musicStatus);
     }
 
@@ -535,13 +535,11 @@ void Example::DrawAudio()
     {
         mgdl_PlaySound(blip);
     }
-    u32 blipElapsed = mgdl_GetInt(blip, MGDL_SOUND_ELAPSED_MS);
+    u32 blipElapsed = mgdl_GetSoundElapsedMs(blip);
     Menu_TextF(audioMenu, "Sound elapsed: %.2f", blipElapsed/1000.0f);
-    mgdlAudioStateEnum soundStatus = (mgdlAudioStateEnum)mgdl_GetInt(blip, MGDL_SOUND_STATUS_ENUM);
+    mgdlAudioStateEnum soundStatus = mgdl_GetSoundStatus(blip);
     DrawSoundStatus(soundStatus);
 }
-#if 0
-#endif
 
 void Example::DrawCameraControls()
 {

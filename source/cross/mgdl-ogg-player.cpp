@@ -250,3 +250,8 @@ mgdlAudioStateEnum OggPlayer_GetSoundStatus(Sound* snd)
 	return musics[snd->voiceNumber].state;
 }
 
+void OggPlayer_SetSoundVolume(Sound* snd, float normalizedVolume)
+{
+	Audio_Platform_SetStreamVolume(snd, normalizedVolume);
+}
+

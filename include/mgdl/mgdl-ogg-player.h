@@ -30,6 +30,7 @@ void OggPlayer_PlaySound(Sound* snd);
 void OggPlayer_PauseSound(Sound* snd);
 void OggPlayer_ResumeSound(Sound* snd);
 void OggPlayer_StopSound(Sound* snd);
+void OggPlayer_SetSoundVolume(Sound* snd, float normalizedVolume);
 sizetype OggPlayer_GetSoundSizeBytes(Sound* snd);
 u32 OggPlayer_GetSoundElapsedMs(Sound* snd);
 void OggPlayer_SetSoundElapsedMs(Sound* snd, u32 milliseconds);

@@ -15,6 +15,7 @@ extern "C" {
 	void WavPlayer_StopSound(Sound* snd);
 	void WavPlayer_PauseSound(Sound* snd);
 	void WavPlayer_ResumeSound(Sound* snd);
+	void WavPlayer_SetSoundVolume(Sound* snd, float normalizedVolume);
 
 	sizetype WavPlayer_GetSoundSizeBytes(Sound* snd);
 	u32 WavPlayer_GetSoundElapsedMs(Sound* snd);
