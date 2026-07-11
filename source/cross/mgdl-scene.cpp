@@ -169,7 +169,7 @@ static void s_DrawUFBXNode(Scene* scene, ufbx_node* node, bool animate, float el
 
 	for(size_t i = 0; i < node->children.count; i++)
 	{
-		s_DrawUFBXNode(scene, node->children[i]);
+		s_DrawUFBXNode(scene, node->children[i], animate, elapsedSeconds);
 	}
 	glPopMatrix();
 }

@@ -41,7 +41,6 @@ struct Sound
 	s32 voiceNumber; // index to array in each platform, -1 if invalid
 	float normalizedVolume; /**< Volume between 0 and 1 */
 	SoundFileType type;
-	bool isLooping;
 };
 typedef struct Sound Sound;
 

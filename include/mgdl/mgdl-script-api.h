@@ -146,8 +146,6 @@ void mgdl_StopSound(SoundHandle handle);
 
 mgdlAudioStateEnum mgdl_GetSoundStatus(SoundHandle handle);
 int mgdl_GetSoundElapsedMs(SoundHandle handle);
-void mgdl_SetSoundLooping(SoundHandle handle, bool looping);
-bool mgdl_GetSoundLooping(SoundHandle handle);
 
 // PALETTES
 // ---------------------------------------

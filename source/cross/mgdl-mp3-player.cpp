@@ -140,23 +140,23 @@ void Mp3Player_PlaySound(Sound* snd)
 		Log_ErrorF("Cannot play Mp3 files with more than 2 channels");
 	}
 	Audio_Platform_SetCallback(Mp3_Callback);
-	Audio_Platform_StartStream(snd, musics[snd->voiceNumber].mp3->sampleRate, format);
+	Audio_StartStream(snd, musics[snd->voiceNumber].mp3->sampleRate, format);
 	musics[snd->voiceNumber].state = Audio_StatePlaying;
 }
 
 void Mp3Player_PauseSound(Sound* snd)
 {
-	Audio_Platform_PauseStream(snd);
+	Audio_PauseStream(snd);
 	musics[snd->voiceNumber].state = Audio_StatePaused;
 }
 void Mp3Player_ResumeSound(Sound* snd)
 {
-	Audio_Platform_ResumeStream(snd);
+	Audio_ResumeStream(snd);
 	musics[snd->voiceNumber].state = Audio_StatePlaying;
 }
 void Mp3Player_StopSound(Sound* snd)
 {
-	Audio_Platform_StopStream(snd);
+	Audio_StopStream(snd);
 	musics[snd->voiceNumber].state = Audio_StateStopped;
 }
 
@@ -185,7 +185,7 @@ void Mp3Player_SetSoundElapsedMs(Sound* snd, u32 milliseconds)
 
 void Mp3Player_SetSoundVolume(Sound* snd, float normalizedVolume)
 {
-	Audio_Platform_SetStreamVolume(snd, normalizedVolume);
+	Audio_SetStreamVolume(snd, normalizedVolume);
 }
 
 mgdlAudioStateEnum Mp3Player_GetSoundStatus(Sound* snd)

@@ -150,7 +150,7 @@ void WiiController_SetButtonUp (WiiController* controller, u32 buttonEnum )
 	controller->m_releasedButtons = Flag_SetAll(controller->m_releasedButtons, buttonEnum);
 }
 
-const char* WiiController_GetButtonSymbol(WiiController* controller, int buttonEnum)
+const char* WiiController_GetButtonSymbol(WiiController* controller, u32 buttonEnum)
 {
 	static const char* names[] ={ "?", "2", "1", "B", "A", "-", "H", "L", "R", "D", "U", "+", "Z", "C", "X", "Y", "LZ", "RZ", "L2", "R2" };
 	if(controller->m_type == Controller_Wiimote || controller->m_type == Controller_Nunchuk)

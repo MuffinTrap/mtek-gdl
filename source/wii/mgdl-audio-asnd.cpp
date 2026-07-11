@@ -183,7 +183,7 @@ void Audio_PlayStaticBuffer(Sound* snd)
 
 	// TODO master volume etc.
 	s32 pitch = 1;
-	s32 volume = 255;
+	s32 volume = s32(255.0f * snd->normalizedVolume);
 
 	ASND_SetVoice(
 		sound->voiceNumber,
@@ -226,6 +226,11 @@ u32 Audio_GetStaticBufferElapsedMs(Sound* snd)
 	}
 	return 0;
 }
+void Audio_SetStaticBufferNormalizedVolume(Sound* snd, float normalizedVolume)
+{
+	ASND_ChangeVolumeVoice(snd->voiceNumber, s32(255.0f * normalizedVolume));
+
+}
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 void Audio_SetStaticBufferElapsedMs(Sound* snd, u32 milliseconds)
@@ -257,7 +262,7 @@ void ASND_Callback(s32 asndVoice)
 	ASND_AddVoice(streamingSound.voiceNumber, streamingBuffers[activeStreamingBuffer], bytesWritten);
 }
 
-void Audio_Platform_StartStream(Sound* s, s32 sampleRate, SoundSampleFormat format)
+void Audio_StartStream(Sound* s, s32 sampleRate, SoundSampleFormat format)
 {
 	// Note Voice Number 0 is reserved for streaming
 	streamingSound.voiceNumber = 0;
@@ -286,7 +291,7 @@ void Audio_Platform_StartStream(Sound* s, s32 sampleRate, SoundSampleFormat form
 
 	// TODO master volume etc.
 	s32 pitch = 1;
-	s32 volume = 255;
+	s32 volume = s32(255.0f * s->normalizedVolume);
 
 	// Send first buffer
 	ASND_SetVoice(
@@ -302,7 +307,7 @@ void Audio_Platform_StartStream(Sound* s, s32 sampleRate, SoundSampleFormat form
 
 	ASND_Pause(0);
 }
-void Audio_Platform_StopStream(Sound* s)
+void Audio_StopStream(Sound* s)
 {
 	if (streamingVoice == s->voiceNumber)
 	{
@@ -310,18 +315,27 @@ void Audio_Platform_StopStream(Sound* s)
 	}
 
 }
-void Audio_Platform_PauseStream(Sound* s)
+void Audio_PauseStream(Sound* s)
 {
 	if (streamingVoice == s->voiceNumber)
 	{
 		ASND_PauseVoice(streamingSound.voiceNumber, 1);
 	}
 }
-void Audio_Platform_ResumeStream(Sound* s)
+void Audio_ResumeStream(Sound* s)
 {
 	if (streamingVoice == s->voiceNumber)
 	{
 		ASND_PauseVoice(streamingSound.voiceNumber, 0);
 	}
+}
+
+void Audio_SetStreamVolume(Sound* s, float normalizedVolume)
+{
+	if (streamingVoice == s->voiceNumber)
+	{
+		ASND_ChangeVolumeVoice(streamingSound.voiceNumber, s32(255.0f) * normalizedVolume));
+	}
+
 }
 #endif

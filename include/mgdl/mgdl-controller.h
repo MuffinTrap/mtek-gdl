@@ -51,7 +51,7 @@ enum WiiButtons : u32
 	ButtonClassicRight =		(0x8000u<<16),
 
 
-	ButtonAny = 	0xFFFFFFFFu
+	ButtonAny = 	0xFFFFFFFu
 };
 typedef enum WiiButtons WiiButtons;
 
@@ -200,7 +200,7 @@ bool WiiController_HasClassicController(WiiController* controller);
 // Private functions
 
 
-const char* WiiController_GetButtonSymbol(WiiController* controller, int buttonEnum);
+const char* WiiController_GetButtonSymbol(WiiController* controller, u32 buttonEnum);
 
 void WiiController_SetButtonDown(WiiController* controller, u32 buttonEnum);
 void WiiController_SetButtonUp(WiiController* controller, u32 buttonEnum);

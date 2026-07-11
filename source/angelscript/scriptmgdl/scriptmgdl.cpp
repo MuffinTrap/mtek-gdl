@@ -179,8 +179,6 @@ static void RegisterSound(asIScriptEngine* as_engine)
 	as_engine->RegisterGlobalFunction("void mgdl_StopSound(SoundHandle soundHandle)", asFUNCTION(mgdl_StopSound), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("mgdlAudioStateEnum mgdl_GetSoundStatus(SoundHandle handle)", asFUNCTION(mgdl_GetSoundStatus), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("int mgdl_GetSoundElapsedMs(SoundHandle handle)", asFUNCTION(mgdl_GetSoundElapsedMs), asCALL_CDECL);
-	as_engine->RegisterGlobalFunction("void mgdl_SetSoundLooping(SoundHandle handle, bool looping)", asFUNCTION(mgdl_SetSoundLooping), asCALL_CDECL);
-	as_engine->RegisterGlobalFunction("bool mgdl_GetSoundLooping(SoundHandle handle)", asFUNCTION(mgdl_GetSoundLooping), asCALL_CDECL);
 
 }
 

@@ -13,7 +13,6 @@ Sound* Sound_Create(void)
 void Sound_InitEmpty(Sound* sound)
 {
     sound->voiceNumber = -1;
-    sound->isLooping = false;
     sound->type = SoundWav;
 }
 void Sound_Init(Sound* snd, s32 voiceNumber, SoundFileType filetype)
@@ -38,7 +37,6 @@ int Sound_FormatToChannels(SoundSampleFormat format)
     }
     return 0;
 }
-bool Sound_GetLooping(Sound* sound) { return sound->isLooping; }
 
 static const char* soundType(SoundFileType ft)
 {
