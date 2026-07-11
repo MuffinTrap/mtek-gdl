@@ -158,10 +158,6 @@ char* mgdl_GetPrintfBuffer(void);
  */
 void RevBytes(void *var, int size);
 
-#ifdef __cplusplus
-}
-#endif
-
 #define MGDL_PRINTF_BUFFER_SIZE 256
 /**
  * @brief Writes the formatted text to a buffer.
@@ -177,14 +173,10 @@ void RevBytes(void *var, int size);
 
 char* mgdl_BufferPrintf(const char* format, ...);
 
-#ifdef GEKKO
-#	define MGDL_COMPILER GCC
-#else
-#	define MGDL_COMPILER clang
+#ifdef __cplusplus
+}
 #endif
 
-#define MGDL_DIAGNOSTIC_PUSH #pragma MGDL_COMPILER diagnostic push
-#define MGDL_IGNORE_UNUSED_PARAMETER #pragma MGDL_COMPILER diagnostic ignored "-Wunused-parameter"
-#define MGDL_DIAGNOSTIC_POP #pragma MGDL_COMPILER diagnostic pop \
-
-#undef MGDL_COMPILER
+// File system
+bool mgdl_DoesFileExist(const char* filename);
+bool mgdl_DoesFileExist(const zstr& filename);

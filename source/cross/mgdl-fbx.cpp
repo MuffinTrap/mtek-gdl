@@ -42,6 +42,11 @@ ufbx_scene* FBX_LoadScene(const char* fbxFile)
 
 Scene* FBX_Load(const char* fbxFile)
 {
+	if (mgdl_DoesFileExist(fbxFile) == false)
+	{
+		Log_ErrorF("No such file: %s\n", fbxFile);
+		return nullptr;
+	}
 	ufbx_scene* ufbx = FBX_LoadScene(fbxFile);
 	if (ufbx == nullptr)
 	{

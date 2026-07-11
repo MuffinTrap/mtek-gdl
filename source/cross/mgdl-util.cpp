@@ -249,3 +249,27 @@ void RevBytes(void *var, int size) {
 #else
 #pragma clang diagnostic pop
 #endif
+
+// File system
+#if defined(MGDL_PLATFORM_WINDOWS)
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
+
+bool mgdl_DoesFileExist(const char* filename)
+{
+#if defined(MGDL_PLATFORM_WINDOWS)
+	DWORD attributes = GetFileAttributesA(filename);
+	return (attributes != INVALID_FILE_ATTRIBUTES && ! (attributes & FILE_ATTRIBUTE_DIRECTORY));
+#else
+	return (access(filename, F_OK) != -1);
+#endif
+
+	return false;
+
+}
+bool mgdl_DoesFileExist(const zstr& filename)
+{
+	return mgdl_DoesFileExist(zstr_cstr(&filename));
+}

@@ -22,6 +22,11 @@
 PNGFile* PNG_ReadFile(const char* filename)
 {
 	Log_InfoF("Loading Png file %s\n", filename);
+	if (mgdl_DoesFileExist(filename) == false)
+	{
+		Log_ErrorF("No such file: %s\n", filename);
+		return nullptr;
+	}
 	int width, height, channels;
 	unsigned char* texelPtr = stbi_load(filename, &width, &height, &channels, 0);
 	if (texelPtr == NULL)

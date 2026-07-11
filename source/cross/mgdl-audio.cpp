@@ -6,6 +6,7 @@
 #include <mgdl/mgdl-mp3-player.h>
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-memory.h>
+#include <mgdl/mgdl-util.h>
 
 
 // TODO these are not used
@@ -55,6 +56,12 @@ void Audio_Deinit()
 
 Sound* Sound_Load(const char* filename, SoundFileType filetype)
 {
+
+	if (mgdl_DoesFileExist(filename) == false)
+	{
+		Log_ErrorF("No such file: %s\n", filename);
+		return nullptr;
+	}
 	// Find first voice that is not in use
 	int loadedIndex = firstFreeVoice;
 	if (firstFreeVoice >= MGDL_AUDIO_MAX_SOUNDS)
