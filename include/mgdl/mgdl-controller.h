@@ -14,7 +14,7 @@
 /**
  * @brief Enum values for all the buttons on the Wii Controller.
  */
-enum WiiButtons
+enum WiiButtons : u32
 {
 	ButtonNone = 	0x0000,
 	Button2 = 		0x0001,
@@ -30,12 +30,39 @@ enum WiiButtons
 	ButtonPlus = 	0x1000,
 
 	// Nunchuck
-	ButtonZ	=		(0x0001 << 16),
-	ButtonC	=		(0x0002 << 16),
+	ButtonZ	=		(0x0001u << 16),
+	ButtonC	=		(0x0002u << 16),
 
-	ButtonAny = 	0xFFFF
+	// Classic controller
+	ButtonClassicUp =		(0x0001u<<16),
+	ButtonClassicLeft =		(0x0002u<<16),
+	ButtonClassicRightShoulder   =		(0x0004u<<16),
+	ButtonClassicX =		(0x0008u<<16),
+	ButtonClassicA =		(0x0010u<<16),
+	ButtonClassicY =		(0x0020u<<16),
+	ButtonClassicB =		(0x0040u<<16),
+	ButtonClassicLeftShoulder =		(0x0080u<<16),
+	ButtonClassicRightTrigger =		(0x0200u<<16),
+	ButtonClassicPlus =		(0x0400u<<16),
+	ButtonClassicHome =		(0x0800u<<16),
+	ButtonClassicMinus =		(0x1000u<<16),
+	ButtonClassicLeftTrigger=(0x2000u<<16),
+	ButtonClassicDown =		(0x4000u<<16),
+	ButtonClassicRight =		(0x8000u<<16),
+
+
+	ButtonAny = 	0xFFFFFFFu
 };
 typedef enum WiiButtons WiiButtons;
+
+enum ControllerType
+{
+	Controller_Wiimote, /**< Wii remote without attachments */
+	Controller_Nunchuk /**< Wii remote with Nunchuk */,
+	Controller_ClassicController, /**< Wii remote with Pro Controller */
+	Controller_Xbox360Pad /**< Wii remote with Nunchuk and Pro Controller */
+};
+typedef enum ControllerType ControllerType;
 
 /**
  * @brief Struct representing the Wii controller.
@@ -50,6 +77,8 @@ struct WiiController
 	u32 m_heldButtons;
 	float m_nunchukJoystickDirectionX;
 	float m_nunchukJoystickDirectionY;
+	float m_rightStickDirectionX;
+	float m_rightStickDirectionY;
 	float m_cursorX;
 	float m_cursorY;
 	float m_roll;
@@ -59,6 +88,9 @@ struct WiiController
 	// Which controller number this is: 0-3
 	u8 m_channel;
 	bool m_isConnected;
+	bool m_rightStickMovesPointer;
+	float m_pointerSpeed; /**< Pixels per second */
+	ControllerType m_type;
 };
 typedef struct WiiController WiiController;
 
@@ -114,11 +146,36 @@ bool WiiController_ButtonHeld(WiiController* controller, u32 buttonEnum);
 Vector2 WiiController_GetCursorPosition(WiiController* controller);
 
 /**
+ * @brief Sets the position of the cursor.
+ * @note Only usable on PC platform with gamepads because it will be overriden on
+ * next update on Wii
+ * @param controller The controller
+ * @param x X position in pixels
+ * @param y Y position in pixels
+ */
+void WiiController_SetCursorPosition(WiiController* controller, float x, float y);
+
+/**
  * @brief Returns the direction of the nunchuck joystick.
  * @note The returned vector2 is not normalized. +Y is towards player or down
  * @return Direction of the nunchuck joystick.
  */
 Vector2 WiiController_GetNunchukJoystickDirection(WiiController* controller);
+
+/**
+ * @brief Returns the direction of the left thumbstick.
+ * @note On Xbox360 pad this is the same as Nunchuk direction
+ * The returned vector2 is not normalized. +Y is towards player or down
+ * @return Direction of the left thumbstick
+ */
+Vector2 WiiController_GetLeftStickDirection(WiiController* controller);
+/**
+ * @brief Returns the direction of the right thumbstick.
+ * @note The returned vector2 is not normalized. +Y is towards player or down
+ * @return Direction of the right thumbstick
+ */
+Vector2 WiiController_GetRightStickDirection(WiiController* controller);
+
 
 /**
  * @brief Returns the roll reported by the gyroscope in radians.
@@ -136,7 +193,14 @@ float WiiController_GetPitch(WiiController* controller);
  */
 float WiiController_GetYaw(WiiController* controller);
 
-const char* WiiController_GetButtonSymbol(int buttonEnum);
+bool WiiController_HasNunchuk(WiiController* controller);
+bool WiiController_HasClassicController(WiiController* controller);
+
+
+// Private functions
+
+
+const char* WiiController_GetButtonSymbol(WiiController* controller, u32 buttonEnum);
 
 void WiiController_SetButtonDown(WiiController* controller, u32 buttonEnum);
 void WiiController_SetButtonUp(WiiController* controller, u32 buttonEnum);

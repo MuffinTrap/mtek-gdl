@@ -161,6 +161,7 @@ void Audio_CloseStaticBuffer(Sound* snd, void* buffer, sizetype bytesWritten)
 
 void Audio_PlayStaticBuffer(Sound* snd)
 {
+    alSourcef(soundDatas[snd->voiceNumber].source, AL_GAIN, snd->normalizedVolume);
     alSourcePlay(soundDatas[snd->voiceNumber].source);
 }
 void Audio_StopStaticBuffer(Sound* snd)
@@ -200,12 +201,6 @@ void Audio_PauseStaticBuffer(Sound* sound, bool pause) {
     }
 }
 
-void Sound_SetLooping(Sound* sound, bool looping)
-{
-    sound->isLooping = looping;
-    alSourcei(soundDatas[sound->voiceNumber].source, AL_LOOPING, looping ? AL_TRUE : AL_FALSE);
-}
-
 static mgdlAudioStateEnum GetOpenALSourceStatus(ALuint source)
 {
     ALint sourceState;
@@ -241,7 +236,7 @@ static void FillAndQueue(StreamBuffer* buffer)
     alCall(alSourceQueueBuffers, streamingSource, 1, &buffer->bufferName);
 }
 
-void Audio_Platform_StartStream(Sound* snd, s32 sampleRate, SoundSampleFormat format)
+void Audio_StartStream(Sound* snd, s32 sampleRate, SoundSampleFormat format)
 {
     if (streamingVoiceNumber != -1)
     {
@@ -260,17 +255,17 @@ void Audio_Platform_StartStream(Sound* snd, s32 sampleRate, SoundSampleFormat fo
         FillAndQueue(&streamingBuffers[i]);
     }
 
-    Audio_Platform_SetStreamVolume(snd, snd->normalizedVolume);
+    Audio_SetStreamVolume(snd, snd->normalizedVolume);
     alSourcePlay(streamingSource);
 }
-void Audio_Platform_PauseStream(Sound* snd)
+void Audio_PauseStream(Sound* snd)
 {
     if (snd->voiceNumber == streamingVoiceNumber)
     {
         alSourcePause(streamingSource);
     }
 }
-void Audio_Platform_ResumeStream(Sound* snd)
+void Audio_ResumeStream(Sound* snd)
 {
     if (snd->voiceNumber == streamingVoiceNumber)
     {
@@ -278,7 +273,7 @@ void Audio_Platform_ResumeStream(Sound* snd)
     }
 }
 
-void Audio_Platform_SetStreamVolume(Sound* snd, float normalizedVolume)
+void Audio_SetStreamVolume(Sound* snd, float normalizedVolume)
 {
     if (snd->voiceNumber == streamingVoiceNumber)
     {
@@ -286,11 +281,19 @@ void Audio_Platform_SetStreamVolume(Sound* snd, float normalizedVolume)
     }
 }
 
-void Audio_Platform_StopStream(Sound* snd)
+void Audio_StopStream(Sound* snd)
 {
     if (snd->voiceNumber == streamingVoiceNumber)
     {
         alSourceStop(streamingSource);
+    }
+}
+
+void Audio_SetStreamLooping(Sound* snd, bool looping)
+{
+    if (snd->voiceNumber == streamingVoiceNumber)
+    {
+        alSourcei(streamingSource, AL_LOOPING, looping ? AL_TRUE : AL_FALSE);
     }
 }
 

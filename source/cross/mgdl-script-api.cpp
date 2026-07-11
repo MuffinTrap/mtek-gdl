@@ -263,7 +263,7 @@ void mgdl_DrawScene(SceneHandle handle, float x, float y, float z, float scale, 
 		glPushMatrix();
 		glTranslatef(x, y, z);
 		glScalef(scale, scale, scale);
-		Scene_DrawFbx(scene);
+		Scene_Draw(scene);
 		glPopMatrix();
 	}
 }
@@ -415,20 +415,6 @@ bool mgdl_IsButtonPressed(int controller, WiiButtons button)
 		}
 	}
 	return false;
-}
-
-void mgdl_SetSoundLooping(SoundHandle handle, bool looping)
-{
-	Sound* snd = AssetManager_GetSound(handle);
-	ASSERT_DEBUG(snd != nullptr);
-	Sound_SetLooping(snd, looping);
-}
-
-bool mgdl_GetSoundLooping(SoundHandle handle)
-{
-	Sound* snd = AssetManager_GetSound(handle);
-	ASSERT_DEBUG(snd != nullptr);
-	return Sound_GetLooping(snd);
 }
 
 float mgdl_GetSpriteAspect(TextureHandle handle)

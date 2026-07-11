@@ -224,17 +224,6 @@ u32 Sound_GetElapsedMs(Sound* snd)
 
 }
 
-bool Sound_GetLooping(Sound* snd)
-{
-	ASSERT_DEBUG(snd!=nullptr);
-	return snd->isLooping;
-}
-void Sound_SetLooping(Sound* snd, bool looping)
-{
-	ASSERT_DEBUG(snd!=nullptr);
-	snd->isLooping = looping;
-}
-
 mgdlAudioStateEnum Sound_GetStatus(Sound* snd)
 {
 	ASSERT_DEBUG(snd!=nullptr);

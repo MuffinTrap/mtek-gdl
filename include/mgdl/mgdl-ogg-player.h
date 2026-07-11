@@ -34,6 +34,8 @@ void OggPlayer_SetSoundVolume(Sound* snd, float normalizedVolume);
 sizetype OggPlayer_GetSoundSizeBytes(Sound* snd);
 u32 OggPlayer_GetSoundElapsedMs(Sound* snd);
 void OggPlayer_SetSoundElapsedMs(Sound* snd, u32 milliseconds);
+
+
 mgdlAudioStateEnum OggPlayer_GetSoundStatus(Sound* snd);
 
 #ifdef __cplusplus

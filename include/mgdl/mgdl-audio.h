@@ -100,9 +100,6 @@ extern "C"
 	*/
 	mgdlAudioStateEnum Sound_GetStatus(Sound* snd);
 
-	bool Sound_GetLooping(Sound* snd);
-	void Sound_SetLooping(Sound* snd, bool looping);
-
 	/**
 	@brief Sets volume for given sound
 	@param Sound The sound 
@@ -244,12 +241,11 @@ void Audio_Platform_UnloadSound(Sound* s);
 * @param snd The sound to stream
 * @param sampleRate The samplerate of the audio.
 */
-// TODO Remove Platform_
-void Audio_Platform_StartStream(Sound* s, s32 sampleRate, SoundSampleFormat format);
-void Audio_Platform_StopStream(Sound* s);
-void Audio_Platform_PauseStream(Sound* s);
-void Audio_Platform_ResumeStream(Sound* s);
-void Audio_Platform_SetStreamVolume(Sound* s, float normalizedVolume);
+void Audio_StartStream(Sound* s, s32 sampleRate, SoundSampleFormat format);
+void Audio_StopStream(Sound* s);
+void Audio_PauseStream(Sound* s);
+void Audio_ResumeStream(Sound* s);
+void Audio_SetStreamVolume(Sound* s, float normalizedVolume);
 
 #ifdef __cplusplus
 }

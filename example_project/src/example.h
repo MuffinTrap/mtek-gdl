@@ -79,6 +79,5 @@ class Example
         Vector2 cursorPos;
         bool mouseClick;
         bool mouseDown;
-        bool musicLooping;
 
 };

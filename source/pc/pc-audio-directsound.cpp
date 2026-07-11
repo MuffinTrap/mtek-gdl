@@ -23,6 +23,10 @@ static DWORD lastWriteCursorPosition = -MGDL_AUDIO_CALLBACK_BUFFER_SIZE;
 static DWORD lastPlayCursorPosition = 0;
 static DWORD lastWritePosition = 0; // Make sure to always continue writing from the last point
 static void WriteToStream(DWORD bytesToWrite);
+static Sound* streamingSound = nullptr;
+
+static s32 activeStreamingSound = -1;
+static bool s_audioPaused = false;
 
 // Multiple buffers for music and sound effects
 static SoundDirectSound* soundDatas;
@@ -67,9 +71,6 @@ static void PrintDirectSoundError(HRESULT error)
 
 // Playback and audio state
 
-static s32 activeStreamingSound = -1;
-
-static bool s_audioPaused = false;
 
 static DWORD ringBufferWritePoint;
 
@@ -265,6 +266,7 @@ void Audio_CloseStaticBuffer(Sound* snd, void* buffer, sizetype bytesWritten)
 void Audio_PlayStaticBuffer(Sound* snd)
 {
 	// TODO : if fails, try to Restore buffer
+	s_SetBufferVolume(soundDatas[snd->voiceNumber].buffer, snd->normalizedVolume);
 	soundDatas[snd->voiceNumber].buffer->Play(0, 0, 0);
 }
 void Audio_PauseStaticBuffer(Sound* snd, bool paused)
@@ -282,7 +284,7 @@ void Audio_PauseStaticBuffer(Sound* snd, bool paused)
 		}
 		else
 		{
-			soundDatas[snd->voiceNumber].buffer->Play(0, 0, 0);
+			Audio_PlayStaticBuffer(snd);
 		}
 	}
 }
@@ -305,7 +307,7 @@ void Audio_Platform_UnloadSound(Sound s)
 	}
 }
 // TODO What if different format than before?
-void Audio_Platform_StartStream(Sound* snd, s32 sampleRate, SoundSampleFormat format)
+void Audio_StartStream(Sound* snd, s32 sampleRate, SoundSampleFormat format)
 {
 	if (activeStreamingSound != snd->voiceNumber)
 	{
@@ -342,10 +344,11 @@ void Audio_Platform_StartStream(Sound* snd, s32 sampleRate, SoundSampleFormat fo
 			true);
 	}
 
+	streamingSound = snd;
 	activeStreamingSound = snd->voiceNumber;
 	WriteToStream(streamingBufferSize / 2); // Write half the buffer in advance
 	streamingBuffer->Play(0,0,DSBPLAY_LOOPING);
-	Audio_Platform_SetStreamVolume(snd, snd->normalizedVolume);
+	Audio_SetStreamVolume(snd, snd->normalizedVolume);
 }
 
 
@@ -549,13 +552,14 @@ void Audio_SetPaused(bool paused)
 	if (activeStreamingSound >= 0)
 	{
 		streamingBuffer->GetStatus(&statusFlagsOut);
-		if (paused && Flag_IsSetAny(statusFlagsOut,DSBSTATUS_LOOPING))
+		if (paused && Flag_IsSetAny(statusFlagsOut,DSBSTATUS_PLAYING))
 		{
 			streamingBuffer->Stop();
+			// NOTE Do not stop the stream. the audio is still active
 		}
 		else if (paused == false)
 		{
-			streamingBuffer->Play(0,0,DSBPLAY_LOOPING);
+			Audio_ResumeStream(streamingSound);
 		}
 	}
 
@@ -588,7 +592,7 @@ bool Audio_IsPaused(void)
 	return s_audioPaused;
 }
 
-void Audio_Platform_PauseStream(Sound* snd)
+void Audio_PauseStream(Sound* snd)
 {
 	if (snd->voiceNumber == activeStreamingSound)
 	{
@@ -596,15 +600,22 @@ void Audio_Platform_PauseStream(Sound* snd)
 	}
 }
 
-void Audio_Platform_ResumeStream(Sound* snd)
+void Audio_ResumeStream(Sound* snd)
 {
 	if (snd->voiceNumber == activeStreamingSound)
 	{
-		streamingBuffer->Play(0,0,DSBPLAY_LOOPING);
+		if (streamingSound->isLooping)
+		{
+			streamingBuffer->Play(0,0,DSBPLAY_LOOPING);
+		}
+		else
+		{
+			streamingBuffer->Play(0,0,0);
+		}
 	}
 }
 
-void Audio_Platform_StopStream(Sound* snd) 
+void Audio_StopStream(Sound* snd)
 {
 	if (snd->voiceNumber == activeStreamingSound)
 	{
@@ -622,7 +633,7 @@ static void s_SetBufferVolume(IDirectSoundBuffer* buffer), float normalizedVolum
 
 }
 
-void Audio_Platform_SetStreamVolume(Sound* snd, float normalizedVolume)
+void Audio_SetStreamVolume(Sound* snd, float normalizedVolume)
 {
 	if (snd->voiceNumber == activeStreamingSound)
 	{

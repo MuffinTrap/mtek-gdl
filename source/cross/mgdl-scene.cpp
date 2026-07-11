@@ -95,10 +95,19 @@ static void m_ApplyUFBXTransform(ufbx_transform* transform)
 	glScalef(transform->scale.x, transform->scale.y, transform->scale.z);
 }
 
-static void DrawUFBXNode(Scene* scene, ufbx_node* node)
+static void s_DrawUFBXNode(Scene* scene, ufbx_node* node, bool animate, float elapsedSeconds)
 {
 	glPushMatrix();
-	m_ApplyUFBXTransform(&node->local_transform);
+
+	if (animate)
+	{
+		ufbx_transform animatedPos = ufbx_evaluate_transform(scene->ufbx->anim, node, elapsedSeconds);
+		m_ApplyUFBXTransform(&animatedPos);
+	}
+	else
+	{
+		m_ApplyUFBXTransform(&node->local_transform);
+	}
 
 	if (node->mesh != nullptr)
 	{
@@ -160,7 +169,7 @@ static void DrawUFBXNode(Scene* scene, ufbx_node* node)
 
 	for(size_t i = 0; i < node->children.count; i++)
 	{
-		DrawUFBXNode(scene, node->children[i]);
+		s_DrawUFBXNode(scene, node->children[i], animate, elapsedSeconds);
 	}
 	glPopMatrix();
 }
@@ -202,13 +211,8 @@ void Scene_ApplyCamera(Scene* scene, u32 index)
 	}
 }
 
-// NOTE
-// New system. Store minimal amount of information
-// use the ufbx scene for everything else
-void Scene_DrawFbx(Scene* scene)
+static bool s_BeginLights(Scene* scene)
 {
-	ufbx_node* root = scene->ufbx->root_node;
-
 	// If the scene has lights, enable lighting
 	// and all the lights
 	const bool hasLights = PointerArray_Count(scene->lights) > 0;
@@ -221,18 +225,49 @@ void Scene_DrawFbx(Scene* scene)
 			Light_Apply(l);
 		}
 	}
+	return hasLights;
+}
 
-	DrawUFBXNode(scene, root);
-
-	if (hasLights)
+static void s_EndLights(Scene* scene)
+{
+	for (sizetype i = 0; i < PointerArray_Count(scene->lights); i++)
 	{
-		for (sizetype i = 0; i < PointerArray_Count(scene->lights); i++)
-		{
-			// TODO Do we need to disable the lights?
-			// Light* l = PointerArray_GetLight(scene->lights, i);
-		}
-		mgdl_SetLightingEnabled(false);
+		// TODO Do we need to disable the lights?
+		// Light* l = PointerArray_GetLight(scene->lights, i);
 	}
+	mgdl_SetLightingEnabled(false);
+}
+
+// NOTE
+// New system. Store minimal amount of information
+// use the ufbx scene for everything else
+void Scene_Draw(Scene* scene)
+{
+
+	bool lightsOn = s_BeginLights(scene);
+
+	ufbx_node* root = scene->ufbx->root_node;
+	s_DrawUFBXNode(scene, root, false, 0.0f);
+
+	if (lightsOn)
+	{
+		s_EndLights(scene);
+	}
+}
+
+void Scene_DrawAnimated(Scene* scene, float elapsedSeconds)
+{
+
+	bool lightsOn = s_BeginLights(scene);
+
+	ufbx_node* root = scene->ufbx->root_node;
+	s_DrawUFBXNode(scene, root, true, elapsedSeconds);
+
+	if (lightsOn)
+	{
+		s_EndLights(scene);
+	}
+
 }
 
 void Scene_AddMaterial ( Scene* scene, Material* material )

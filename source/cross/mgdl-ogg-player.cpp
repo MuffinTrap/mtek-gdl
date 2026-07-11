@@ -197,7 +197,7 @@ void OggPlayer_PlaySound(Sound* snd)
 		Log_ErrorF("Cannot play Ogg files with more than 2 channels");
 	}
 	Audio_Platform_SetCallback(Ogg_Callback);
-	Audio_Platform_StartStream(snd, musics[snd->voiceNumber].sampleRate, format);
+	Audio_StartStream(snd, musics[snd->voiceNumber].sampleRate, format);
 	musics[snd->voiceNumber].state = Audio_StatePlaying;
 }
 
@@ -205,7 +205,7 @@ void OggPlayer_PauseSound(Sound* snd)
 {
 	if (musics[snd->voiceNumber].state == Audio_StatePlaying)
 	{
-		Audio_Platform_PauseStream(snd);
+		Audio_PauseStream(snd);
 		musics[snd->voiceNumber].state = Audio_StatePaused;
 	}
 }
@@ -213,7 +213,7 @@ void OggPlayer_ResumeSound(Sound* snd)
 {
 	if (musics[snd->voiceNumber].state == Audio_StatePaused)
 	{
-		Audio_Platform_ResumeStream(snd);
+		Audio_ResumeStream(snd);
 		musics[snd->voiceNumber].state = Audio_StatePlaying;
 	}
 }
@@ -222,7 +222,7 @@ void OggPlayer_StopSound(Sound* snd)
 {
 	if (musics[snd->voiceNumber].state == Audio_StatePlaying)
 	{
-		Audio_Platform_StopStream(snd);
+		Audio_StopStream(snd);
 		musics[snd->voiceNumber].state = Audio_StateStopped;
 	}
 }
@@ -252,6 +252,6 @@ mgdlAudioStateEnum OggPlayer_GetSoundStatus(Sound* snd)
 
 void OggPlayer_SetSoundVolume(Sound* snd, float normalizedVolume)
 {
-	Audio_Platform_SetStreamVolume(snd, normalizedVolume);
+	Audio_SetStreamVolume(snd, normalizedVolume);
 }
 

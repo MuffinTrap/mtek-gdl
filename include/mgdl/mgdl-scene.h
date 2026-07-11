@@ -46,7 +46,8 @@ extern "C"
 	 */
 	void Scene_InitArrays(Scene* scene, int meshCapacity, int materialCapacity, int lightCapacity);
 
-	void Scene_DrawFbx(Scene* scene);
+	void Scene_Draw(Scene* scene);
+	void Scene_DrawAnimated(Scene* scene, float elapsedSeconds);
 	void Scene_SetUFBX(Scene* scene, ufbx_scene* ufbxScene);
 
 	void Scene_AddMesh(Scene* scene, Mesh* mesh);

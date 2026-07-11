@@ -234,6 +234,19 @@ bool Platform_IsControllerConnected(int controllerIndex)
 	}
 }
 
+static Vector2 m_GetJoystickDir(joystick_t* jdata)
+{
+			// Angle is reported in degrees
+			// Angle of 0 means up.
+			// 90 right, 180 down, 270 left
+	float rad = DegToRad(jdata->ang);
+	const float x = 0;
+	const float y = -1.0f;
+	float dirx = cos(rad) * x - sin(rad) * y;
+	float diry = sin(rad) * x + cos(rad) * y;
+	return Vector2New(dirx * jdata->mag, diry * jdata->mag);
+}
+
 void Platform_ReadControllers()
 {
 	// TODO This might have to be in a macro
@@ -270,17 +283,31 @@ void Platform_ReadControllers()
 		if (ex.type == WPAD_EXP_NUNCHUK)
 		{
 			joystick_t n = ex.nunchuk.js;
-			// Angle is reported in degrees
-			// Angle of 0 means up.
-			// 90 right, 180 down, 270 left
 
-			float rad = DegToRad(n.ang);
-			float x = 0;
-			float y = -1.0f;
-			float dirx = cos(rad) * x - sin(rad) * y;
-			float diry = sin(rad) * x + cos(rad) * y;
-			controller->m_nunchukJoystickDirectionX = dirx * n.mag;
-			controller->m_nunchukJoystickDirectionY = diry * n.mag;
+			Vector2 nunchukDir = m_GetJoystickDir(&n);
+			controller->m_nunchukJoystickDirectionX = nunchukDir.x;
+			controller->m_nunchukJoystickDirectionY = nunchukDir.y;
+
+			controller->m_type = Controller_Nunchuk;
+		}
+		else if (ex.type == WPAD_EXP_CLASSIC)
+		{
+			joystick_t leftStick = ex.classic.ljs;
+			joystick_t rightStick = ex.classic.rjs;
+
+			Vector2 nunchukDir = m_GetJoystickDir(&leftStick);
+			controller->m_nunchukJoystickDirectionX = nunchukDir.x;
+			controller->m_nunchukJoystickDirectionY = nunchukDir.y;
+
+			Vector2 rstickDir = m_GetJoystickDir(&rightStick);
+			controller->m_rightStickDirectionX = rstickDir.x;
+			controller->m_rightStickDirectionY = rstickDir.y;
+
+			controller->m_type = Controller_ClassicController;
+		}
+		else
+		{
+			controller->m_type = Controller_Wiimote;
 		}
 
 		controller->m_roll = DegToRad(data1->orient.roll);

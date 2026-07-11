@@ -103,10 +103,6 @@ void Example::Init()
     rocketMenu =        Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 256, 356, "Rocket");
     angelMenu =        Menu_CreateWindowed(debugFont, 1.0f, 1.0f, 256, 32, "AngelScript");
 
-    if (sampleMusic)
-    {
-        musicLooping = mgdl_GetSoundLooping(sampleMusic);
-    }
     sceneRotation = Vector3New(0.0f, 1.0f,0.0f);
     //quad->DebugPrint();
 
@@ -284,7 +280,7 @@ void Example::DrawScene ( Scene* scene, Vector3 scale)
     glRotatef(elp * sceneRotation.z * 10.0f, 0.0f, 0.0f, 1.0f);
     glScalef(scale.x, scale.y, scale.z);
 
-    Scene_DrawFbx(scene);
+    Scene_Draw(scene);
 
     glPopMatrix();
     glDisable(GL_DEPTH_TEST);
@@ -383,7 +379,7 @@ void Example::DrawInputInfo()
     for(int i = 0; i < 8;i++ )
     {
         bool held = WiiController_ButtonHeld(mgdl_GetController(0), buttons[i]);
-        Menu_Flag(controllerMenu, WiiController_GetButtonSymbol(buttons[i]), held);
+        Menu_Flag(controllerMenu, WiiController_GetButtonSymbol(mgdl_GetController(0), buttons[i]), held);
     }
 
     Menu_Text(controllerMenu, "D pad");
