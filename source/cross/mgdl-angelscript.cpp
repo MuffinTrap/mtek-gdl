@@ -56,7 +56,7 @@ static void AngelScriptMessageCallback(const asSMessageInfo *msg)
             Log_WarningF("%s:%d:%d %s\n", file, msg->row, msg->col, msg->message);
             break;
         case asMSGTYPE_INFORMATION:
-            Console_Print(ConsoleText_White, "AngelScript:"); Log_Info(msg->message);
+            Console_Print(ConsoleText_White, "AngelScript:"); Log_InfoF("%s\n", msg->message);
             break;
     }
     zstr_free(&filename);
