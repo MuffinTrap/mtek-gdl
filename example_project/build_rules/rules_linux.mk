@@ -11,7 +11,7 @@ TARGET_POSTFIX += _lnx.elf
 
 # Add AngelScript library directory
 ifdef ANGEL
-LDFLAGS += -L$(ANGELSCRIPT_SDK)/angelscript/lib/$(PLATFORM_NAME)
+LDFLAGS += -L$(ANGELSCRIPT_SDK)/angelscript/lib
 endif
 
 # Name the compiler
