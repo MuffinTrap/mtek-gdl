@@ -114,4 +114,4 @@ sizetype ObjectArray_Add_##TYPE ( ObjectArray* array, TYPE item ) {\
     v[array->count] = item; \
     array->count += 1; \
     return  array->count-1; \
-} \
+}

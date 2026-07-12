@@ -35,28 +35,16 @@ namespace gdl {
 
 		if (cx == Centered) {
 			ppx = (int)xSize/2;
-		} else if (cx == PCentered) {
-			ppx = (float)xSize/2;
 		} else if (cx == RJustify) {
 			ppx = xSize;
-		} else if (cx == Pivot) {
-			ppx = px;
-		} else if (cx == CPivot) {
-			ppx = px+0.5f;
 		} else {
 			ppx = cx;
 		}
 
 		if (cy == Centered) {
 			ppy = (int)ySize/2;
-		} else if (cy == PCentered) {
-			ppy = (float)ySize/2;
 		} else if (cy == RJustify) {
 			ppy = ySize;
-		} else if (cy == Pivot) {
-			ppy = py;
-		} else if (cy == CPivot) {
-			ppy = py+0.5f;
 		} else {
 			ppy = cy;
 		}

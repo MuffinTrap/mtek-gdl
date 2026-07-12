@@ -228,7 +228,8 @@ u32 Audio_GetStaticBufferElapsedMs(Sound* snd)
 }
 void Audio_SetStaticBufferNormalizedVolume(Sound* snd, float normalizedVolume)
 {
-	ASND_ChangeVolumeVoice(snd->voiceNumber, s32(255.0f * normalizedVolume));
+	s32 volume = s32(255.0f * normalizedVolume);
+	ASND_ChangeVolumeVoice(snd->voiceNumber, volume, volume);
 
 }
 #pragma GCC diagnostic push
@@ -334,7 +335,8 @@ void Audio_SetStreamVolume(Sound* s, float normalizedVolume)
 {
 	if (streamingVoice == s->voiceNumber)
 	{
-		ASND_ChangeVolumeVoice(streamingSound.voiceNumber, s32(255.0f) * normalizedVolume));
+		s32 volume = s32(255.0f * normalizedVolume);
+		ASND_ChangeVolumeVoice(streamingSound.voiceNumber, volume, volume);
 	}
 
 }
