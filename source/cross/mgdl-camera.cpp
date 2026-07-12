@@ -14,6 +14,7 @@ Camera* Camera_CreateDefault()
 	camera->farZ = 1000.0f;
 	camera->direction = Vector3New(0.0f, 0.0f, -1.0f);
 	camera->rotations = Vector3New(0.0f, 0.0f, 0.0f);
+	camera->projection = CameraPerspective;
 
 	return camera;
 }

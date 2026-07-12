@@ -417,6 +417,92 @@ bool mgdl_IsButtonPressed(int controller, WiiButtons button)
 	return false;
 }
 
+Vector2 mgdl_GetJoystick(int controller, WiiJoystick joystick)
+{
+
+	if (controller >=0 && controller < MGDL_MAX_CONTROLLERS)
+	{
+		WiiController* c = mgdl_GetController(controller);
+		ASSERT_DEBUG(c != nullptr);
+		if (c != nullptr)
+		{
+			if (WiiController_HasNunchuk(c))
+			{
+				return WiiController_GetNunchukJoystickDirection(c);
+			}
+			else if (WiiController_HasClassicController(c))
+			{
+				if(joystick == Joystick_LeftStick)
+				{
+					return WiiController_GetLeftStickDirection(c);
+				}
+				else if(joystick == Joystick_RightStick)
+				{
+					return WiiController_GetRightStickDirection(c);
+				}
+			}
+		}
+	}
+	return Vector2Zero();
+}
+
+float mgdl_GetJoystickX(int controller, WiiJoystick joystick)
+{
+	if (controller >=0 && controller < MGDL_MAX_CONTROLLERS)
+	{
+		WiiController* c = mgdl_GetController(controller);
+		ASSERT_DEBUG(c != nullptr);
+		if (c != nullptr)
+		{
+			if (WiiController_HasNunchuk(c))
+			{
+				return WiiController_GetNunchukJoystickDirectionX(c);
+			}
+			else if (WiiController_HasClassicController(c))
+			{
+				if(joystick == Joystick_LeftStick)
+				{
+					return WiiController_GetLeftStickDirectionX(c);
+				}
+				else if(joystick == Joystick_RightStick)
+				{
+					return WiiController_GetRightStickDirectionY(c);
+				}
+			}
+		}
+	}
+	return 0.0f;
+
+}
+float mgdl_GetJoystickY(int controller, WiiJoystick joystick)
+{
+	if (controller >=0 && controller < MGDL_MAX_CONTROLLERS)
+	{
+		WiiController* c = mgdl_GetController(controller);
+		ASSERT_DEBUG(c != nullptr);
+		if (c != nullptr)
+		{
+			if (WiiController_HasNunchuk(c))
+			{
+				return WiiController_GetNunchukJoystickDirectionY(c);
+			}
+			else if (WiiController_HasClassicController(c))
+			{
+				if(joystick == Joystick_LeftStick)
+				{
+					return WiiController_GetLeftStickDirectionY(c);
+				}
+				else if(joystick == Joystick_RightStick)
+				{
+					return WiiController_GetRightStickDirectionY(c);
+				}
+			}
+		}
+	}
+	return 0.0f;
+
+}
+
 float mgdl_GetSpriteAspect(TextureHandle handle)
 {
 	Texture* tex = AssetManager_GetTexture(handle);

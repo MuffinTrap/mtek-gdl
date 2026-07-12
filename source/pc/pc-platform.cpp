@@ -111,11 +111,13 @@ void Platform_InitControllers()
 	{
 		WiiController* c = &platformPC->controllers[i];
 		WiiController_Init(c, i);
+        c->m_type = Controller_Xbox360Pad;
 		WiiController_ZeroAllInputs(c);
 		WiiController_StartFrame(c);
 	}
 
 	WiiController_Init(&kbmController, 0);
+    kbmController.m_type = Controller_Xbox360Pad;
 	WiiController_ZeroAllInputs(&kbmController);
 	WiiController_StartFrame(&kbmController);
 

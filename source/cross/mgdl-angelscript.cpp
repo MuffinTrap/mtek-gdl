@@ -196,7 +196,7 @@ mgdl_AngelScript* mgdl_InitAngelCpp(AngelInitFuncType initFunc, AngelFrameFuncTy
 	return angel;
 }
 
-mgdl_AngelScript* mgdl_InitAngelScript(const char* mainScript, const char* hotloadDirectory, const char* moduleName)
+mgdl_AngelScript* mgdl_InitAngelScript()
 {
 	mgdl_InitScriptApi();
 	mgdl_AngelScript* angel =(mgdl_AngelScript*)mgdl_AllocateGeneralMemory(sizeof(mgdl_AngelScript));
@@ -214,6 +214,12 @@ mgdl_AngelScript* mgdl_InitAngelScript(const char* mainScript, const char* hotlo
 	// Register mgdl functions
 	RegisterMGDL(angel->engine);
 
+	return angel;
+}
+
+
+bool mgdl_LoadAngelScriptFiles(mgdl_AngelScript* angel, const char* mainScript, const char* hotloadDirectory, const char* moduleName)
+{
     angel->ctx = angel->engine->CreateContext();
 	angel->frameFunc = nullptr;
 	angel->initFunc = nullptr;
@@ -274,9 +280,7 @@ mgdl_AngelScript* mgdl_InitAngelScript(const char* mainScript, const char* hotlo
 	}
 
 	// Load the given file to module
-	ReloadAngelScriptCode(angel);
-
-	return angel;
+	return ReloadAngelScriptCode(angel);
 }
 
 

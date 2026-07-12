@@ -21,10 +21,13 @@ void Example::AngelInit()
 {
     // AngelScript
 #if defined(USE_ANGEL_AS_SCRIPT)
-    angelContext = mgdl_InitAngelScript("scripts/angel.cpp", "scripts", "example");
+    angelContext = mgdl_InitAngelScript();
     if (angelContext != nullptr)
     {
-        mgdl_RunAngelScriptInit(angelContext);
+        if (mgdl_LoadAngelScriptFiles(angelContext, "scripts/angel.cpp", "scripts", "example"))
+        {
+            mgdl_RunAngelScriptInit(angelContext);
+        }
     }
 #elif defined(USE_ANGEL_AS_CPP)
     angelContext = mgdl_InitAngelCpp(&angelscript_init, &angelscript_frame, &angelscript_quit);
@@ -332,7 +335,7 @@ void DrawDPad(short x, short y, short size)
     }
 }
 
-void DrawJoystick(short x, short y, short size)
+void DrawJoystick(short x, short y, short size, Vector2 joystick)
 {
     // Draw joystick direction
     short jsize=size;
@@ -340,7 +343,7 @@ void DrawJoystick(short x, short y, short size)
     short h=box/2;
     Palette* blessing = Palette_GetDefault();
     color32 jc = Palette_GetColor(blessing, 5);
-    Vector2 jdir = WiiController_GetNunchukJoystickDirection(mgdl_GetController(0));
+    Vector2 jdir = joystick;
     short jleft= x + jsize/2 + jdir.x * box-h;
     short jtop = y - jsize/2 - jdir.y * box-h;
     // Lined Rectangle shows limits
@@ -358,6 +361,7 @@ void Example::DrawInputInfo()
 {
     int x = 10;
     int y = mgdl_GetScreenHeight() - 10;
+    WiiController* controller = mgdl_GetController(0);
 
 
     Menu_StartInput(controllerMenu, x, y, 100, cursorPos, false, false);
@@ -378,21 +382,25 @@ void Example::DrawInputInfo()
 
     for(int i = 0; i < 8;i++ )
     {
-        bool held = WiiController_ButtonHeld(mgdl_GetController(0), buttons[i]);
-        Menu_Flag(controllerMenu, WiiController_GetButtonSymbol(mgdl_GetController(0), buttons[i]), held);
+        bool held = WiiController_ButtonHeld(controller, buttons[i]);
+        Menu_Flag(controllerMenu, WiiController_GetButtonSymbol(controller, buttons[i]), held);
     }
 
     Menu_Text(controllerMenu, "D pad");
     DrawDPad(controllerMenu->drawx + 50, controllerMenu->drawy, controllerMenu->textSize);
     Menu_Skip(controllerMenu, controllerMenu->textSize*3);
 
-    Menu_Text(controllerMenu, "Joystick");
-    DrawJoystick(controllerMenu->drawx + 50, controllerMenu->drawy, controllerMenu->textSize);
+    Menu_Text(controllerMenu, "Nunchuk/LS");
+    DrawJoystick(controllerMenu->drawx + 50, controllerMenu->drawy, controllerMenu->textSize, WiiController_GetNunchukJoystickDirection(controller));
     Menu_Skip(controllerMenu, controllerMenu->textSize*3);
 
-    float pitch = WiiController_GetPitch(mgdl_GetController(0));
-    float yaw = WiiController_GetYaw(mgdl_GetController(0));
-    float roll = WiiController_GetRoll(mgdl_GetController(0));
+    Menu_Text(controllerMenu, "RS");
+    DrawJoystick(controllerMenu->drawx + 50, controllerMenu->drawy, controllerMenu->textSize, WiiController_GetRightStickDirection(controller));
+    Menu_Skip(controllerMenu, controllerMenu->textSize*3);
+
+    float pitch = WiiController_GetPitch(controller);
+    float yaw = WiiController_GetYaw(controller);
+    float roll = WiiController_GetRoll(controller);
     Menu_TextF(controllerMenu, "Pitch %.0f ", Rad2Deg(pitch));
     Menu_TextF(controllerMenu, "Yaw %.0f", Rad2Deg(yaw));
     Menu_TextF(controllerMenu, "Roll %.0f", Rad2Deg(roll));

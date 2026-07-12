@@ -159,6 +159,9 @@ color32 mgdl_GetPaletteColor(PaletteHandle palette, u8 colorIndex);
 
 bool mgdl_IsButtonDown(int controller, WiiButtons button);
 bool mgdl_IsButtonPressed(int controller, WiiButtons button);
+Vector2 mgdl_GetJoystick(int controller, WiiJoystick joystick);
+float mgdl_GetJoystickX(int controller, WiiJoystick joystick);
+float mgdl_GetJoystickY(int controller, WiiJoystick joystick);
 
 #ifdef __cplusplus
 }

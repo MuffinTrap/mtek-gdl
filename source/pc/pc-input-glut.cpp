@@ -143,16 +143,16 @@ void keyboardDown(unsigned char key, int x, int y) {
 			kbmController.m_roll = M_PI;
 			break;
 		case ascii_i:
-			kbmController.m_pitch = -M_PI;
+			kbmController.m_rightStickDirectionY = -1.0f;
 			break;
 		case ascii_k:
-			kbmController.m_pitch = M_PI;
+			kbmController.m_rightStickDirectionY = 1.0f;
 			break;
 		case ascii_j:
-			kbmController.m_yaw = -M_PI;
+			kbmController.m_rightStickDirectionX = -1.0f;
 			break;
 		case ascii_l:
-			kbmController.m_yaw = M_PI;
+			kbmController.m_rightStickDirectionX = 1.0f;
 			break;
 		};
 	}
@@ -199,17 +199,18 @@ void keyboardUp(unsigned char key, int x, int y) {
 		case ascii_o:
 			kbmController.m_roll = 0.0f;
 			break;
+
 		case ascii_i:
-			kbmController.m_pitch = 0.0f;
+			kbmController.m_rightStickDirectionY = 0.0f;
 			break;
 		case ascii_k:
-			kbmController.m_pitch = 0.0f;
+			kbmController.m_rightStickDirectionY = 0.0f;
 			break;
 		case ascii_j:
-			kbmController.m_yaw = 0.0f;
+			kbmController.m_rightStickDirectionX = 0.0f;
 			break;
 		case ascii_l:
-			kbmController.m_yaw = 0.0f;
+			kbmController.m_rightStickDirectionX = 0.0f;
 			break;
 	};
 }

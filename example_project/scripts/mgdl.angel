@@ -24,4 +24,11 @@ void mgdl_DrawModelRotatedV(ModelHandle handle, Vector3 position, Vector3 rotati
 {
 	mgdl_DrawModelRotated(handle, position.x, position.y, position.z, rotationDeg.x, rotationDeg.y, rotationDeg.z, scale, color);
 }
+
+Vector2 mgdl_GetJoystick(int controller, WiiJoystick joystick)
+{
+	float x = mgdl_GetJoystickX(controller, joystick);
+	float y = mgdl_GetJoystickY(controller, joystick);
+	return Vector2New(x,y);
+}
 #endif

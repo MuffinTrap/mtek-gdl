@@ -32,3 +32,4 @@
 #include "mgdl/mgdl-console.h"
 #include "mgdl/mgdl-audio.h"
 #include "mgdl/mgdl-main.h"
+#include "mgdl/mgdl-angelscript.h"

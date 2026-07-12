@@ -55,6 +55,14 @@ enum WiiButtons : u32
 };
 typedef enum WiiButtons WiiButtons;
 
+enum WiiJoystick
+{
+	Joystick_Nunchuk,
+	Joystick_LeftStick,
+	Joystick_RightStick
+};
+typedef enum WiiJoystick WiiJoystick;
+
 enum ControllerType
 {
 	Controller_Wiimote, /**< Wii remote without attachments */
@@ -161,6 +169,8 @@ void WiiController_SetCursorPosition(WiiController* controller, float x, float y
  * @return Direction of the nunchuck joystick.
  */
 Vector2 WiiController_GetNunchukJoystickDirection(WiiController* controller);
+float WiiController_GetNunchukJoystickDirectionX(WiiController* controller);
+float WiiController_GetNunchukJoystickDirectionY(WiiController* controller);
 
 /**
  * @brief Returns the direction of the left thumbstick.
@@ -169,12 +179,16 @@ Vector2 WiiController_GetNunchukJoystickDirection(WiiController* controller);
  * @return Direction of the left thumbstick
  */
 Vector2 WiiController_GetLeftStickDirection(WiiController* controller);
+float WiiController_GetLeftStickDirectionX(WiiController* controller);
+float WiiController_GetLeftStickDirectionY(WiiController* controller);
 /**
  * @brief Returns the direction of the right thumbstick.
  * @note The returned vector2 is not normalized. +Y is towards player or down
  * @return Direction of the right thumbstick
  */
 Vector2 WiiController_GetRightStickDirection(WiiController* controller);
+float WiiController_GetRightStickDirectionX(WiiController* controller);
+float WiiController_GetRightStickDirectionY(WiiController* controller);
 
 
 /**

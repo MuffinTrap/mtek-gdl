@@ -146,24 +146,32 @@ static void RegisterDrawing(asIScriptEngine* as_engine)
 static void RegisterController(asIScriptEngine* as_engine)
 {
 	as_engine->RegisterEnum("WiiButtons");
-	as_engine->RegisterEnumValue("WiiButtons", "ButtonNone", 	0x0000);
-	as_engine->RegisterEnumValue("WiiButtons", "Button2", 		0x0001);
-	as_engine->RegisterEnumValue("WiiButtons", "Button1", 		0x0002);
-	as_engine->RegisterEnumValue("WiiButtons", "ButtonB", 		0x0004);
-	as_engine->RegisterEnumValue("WiiButtons", "ButtonA", 		0x0008);
-	as_engine->RegisterEnumValue("WiiButtons", "ButtonMinus", 	0x0010);
-	as_engine->RegisterEnumValue("WiiButtons", "ButtonHome", 	0x0080);
-	as_engine->RegisterEnumValue("WiiButtons", "ButtonLeft", 	0x0100);
-	as_engine->RegisterEnumValue("WiiButtons", "ButtonRight", 	0x0200);
-	as_engine->RegisterEnumValue("WiiButtons", "ButtonDown", 	0x0400);
-	as_engine->RegisterEnumValue("WiiButtons", "ButtonUp", 		0x0800);
-	as_engine->RegisterEnumValue("WiiButtons", "ButtonPlus", 	0x1000);
-	as_engine->RegisterEnumValue("WiiButtons", "ButtonZ"	,		(0x0001 << 16));
-	as_engine->RegisterEnumValue("WiiButtons", "ButtonC"	,		(0x0002 << 16));
-	as_engine->RegisterEnumValue("WiiButtons", "ButtonAny", 	0xFFF);
+	as_engine->RegisterEnumValue("WiiButtons", "ButtonNone", 	(int)ButtonNone);
+	as_engine->RegisterEnumValue("WiiButtons", "Button2", 	(int)Button2);
+	as_engine->RegisterEnumValue("WiiButtons", "Button1", 	(int)Button1);
+	as_engine->RegisterEnumValue("WiiButtons", "ButtonB", 	(int)ButtonB);
+	as_engine->RegisterEnumValue("WiiButtons", "ButtonA", 	(int)ButtonA);
+	as_engine->RegisterEnumValue("WiiButtons", "ButtonMinus", (int)ButtonMinus);
+	as_engine->RegisterEnumValue("WiiButtons", "ButtonHome", 	(int)ButtonHome);
+	as_engine->RegisterEnumValue("WiiButtons", "ButtonLeft", 	(int)ButtonLeft);
+	as_engine->RegisterEnumValue("WiiButtons", "ButtonRight", (int)ButtonRight);
+	as_engine->RegisterEnumValue("WiiButtons", "ButtonDown", 	(int)ButtonDown);
+	as_engine->RegisterEnumValue("WiiButtons", "ButtonUp", 	(int)ButtonUp);
+	as_engine->RegisterEnumValue("WiiButtons", "ButtonPlus", 	(int)ButtonPlus);
+	as_engine->RegisterEnumValue("WiiButtons", "ButtonZ"	,	(int)ButtonZ);
+	as_engine->RegisterEnumValue("WiiButtons", "ButtonC"	,	(int)ButtonC);
+	as_engine->RegisterEnumValue("WiiButtons", "ButtonAny", 	0xFFFFFFu);
+
+	as_engine->RegisterEnum("WiiJoystick");
+	as_engine->RegisterEnumValue("WiiJoystick", "Joystick_Nunchuk",(int)Joystick_Nunchuk);
+	as_engine->RegisterEnumValue("WiiJoystick", "Joystick_LeftStick",(int)Joystick_LeftStick);
+	as_engine->RegisterEnumValue("WiiJoystick", "Joystick_RightStick",(int)Joystick_RightStick);
+
 
 	as_engine->RegisterGlobalFunction("bool mgdl_IsButtonDown(int controller, WiiButtons button)", asFUNCTION(mgdl_IsButtonDown), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("bool mgdl_IsButtonPressed(int controller, WiiButtons button)", asFUNCTION(mgdl_IsButtonPressed), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("float mgdl_GetJoystickX(int controller, WiiJoystick joystick)", asFUNCTION(mgdl_GetJoystickX), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("float mgdl_GetJoystickY(int controller, WiiJoystick joystick)", asFUNCTION(mgdl_GetJoystickY), asCALL_CDECL);
 }
 
 static void RegisterSound(asIScriptEngine* as_engine)

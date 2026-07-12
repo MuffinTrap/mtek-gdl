@@ -39,12 +39,20 @@ extern "C" {
 
 	/**
 	 * @brief Allocates and initializes a new AngelScript object to use with scripts.
+	 * @details This allocates the object and creates the engine. It also registers mgdl functions and script add-ons. Register your own functions before calling mgdl_LoadAngelScript
+	 * @returns Pointer to the initialized object
+	 */
+	mgdl_AngelScript* mgdl_InitAngelScript();
+
+	/**
+	 * @brief Loads the script files and compiles them.
+	 * @param angel The AngelScript object from mgdl_InitAngelScript
 	 * @param mainScript Name of main script file.
 	 * @param hotloadDirectory Name of the directory which is watched for changing. Set to nullptr to disable hotloading.
 	 * @param moduleName Optional name for the module. If set to nullptr a default name is used
-	 * @returns Pointer to the initialized object
+	 * @returns If the loading and compilation was successfull.
 	 */
-	mgdl_AngelScript* mgdl_InitAngelScript(const char* mainScript, const char* hotloadDirectory, const char* moduleName);
+	bool mgdl_LoadAngelScriptFiles(mgdl_AngelScript* angel, const char* mainScript, const char* hotloadDirectory, const char* moduleName);
 
 	/**
 	 * @brief Initializes the AngelScript to be used as cpp code.

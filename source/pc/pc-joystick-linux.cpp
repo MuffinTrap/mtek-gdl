@@ -92,6 +92,8 @@ void Joystick_Init()
             Log_InfoF("Joystick Init %d %s : %zu axii %zu buttons\n", joystick->index, name, joystick->axisCount, joystick->buttonCount);
             joystick->axes = (struct axis_state*)malloc(sizeof(struct axis_state) * joystick->axisCount);
 
+            joystick->controller.m_type = Controller_Xbox360Pad;
+
             // This joystick is ok, next one
             joystickIndex += 1;
         }
