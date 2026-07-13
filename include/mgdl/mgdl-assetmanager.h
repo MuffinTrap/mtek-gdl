@@ -99,7 +99,7 @@ void AssetManager_Init();
  * @param filename Path to the png file relative to the executable
  * @returns Handle to the loaded texture
  */
-TextureHandle AssetManager_LoadTexture(const char* filename);
+TextureHandle AssetManager_LoadTexture(const char* filename, bool generateMipMaps);
 
 /**
  * @brief Returns the texture asset associated with the given handle.

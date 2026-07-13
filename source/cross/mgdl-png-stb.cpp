@@ -100,16 +100,16 @@ GLenum PNG_PNGtoGLInternalFormat(int stbi_format)
 	switch (stbi_format)
 	{
 	case STBI_grey:
-		return GL_UNSIGNED_BYTE;
+		return GL_LUMINANCE;
 		break;
 	case STBI_grey_alpha:
-		return GL_UNSIGNED_BYTE;
+		return GL_LUMINANCE_ALPHA;
 		break;
 	case STBI_rgb:
-		return GL_UNSIGNED_BYTE;
+		return GL_RGB;
 		break;
 	case STBI_rgb_alpha:
-		return GL_UNSIGNED_BYTE;
+		return GL_RGBA;
 		break;
 	default:
 		Log_Warning("Unsupported PNG color type\n");
@@ -118,6 +118,12 @@ GLenum PNG_PNGtoGLInternalFormat(int stbi_format)
 	};
 	return 0;
 }
+
+GLenum PNG_GetGLType(PNGFile* png)
+{
+	return GL_UNSIGNED_BYTE;
+}
+
 int PNG_GLFormattoPNGFormat(GLenum format)
 {
 	switch (format)

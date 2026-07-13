@@ -7,8 +7,8 @@
 // a C++ polymorphic function
 PaletteHandle mgdl_LoadPalette(const zstr& image);
 PaletteHandle mgdl_LoadPalette(const char* image);
-TextureHandle mgdl_LoadTexture(const zstr& filename);
-TextureHandle mgdl_LoadTexture(const char* filename);
+TextureHandle mgdl_LoadTexture(const zstr& filename, bool generateMipMaps);
+TextureHandle mgdl_LoadTexture(const char* filename, bool generateMipMaps);
 SoundHandle mgdl_LoadSound(const zstr& filename);
 SoundHandle mgdl_LoadSound(const char* filename);
 SceneHandle mgdl_LoadScene(const zstr& filename);
@@ -99,7 +99,15 @@ void mgdl_InitScriptApi();
  * @param texture Handle of the texture
  * @param mode Filtering mode
  */
-void mgdl_SetTextureFilter(TextureHandle texture, TextureFilterModes mode);
+void mgdl_SetTextureFilterMag(TextureHandle texture, TextureFilterModes mode);
+
+/**
+	* @brief Sets the filtering mode of the texture when minifying
+	* @note If the texture has mipmaps, the Nearest and Linear modes do not use. Be sure to use a mipmap filter. (You will get a warning if you don't). Warning also comes from using mipmap filter on texture without mipmaps.
+	* @param texture Handle of the texture
+	* @param mode The mode to use
+	*/
+void mgdl_SetTextureFilterMin(TextureHandle texture, TextureFilterModes mode);
 /**
  * @brief Set the wrapping mode used for a texture
  * @param texture Handle of the texture

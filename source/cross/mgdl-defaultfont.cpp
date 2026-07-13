@@ -568,7 +568,7 @@ Texture* DefaultFont_GetDefaultFont(void)
 		glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
 
 		debugFont = Texture_Create();
-		Texture_SetGLName(debugFont, texName, width, height, ColorFormats::GrayAlpha);
+		Texture_SetGLName(debugFont, texName, width, height, ColorFormats::GrayAlpha, false);
 		SpriteAtlas_MapSimple(debugFont, 8, 8, ' ');
 	}
 	return debugFont;

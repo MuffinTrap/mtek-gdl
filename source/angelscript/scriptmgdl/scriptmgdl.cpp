@@ -67,6 +67,19 @@ static void RegisterTypes(asIScriptEngine* as_engine)
 
 	as_engine->RegisterTypedef("color32", "uint32");
 
+	as_engine->RegisterEnum("TextureFilterModes");
+	as_engine->RegisterEnumValue("TextureFilterModes", "Linear", (int)Linear);
+	as_engine->RegisterEnumValue("TextureFilterModes", "Nearest", (int)Nearest);
+	as_engine->RegisterEnumValue("TextureFilterModes", "MipmapNearest", (int)MipmapNearest);
+	as_engine->RegisterEnumValue("TextureFilterModes", "MipmapLinear", (int)MipmapLinear);
+	as_engine->RegisterEnumValue("TextureFilterModes", "MipmapAvgNearest", (int)MipmapAvgNearest);
+	as_engine->RegisterEnumValue("TextureFilterModes", "MipmapTrilinear", (int)MipmapTrilinear);
+
+	as_engine->RegisterEnum("TextureWrapModes");
+	as_engine->RegisterEnumValue("TextureWrapModes", "Wrap_Clamp", (int)Wrap_Clamp);
+	as_engine->RegisterEnumValue("TextureWrapModes", "Wrap_Repeat", (int)Wrap_Repeat);
+	as_engine->RegisterEnumValue("TextureWrapModes", "Wrap_Mirror", (int)Wrap_Mirror);
+
 	// Register constants
 	    // Register a boolean flag that can be read, but not modified by the script.
 }
@@ -83,7 +96,7 @@ static void RegisterMain(asIScriptEngine* as_engine)
 
 
 	// Asset handling
-	as_engine->RegisterGlobalFunction("TextureHandle mgdl_LoadTexture(const zstr &in filename)", asFUNCTIONPR(mgdl_LoadTexture, (const zstr&), TextureHandle), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("TextureHandle mgdl_LoadTexture(const zstr &in filename, bool generateMipMaps)", asFUNCTIONPR(mgdl_LoadTexture, (const zstr&, bool), TextureHandle), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("PaletteHandle mgdl_LoadPalette(const zstr &in filename)", asFUNCTIONPR(mgdl_LoadPalette, (const zstr&), PaletteHandle), asCALL_CDECL);;
 	as_engine->RegisterGlobalFunction("SoundHandle mgdl_LoadSound(const zstr &in filename)", asFUNCTIONPR(mgdl_LoadSound, (const zstr&), SoundHandle), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("SceneHandle mgdl_LoadScene(const zstr &in filename)", asFUNCTIONPR(mgdl_LoadScene, (const zstr&), SceneHandle), asCALL_CDECL);
@@ -141,6 +154,8 @@ static void RegisterDrawing(asIScriptEngine* as_engine)
 	as_engine->RegisterGlobalFunction("int mgdl_GetSpriteWidth(TextureHandle handle)", asFUNCTION(mgdl_GetSpriteWidth), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("int mgdl_GetSpriteHeight(TextureHandle handle)", asFUNCTION(mgdl_GetSpriteHeight), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("float mgdl_GetSpriteAspect(TextureHandle handle)", asFUNCTION(mgdl_GetSpriteAspect), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_SetTextureFilterMag(TextureHandle handle, TextureFilterModes mode)", asFUNCTION(mgdl_SetTextureFilterMag),asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_SetTextureFilterMin(TextureHandle handle, TextureFilterModes mode)", asFUNCTION(mgdl_SetTextureFilterMin),asCALL_CDECL);
 }
 
 static void RegisterController(asIScriptEngine* as_engine)

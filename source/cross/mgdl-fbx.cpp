@@ -304,11 +304,11 @@ Material* FBX_LoadNodeMaterial(ufbx_node* node, sizetype materialIndex, const ch
 		{
 			Log_InfoF("Trying to load material from %s\n", searchfolder);
 			mgdl_BufferPrintf("%s/%s", searchfolder, material->name.data);
-			materialTexture = AssetManager_LoadTexture(mgdl_GetPrintfBuffer());
+			materialTexture = AssetManager_LoadTexture(mgdl_GetPrintfBuffer(), false);
 		}
 		else
 		{
-			materialTexture = AssetManager_LoadTexture(material->name.data);
+			materialTexture = AssetManager_LoadTexture(material->name.data, false);
 		}
 		Texture* texture = nullptr;
 		if (Handle_IsValid(materialTexture))

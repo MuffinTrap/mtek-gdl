@@ -174,21 +174,27 @@ void mgdl_DrawModelRotated(ModelHandle handle, const float x, float y, float z, 
 
 // TEXTURES
 
-TextureHandle mgdl_LoadTexture(const zstr& filename)
+TextureHandle mgdl_LoadTexture(const zstr& filename, bool generateMipMaps)
 {
-	return mgdl_LoadTexture(zstr_cstr(&filename));
+	return mgdl_LoadTexture(zstr_cstr(&filename), generateMipMaps);
 }
-TextureHandle mgdl_LoadTexture(const char* filename)
+TextureHandle mgdl_LoadTexture(const char* filename, bool generateMipMaps)
 {
-	TextureHandle handle = AssetManager_LoadTexture(filename);
+	TextureHandle handle = AssetManager_LoadTexture(filename, generateMipMaps);
 	return handle;
 }
 
-void mgdl_SetTextureFilter(TextureHandle texture, TextureFilterModes mode)
+void mgdl_SetTextureFilterMag(TextureHandle texture, TextureFilterModes mode)
 {
 	Texture* tex = AssetManager_GetTexture(texture);
 	ASSERT_DEBUG(tex != nullptr);
-	Texture_SetFilterMode(tex, mode);
+	Texture_SetFilterModeMag(tex, mode);
+}
+void mgdl_SetTextureFilterMin(TextureHandle texture, TextureFilterModes mode)
+{
+	Texture* tex = AssetManager_GetTexture(texture);
+	ASSERT_DEBUG(tex != nullptr);
+	Texture_SetFilterModeMin(tex, mode);
 }
 void mgdl_SetTextureWrap(TextureHandle texture, TextureWrapModes mode)
 {
@@ -466,7 +472,7 @@ float mgdl_GetJoystickX(int controller, WiiJoystick joystick)
 				}
 				else if(joystick == Joystick_RightStick)
 				{
-					return WiiController_GetRightStickDirectionY(c);
+					return WiiController_GetRightStickDirectionX(c);
 				}
 			}
 		}

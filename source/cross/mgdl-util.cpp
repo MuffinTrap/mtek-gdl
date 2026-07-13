@@ -1,6 +1,7 @@
 #include <mgdl/mgdl-util.h>
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-types.h>
+#include <mgdl/mgdl-logger.h>
 #include <cstdlib>
 #include <stdio.h>
 #include <mgdl/wflcg/WFLCG_c.h>
@@ -109,19 +110,20 @@ GLint TextureFilterToGLFilter(TextureFilterModes filterMode)
 		case TextureFilterModes::Nearest:
 			return GL_NEAREST;
 			break;
-		case TextureFilterModes::LN_MM_LN:
+		case TextureFilterModes::MipmapTrilinear:
 			return GL_LINEAR_MIPMAP_LINEAR;
 			break;
-		case TextureFilterModes::LN_MM_NR:
+		case TextureFilterModes::MipmapAvgNearest:
 			return GL_LINEAR_MIPMAP_NEAREST;
 			break;
-		case TextureFilterModes::NR_MM_LN:
+		case TextureFilterModes::MipmapLinear:
 			return GL_NEAREST_MIPMAP_LINEAR;
 			break;
-		case TextureFilterModes::NR_MM_NR:
+		case TextureFilterModes::MipmapNearest:
 			return GL_NEAREST_MIPMAP_NEAREST;
 			break;
 		default:
+			Log_ErrorF("Unknown filtering mode %d\n", (int)filterMode);
 			return GL_LINEAR;
 			break;
 	};
@@ -134,13 +136,14 @@ GLint TextureWrapToGLWrap(TextureWrapModes wrapMode)
 		case TextureWrapModes::Wrap_Clamp:
 			return GL_CLAMP;
 			break;
-		case TextureWrapModes::Mirror:
+		case TextureWrapModes::Wrap_Mirror:
 			return GL_MIRRORED_REPEAT;
 			break;
-		case TextureWrapModes::Repeat:
+		case TextureWrapModes::Wrap_Repeat:
 			return GL_REPEAT;
 			break;
 		default:
+			Log_ErrorF("Unknown wrap mode %d\n", (int)wrapMode);
 			return GL_CLAMP;
 			break;
 	}

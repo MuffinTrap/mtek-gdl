@@ -80,10 +80,10 @@ typedef void (*CallbackFunction)(void);
  *		These are not to be confused with gdl::TextureFormatModes which designates GX texture formats.
  */
 enum ColorFormats {
-    Gray,		//!< 8-bit grayscale (I8).
-    GrayAlpha,	//!< 16-bit grayscale with alpha (I8A8).
-    RGB,		//!< 24-bit true-color RGB (R8G8B8).
-    RGBA,		//!< 32-bit true-color RGBA (R8G8B8A8).
+    Gray = 1,		//!< 8-bit grayscale (I8).
+    GrayAlpha = 2,	//!< 16-bit grayscale with alpha (I8A8).
+    RGB = 3,		//!< 24-bit true-color RGB (R8G8B8).
+    RGBA = 4,		//!< 32-bit true-color RGBA (R8G8B8A8).
 };
 typedef enum ColorFormats ColorFormats;
 
@@ -96,8 +96,8 @@ typedef enum ColorFormats ColorFormats;
  */
 enum TextureWrapModes {
     Wrap_Clamp,		//!< Clamped (no wrap).
-    Repeat,	//!< Repeated wrap (only applicable to power of two textures).
-    Mirror,	//!< Mirrored wrap (only applicable to power of two textures).
+    Wrap_Repeat,	//!< Repeated wrap (only applicable to power of two textures).
+    Wrap_Mirror,	//!< Mirrored wrap (only applicable to power of two textures).
 };
 typedef enum TextureWrapModes TextureWrapModes;
 
@@ -113,10 +113,10 @@ typedef enum TextureWrapModes TextureWrapModes;
 enum TextureFilterModes {
     Nearest,			//!< Nearest-neighbor interpolation.
     Linear,		//!< Linear interpolation.
-    NR_MM_NR,	//!< Near-mipmap-Near (texture must be mipmapped).
-    LN_MM_NR,	//!< Linear-mipmap-Near (texture must be mipmapped).
-    NR_MM_LN,	//!< Near-mipmap-Linear (texture must be mipmapped).
-    LN_MM_LN,	//!< Linear-mipmap-Linear (texture must be mipmapped).
+    MipmapNearest,	//!< Near-mipmap-Near (texture must be mipmapped). // Nearest
+    MipmapLinear,	//!< Linear-mipmap-Near (texture must be mipmapped). // Linear
+    MipmapAvgNearest,	//!< Near-mipmap-Linear (texture must be mipmapped). // Interpolate between linearly between nearest provided by two mipmaps
+    MipmapTrilinear	//!< Linear-mipmap-Linear (texture must be mipmapped). // Bilinear
 };
 typedef enum TextureFilterModes TextureFilterModes;
 

@@ -146,7 +146,7 @@ void AssetManager_LoadFont(AssetManager* manager, Texture* texture)
 	manager->m_memoryInUse += texture->spriteAtlas->characterCount * sizeof(Vector2);
 }
 
-TextureHandle AssetManager_LoadTexture(const char* filename)
+TextureHandle AssetManager_LoadTexture(const char* filename, bool generateMipMaps)
 {
 	mgdl_assert_print(m_manager.m_textureAssets != nullptr, "AssetManager not initialized!");
 	TextureHandle handle = Handle_CreateTexture(0);
@@ -167,7 +167,7 @@ TextureHandle AssetManager_LoadTexture(const char* filename)
 	// TODO Read settings from asset configuration file
 
 	TextureFilterModes filterMode = TextureFilterModes::Nearest;
-	Texture* texture = Texture_LoadFile(filename, filterMode);
+	Texture* texture = Texture_LoadFile(filename, filterMode, generateMipMaps);
 	ASSERT_DEBUG(texture != nullptr);
 	if (texture != nullptr)
 	{
@@ -175,7 +175,14 @@ TextureHandle AssetManager_LoadTexture(const char* filename)
 		// TODO how much memory the image data takes extracted
 		// TODO Convert from image format to bytes per pixe;
 		// TODO add a function to texture that tells the memory usage
-		m_manager.m_memoryInUse += texture->width * texture->height *4;
+		if (generateMipMaps)
+		{
+			m_manager.m_memoryInUse += (texture->width * 1.5f) * texture->height * (int)texture->colorFormat;
+		}
+		else
+		{
+			m_manager.m_memoryInUse += texture->width * texture->height * (int)texture->colorFormat;
+		}
 
 		TextureAsset ta = AssetManager_CreateTextureAsset(texture, filename);
 		handle = Handle_CreateTexture((u16)ObjectArray_Add_TextureAsset(array, ta));

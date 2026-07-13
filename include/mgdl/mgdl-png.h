@@ -35,6 +35,7 @@ void PNG_DeleteData(PNGFile* png);
 
 GLenum PNG_GetGLFormat(PNGFile* png);
 GLenum PNG_GetGLInternalFormat(PNGFile* png);
+GLenum PNG_GetGLType(PNGFile* png);
 
 GLubyte* PNG_GetTexels(PNGFile* png);
 color32 PNG_GetRGBA(PNGFile* png, int x, int y);
