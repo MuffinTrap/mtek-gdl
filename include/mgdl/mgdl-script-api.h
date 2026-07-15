@@ -39,6 +39,11 @@ void mgdl_DrawTextV(const zstr& text, const Vector2& topleft, float fontSize, co
 void mgdl_DrawTextEx(TextureHandle font, const zstr& text, float x, float y,  float fontSize, color32 color);
 void mgdl_DrawTextVEx(TextureHandle font, const zstr& text, const Vector2 & topleft,  float fontSize, color32 color);
 
+void mgdl_DrawTextInt(const zstr& text, int number, float x, float y, float fontSize, color32 color);
+void mgdl_DrawTextFloat(const zstr& text, float number, float x, float y, float fontSize, color32 color);
+void mgdl_DrawInt( int number, float x, float y, float fontSize, color32 color);
+void mgdl_DrawFloat( float number, float x, float y, float fontSize, color32 color);
+
 void mgdl_DrawTextureV(TextureHandle texture, const Vector2& topLeft);
 void mgdl_DrawSceneV(SceneHandle scene, const Vector3& position, float scale, color32 color);
 
@@ -74,6 +79,7 @@ void mgdl_DrawRectangleLinesEx(RectF rec, float lineThickness, color32 color);
  * @param color Color of the line.
  */
 void mgdl_DrawLine( float x, float y, float x2, float y2, color32 color );
+void mgdl_DrawLineGradient( float x1, float y1, float x2, float y2, color32 color1 , color32 color2);
 
 /**
  * @brief Draws a line.

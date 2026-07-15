@@ -133,9 +133,25 @@ static void RegisterDrawing(asIScriptEngine* as_engine)
 	// Register drawing functions
 	as_engine->RegisterGlobalFunction("void mgdl_DrawTexture(TextureHandle textureHandle, float x, float y)", asFUNCTION(mgdl_DrawTexture), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("void mgdl_DrawTextureEx(TextureHandle textureHandle, float x, float y, float rotationDeg, float scale)", asFUNCTION(mgdl_DrawTextureEx), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_DrawLine(float x1, float y2, float x2, float y2, color32 color)", asFUNCTION(mgdl_DrawLine), asCALL_CDECL);
+
+	as_engine->RegisterGlobalFunction("void mgdl_DrawLineGradient( float x1, float y1, float x2, float y2, color32 color1 , color32 color2)", asFUNCTION(mgdl_DrawLineGradient), asCALL_CDECL);
+
 	as_engine->RegisterGlobalFunction("void mgdl_DrawRectangle(float x, float y, float w, float h, color32 color)", asFUNCTION(mgdl_DrawRectangle), asCALL_CDECL);
+
+
+	// NOTE Text drawing
+
 	as_engine->RegisterGlobalFunction("void mgdl_DrawText(const zstr &in text, float x, float y, float fontSize, color32 color)", asFUNCTIONPR(mgdl_DrawText, (const zstr&, float, float, float, color32), void), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("void mgdl_DrawTextEx(TextureHandle font,  const zstr &in text, float x, float y, float fontSize, color32 color)", asFUNCTIONPR(mgdl_DrawTextEx, (TextureHandle, const zstr&, float, float, float, color32), void), asCALL_CDECL);
+
+	as_engine->RegisterGlobalFunction("void mgdl_DrawTextInt(const zstr &in text, int number, float x, float y, float fontSize, color32 color)", asFUNCTION(mgdl_DrawTextInt), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_DrawTextFloat(const zstr &in text, float number, float x, float y, float fontSize, color32 color)", asFUNCTION(mgdl_DrawTextFloat), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_DrawInt( int number, float x, float y, float fontSize, color32 color)", asFUNCTION(mgdl_DrawInt), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_DrawFloat( float number, float x, float y, float fontSize, color32 color)", asFUNCTION(mgdl_DrawFloat), asCALL_CDECL);
+
+	// NOTE Models
+
 	as_engine->RegisterGlobalFunction("void mgdl_DrawScene(SceneHandle font, float x, float y, float z, float scale, color32 color)", asFUNCTIONPR(mgdl_DrawScene, (SceneHandle, float, float, float, float, color32), void), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("void mgdl_DrawModel(ModelHandle font, float x, float y, float z, float scale, color32 color)", asFUNCTIONPR(mgdl_DrawModel, (ModelHandle, float, float, float, float, color32), void), asCALL_CDECL);
 

@@ -66,6 +66,33 @@ void mgdl_DrawTextVEx(TextureHandle font, const zstr& text, const Vector2& tople
 	mgdl_DrawTextEx(font, text, topleft.x, topleft.y, fontSize, color);
 }
 
+void mgdl_DrawTextInt(const zstr& text, int number, float x, float y, float fontSize, color32 color)
+{
+
+	Texture* db = DefaultFont_GetDefaultFont();
+	Texture_DrawTextF(db, color, x, y, fontSize, "%s %d", zstr_cstr(&text), number);
+
+}
+
+void mgdl_DrawTextFloat(const zstr& text, float number, float x, float y, float fontSize, color32 color)
+{
+	Texture* db = DefaultFont_GetDefaultFont();
+	Texture_DrawTextF(db, color, x, y, fontSize, "%s %.4f", zstr_cstr(&text), number);
+
+}
+void mgdl_DrawInt( int number, float x, float y, float fontSize, color32 color)
+{
+	Texture* db = DefaultFont_GetDefaultFont();
+	Texture_DrawTextF(db, color, x, y, fontSize, "%d", number);
+
+}
+void mgdl_DrawFloat( float number, float x, float y, float fontSize, color32 color)
+{
+	Texture* db = DefaultFont_GetDefaultFont();
+	Texture_DrawTextF(db, color, x, y, fontSize, "%.4f", number);
+
+}
+
 inline static void OpenGLRect(float x, float y, float x2, float y2, color32 color)
 {
 	mgdl_glColor32(color);
@@ -120,6 +147,16 @@ void mgdl_DrawLine ( float x, float y, float x2, float y2, color32 color )
 	glEnd();
 }
 
+void mgdl_DrawLineGradient( float x1, float y1, float x2, float y2, color32 color1 , color32 color2)
+{
+	glBegin(GL_LINES);
+	mgdl_glColor32(color1);
+	glVertex2f(x1, y1);
+	mgdl_glColor32(color2);
+	glVertex2f(x2, y2);
+	glEnd();
+
+}
 void mgdl_DrawLineV(Vector2 start, Vector2 end, color32 color )
 {
 	glBegin(GL_LINES);
