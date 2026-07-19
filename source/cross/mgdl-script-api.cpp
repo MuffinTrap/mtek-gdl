@@ -21,6 +21,18 @@ void mgdl_InitScriptApi()
 
 	s_activePalette = AssetManager_GetPalette(s_defaultPaletteHandle);
 }
+void mgdl_LogText(const zstr& text)
+{
+	Log_InfoF("%s\n",zstr_cstr(&text));
+}
+void mgdl_LogTextInt(const zstr& text, int number)
+{
+	Log_InfoF("%s %d\n", zstr_cstr(&text), number);
+}
+void mgdl_LogTextFloat(const zstr& text, float number)
+{
+	Log_InfoF("%s %.4f\n", zstr_cstr(&text), number);
+}
 
 // DRAWING
 void mgdl_DrawText(const char* text, float x, float y, float fontSize, color32 color)

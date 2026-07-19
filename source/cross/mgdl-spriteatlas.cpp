@@ -169,6 +169,8 @@ void Texture_DrawText(Texture* texture, color32 color, float x, float y, float t
 	const float uvW = font->uvWidth;
 	const float uvH = font->uvHeight;
 
+	textHeight *= mgdl_glGetYDirection();
+
 	const float left = dx;
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER, 0.3f);

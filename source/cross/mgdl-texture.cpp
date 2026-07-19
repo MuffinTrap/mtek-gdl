@@ -4,6 +4,7 @@
 #include <mgdl/mgdl-png.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-types.h>
+#include <mgdl/mgdl-opengl_util.h>
 #include <stdio.h>
 #include <cstdlib>
 #include <cstring>
@@ -119,7 +120,7 @@ void Texture_DrawRectF(Texture* img, RectF area)
 	float dx = (float)area.x;
 	float dy = (float)area.y;
 	float dx2 = (float)area.x + area.w;
-	float dy2 = (float)area.y - area.h;
+	float dy2 = (float)area.y - area.h * mgdl_glGetYDirection();
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, img->textureId);

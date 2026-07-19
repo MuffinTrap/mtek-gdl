@@ -38,19 +38,34 @@ void mgdl_InitPerspectiveProjection(float fovy, float nearZ, float farZ)
     gluPerspective(fovy, mgdl_GetAspectRatio(), nearZ, farZ);
 }
 
-void mgdl_InitOrthoProjection()
+static float s_yDirection = 1.0f;
+
+void mgdl_InitOrthoProjection(float yDirection)
 {
     glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
     // Y increases up : OpenGL default
 	Viewport viewport = mgdl_GetViewport();
-    gluOrtho2D(0.0, (double)viewport.width, 0.0, (double)viewport.height);
+	if (yDirection >= 0)
+	{
+		s_yDirection = 1;
+		gluOrtho2D(0.0, (double)viewport.width, 0.0, (double)viewport.height);
+	}
+	else
+	{
+		s_yDirection = -1;
+		gluOrtho2D(0.0, (double)viewport.width, (double)viewport.height, 0.0f);
+	}
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	// NOTE: This is from the OpenGL red book. The purpose is to have the vertices
 	// in the middle of the screen pixels
 	glTranslatef(0.375f, 0.375f, 0.0f);
+}
+float mgdl_glGetYDirection(void)
+{
+	return s_yDirection;
 }
 
 void mgdl_InitCameraF(float px, float py, float pz, float tx, float ty, float tz, float ux, float uy, float uz)

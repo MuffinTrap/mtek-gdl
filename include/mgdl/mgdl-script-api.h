@@ -5,6 +5,13 @@
 
 // Everything that takes a string parameter needs to be
 // a C++ polymorphic function
+// LOGGING
+/////////
+
+void mgdl_LogText(const zstr& text);
+void mgdl_LogTextInt(const zstr& text, int number);
+void mgdl_LogTextFloat(const zstr& text, float number);
+
 PaletteHandle mgdl_LoadPalette(const zstr& image);
 PaletteHandle mgdl_LoadPalette(const char* image);
 TextureHandle mgdl_LoadTexture(const zstr& filename, bool generateMipMaps);
@@ -176,6 +183,7 @@ bool mgdl_IsButtonPressed(int controller, WiiButtons button);
 Vector2 mgdl_GetJoystick(int controller, WiiJoystick joystick);
 float mgdl_GetJoystickX(int controller, WiiJoystick joystick);
 float mgdl_GetJoystickY(int controller, WiiJoystick joystick);
+
 
 #ifdef __cplusplus
 }

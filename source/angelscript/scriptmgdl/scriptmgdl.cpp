@@ -16,7 +16,7 @@ static void RegisterOpenGLUtilsAndGlut(asIScriptEngine* as_engine)
 
 
 	// mgdl utils
-	as_engine->RegisterGlobalFunction("void mgdl_InitOrthoProjection()", asFUNCTION(mgdl_InitOrthoProjection), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_InitOrthoProjection(float yDirection)", asFUNCTION(mgdl_InitOrthoProjection), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("void mgdl_glSetAlphaTest(bool enabled)", asFUNCTION(mgdl_glSetAlphaTest), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("void mgdl_glColor32(color32 color)", asFUNCTION(mgdl_glColor32), asCALL_CDECL);
 
@@ -93,6 +93,11 @@ static void RegisterMain(asIScriptEngine* as_engine)
 	as_engine->RegisterGlobalFunction("float mgdl_GetDeltaTime()", asFUNCTION(mgdl_GetDeltaTime), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("float mgdl_DoProgramExit()", asFUNCTION(mgdl_DoProgramExit), asCALL_CDECL);
 
+
+	// Logging
+	as_engine->RegisterGlobalFunction("void mgdl_LogText(const zstr &in text)", asFUNCTION(mgdl_LogText), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_LogTextInt(const zstr &in text, int number)", asFUNCTION(mgdl_LogTextInt), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_LogTextFloat(const zstr &in text, float number)", asFUNCTION(mgdl_LogTextFloat), asCALL_CDECL);
 
 
 	// Asset handling

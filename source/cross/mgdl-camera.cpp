@@ -64,7 +64,7 @@ void Camera_Apply(Camera* camera)
 void Camera_DrawThirdsGuide(Camera* camera)
 {
 	ASSERT_DEBUG(camera != nullptr);
-	mgdl_InitOrthoProjection();
+	mgdl_InitOrthoProjection(1.0f);
 
 	Viewport viewport = mgdl_GetViewport();
 	float W = viewport.width;
@@ -94,7 +94,7 @@ void Camera_DrawOverlayColor(Camera* camera, color32 color, float opacity)
 	ASSERT_DEBUG(camera != nullptr);
 	if (opacity > 0.0f)
 	{
-		mgdl_InitOrthoProjection();
+		mgdl_InitOrthoProjection(1.0f);
 
 		Viewport viewport = mgdl_GetViewport();
 		float W = viewport.width;

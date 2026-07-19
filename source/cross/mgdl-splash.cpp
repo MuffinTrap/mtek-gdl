@@ -187,7 +187,7 @@ float DrawSplashScreen(float deltaTime, bool drawHoldAMessage, float aHoldTimer)
 {
 	// Draws mgdl
 	// in stylized letters
-	mgdl_InitOrthoProjection();
+	mgdl_InitOrthoProjection(1.0f);
 
 	Texture* debf = DefaultFont_GetDefaultFont();
 	if (customColors == false)

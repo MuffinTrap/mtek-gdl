@@ -30,8 +30,15 @@ extern "C"
     void mgdl_InitPerspectiveProjection(float fovy, float nearZ, float farZ);
     /**
      * @brief Inits the orthographic projection. The current viewport is used to set the size and position
+     * @param yDirection Set to positive if y increases up. Set to negative if y increases down. This makes all 2D texture and text drawing work correctly.
      */
-    void mgdl_InitOrthoProjection(void);
+    void mgdl_InitOrthoProjection(float yDirection);
+
+    /**
+     * @brief Returns -1 if y increases downwards and +1 if y increases up
+     * @returns Y axis direction
+     */
+    float mgdl_glGetYDirection(void);
 
     /**
      * @brief Enables or disables the default transparency settings
