@@ -104,6 +104,7 @@ static bool ReloadAngelScriptCode(mgdl_AngelScript* angel)
 	if (result < 0 && s_compileErrorFlag)
 	{
 		// Code had errors
+		angel->status = Angel_CompileError;
 		return false;
 	}
     else if (result < 0)
@@ -140,6 +141,7 @@ static bool ReloadAngelScriptCode(mgdl_AngelScript* angel)
         return false;
     }
     Log_InfoF("Loaded AngelScipt file %s\n", script);
+	angel->status = Angel_Running;
     return true;
 }
 
@@ -171,8 +173,7 @@ static bool ReloadAngelScriptCode(mgdl_AngelScript* angel)
 
 				// Actually, always compile the main file
 				// that should #include everything else
-				ReloadAngelScriptCode(angel);
-				mgdl_RunAngelScriptInit(angel);
+				angel->status = Angel_SourceChanged;
 			}
 		}
 	}
@@ -193,6 +194,7 @@ mgdl_AngelScript* mgdl_InitAngelCpp(AngelInitFuncType initFunc, AngelFrameFuncTy
 	angel->cxxInitFunc = initFunc;
 	angel->cxxFrameFunc = frameFunc;
 	angel->cxxQuitFunc = quitFunc;
+	angel->status = Angel_Running;
 	return angel;
 }
 
@@ -204,6 +206,7 @@ mgdl_AngelScript* mgdl_InitAngelScript()
     angel->engine = asCreateScriptEngine();
     int result = angel->engine->SetMessageCallback(asFUNCTION(AngelScriptMessageCallback), 0, asCALL_CDECL);
     mgdl_assert_print(result >= 0, "Failed setting AngelScript message callback\n");
+	angel->status = Angel_Running;
 
 	// Arrays with int[] array declaration
 	RegisterScriptArray(angel->engine, true);
@@ -336,11 +339,19 @@ void mgdl_RunAngelScriptInit(mgdl_AngelScript* angel)
 void mgdl_RunAngelScriptFrame(mgdl_AngelScript* angel, float deltatime)
 {
 	ASSERT_DEBUG(angel != nullptr);
+	if (angel->status == Angel_SourceChanged)
+	{
+		if (ReloadAngelScriptCode(angel))
+		{
+			mgdl_RunAngelScriptInit(angel);
+		}
+	}
+
 	if (angel->cxxFrameFunc != nullptr)
 	{
 		angel->cxxFrameFunc(deltatime);
 	}
-	else if (s_compileErrorFlag == false)
+	else if (angel->status != Angel_CompileError)
 	{
 		RunAngelFunctionVoidFloat(angel, angel->frameFunc, deltatime);
 	}

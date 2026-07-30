@@ -17,6 +17,14 @@ extern "C" {
 	typedef void (*AngelQuitFuncType)(void);
 	typedef void (*AngelFrameFuncType)(float);
 
+	enum AngelScriptStatus
+	{
+		Angel_Running,
+		Angel_CompileError,
+		Angel_SourceChanged
+	};
+	typedef enum AngelScriptStatus AngelScriptStatus;
+
 	/**
 	 * @brief Struct representing the AngelScript engine and functions
 	 */
@@ -34,6 +42,7 @@ extern "C" {
 		zstr moduleName;
 		zstr scriptFileType;
 		bool dmonInitDone;
+		AngelScriptStatus status;
 	};
 	typedef struct mgdl_AngelScript mgdl_AngelScript;
 

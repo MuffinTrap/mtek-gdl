@@ -33,7 +33,7 @@ void angelscript_init()
 	deltaCircle = Vector2New(0, screenHeight/4.0f );
 	frameCircle = Vector2New(0, screenHeight*(2.0f/3.0f) );
 
-	barb = mgdl_LoadTexture("assets/barb.png");
+	barb = mgdl_LoadTexture("assets/barb.png", false);
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -98,7 +98,7 @@ void scene_test_scene(float deltatime)
 void effect_2d(float deltatime)
 {
 	glClearColor(0.2f, 0.2f, 0.1f, 1.0f);
-	mgdl_InitOrthoProjection();
+	mgdl_InitOrthoProjection(1);
 	int screenWidth = mgdl_GetScreenWidth();
 	int screenHeight = mgdl_GetScreenHeight();
 	deltaCircle.x += deltatime * speed;
@@ -116,10 +116,10 @@ void effect_2d(float deltatime)
 
 	mgdl_DrawTexture(barb, 120, screenHeight-16);
 
-	mgdl_DrawRectangle(deltaCircle.x, deltaCircle.y, circleSize, circleSize, mgdl_GetPaletteColor(debugPalette,3) );
+	mgdl_DrawRectangle(deltaCircle.x, deltaCircle.y, circleSize,    circleSize, mgdl_GetPaletteColor(debugPalette,3) );
 	mgdl_DrawRectangle(frameCircle.x, frameCircle.y, circleSize, circleSize, mgdl_GetPaletteColor(debugPalette,4) );
 
-	mgdl_DrawText("Henlo!", 100, 300 + sin(mgdl_GetElapsedSeconds() * 2) * 130, 64, Debug_Yellow);
+	mgdl_DrawText("Henlo!", 120, 300 + sin(mgdl_GetElapsedSeconds() * 2) * 40, 64, Debug_Yellow);
 }
 void Quad(
     Vector3 A,
