@@ -143,6 +143,23 @@ static bool ReloadAngelScriptCode(mgdl_AngelScript* angel)
     return true;
 }
 
+
+asIScriptFunction* mgdl_FindAngelScriptFunctionVoidVoid(mgdl_AngelScript* angel, const char* functionDeclaration)
+{
+	const char* moduleName = zstr_cstr(&angel->moduleName);
+    asIScriptModule* mod = angel->engine->GetModule(moduleName);
+    mgdl_assert_print(mod != nullptr, "Failed to get module\n");
+
+    asIScriptFunction* function = mod->GetFunctionByDecl(functionDeclaration);
+    if( function == nullptr )
+    {
+        // The function couldn't be found. Instruct the script writer
+        // to include the expected function in the script.
+        Log_ErrorF("The script does not have the function '%s'. Please add it and try again.\n", functionDeclaration);
+    }
+    return function;
+}
+
 #if defined(GEKKO)
 	// No file watching on Wii
 	// NOP
@@ -316,6 +333,18 @@ static void RunAngelFunctionVoidFloat(mgdl_AngelScript* angel, asIScriptFunction
 				// An exception occurred, let the script writer know what happened so it can be corrected.
 				Log_ErrorF("An exception '%s' occurred when running angelscript function. Please correct the code and try again.\n", angel->ctx->GetExceptionString());
 			}
+		}
+	}
+}
+
+
+void mgdl_RunAngelScriptFunction(mgdl_AngelScript* angel, asIScriptFunction* function)
+{
+	if (function != nullptr)
+	{
+		if (s_compileErrorFlag == false)
+		{
+			RunAngelFunctionVoidVoid(angel, function);
 		}
 	}
 }

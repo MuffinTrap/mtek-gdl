@@ -79,6 +79,22 @@ extern "C" {
 	 */
 	void mgdl_RunAngelScriptQuit(mgdl_AngelScript* angel);
 
+	// Custom functions for games and demos
+	/**
+	 * @brief Look for a function in anglescript by declaration
+	 * @param angel The AngelScript object with the module
+	 * @param angel The function declaration, must be type void()
+	 * @returns Function pointer or nullptr
+	 */
+	asIScriptFunction* mgdl_FindAngelScriptFunctionVoidVoid(mgdl_AngelScript* angel, const char* functionDeclaration);
+
+	/**
+	 * @brief Run a provided AngleScript function
+	 * @param angel The AngelScript object with the module
+	 * @param angel The function pointer
+	 */
+	void mgdl_RunAngelScriptFunction(mgdl_AngelScript* angel, asIScriptFunction* function);
+
 	/**
 	 * @brief Deinitializes the AngelScript engine and hotloading and frees all memory
 	 * @param angel The AngelScript object to deinit

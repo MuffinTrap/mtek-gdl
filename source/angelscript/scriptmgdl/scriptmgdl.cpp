@@ -112,13 +112,23 @@ static void RegisterDrawing(asIScriptEngine* as_engine)
 {
 	// Default debug colors
 	as_engine->RegisterGlobalProperty("const color32 Debug_Black", (void*)&Debug_Black);
-	as_engine->RegisterGlobalProperty("const color32 Debug_DarkGray", (void*)&Debug_DarkGray);
-	as_engine->RegisterGlobalProperty("const color32 Debug_Blue", (void*)&Debug_Blue);
-	as_engine->RegisterGlobalProperty("const color32 Debug_Green", (void*)&Debug_Green);
 	as_engine->RegisterGlobalProperty("const color32 Debug_Red", (void*)&Debug_Red);
+	as_engine->RegisterGlobalProperty("const color32 Debug_Green", (void*)&Debug_Green);
+	as_engine->RegisterGlobalProperty("const color32 Debug_Blue", (void*)&Debug_Blue);
+	as_engine->RegisterGlobalProperty("const color32 Debug_Cyan", (void*)&Debug_Cyan);
 	as_engine->RegisterGlobalProperty("const color32 Debug_Magenta", (void*)&Debug_Magenta);
 	as_engine->RegisterGlobalProperty("const color32 Debug_Yellow", (void*)&Debug_Yellow);
 	as_engine->RegisterGlobalProperty("const color32 Debug_White", (void*)&Debug_White);
+
+	as_engine->RegisterGlobalProperty("const color32 Debug_Gray", (void*)&Debug_Gray);
+	as_engine->RegisterGlobalProperty("const color32 Debug_LightRed", (void*)&Debug_LightRed);
+	as_engine->RegisterGlobalProperty("const color32 Debug_LightGreen", (void*)&Debug_LightGreen);
+	as_engine->RegisterGlobalProperty("const color32 Debug_LightBlue", (void*)&Debug_LightBlue);
+	as_engine->RegisterGlobalProperty("const color32 Debug_LightCyan", (void*)&Debug_LightCyan);
+	as_engine->RegisterGlobalProperty("const color32 Debug_LightMagenta", (void*)&Debug_Magenta);
+	as_engine->RegisterGlobalProperty("const color32 Debug_LightYellow", (void*)&Debug_LightYellow);
+	as_engine->RegisterGlobalProperty("const color32 Debug_LightGray", (void*)&Debug_LightGray);
+
 
 
 	// Font and Sprite Atlas

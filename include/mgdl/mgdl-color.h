@@ -66,14 +66,24 @@ struct RGBAf
 typedef struct RGBAf RGBAf;
 
 
-const color32 Debug_Black		= 0x000000FF;// 0 Black
-const color32 Debug_DarkGray  	= 0x555555FF; // 1 Dark Gray
-const color32 Debug_Blue			= 0x5555FFFF; // 2 Blue
-const color32 Debug_Green		= 0x55FF55FF; // 3 Green
-const color32 Debug_Red			= 0xFF5555FF; // 4 Red
-const color32 Debug_Magenta		= 0xFF55FFFF; // 5 Magenta
-const color32 Debug_Yellow		= 0xFFFF55FF; // 6 Yellow
-const color32 Debug_White		= 0xFFFFFFFF;  // 7 White
+const color32 Debug_Black		= 0x000000FF;
+const color32 Debug_Red			= 0xFF5555FF;
+const color32 Debug_Green		= 0x55FF55FF;
+const color32 Debug_Blue			= 0x5555FFFF;
+const color32 Debug_Cyan			= 0x55FFFFFF;
+const color32 Debug_Magenta		= 0xFF55FFFF;
+const color32 Debug_Yellow		= 0xFFFF55FF;
+const color32 Debug_White		= 0xFFFFFFFF;
+
+const color32 Debug_Gray		  	= 0x555555FF;
+const color32 Debug_LightRed		= 0xFFCCCCFF;
+const color32 Debug_LightGreen	= 0xCCFFCCFF;
+const color32 Debug_LightBlue	= 0xCCCCFFFF;
+const color32 Debug_LightCyan  	= 0xCCFFFFFF;
+const color32 Debug_LightMagenta	= 0xFFCCFFFF;
+const color32 Debug_LightYellow	= 0xFFFFCCFF;
+const color32 Debug_LightGray	= 0xCCCCCCFF;
+
 
 #ifdef __cplusplus
 extern "C"

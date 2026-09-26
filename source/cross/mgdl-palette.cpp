@@ -23,13 +23,21 @@ static Palette* s_debugPalette = nullptr;
 static u32 brightDos[] =
 {
 	Debug_Black,
-	Debug_DarkGray,
-	Debug_Blue,
-	Debug_Green,
 	Debug_Red,
+	Debug_Green,
+	Debug_Blue,
+	Debug_Cyan,
 	Debug_Magenta,
 	Debug_Yellow,
-	Debug_White
+	Debug_White,
+	Debug_Gray,
+	Debug_LightRed,
+	Debug_LightGreen,
+	Debug_LightBlue,
+	Debug_LightCyan,
+	Debug_LightMagenta,
+	Debug_LightYellow,
+	Debug_LightGray
 };
 
 
@@ -46,7 +54,7 @@ Palette* Palette_GetDebug(void)
 {
 	if (s_debugPalette == nullptr)
 	{
-		s_debugPalette = Palette_Create(brightDos, 8);
+		s_debugPalette = Palette_Create(brightDos, 16);
 	}
 	return s_debugPalette;
 }
