@@ -939,13 +939,24 @@ static inline bool zstr_is_valid_utf8(const zstr *s)
 // Creates a view from a C-string.
 static inline zstr_view zstr_view_from(const char *cstr)
 {
+#if defined(_WIN32)
+    zstr_view v;
+    v.data = cstr; v.len = strlen(cstr);
+    return v;
+#else
     return (zstr_view){ .data = cstr, .len = strlen(cstr) };
+#endif
 }
 
 // Creates a view covering the entire zstr.
 static inline zstr_view zstr_as_view(const zstr *s)
 {
+#if defined(_WIN32)
+    zstr_view v; v.data = zstr_cstr(s); v.len = zstr_len(s);
+    return v;
+#else
     return (zstr_view){ .data = zstr_cstr(s), .len = zstr_len(s) };
+#endif
 }
 
 // Converts a view back into an owning zstr (allocates).
@@ -957,9 +968,26 @@ static inline zstr zstr_from_view(zstr_view v)
 // Returns a substring view.
 static inline zstr_view zstr_sub(zstr_view v, size_t start, size_t len)
 {
-    if (start >= v.len) return (zstr_view){ "", 0 };
+    if (start >= v.len)
+    {
+#if defined(_WIN32)
+        zstr_view vout;
+        vout.data = "";
+        vout.len = 0;
+        return vout;
+
+#else 
+        return (zstr_view) { "", 0 };
+#endif
+    }
     if (start + len > v.len) len = v.len - start;
+
+#if defined(_WIN32)
+    zstr_view vout;  vout.data = v.data + start, vout.len = len;
+    return vout;
+#else
     return (zstr_view){ .data = v.data + start, .len = len };
+#endif
 }
 
 // Checks if view equals a C-string.
@@ -1011,7 +1039,12 @@ static inline zstr_view zstr_view_lstrip(zstr_view v)
     const char *start = v.data;
     const char *end = v.data + v.len;
     while (start < end && isspace((unsigned char)*start)) start++;
+#if defined(_WIN32)
+	zstr_view vout; vout.data = start; vout.len = (size_t)(end - start);
+    return vout;
+    #else
     return (zstr_view){ .data = start, .len = (size_t)(end - start) };
+#endif
 }
 
 // Trims whitespace from the end of the view.
@@ -1020,7 +1053,12 @@ static inline zstr_view zstr_view_rstrip(zstr_view v)
     const char *start = v.data;
     const char *end = v.data + v.len;
     while (end > start && isspace((unsigned char)*(end - 1))) end--;
+#if defined(_WIN32)
+	zstr_view vout; vout.data = start; vout.len = (size_t)(end - start);
+    return vout;
+    #else
     return (zstr_view){ .data = start, .len = (size_t)(end - start) };
+#endif
 }
 
 // Trims whitespace from both ends.
@@ -1064,12 +1102,23 @@ static inline bool zstr_view_to_int(zstr_view v, int *out)
 // Initializes an iterator for splitting a string.
 static inline zstr_split_iter zstr_split_init(zstr_view src, const char *delim) 
 {
+
+#if defined(_WIN32)
+    zstr_split_iter i;
+    i.source = src;
+        i.delim = zstr_view_from(delim);
+        i.current_pos = 0;
+        i.finished = false;
+        return i;
+
+#else
     return (zstr_split_iter){
         .source = src,
         .delim = zstr_view_from(delim),
         .current_pos = 0,
         .finished = false
     };
+#endif
 }
 
 // Gets the next part in a split iteration. Returns false when done.
@@ -1093,12 +1142,26 @@ static inline bool zstr_split_next(zstr_split_iter *it, zstr_view *out_part)
 
     if (found_at == remaining) 
     {
+#if defined(_WIN32)
+        zstr_view v; 
+        v.data = start; 
+        v.len = remaining;
+		*out_part = v;
+#else // defined(_WIN32)
         *out_part = (zstr_view){ .data = start, .len = remaining };
-        it->finished = true;
+#endif
+		it->finished = true;
     }
     else 
     {
+#if defined(_WIN32)
+        zstr_view v; 
+        v.data = start; 
+        v.len = found_at;
+        *out_part = v;
+#else
         *out_part = (zstr_view){ .data = start, .len = found_at };
+#endif
         it->current_pos += found_at + it->delim.len;
     }
     

@@ -9,6 +9,8 @@
 #include <mgdl/pc/mgdl-joystick.h>
 #include <mgdl/pc/mgdl-pc-input.h>
 
+#define WIN32_LEAN_AND_MEAN
+#define NOCOMM
 #include <Windows.h>
 #include <windowsx.h> // Macro for extracting mouse position
 

@@ -15,6 +15,10 @@
 #       include <Windows.h>
 #       include <gL/GL.h>
 #       include <gL/GLU.h>
+#   elif defined(_WIN32)
+#       include <Windows.h>
+#       include <gl/GL.h>
+#       include <gl/GLU.h>
 #   elif defined(__linux__)
         #include <GL/gl.h>
         #include <GL/glu.h>

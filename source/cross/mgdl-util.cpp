@@ -137,7 +137,12 @@ GLint TextureWrapToGLWrap(TextureWrapModes wrapMode)
 			return GL_CLAMP;
 			break;
 		case TextureWrapModes::Wrap_Mirror:
+#if defined(MGDL_PLATFORM_WINDOWS)
+			// TODO How to do?
+			return GL_REPEAT;
+#else // defined(MGDL_PLATFORM_WINDOWS)
 			return GL_MIRRORED_REPEAT;
+#endif
 			break;
 		case TextureWrapModes::Wrap_Repeat:
 			return GL_REPEAT;
@@ -255,6 +260,8 @@ void RevBytes(void *var, int size) {
 
 // File system
 #if defined(MGDL_PLATFORM_WINDOWS)
+#define WIN32_LEAN_AND_MEAN
+#define NOCOMM
 #include <windows.h>
 #else
 #include <unistd.h>

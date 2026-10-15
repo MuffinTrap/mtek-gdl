@@ -49,7 +49,7 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -121,39 +121,66 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;MGDL_PLATFORM_WINDOWS;MGDL_PLATFORM="Windows Native";MGDL_USE_CCVECTOR;UFBX_REAL_IS_FLOAT;_XKEYCHECK_H;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Dev\Wii\mtek-gdl\source\angelscript;C:\Dev\Wii\Libraries\sdk\add_on;C:\Dev\Wii\Libraries\sdk\angelscript\include;..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <Optimization>MinSpace</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <ExportNamedFunctions>*</ExportNamedFunctions>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Libraries\sdk\angelscript\include\angelscript.h" />
+    <ClInclude Include="..\include\mgdl.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\sdk\angelscript\projects\msvc2022\angelscript.vcxproj">
+      <Project>{39e6af97-6ba3-4a72-8c61-bcebf214ebfd}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="..\include\mgdl\ufbx\ufbx.cpp" />
-    <ClCompile Include="..\source\cross\mgdl-alloc.cpp" />
+    <ClCompile Include="..\source\angelscript\scriptarray\scriptarray.cpp" />
+    <ClCompile Include="..\source\angelscript\scriptbuilder\scriptbuilder.cpp" />
+    <ClCompile Include="..\source\angelscript\scriptmath\scriptmath.cpp" />
+    <ClCompile Include="..\source\angelscript\scriptmgdl\scriptmgdl.cpp" />
+    <ClCompile Include="..\source\angelscript\scriptmgdl\ZStrFactory.cpp" />
+    <ClCompile Include="..\source\angelscript\scriptopengl\ScriptOpenGL.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-angelscript.cpp" />
     <ClCompile Include="..\source\cross\mgdl-assetmanager.cpp" />
     <ClCompile Include="..\source\cross\mgdl-audio.cpp" />
-    <ClCompile Include="..\source\cross\mgdl-cache.cpp" />
     <ClCompile Include="..\source\cross\mgdl-camera.cpp" />
     <ClCompile Include="..\source\cross\mgdl-color.cpp" />
     <ClCompile Include="..\source\cross\mgdl-console.cpp" />
     <ClCompile Include="..\source\cross\mgdl-controller.cpp" />
     <ClCompile Include="..\source\cross\mgdl-defaultfont.cpp" />
-    <ClCompile Include="..\source\cross\mgdl-draw2d.cpp" />
     <ClCompile Include="..\source\cross\mgdl-draw3d.cpp" />
     <ClCompile Include="..\source\cross\mgdl-dynamic_array.cpp" />
     <ClCompile Include="..\source\cross\mgdl-fbx.cpp" />
-    <ClCompile Include="..\source\cross\mgdl-font.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-gradient.cpp" />
     <ClCompile Include="..\source\cross\mgdl-gui.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-light-system.cpp" />
     <ClCompile Include="..\source\cross\mgdl-light.cpp" />
     <ClCompile Include="..\source\cross\mgdl-logger.cpp" />
     <ClCompile Include="..\source\cross\mgdl-main.cpp" />
     <ClCompile Include="..\source\cross\mgdl-material.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-memory.cpp" />
     <ClCompile Include="..\source\cross\mgdl-mesh.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-model.cpp" />
     <ClCompile Include="..\source\cross\mgdl-mp3-player.cpp" />
     <ClCompile Include="..\source\cross\mgdl-node.cpp" />
     <ClCompile Include="..\source\cross\mgdl-ogg-player.cpp" />
@@ -164,11 +191,14 @@
     <ClCompile Include="..\source\cross\mgdl-png-stb.cpp" />
     <ClCompile Include="..\source\cross\mgdl-png.cpp" />
     <ClCompile Include="..\source\cross\mgdl-scene.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-script-api.cpp" />
     <ClCompile Include="..\source\cross\mgdl-sound.cpp" />
     <ClCompile Include="..\source\cross\mgdl-splash.cpp" />
     <ClCompile Include="..\source\cross\mgdl-sprite.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-spriteatlas.cpp" />
     <ClCompile Include="..\source\cross\mgdl-texture.cpp" />
     <ClCompile Include="..\source\cross\mgdl-transform.cpp" />
+    <ClCompile Include="..\source\cross\mgdl-types.cpp" />
     <ClCompile Include="..\source\cross\mgdl-util.cpp" />
     <ClCompile Include="..\source\cross\mgdl-vectorfunctions.cpp" />
     <ClCompile Include="..\source\cross\mgdl-wav-player.cpp" />
@@ -179,57 +209,6 @@
     <ClCompile Include="..\source\pc\pc-joystick.cpp" />
     <ClCompile Include="..\source\pc\pc-platform-win32.cpp" />
     <ClCompile Include="..\source\pc\pc-platform.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\include\mgdl.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-alloc.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-assert.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-assetmanager.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-audio.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-cache.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-camera.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-color.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-config.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-console.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-controller.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-defaultfont.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-doxygen.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-draw2d.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-draw3d.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-dynamic_array.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-fbx.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-file.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-font.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-gui.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-light.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-logger.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-main.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-material.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-mesh.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-mp3-player.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-music.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-node.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-ogg-player.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-opengl.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-opengl_util.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-palette.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-platform.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-png.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-rocket.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-scene.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-sound.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-splash.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-sprite.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-texture.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-transform.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-types.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-util.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-vector.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-vectorfunctions.h" />
-    <ClInclude Include="..\include\mgdl\mgdl-wav-player.h" />
-    <ClInclude Include="..\include\mgdl\pc\mgdl-audio-directsound.h" />
-    <ClInclude Include="..\include\mgdl\pc\mgdl-joystick.h" />
-    <ClInclude Include="..\include\mgdl\pc\mgdl-pc-input.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

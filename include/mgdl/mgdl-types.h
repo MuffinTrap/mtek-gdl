@@ -24,6 +24,12 @@
 #pragma clang diagnostic ignored "-Wc99-extensions"
 #pragma clang diagnostic ignored "-Wc++20-designator"
 #endif
+
+// Windows complains about unsafe fopen etc.
+#if defined(_WIN32) && not defined(_CRT_SECURE_NO_WARNINGS)
+	#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include <mgdl/zstrh/zstr.h>
 #ifndef GEKKO
 #pragma clang diagnostic pop

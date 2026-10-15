@@ -4,6 +4,7 @@
 #include <mgdl/mgdl-audio.h>
 #include <mgdl/mgdl-logger.h>
 #include <mgdl/mgdl-assert.h>
+#include <mgdl/mgdl-memory.h>
 #include <mgdl/mgdl-util.h>
 
 // Pointer to Object created by DirectSoundCreate
@@ -68,6 +69,36 @@ static void PrintDirectSoundError(HRESULT error)
 		};
 }
 
+// Static buffer functions
+static u32 s_GetBufferElaped(LPDIRECTSOUNDBUFFER buffer, int channels, int samplerate)
+{
+	if (buffer != nullptr)
+	{
+		DWORD playposition;
+		DWORD writeposition;
+
+		HRESULT positionResult = buffer->GetCurrentPosition(&playposition, &writeposition);
+		if (positionResult == DS_OK)
+		{
+			// calculate to ms      bytes /  ms in second * samples per second * (bytes per sample)
+			DWORD samplesElapsed = playposition / channels;
+			DWORD msElapsed = (playposition * 1000) / samplerate;
+			return msElapsed;
+		}
+	}
+	return 0;
+}
+
+static void s_SetBufferVolume(IDirectSoundBuffer* buffer, float normalizedVolume)
+{
+	if (buffer != nullptr)
+	{
+		// In DirectAudio max is 0 : DSBVOLUME_MAX
+		// and min is -10 000 : DSBVOLUME_MIN
+		float decreaseFromNormal = 1.0f - normalizedVolume;
+		buffer->SetVolume(LONG(DSBVOLUME_MAX + DSBVOLUME_MIN * decreaseFromNormal));
+	}
+}
 
 // Playback and audio state
 
@@ -262,6 +293,7 @@ void Audio_CloseStaticBuffer(Sound* snd, void* buffer, sizetype bytesWritten)
 		PrintDirectSoundError(unlockResult);
 	}
 }
+
 
 void Audio_PlayStaticBuffer(Sound* snd)
 {
@@ -578,7 +610,10 @@ void Audio_SetPaused(bool paused)
 			else
 			{
 				// NOTE resume only those buffers that have had any playback
-				if (Audio_GetStaticBufferElapsedMs(soundDatas[i]->buffer) > 0)
+				soundDatas[i].buffer->GetStatus(&statusFlagsOut);
+				if (Flag_IsSetAny(HealthStatusFailed, DSBSTATUS_PLAYING) == false 
+					&& soundDatas[i].inUse 
+					&& soundDatas[i].elapsedSeconds > 0)
 				{
 					soundDatas[i].buffer->Play(0,0,0);
 				}
@@ -604,14 +639,7 @@ void Audio_ResumeStream(Sound* snd)
 {
 	if (snd->voiceNumber == activeStreamingSound)
 	{
-		if (streamingSound->isLooping)
-		{
-			streamingBuffer->Play(0,0,DSBPLAY_LOOPING);
-		}
-		else
-		{
-			streamingBuffer->Play(0,0,0);
-		}
+		streamingBuffer->Play(0,0,0);
 	}
 }
 
@@ -624,14 +652,6 @@ void Audio_StopStream(Sound* snd)
 	}
 }
 
-static void s_SetBufferVolume(IDirectSoundBuffer* buffer), float normalizedVolume)
-{
-		// In DirectAudio max is 0 : DSBVOLUME_MAX
-		// and min is -10 000 : DSBVOLUME_MIN
-		float decreaseFromNormal = 1.0f - normalizedVolume;
-		buffer->SetVolume(LONG(DSBVOLUME_MAX + DSBVOLUME_MIN * decreaseFromNormal));
-
-}
 
 void Audio_SetStreamVolume(Sound* snd, float normalizedVolume)
 {
@@ -659,7 +679,7 @@ mgdlAudioStateEnum Audio_GetStaticBufferStatus(Sound* snd)
 	return Audio_StateInvalid;
 }
 
-mgdlAudioStateEnum Audio_SetStaticBufferNormalizedVolume(Sound* snd, float normalizedVolume)
+void Audio_SetStaticBufferNormalizedVolume(Sound* snd, float normalizedVolume)
 {
 	if (snd != nullptr && snd->voiceNumber > 0 && snd->voiceNumber < MGDL_AUDIO_MAX_SOUNDS)
 	{
@@ -684,21 +704,12 @@ void Audio_SetStaticBufferElapsedMs(Sound* snd, u32 milliseconds)
 	}
 }
 
+
 u32 Audio_GetStaticBufferElapsedMs(Sound* snd)
 {
 	if (snd != nullptr && snd->voiceNumber >= 0 && snd->voiceNumber < MGDL_AUDIO_MAX_SOUNDS)
 	{
-		DWORD playposition;
-		DWORD writeposition;
-		
-		HRESULT positionResult = soundDatas[snd->voiceNumber].buffer->GetCurrentPosition(&playposition, &writeposition);
-		if (positionResult == DS_OK)
-		{
-			// calculate to ms      bytes /  ms in second * samples per second * (bytes per sample)
-			DWORD samplesElapsed = playposition / (soundDatas[snd->voiceNumber].channels);
-			DWORD msElapsed = (playposition * 1000) / soundDatas[snd->voiceNumber].samplerate;
-			return msElapsed;
-		}
+		return s_GetBufferElaped(soundDatas[snd->voiceNumber].buffer, soundDatas[snd->voiceNumber].channels, soundDatas[snd->voiceNumber].samplerate);
 	}
 	return 0;
 }
