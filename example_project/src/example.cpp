@@ -46,15 +46,16 @@ void Example::Init()
     Log_SaveLines(256);
 
     // Sprites, images and fonts
-    barb = mgdl_LoadTexture("assets/barb.png");
-    mgdl_SetTextureFilter(barb, TextureFilterModes::Linear);
+    barb = mgdl_LoadTexture("assets/barb.png", false);
+    mgdl_SetTextureFilterMag(barb, TextureFilterModes::Linear);
+    mgdl_SetTextureFilterMin(barb, TextureFilterModes::Linear);
     short spriteHeight = 64;
-    mel_sprites = mgdl_LoadTexture("assets/mel_tiles.png");
+    mel_sprites = mgdl_LoadTexture("assets/mel_tiles.png", false);
     mgdl_CreateSpriteAtlas(mel_sprites, spriteHeight, spriteHeight);
-    fruitSprites = mgdl_LoadTexture("assets/fruits.png");
+    fruitSprites = mgdl_LoadTexture("assets/fruits.png", false);
     mgdl_CreateSpriteAtlas(fruitSprites, 16, 16);
 
-    ibmFont = mgdl_LoadTexture("assets/font8x16.png");
+    ibmFont = mgdl_LoadTexture("assets/font8x16.png", false);
     mgdl_CreateFont(ibmFont, 8, 16, ' ');
 
     /*
@@ -192,13 +193,13 @@ void Example::Draw()
     color32 black = Palette_GetColor(Palette_GetDefault(), 5);
     mgdl_glClearColor32(black);
 
-    mgdl_InitOrthoProjection();
+    mgdl_InitOrthoProjection(1);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
     if ( toggle3D) {DrawIcosa();}
 
-    mgdl_InitOrthoProjection();
+    mgdl_InitOrthoProjection(1);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
