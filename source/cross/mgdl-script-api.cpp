@@ -456,8 +456,8 @@ bool mgdl_IsButtonDown(int controller, WiiButtons button)
 		}
 	}
 	return false;
-
 }
+
 bool mgdl_IsButtonPressed(int controller, WiiButtons button)
 {
 	if (controller >=0 && controller < MGDL_MAX_CONTROLLERS)
@@ -471,6 +471,21 @@ bool mgdl_IsButtonPressed(int controller, WiiButtons button)
 	}
 	return false;
 }
+
+bool mgdl_IsButtonReleased(int controller, WiiButtons button)
+{
+	if (controller >=0 && controller < MGDL_MAX_CONTROLLERS)
+	{
+		WiiController* c = mgdl_GetController(controller);
+		ASSERT_DEBUG(c != nullptr);
+		if (c != nullptr)
+		{
+			return WiiController_ButtonRelease(c, button);
+		}
+	}
+	return false;
+}
+
 
 Vector2 mgdl_GetJoystick(int controller, WiiJoystick joystick)
 {

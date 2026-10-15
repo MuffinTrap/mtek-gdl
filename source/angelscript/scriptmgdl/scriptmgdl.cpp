@@ -153,6 +153,7 @@ static void RegisterDrawing(asIScriptEngine* as_engine)
 	as_engine->RegisterGlobalFunction("void mgdl_DrawLineGradient( float x1, float y1, float x2, float y2, color32 color1 , color32 color2)", asFUNCTION(mgdl_DrawLineGradient), asCALL_CDECL);
 
 	as_engine->RegisterGlobalFunction("void mgdl_DrawRectangle(float x, float y, float w, float h, color32 color)", asFUNCTION(mgdl_DrawRectangle), asCALL_CDECL);
+	as_engine->RegisterGlobalFunction("void mgdl_DrawRectangleLines(float x, float y, float w, float h, color32 color)", asFUNCTION(mgdl_DrawRectangleLines), asCALL_CDECL);
 
 
 	// NOTE Text drawing
@@ -215,7 +216,11 @@ static void RegisterController(asIScriptEngine* as_engine)
 
 
 	as_engine->RegisterGlobalFunction("bool mgdl_IsButtonDown(int controller, WiiButtons button)", asFUNCTION(mgdl_IsButtonDown), asCALL_CDECL);
+
 	as_engine->RegisterGlobalFunction("bool mgdl_IsButtonPressed(int controller, WiiButtons button)", asFUNCTION(mgdl_IsButtonPressed), asCALL_CDECL);
+
+	as_engine->RegisterGlobalFunction("bool mgdl_IsButtonReleased(int controller, WiiButtons button)", asFUNCTION(mgdl_IsButtonReleased), asCALL_CDECL);
+
 	as_engine->RegisterGlobalFunction("float mgdl_GetJoystickX(int controller, WiiJoystick joystick)", asFUNCTION(mgdl_GetJoystickX), asCALL_CDECL);
 	as_engine->RegisterGlobalFunction("float mgdl_GetJoystickY(int controller, WiiJoystick joystick)", asFUNCTION(mgdl_GetJoystickY), asCALL_CDECL);
 }
