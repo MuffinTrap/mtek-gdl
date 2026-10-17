@@ -36,6 +36,10 @@ class Example
     float elapsedSeconds;
 
     mgdl_AngelScript* angelContext;
+    asIScriptFunction* angelInitFunc;
+    asIScriptFunction* angelFrameFunc;
+    float angelScriptDuration;
+    bool angelScriptActive = false;
 
 
     // Toggles

@@ -1,6 +1,5 @@
 // Only used when in Script mode.
 // When used as CPP the actual CPP function is called
-#if USE_ANGEL_AS_SCRIPT
 
 void mgdl_DrawTextV(zstr text, Vector2 topleft, float fontSize, color32 color)
 {
@@ -31,4 +30,3 @@ Vector2 mgdl_GetJoystick(int controller, WiiJoystick joystick)
 	float y = mgdl_GetJoystickY(controller, joystick);
 	return Vector2New(x,y);
 }
-#endif

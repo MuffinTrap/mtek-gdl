@@ -159,6 +159,13 @@
 #include <ctype.h>
 #include <stdlib.h> 
 
+// Added by muffintrap for compliance with pedantic C++ compilers
+#if defined(_WIN32) || defined(GEKKO)
+#   ifndef PEDANTIC_CPP
+#       define PEDANTIC_CPP
+#   endif
+#endif
+
 // I am thinking of you too, C++ devs.
 #ifdef __cplusplus
 extern "C" {
@@ -939,7 +946,7 @@ static inline bool zstr_is_valid_utf8(const zstr *s)
 // Creates a view from a C-string.
 static inline zstr_view zstr_view_from(const char *cstr)
 {
-#if defined(_WIN32)
+#if defined(PEDANTIC_CPP)
     zstr_view v;
     v.data = cstr; v.len = strlen(cstr);
     return v;
@@ -951,7 +958,7 @@ static inline zstr_view zstr_view_from(const char *cstr)
 // Creates a view covering the entire zstr.
 static inline zstr_view zstr_as_view(const zstr *s)
 {
-#if defined(_WIN32)
+#if defined(PEDANTIC_CPP)
     zstr_view v; v.data = zstr_cstr(s); v.len = zstr_len(s);
     return v;
 #else
@@ -970,7 +977,7 @@ static inline zstr_view zstr_sub(zstr_view v, size_t start, size_t len)
 {
     if (start >= v.len)
     {
-#if defined(_WIN32)
+#if defined(PEDANTIC_CPP)
         zstr_view vout;
         vout.data = "";
         vout.len = 0;
@@ -982,7 +989,7 @@ static inline zstr_view zstr_sub(zstr_view v, size_t start, size_t len)
     }
     if (start + len > v.len) len = v.len - start;
 
-#if defined(_WIN32)
+#if defined(PEDANTIC_CPP)
     zstr_view vout;  vout.data = v.data + start, vout.len = len;
     return vout;
 #else
@@ -1039,7 +1046,7 @@ static inline zstr_view zstr_view_lstrip(zstr_view v)
     const char *start = v.data;
     const char *end = v.data + v.len;
     while (start < end && isspace((unsigned char)*start)) start++;
-#if defined(_WIN32)
+#if defined(PEDANTIC_CPP)
 	zstr_view vout; vout.data = start; vout.len = (size_t)(end - start);
     return vout;
     #else
@@ -1053,7 +1060,7 @@ static inline zstr_view zstr_view_rstrip(zstr_view v)
     const char *start = v.data;
     const char *end = v.data + v.len;
     while (end > start && isspace((unsigned char)*(end - 1))) end--;
-#if defined(_WIN32)
+#if defined(PEDANTIC_CPP)
 	zstr_view vout; vout.data = start; vout.len = (size_t)(end - start);
     return vout;
     #else
@@ -1103,7 +1110,7 @@ static inline bool zstr_view_to_int(zstr_view v, int *out)
 static inline zstr_split_iter zstr_split_init(zstr_view src, const char *delim) 
 {
 
-#if defined(_WIN32)
+#if defined(PEDANTIC_CPP)
     zstr_split_iter i;
     i.source = src;
         i.delim = zstr_view_from(delim);
@@ -1142,19 +1149,19 @@ static inline bool zstr_split_next(zstr_split_iter *it, zstr_view *out_part)
 
     if (found_at == remaining) 
     {
-#if defined(_WIN32)
+#if defined(PEDANTIC_CPP)
         zstr_view v; 
         v.data = start; 
         v.len = remaining;
 		*out_part = v;
-#else // defined(_WIN32)
+#else
         *out_part = (zstr_view){ .data = start, .len = remaining };
 #endif
 		it->finished = true;
     }
     else 
     {
-#if defined(_WIN32)
+#if defined(PEDANTIC_CPP)
         zstr_view v; 
         v.data = start; 
         v.len = found_at;

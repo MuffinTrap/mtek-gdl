@@ -1,6 +1,9 @@
 /** ScriptOpenGL.cpp by Blue Cat Audio (www.bluecataudio.com)
+ *
+ * Modified by muffintrap: removed OpenGL functions that Wii's OpenGX does not have
 *
 */
+#define MGDL_OPENGX
 
 #include "ScriptOpenGL.h"
 #include <assert.h> // assert()
@@ -8,12 +11,7 @@
 // This part modified by muffintrap
 #include <scriptarray/scriptarray.h>
 #include <mgdl/mgdl-opengl.h>
-// openGL
-#ifdef _WIN32
-#define asGLFunctionCall asCALL_STDCALL
-#else
-#define asGLFunctionCall asCALL_CDECL
-#endif
+#include <mgdl/mgdl-angelscript.h>
 // modification ends
 
 
@@ -614,12 +612,6 @@ void as_glLightfv(GLenum light, GLenum pname, const CScriptArray& a)
     ///@todo check length depending on enum value for safety
     return glLightfv(light,pname,(const GLfloat*)a.At(0));
 }
-void as_glLightiv(GLenum light, GLenum pname, const CScriptArray& a)
-{
-    // unsafe direct memory access (read only)
-    ///@todo check length depending on enum value for safety
-    return glLightiv(light,pname,(const GLint*)a.At(0));
-}
 
 void as_glMaterialfv(GLenum face, GLenum pname,const CScriptArray& a)
 {
@@ -627,11 +619,20 @@ void as_glMaterialfv(GLenum face, GLenum pname,const CScriptArray& a)
     return glMaterialfv(face,pname,(const GLfloat*)a.At(0));
 }
 
-void as_glMaterialiv(GLenum face, GLenum pname,const CScriptArray& a)
-{
-    // unsafe direct memory access (read only)
-    return glMaterialiv(face,pname,(const GLint*)a.At(0));
-}
+#if not defined(MGDL_OPENGX)
+    void as_glMaterialiv(GLenum face, GLenum pname,const CScriptArray& a)
+    {
+        // unsafe direct memory access (read only)
+        return glMaterialiv(face,pname,(const GLint*)a.At(0));
+    }
+    void as_glLightiv(GLenum light, GLenum pname, const CScriptArray& a)
+    {
+        // unsafe direct memory access (read only)
+        ///@todo check length depending on enum value for safety
+        return glLightiv(light,pname,(const GLint*)a.At(0));
+    }
+#endif
+
 
 void RegisterOpenGL_Native(asIScriptEngine *engine)
 {
@@ -1331,195 +1332,200 @@ void RegisterOpenGL_Native(asIScriptEngine *engine)
     r=engine->RegisterGlobalProperty("const GLenum GL_TEXTURE_COMPONENTS" , &kGL_TEXTURE_COMPONENTS); assert(r>=0);
 
 
-    r=engine->RegisterGlobalFunction("void glAccum (GLenum op, GLfloat value) ", asFUNCTION(glAccum), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glAlphaFunc (GLenum func, GLclampf ref) ", asFUNCTION(glAlphaFunc), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glArrayElement (GLint i) ", asFUNCTION(glArrayElement), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glBegin (GLenum mode) ", asFUNCTION(glBegin), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glBindTexture (GLenum target, GLuint texture) ", asFUNCTION(glBindTexture), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glBlendFunc (GLenum sfactor, GLenum dfactor) ", asFUNCTION(glBlendFunc), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glCallList (GLuint list) ", asFUNCTION(glCallList), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glClear (GLbitfield mask) ", asFUNCTION(glClear), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glClearAccum (GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) ", asFUNCTION(glClearAccum), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glClearColor (GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha) ", asFUNCTION(glClearColor), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glClearDepth (GLclampd depth) ", asFUNCTION(glClearDepth), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glClearIndex (GLfloat c) ", asFUNCTION(glClearIndex), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glClearStencil (GLint s) ", asFUNCTION(glClearStencil), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glColor3b (GLbyte red, GLbyte green, GLbyte blue) ", asFUNCTION(glColor3b), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glColor3d (GLdouble red, GLdouble green, GLdouble blue) ", asFUNCTION(glColor3d), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glColor3f (GLfloat red, GLfloat green, GLfloat blue) ", asFUNCTION(glColor3f), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glColor3i (GLint red, GLint green, GLint blue) ", asFUNCTION(glColor3i), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glColor3s (GLshort red, GLshort green, GLshort blue) ", asFUNCTION(glColor3s), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glColor3ub (GLubyte red, GLubyte green, GLubyte blue) ", asFUNCTION(glColor3ub), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glColor3ui (GLuint red, GLuint green, GLuint blue) ", asFUNCTION(glColor3ui), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glColor3us (GLushort red, GLushort green, GLushort blue) ", asFUNCTION(glColor3us), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glColor4b (GLbyte red, GLbyte green, GLbyte blue, GLbyte alpha) ", asFUNCTION(glColor4b), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glColor4d (GLdouble red, GLdouble green, GLdouble blue, GLdouble alpha) ", asFUNCTION(glColor4d), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glColor4f (GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) ", asFUNCTION(glColor4f), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glColor4i (GLint red, GLint green, GLint blue, GLint alpha) ", asFUNCTION(glColor4i), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glColor4s (GLshort red, GLshort green, GLshort blue, GLshort alpha) ", asFUNCTION(glColor4s), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glColor4ub (GLubyte red, GLubyte green, GLubyte blue, GLubyte alpha) ", asFUNCTION(glColor4ub), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glColor4ui (GLuint red, GLuint green, GLuint blue, GLuint alpha) ", asFUNCTION(glColor4ui), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glColor4us (GLushort red, GLushort green, GLushort blue, GLushort alpha) ", asFUNCTION(glColor4us), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glColorMask (GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha) ", asFUNCTION(glColorMask), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glColorMaterial (GLenum face, GLenum mode) ", asFUNCTION(glColorMaterial), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glCopyPixels (GLint x, GLint y, GLsizei width, GLsizei height, GLenum type) ", asFUNCTION(glCopyPixels), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glCopyTexImage1D (GLenum target, GLint level, GLenum internalFormat, GLint x, GLint y, GLsizei width, GLint border) ", asFUNCTION(glCopyTexImage1D), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glCopyTexImage2D (GLenum target, GLint level, GLenum internalFormat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border) ", asFUNCTION(glCopyTexImage2D), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glCopyTexSubImage1D (GLenum target, GLint level, GLint xoffset, GLint x, GLint y, GLsizei width) ", asFUNCTION(glCopyTexSubImage1D), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glCopyTexSubImage2D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height) ", asFUNCTION(glCopyTexSubImage2D), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glCullFace (GLenum mode) ", asFUNCTION(glCullFace), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glDeleteLists (GLuint list, GLsizei range) ", asFUNCTION(glDeleteLists), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glDepthFunc (GLenum func) ", asFUNCTION(glDepthFunc), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glDepthMask (GLboolean flag) ", asFUNCTION(glDepthMask), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glDepthRange (GLclampd zNear, GLclampd zFar) ", asFUNCTION(glDepthRange), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glDisable (GLenum cap) ", asFUNCTION(glDisable), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glDisableClientState (GLenum array) ", asFUNCTION(glDisableClientState), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glDrawArrays (GLenum mode, GLint first, GLsizei count) ", asFUNCTION(glDrawArrays), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glDrawBuffer (GLenum mode) ", asFUNCTION(glDrawBuffer), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glEdgeFlag (GLboolean flag) ", asFUNCTION(glEdgeFlag), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glEnable (GLenum cap) ", asFUNCTION(glEnable), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glEnableClientState (GLenum array) ", asFUNCTION(glEnableClientState), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glEnd (void) ", asFUNCTION(glEnd), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glEndList (void) ", asFUNCTION(glEndList), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glEvalCoord1d (GLdouble u) ", asFUNCTION(glEvalCoord1d), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glEvalCoord1f (GLfloat u) ", asFUNCTION(glEvalCoord1f), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glEvalCoord2d (GLdouble u, GLdouble v) ", asFUNCTION(glEvalCoord2d), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glEvalCoord2f (GLfloat u, GLfloat v) ", asFUNCTION(glEvalCoord2f), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glEvalMesh1 (GLenum mode, GLint i1, GLint i2) ", asFUNCTION(glEvalMesh1), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glEvalMesh2 (GLenum mode, GLint i1, GLint i2, GLint j1, GLint j2) ", asFUNCTION(glEvalMesh2), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glEvalPoint1 (GLint i) ", asFUNCTION(glEvalPoint1), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glEvalPoint2 (GLint i, GLint j) ", asFUNCTION(glEvalPoint2), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glFinish (void) ", asFUNCTION(glFinish), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glFlush (void) ", asFUNCTION(glFlush), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glFogf (GLenum pname, GLfloat param) ", asFUNCTION(glFogf), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glFogi (GLenum pname, GLint param) ", asFUNCTION(glFogi), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glFrontFace (GLenum mode) ", asFUNCTION(glFrontFace), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glFrustum (GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar) ", asFUNCTION(glFrustum), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("GLuint glGenLists (GLsizei range) ", asFUNCTION(glGenLists), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("GLenum glGetError (void) ", asFUNCTION(glGetError), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glHint (GLenum target, GLenum mode) ", asFUNCTION(glHint), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glIndexMask (GLuint mask) ", asFUNCTION(glIndexMask), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glIndexd (GLdouble c) ", asFUNCTION(glIndexd), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glIndexf (GLfloat c) ", asFUNCTION(glIndexf), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glIndexi (GLint c) ", asFUNCTION(glIndexi), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glIndexs (GLshort c) ", asFUNCTION(glIndexs), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glIndexub (GLubyte c) ", asFUNCTION(glIndexub), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glInitNames (void) ", asFUNCTION(glInitNames), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("GLboolean glIsEnabled (GLenum cap) ", asFUNCTION(glIsEnabled), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("GLboolean glIsList (GLuint list) ", asFUNCTION(glIsList), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("GLboolean glIsTexture (GLuint texture) ", asFUNCTION(glIsTexture), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glLightModelf (GLenum pname, GLfloat param) ", asFUNCTION(glLightModelf), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glLightModeli (GLenum pname, GLint param) ", asFUNCTION(glLightModeli), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glLightf (GLenum light, GLenum pname, GLfloat param) ", asFUNCTION(glLightf), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glLighti (GLenum light, GLenum pname, GLint param) ", asFUNCTION(glLighti), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glLineStipple (GLint factor, GLushort pattern) ", asFUNCTION(glLineStipple), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glLineWidth (GLfloat width) ", asFUNCTION(glLineWidth), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glListBase (GLuint base) ", asFUNCTION(glListBase), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glLoadIdentity (void) ", asFUNCTION(glLoadIdentity), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glLoadName (GLuint name) ", asFUNCTION(glLoadName), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glLogicOp (GLenum opcode) ", asFUNCTION(glLogicOp), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glMapGrid1d (GLint un, GLdouble u1, GLdouble u2) ", asFUNCTION(glMapGrid1d), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glMapGrid1f (GLint un, GLfloat u1, GLfloat u2) ", asFUNCTION(glMapGrid1f), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glMapGrid2d (GLint un, GLdouble u1, GLdouble u2, GLint vn, GLdouble v1, GLdouble v2) ", asFUNCTION(glMapGrid2d), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glMapGrid2f (GLint un, GLfloat u1, GLfloat u2, GLint vn, GLfloat v1, GLfloat v2) ", asFUNCTION(glMapGrid2f), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glMaterialf (GLenum face, GLenum pname, GLfloat param) ", asFUNCTION(glMaterialf), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glMateriali (GLenum face, GLenum pname, GLint param) ", asFUNCTION(glMateriali), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glMatrixMode (GLenum mode) ", asFUNCTION(glMatrixMode), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glNewList (GLuint list, GLenum mode) ", asFUNCTION(glNewList), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glNormal3b (GLbyte nx, GLbyte ny, GLbyte nz) ", asFUNCTION(glNormal3b), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glNormal3d (GLdouble nx, GLdouble ny, GLdouble nz) ", asFUNCTION(glNormal3d), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glNormal3f (GLfloat nx, GLfloat ny, GLfloat nz) ", asFUNCTION(glNormal3f), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glNormal3i (GLint nx, GLint ny, GLint nz) ", asFUNCTION(glNormal3i), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glNormal3s (GLshort nx, GLshort ny, GLshort nz) ", asFUNCTION(glNormal3s), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glOrtho (GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar) ", asFUNCTION(glOrtho), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glPassThrough (GLfloat token) ", asFUNCTION(glPassThrough), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glPixelStoref (GLenum pname, GLfloat param) ", asFUNCTION(glPixelStoref), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glPixelStorei (GLenum pname, GLint param) ", asFUNCTION(glPixelStorei), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glPixelTransferf (GLenum pname, GLfloat param) ", asFUNCTION(glPixelTransferf), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glPixelTransferi (GLenum pname, GLint param) ", asFUNCTION(glPixelTransferi), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glPixelZoom (GLfloat xfactor, GLfloat yfactor) ", asFUNCTION(glPixelZoom), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glPointSize (GLfloat size) ", asFUNCTION(glPointSize), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glPolygonMode (GLenum face, GLenum mode) ", asFUNCTION(glPolygonMode), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glPolygonOffset (GLfloat factor, GLfloat units) ", asFUNCTION(glPolygonOffset), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glPopAttrib (void) ", asFUNCTION(glPopAttrib), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glPopClientAttrib (void) ", asFUNCTION(glPopClientAttrib), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glPopMatrix (void) ", asFUNCTION(glPopMatrix), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glPopName (void) ", asFUNCTION(glPopName), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glPushAttrib (GLbitfield mask) ", asFUNCTION(glPushAttrib), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glPushClientAttrib (GLbitfield mask) ", asFUNCTION(glPushClientAttrib), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glPushMatrix (void) ", asFUNCTION(glPushMatrix), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glPushName (GLuint name) ", asFUNCTION(glPushName), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glRasterPos2d (GLdouble x, GLdouble y) ", asFUNCTION(glRasterPos2d), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glRasterPos2f (GLfloat x, GLfloat y) ", asFUNCTION(glRasterPos2f), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glRasterPos2i (GLint x, GLint y) ", asFUNCTION(glRasterPos2i), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glRasterPos2s (GLshort x, GLshort y) ", asFUNCTION(glRasterPos2s), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glRasterPos3d (GLdouble x, GLdouble y, GLdouble z) ", asFUNCTION(glRasterPos3d), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glRasterPos3f (GLfloat x, GLfloat y, GLfloat z) ", asFUNCTION(glRasterPos3f), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glRasterPos3i (GLint x, GLint y, GLint z) ", asFUNCTION(glRasterPos3i), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glRasterPos3s (GLshort x, GLshort y, GLshort z) ", asFUNCTION(glRasterPos3s), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glRasterPos4d (GLdouble x, GLdouble y, GLdouble z, GLdouble w) ", asFUNCTION(glRasterPos4d), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glRasterPos4f (GLfloat x, GLfloat y, GLfloat z, GLfloat w) ", asFUNCTION(glRasterPos4f), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glRasterPos4i (GLint x, GLint y, GLint z, GLint w) ", asFUNCTION(glRasterPos4i), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glRasterPos4s (GLshort x, GLshort y, GLshort z, GLshort w) ", asFUNCTION(glRasterPos4s), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glReadBuffer (GLenum mode) ", asFUNCTION(glReadBuffer), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glRectd (GLdouble x1, GLdouble y1, GLdouble x2, GLdouble y2) ", asFUNCTION(glRectd), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glRectf (GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) ", asFUNCTION(glRectf), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glRecti (GLint x1, GLint y1, GLint x2, GLint y2) ", asFUNCTION(glRecti), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glRects (GLshort x1, GLshort y1, GLshort x2, GLshort y2) ", asFUNCTION(glRects), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("GLint glRenderMode (GLenum mode) ", asFUNCTION(glRenderMode), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glRotated (GLdouble angle, GLdouble x, GLdouble y, GLdouble z) ", asFUNCTION(glRotated), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glRotatef (GLfloat angle, GLfloat x, GLfloat y, GLfloat z) ", asFUNCTION(glRotatef), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glScaled (GLdouble x, GLdouble y, GLdouble z) ", asFUNCTION(glScaled), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glScalef (GLfloat x, GLfloat y, GLfloat z) ", asFUNCTION(glScalef), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glScissor (GLint x, GLint y, GLsizei width, GLsizei height) ", asFUNCTION(glScissor), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glShadeModel (GLenum mode) ", asFUNCTION(glShadeModel), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glStencilFunc (GLenum func, GLint ref, GLuint mask) ", asFUNCTION(glStencilFunc), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glStencilMask (GLuint mask) ", asFUNCTION(glStencilMask), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glStencilOp (GLenum fail, GLenum zfail, GLenum zpass) ", asFUNCTION(glStencilOp), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexCoord1d (GLdouble s) ", asFUNCTION(glTexCoord1d), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexCoord1f (GLfloat s) ", asFUNCTION(glTexCoord1f), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexCoord1i (GLint s) ", asFUNCTION(glTexCoord1i), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexCoord1s (GLshort s) ", asFUNCTION(glTexCoord1s), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexCoord2d (GLdouble s, GLdouble t) ", asFUNCTION(glTexCoord2d), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexCoord2f (GLfloat s, GLfloat t) ", asFUNCTION(glTexCoord2f), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexCoord2i (GLint s, GLint t) ", asFUNCTION(glTexCoord2i), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexCoord2s (GLshort s, GLshort t) ", asFUNCTION(glTexCoord2s), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexCoord3d (GLdouble s, GLdouble t, GLdouble r) ", asFUNCTION(glTexCoord3d), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexCoord3f (GLfloat s, GLfloat t, GLfloat r) ", asFUNCTION(glTexCoord3f), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexCoord3i (GLint s, GLint t, GLint r) ", asFUNCTION(glTexCoord3i), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexCoord3s (GLshort s, GLshort t, GLshort r) ", asFUNCTION(glTexCoord3s), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexCoord4d (GLdouble s, GLdouble t, GLdouble r, GLdouble q) ", asFUNCTION(glTexCoord4d), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexCoord4f (GLfloat s, GLfloat t, GLfloat r, GLfloat q) ", asFUNCTION(glTexCoord4f), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexCoord4i (GLint s, GLint t, GLint r, GLint q) ", asFUNCTION(glTexCoord4i), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexCoord4s (GLshort s, GLshort t, GLshort r, GLshort q) ", asFUNCTION(glTexCoord4s), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexEnvf (GLenum target, GLenum pname, GLfloat param) ", asFUNCTION(glTexEnvf), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexEnvi (GLenum target, GLenum pname, GLint param) ", asFUNCTION(glTexEnvi), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexGend (GLenum coord, GLenum pname, GLdouble param) ", asFUNCTION(glTexGend), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexGenf (GLenum coord, GLenum pname, GLfloat param) ", asFUNCTION(glTexGenf), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexGeni (GLenum coord, GLenum pname, GLint param) ", asFUNCTION(glTexGeni), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexParameterf (GLenum target, GLenum pname, GLfloat param) ", asFUNCTION(glTexParameterf), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTexParameteri (GLenum target, GLenum pname, GLint param) ", asFUNCTION(glTexParameteri), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTranslated (GLdouble x, GLdouble y, GLdouble z) ", asFUNCTION(glTranslated), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glTranslatef (GLfloat x, GLfloat y, GLfloat z) ", asFUNCTION(glTranslatef), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glVertex2d (GLdouble x, GLdouble y) ", asFUNCTION(glVertex2d), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glVertex2f (GLfloat x, GLfloat y) ", asFUNCTION(glVertex2f), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glVertex2i (GLint x, GLint y) ", asFUNCTION(glVertex2i), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glVertex2s (GLshort x, GLshort y) ", asFUNCTION(glVertex2s), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glVertex3d (GLdouble x, GLdouble y, GLdouble z) ", asFUNCTION(glVertex3d), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glVertex3f (GLfloat x, GLfloat y, GLfloat z) ", asFUNCTION(glVertex3f), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glVertex3i (GLint x, GLint y, GLint z) ", asFUNCTION(glVertex3i), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glVertex3s (GLshort x, GLshort y, GLshort z) ", asFUNCTION(glVertex3s), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glVertex4d (GLdouble x, GLdouble y, GLdouble z, GLdouble w) ", asFUNCTION(glVertex4d), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glVertex4f (GLfloat x, GLfloat y, GLfloat z, GLfloat w) ", asFUNCTION(glVertex4f), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glVertex4i (GLint x, GLint y, GLint z, GLint w) ", asFUNCTION(glVertex4i), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glVertex4s (GLshort x, GLshort y, GLshort z, GLshort w) ", asFUNCTION(glVertex4s), asGLFunctionCall); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glViewport (GLint x, GLint y, GLsizei width, GLsizei height) ", asFUNCTION(glViewport), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glAccum (GLenum op, GLfloat value) ", asGLFunctionLink(glAccum), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glAlphaFunc (GLenum func, GLclampf ref) ", asGLFunctionLink(glAlphaFunc), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glArrayElement (GLint i) ", asGLFunctionLink(glArrayElement), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glBegin (GLenum mode) ", asGLFunctionLink(glBegin), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glBindTexture (GLenum target, GLuint texture) ", asGLFunctionLink(glBindTexture), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glBlendFunc (GLenum sfactor, GLenum dfactor) ", asGLFunctionLink(glBlendFunc), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glCallList (GLuint list) ", asGLFunctionLink(glCallList), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glClear (GLbitfield mask) ", asGLFunctionLink(glClear), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glClearAccum (GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) ", asGLFunctionLink(glClearAccum), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glClearColor (GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha) ", asGLFunctionLink(glClearColor), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glClearDepth (GLclampd depth) ", asGLFunctionLink(glClearDepth), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glClearStencil (GLint s) ", asGLFunctionLink(glClearStencil), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glColor3b (GLbyte red, GLbyte green, GLbyte blue) ", asGLFunctionLink(glColor3b), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glColor3d (GLdouble red, GLdouble green, GLdouble blue) ", asGLFunctionLink(glColor3d), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glColor3f (GLfloat red, GLfloat green, GLfloat blue) ", asGLFunctionLink(glColor3f), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glColor3i (GLint red, GLint green, GLint blue) ", asGLFunctionLink(glColor3i), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glColor3s (GLshort red, GLshort green, GLshort blue) ", asGLFunctionLink(glColor3s), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glColor3ub (GLubyte red, GLubyte green, GLubyte blue) ", asGLFunctionLink(glColor3ub), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glColor3ui (GLuint red, GLuint green, GLuint blue) ", asGLFunctionLink(glColor3ui), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glColor3us (GLushort red, GLushort green, GLushort blue) ", asGLFunctionLink(glColor3us), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glColor4b (GLbyte red, GLbyte green, GLbyte blue, GLbyte alpha) ", asGLFunctionLink(glColor4b), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glColor4d (GLdouble red, GLdouble green, GLdouble blue, GLdouble alpha) ", asGLFunctionLink(glColor4d), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glColor4f (GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) ", asGLFunctionLink(glColor4f), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glColor4i (GLint red, GLint green, GLint blue, GLint alpha) ", asGLFunctionLink(glColor4i), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glColor4s (GLshort red, GLshort green, GLshort blue, GLshort alpha) ", asGLFunctionLink(glColor4s), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glColor4ub (GLubyte red, GLubyte green, GLubyte blue, GLubyte alpha) ", asGLFunctionLink(glColor4ub), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glColor4ui (GLuint red, GLuint green, GLuint blue, GLuint alpha) ", asGLFunctionLink(glColor4ui), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glColor4us (GLushort red, GLushort green, GLushort blue, GLushort alpha) ", asGLFunctionLink(glColor4us), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glColorMask (GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha) ", asGLFunctionLink(glColorMask), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glColorMaterial (GLenum face, GLenum mode) ", asGLFunctionLink(glColorMaterial), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glCopyPixels (GLint x, GLint y, GLsizei width, GLsizei height, GLenum type) ", asGLFunctionLink(glCopyPixels), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glCullFace (GLenum mode) ", asGLFunctionLink(glCullFace), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glDeleteLists (GLuint list, GLsizei range) ", asGLFunctionLink(glDeleteLists), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glDepthFunc (GLenum func) ", asGLFunctionLink(glDepthFunc), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glDepthMask (GLboolean flag) ", asGLFunctionLink(glDepthMask), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glDepthRange (GLclampd zNear, GLclampd zFar) ", asGLFunctionLink(glDepthRange), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glDisable (GLenum cap) ", asGLFunctionLink(glDisable), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glDisableClientState (GLenum array) ", asGLFunctionLink(glDisableClientState), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glDrawArrays (GLenum mode, GLint first, GLsizei count) ", asGLFunctionLink(glDrawArrays), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glDrawBuffer (GLenum mode) ", asGLFunctionLink(glDrawBuffer), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glEnable (GLenum cap) ", asGLFunctionLink(glEnable), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glEnableClientState (GLenum array) ", asGLFunctionLink(glEnableClientState), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glEnd (void) ", asGLFunctionLink(glEnd), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glEndList (void) ", asGLFunctionLink(glEndList), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glFinish (void) ", asGLFunctionLink(glFinish), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glFlush (void) ", asGLFunctionLink(glFlush), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glFogf (GLenum pname, GLfloat param) ", asGLFunctionLink(glFogf), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glFogi (GLenum pname, GLint param) ", asGLFunctionLink(glFogi), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glFrontFace (GLenum mode) ", asGLFunctionLink(glFrontFace), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glFrustum (GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar) ", asGLFunctionLink(glFrustum), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("GLuint glGenLists (GLsizei range) ", asGLFunctionLink(glGenLists), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("GLenum glGetError (void) ", asGLFunctionLink(glGetError), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glHint (GLenum target, GLenum mode) ", asGLFunctionLink(glHint), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glInitNames (void) ", asGLFunctionLink(glInitNames), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("GLboolean glIsEnabled (GLenum cap) ", asGLFunctionLink(glIsEnabled), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("GLboolean glIsList (GLuint list) ", asGLFunctionLink(glIsList), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glLightModelf (GLenum pname, GLfloat param) ", asGLFunctionLink(glLightModelf), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glLightModeli (GLenum pname, GLint param) ", asGLFunctionLink(glLightModeli), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glLightf (GLenum light, GLenum pname, GLfloat param) ", asGLFunctionLink(glLightf), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glLineStipple (GLint factor, GLushort pattern) ", asGLFunctionLink(glLineStipple), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glLineWidth (GLfloat width) ", asGLFunctionLink(glLineWidth), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glLoadIdentity (void) ", asGLFunctionLink(glLoadIdentity), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glLoadName (GLuint name) ", asGLFunctionLink(glLoadName), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glMaterialf (GLenum face, GLenum pname, GLfloat param) ", asGLFunctionLink(glMaterialf), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glMatrixMode (GLenum mode) ", asGLFunctionLink(glMatrixMode), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glNewList (GLuint list, GLenum mode) ", asGLFunctionLink(glNewList), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glNormal3b (GLbyte nx, GLbyte ny, GLbyte nz) ", asGLFunctionLink(glNormal3b), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glNormal3d (GLdouble nx, GLdouble ny, GLdouble nz) ", asGLFunctionLink(glNormal3d), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glNormal3f (GLfloat nx, GLfloat ny, GLfloat nz) ", asGLFunctionLink(glNormal3f), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glNormal3i (GLint nx, GLint ny, GLint nz) ", asGLFunctionLink(glNormal3i), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glNormal3s (GLshort nx, GLshort ny, GLshort nz) ", asGLFunctionLink(glNormal3s), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glOrtho (GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar) ", asGLFunctionLink(glOrtho), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glPixelStoref (GLenum pname, GLfloat param) ", asGLFunctionLink(glPixelStoref), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glPixelStorei (GLenum pname, GLint param) ", asGLFunctionLink(glPixelStorei), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glPixelTransferf (GLenum pname, GLfloat param) ", asGLFunctionLink(glPixelTransferf), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glPixelTransferi (GLenum pname, GLint param) ", asGLFunctionLink(glPixelTransferi), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glPixelZoom (GLfloat xfactor, GLfloat yfactor) ", asGLFunctionLink(glPixelZoom), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glPointSize (GLfloat size) ", asGLFunctionLink(glPointSize), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glPolygonMode (GLenum face, GLenum mode) ", asGLFunctionLink(glPolygonMode), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glPolygonOffset (GLfloat factor, GLfloat units) ", asGLFunctionLink(glPolygonOffset), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glPopAttrib (void) ", asGLFunctionLink(glPopAttrib), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glPopClientAttrib (void) ", asGLFunctionLink(glPopClientAttrib), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glPopMatrix (void) ", asGLFunctionLink(glPopMatrix), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glPopName (void) ", asGLFunctionLink(glPopName), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glPushAttrib (GLbitfield mask) ", asGLFunctionLink(glPushAttrib), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glPushClientAttrib (GLbitfield mask) ", asGLFunctionLink(glPushClientAttrib), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glPushMatrix (void) ", asGLFunctionLink(glPushMatrix), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glPushName (GLuint name) ", asGLFunctionLink(glPushName), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glRasterPos2d (GLdouble x, GLdouble y) ", asGLFunctionLink(glRasterPos2d), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glRasterPos2f (GLfloat x, GLfloat y) ", asGLFunctionLink(glRasterPos2f), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glRasterPos2i (GLint x, GLint y) ", asGLFunctionLink(glRasterPos2i), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glRasterPos2s (GLshort x, GLshort y) ", asGLFunctionLink(glRasterPos2s), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glRasterPos3d (GLdouble x, GLdouble y, GLdouble z) ", asGLFunctionLink(glRasterPos3d), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glRasterPos3f (GLfloat x, GLfloat y, GLfloat z) ", asGLFunctionLink(glRasterPos3f), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glRasterPos3i (GLint x, GLint y, GLint z) ", asGLFunctionLink(glRasterPos3i), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glRasterPos3s (GLshort x, GLshort y, GLshort z) ", asGLFunctionLink(glRasterPos3s), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glRasterPos4d (GLdouble x, GLdouble y, GLdouble z, GLdouble w) ", asGLFunctionLink(glRasterPos4d), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glRasterPos4f (GLfloat x, GLfloat y, GLfloat z, GLfloat w) ", asGLFunctionLink(glRasterPos4f), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glRasterPos4i (GLint x, GLint y, GLint z, GLint w) ", asGLFunctionLink(glRasterPos4i), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glRasterPos4s (GLshort x, GLshort y, GLshort z, GLshort w) ", asGLFunctionLink(glRasterPos4s), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glReadBuffer (GLenum mode) ", asGLFunctionLink(glReadBuffer), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glRectd (GLdouble x1, GLdouble y1, GLdouble x2, GLdouble y2) ", asGLFunctionLink(glRectd), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glRectf (GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) ", asGLFunctionLink(glRectf), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glRecti (GLint x1, GLint y1, GLint x2, GLint y2) ", asGLFunctionLink(glRecti), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glRects (GLshort x1, GLshort y1, GLshort x2, GLshort y2) ", asGLFunctionLink(glRects), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("GLint glRenderMode (GLenum mode) ", asGLFunctionLink(glRenderMode), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glRotated (GLdouble angle, GLdouble x, GLdouble y, GLdouble z) ", asGLFunctionLink(glRotated), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glRotatef (GLfloat angle, GLfloat x, GLfloat y, GLfloat z) ", asGLFunctionLink(glRotatef), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glScaled (GLdouble x, GLdouble y, GLdouble z) ", asGLFunctionLink(glScaled), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glScalef (GLfloat x, GLfloat y, GLfloat z) ", asGLFunctionLink(glScalef), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glScissor (GLint x, GLint y, GLsizei width, GLsizei height) ", asGLFunctionLink(glScissor), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glShadeModel (GLenum mode) ", asGLFunctionLink(glShadeModel), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glStencilFunc (GLenum func, GLint ref, GLuint mask) ", asGLFunctionLink(glStencilFunc), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glStencilMask (GLuint mask) ", asGLFunctionLink(glStencilMask), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glStencilOp (GLenum fail, GLenum zfail, GLenum zpass) ", asGLFunctionLink(glStencilOp), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexCoord1d (GLdouble s) ", asGLFunctionLink(glTexCoord1d), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexCoord1f (GLfloat s) ", asGLFunctionLink(glTexCoord1f), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexCoord1i (GLint s) ", asGLFunctionLink(glTexCoord1i), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexCoord1s (GLshort s) ", asGLFunctionLink(glTexCoord1s), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexCoord2d (GLdouble s, GLdouble t) ", asGLFunctionLink(glTexCoord2d), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexCoord2f (GLfloat s, GLfloat t) ", asGLFunctionLink(glTexCoord2f), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexCoord2i (GLint s, GLint t) ", asGLFunctionLink(glTexCoord2i), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexCoord2s (GLshort s, GLshort t) ", asGLFunctionLink(glTexCoord2s), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexCoord3d (GLdouble s, GLdouble t, GLdouble r) ", asGLFunctionLink(glTexCoord3d), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexCoord3f (GLfloat s, GLfloat t, GLfloat r) ", asGLFunctionLink(glTexCoord3f), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexCoord3i (GLint s, GLint t, GLint r) ", asGLFunctionLink(glTexCoord3i), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexCoord3s (GLshort s, GLshort t, GLshort r) ", asGLFunctionLink(glTexCoord3s), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexCoord4d (GLdouble s, GLdouble t, GLdouble r, GLdouble q) ", asGLFunctionLink(glTexCoord4d), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexCoord4f (GLfloat s, GLfloat t, GLfloat r, GLfloat q) ", asGLFunctionLink(glTexCoord4f), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexCoord4i (GLint s, GLint t, GLint r, GLint q) ", asGLFunctionLink(glTexCoord4i), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexCoord4s (GLshort s, GLshort t, GLshort r, GLshort q) ", asGLFunctionLink(glTexCoord4s), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexEnvf (GLenum target, GLenum pname, GLfloat param) ", asGLFunctionLink(glTexEnvf), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexEnvi (GLenum target, GLenum pname, GLint param) ", asGLFunctionLink(glTexEnvi), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexGend (GLenum coord, GLenum pname, GLdouble param) ", asGLFunctionLink(glTexGend), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexGenf (GLenum coord, GLenum pname, GLfloat param) ", asGLFunctionLink(glTexGenf), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexGeni (GLenum coord, GLenum pname, GLint param) ", asGLFunctionLink(glTexGeni), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexParameterf (GLenum target, GLenum pname, GLfloat param) ", asGLFunctionLink(glTexParameterf), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTexParameteri (GLenum target, GLenum pname, GLint param) ", asGLFunctionLink(glTexParameteri), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTranslated (GLdouble x, GLdouble y, GLdouble z) ", asGLFunctionLink(glTranslated), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glTranslatef (GLfloat x, GLfloat y, GLfloat z) ", asGLFunctionLink(glTranslatef), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glVertex2d (GLdouble x, GLdouble y) ", asGLFunctionLink(glVertex2d), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glVertex2f (GLfloat x, GLfloat y) ", asGLFunctionLink(glVertex2f), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glVertex2i (GLint x, GLint y) ", asGLFunctionLink(glVertex2i), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glVertex2s (GLshort x, GLshort y) ", asGLFunctionLink(glVertex2s), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glVertex3d (GLdouble x, GLdouble y, GLdouble z) ", asGLFunctionLink(glVertex3d), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glVertex3f (GLfloat x, GLfloat y, GLfloat z) ", asGLFunctionLink(glVertex3f), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glVertex3i (GLint x, GLint y, GLint z) ", asGLFunctionLink(glVertex3i), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glVertex3s (GLshort x, GLshort y, GLshort z) ", asGLFunctionLink(glVertex3s), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glVertex4d (GLdouble x, GLdouble y, GLdouble z, GLdouble w) ", asGLFunctionLink(glVertex4d), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glVertex4f (GLfloat x, GLfloat y, GLfloat z, GLfloat w) ", asGLFunctionLink(glVertex4f), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glVertex4i (GLint x, GLint y, GLint z, GLint w) ", asGLFunctionLink(glVertex4i), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glVertex4s (GLshort x, GLshort y, GLshort z, GLshort w) ", asGLFunctionLink(glVertex4s), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glViewport (GLint x, GLint y, GLsizei width, GLsizei height) ", asGLFunctionLink(glViewport), asGLFunctionCall); assert(r>=0);
 
     // vector functions
-    r=engine->RegisterGlobalFunction("void glLightfv(GLenum light, GLenum pname, const array<GLfloat>& ) ", asFUNCTION(as_glLightfv), asCALL_CDECL); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glLightiv(GLenum light, GLenum pname, const array<GLint>& ) ", asFUNCTION(as_glLightiv), asCALL_CDECL); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glMaterialfv(GLenum light, GLenum pname, const array<GLfloat>& ) ", asFUNCTION(as_glMaterialfv), asCALL_CDECL); assert(r>=0);
-    r=engine->RegisterGlobalFunction("void glMaterialiv(GLenum light, GLenum pname, const array<GLint>& ) ", asFUNCTION(as_glMaterialiv), asCALL_CDECL); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glLightfv(GLenum light, GLenum pname, const array<GLfloat>& ) ", asGLFunctionLink(as_glLightfv), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glMaterialfv(GLenum light, GLenum pname, const array<GLfloat>& ) ", asGLFunctionLink(as_glMaterialfv), asGLFunctionCall); assert(r>=0);
+
+    // NOTE These are not on Wii
+#if not defined(MGDL_OPENGX)
+    r=engine->RegisterGlobalFunction("void glClearIndex (GLfloat c) ", asGLFunctionLink(glClearIndex), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glCopyTexImage1D (GLenum target, GLint level, GLenum internalFormat, GLint x, GLint y, GLsizei width, GLint border) ", asGLFunctionLink(glCopyTexImage1D), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glCopyTexImage2D (GLenum target, GLint level, GLenum internalFormat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border) ", asGLFunctionLink(glCopyTexImage2D), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glCopyTexSubImage1D (GLenum target, GLint level, GLint xoffset, GLint x, GLint y, GLsizei width) ", asGLFunctionLink(glCopyTexSubImage1D), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glCopyTexSubImage2D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height) ", asGLFunctionLink(glCopyTexSubImage2D), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glEdgeFlag (GLboolean flag) ", asGLFunctionLink(glEdgeFlag), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glEvalCoord1d (GLdouble u) ", asGLFunctionLink(glEvalCoord1d), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glEvalCoord1f (GLfloat u) ", asGLFunctionLink(glEvalCoord1f), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glEvalCoord2d (GLdouble u, GLdouble v) ", asGLFunctionLink(glEvalCoord2d), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glEvalCoord2f (GLfloat u, GLfloat v) ", asGLFunctionLink(glEvalCoord2f), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glEvalMesh1 (GLenum mode, GLint i1, GLint i2) ", asGLFunctionLink(glEvalMesh1), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glEvalMesh2 (GLenum mode, GLint i1, GLint i2, GLint j1, GLint j2) ", asGLFunctionLink(glEvalMesh2), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glEvalPoint1 (GLint i) ", asGLFunctionLink(glEvalPoint1), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glEvalPoint2 (GLint i, GLint j) ", asGLFunctionLink(glEvalPoint2), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glIndexMask (GLuint mask) ", asGLFunctionLink(glIndexMask), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glIndexd (GLdouble c) ", asGLFunctionLink(glIndexd), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glIndexf (GLfloat c) ", asGLFunctionLink(glIndexf), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glIndexi (GLint c) ", asGLFunctionLink(glIndexi), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glIndexs (GLshort c) ", asGLFunctionLink(glIndexs), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glIndexub (GLubyte c) ", asGLFunctionLink(glIndexub), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("GLboolean glIsTexture (GLuint texture) ", asGLFunctionLink(glIsTexture), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glLighti (GLenum light, GLenum pname, GLint param) ", asGLFunctionLink(glLighti), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glListBase (GLuint base) ", asGLFunctionLink(glListBase), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glLogicOp (GLenum opcode) ", asGLFunctionLink(glLogicOp), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glMapGrid1d (GLint un, GLdouble u1, GLdouble u2) ", asGLFunctionLink(glMapGrid1d), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glMapGrid1f (GLint un, GLfloat u1, GLfloat u2) ", asGLFunctionLink(glMapGrid1f), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glMapGrid2d (GLint un, GLdouble u1, GLdouble u2, GLint vn, GLdouble v1, GLdouble v2) ", asGLFunctionLink(glMapGrid2d), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glMapGrid2f (GLint un, GLfloat u1, GLfloat u2, GLint vn, GLfloat v1, GLfloat v2) ", asGLFunctionLink(glMapGrid2f), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glMateriali (GLenum face, GLenum pname, GLint param) ", asGLFunctionLink(glMateriali), asGLFunctionCall); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glPassThrough (GLfloat token) ", asGLFunctionLink(glPassThrough), asGLFunctionCall); assert(r>=0);
+
+    r=engine->RegisterGlobalFunction("void glLightiv(GLenum light, GLenum pname, const array<GLint>& ) ", asGLFunctionLink(as_glLightiv), asCALL_CDECL); assert(r>=0);
+    r=engine->RegisterGlobalFunction("void glMaterialiv(GLenum light, GLenum pname, const array<GLint>& ) ", asGLFunctionLink(as_glMaterialiv), asCALL_CDECL); assert(r>=0);
+#endif
 }
 
 // This part modified by muffintrap

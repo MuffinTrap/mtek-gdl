@@ -8,10 +8,6 @@
     static ROCKET_TRACK sync_value;
 #endif
 
-#if defined(USE_ANGEL_AS_CPP)
-#include <angel.hpp>
-#endif
-
 Example::Example()
 {
 
@@ -20,25 +16,21 @@ Example::Example()
 void Example::AngelInit()
 {
     // AngelScript
-#if defined(USE_ANGEL_AS_SCRIPT)
     angelContext = mgdl_InitAngelScript();
     if (angelContext != nullptr)
     {
+        // NOTE Register your own types, functions and callbacks here
         if (mgdl_LoadAngelScriptFiles(angelContext, "scripts/angel.cpp", "scripts", "example"))
         {
-            mgdl_RunAngelScriptInit(angelContext);
+           // Init ok!
+            angelInitFunc = mgdl_FindAngelScriptFunction(angelContext, "void angelscript_init()");
+            angelFrameFunc = mgdl_FindAngelScriptFunction(angelContext, "void angelscript_frame(float deltatime)");
+           // NOTE If you have an init function in angelscript, call it here.
+
+            mgdl_PrepareAngelScriptFunctionCall(angelContext, angelInitFunc);
+            mgdl_CommitAngelScriptFunctionCall(angelContext, angelInitFunc);
         }
     }
-#elif defined(USE_ANGEL_AS_CPP)
-    angelContext = mgdl_InitAngelCpp(&angelscript_init, &angelscript_frame, &angelscript_quit);
-	mgdl_RunAngelScriptInit(angelContext);
-#endif
-    AssetManager_PrintLoadedTextures();
-}
-
-void Example::AngelFrame()
-{
-    mgdl_RunAngelScriptFrame(angelContext, mgdl_GetDeltaTime());
 }
 
 void Example::Init()
@@ -137,6 +129,10 @@ void Example::Init()
     #endif
 
     */
+
+#if defined(USE_ANGELSCRIPT)
+    AngelInit();
+#endif
 }
 
 void Example::Quit()
@@ -149,7 +145,6 @@ void Example::Quit()
 void Example::Update()
 {
     #ifdef MGDL_ROCKET
-
         Rocket_UpdateRow();
         if (WiiController_ButtonPress(mgdl_GetController(0), WiiButtons::Button2))
         {
@@ -163,6 +158,22 @@ void Example::Update()
     cursorPos = WiiController_GetCursorPosition(Platform_GetController(0));
     mouseClick = WiiController_ButtonPress(Platform_GetController(0), ButtonA);
     mouseDown = WiiController_ButtonHeld(Platform_GetController(0), ButtonA);
+
+    mgdl_glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    if (angelScriptActive)
+    {
+        angelScriptDuration -= deltaTime;
+        mgdl_PrepareAngelScriptFunctionCall(angelContext, angelFrameFunc);
+        mgdl_SetAngelScriptFunctionParameterFloat(angelContext, angelFrameFunc, 0, deltaTime);
+        mgdl_CommitAngelScriptFunctionCall(angelContext, angelFrameFunc);
+        if (angelScriptDuration < 0)
+        {
+            angelScriptActive = false;
+        }
+        return;
+    }
+    // NOTE Use the mgdl_glClear to assure depth buffer working correctly on Wii
+    Draw();
 
     /*
     static const char* babyName = "cuboid";
@@ -622,6 +633,11 @@ void Example::DrawRocket()
 void Example::DrawAngel()
 {
     Menu_Start(angelMenu, 10, mgdl_GetScreenHeight()-10, 256);
+    if (Menu_Button(angelMenu, "Run AngelFrame for 5 seconds"))
+    {
+        angelScriptActive = true;
+        angelScriptDuration = 5.0f;
+    }
 }
 
 

@@ -16,7 +16,7 @@ CXXFLAGS += -DMGDL_DEBUG
 else
 CXXFLAGS += -O3
 endif
-CXXFLAGS += -Werror=unused-function -Wall -Wextra -Wpedantic -std=c++11 -static
+CXXFLAGS += -Werror=unused-function -Wall -Wextra -Wpedantic -std=c++20 -static
 
 # Position independent code
 CXXFLAGS += -fPIC

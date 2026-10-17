@@ -1,17 +1,6 @@
 #include "mgdl.angel"
 #include "raymath.angel"
 
-#if USE_ANGEL_AS_CPP
-#	include <mgdl.h>
-#	include <mgdl/raymath/raymath.h>
-#	include <mgdl/mgdl-script-api.h>
-#	include "angel.hpp"
-#	include <mgdl/mgdl-angelscript.h>
-#	ifdef __cplusplus
-		extern "C" {
-#	endif
-#endif
-
 float elapsed = 0.0f;
 Vector2 deltaCircle;
 Vector2 frameCircle;
@@ -167,6 +156,7 @@ void effect_wii_scene(float deltatime)
 
 }
 
+/*
 void effect_3d(float deltatime)
 {
 	elapsed += deltatime;
@@ -239,7 +229,7 @@ void effect_3d(float deltatime)
 	glPopMatrix();
 	glDisable(GL_LIGHTING);
 }
-
+*/
 void angelscript_frame(float deltatime)
 {
 	//effect_3d(deltatime);
@@ -247,9 +237,3 @@ void angelscript_frame(float deltatime)
 	//scene_test_scene(deltatime);
 	//effect_scene(deltatime);
 }
-
-#if USE_ANGEL_AS_CPP
-#	ifdef __cplusplus
-		}
-#	endif
-#endif

@@ -26,7 +26,7 @@ include $(DEVKITPPC)/wii_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	./ rocket scripts
+SOURCES		:=	./ scripts
 DATA		:=	data
 TEXTURES	:=	
 INCLUDES	:=	include
@@ -35,7 +35,7 @@ INCLUDES	:=	include
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-CFLAGS	= -g -Wall -Wextra -DMGDL_PLATFORM_WII -std=c++11 $(MACHDEP) $(INCLUDE)
+CFLAGS	= -g -Wall -Wextra -DMGDL_PLATFORM_WII -std=c++20 $(MACHDEP) $(INCLUDE)
 CXXFLAGS	= -Wwrite-strings $(CFLAGS) -DUFBX_REAL_IS_FLOAT
 CXXFLAGS += -DUSE_ANGEL_AS_CPP
 
@@ -104,13 +104,15 @@ LIBOGC_INC	:=	$(DEVKITPRO)/libogc/include
 PORTLIBS_PPC_INC	:=	$(PORTLIBS_PATH)/ppc/include
 PORTLIBS_WII_INC	:=	$(PORTLIBS_PATH)/wii/include
 MGDL_INC		:=	$(DEVKITPRO)/../libmgdl/include
+ANGEL_INC	:= 	$(ANGELSCRIPT_SDK)/angelscript/include
 export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)) \
 					-I$(CURDIR)/$(BUILD) \
 					-I$(LIBOGC_INC) \
 					-I$(PORTLIBS_PPC_INC) \
 					-I$(PORTLIBS_WII_INC) \
-					-I$(MGDL_INC)
+					-I$(MGDL_INC) \
+					-I$(ANGEL_INC)
 #---------------------------------------------------------------------------------
 # build a list of library paths
 #---------------------------------------------------------------------------------

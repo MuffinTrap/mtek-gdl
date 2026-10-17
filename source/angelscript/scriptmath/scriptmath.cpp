@@ -3,6 +3,7 @@
 #include <float.h>
 #include <string.h>
 #include "scriptmath.h"
+#include <mgdl/mgdl-angelscript.h>
 
 #ifdef __BORLANDC__
 #include <cmath>
@@ -159,66 +160,66 @@ void RegisterScriptMath_Native(asIScriptEngine *engine)
 	int r;
 
 	// Conversion between floating point and IEEE bits representations
-	r = engine->RegisterGlobalFunction("float fpFromIEEE(uint)", asFUNCTIONPR(fpFromIEEE, (asUINT), float), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("uint fpToIEEE(float)", asFUNCTIONPR(fpToIEEE, (float), asUINT), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double fpFromIEEE(uint64)", asFUNCTIONPR(fpFromIEEE, (asQWORD), double), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("uint64 fpToIEEE(double)", asFUNCTIONPR(fpToIEEE, (double), asQWORD), asCALL_CDECL); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float fpFromIEEE(uint)", asGLFunctionLinkPR(fpFromIEEE, (asUINT), float), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("uint fpToIEEE(float)", asGLFunctionLinkPR(fpToIEEE, (float), asUINT), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double fpFromIEEE(uint64)", asGLFunctionLinkPR(fpFromIEEE, (asQWORD), double), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("uint64 fpToIEEE(double)", asGLFunctionLinkPR(fpToIEEE, (double), asQWORD), asGLFunctionCall); assert( r >= 0 );
 
 	// Close to comparison with epsilon 
-	r = engine->RegisterGlobalFunction("bool closeTo(float, float, float = 0.00001f)", asFUNCTIONPR(closeTo, (float, float, float), bool), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("bool closeTo(double, double, double = 0.0000000001)", asFUNCTIONPR(closeTo, (double, double, double), bool), asCALL_CDECL); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("bool closeTo(float, float, float = 0.00001f)", asGLFunctionLinkPR(closeTo, (float, float, float), bool), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("bool closeTo(double, double, double = 0.0000000001)", asGLFunctionLinkPR(closeTo, (double, double, double), bool), asGLFunctionCall); assert( r >= 0 );
 
 #if AS_USE_FLOAT
 	// Trigonometric functions
-	r = engine->RegisterGlobalFunction("float cos(float)", asFUNCTIONPR(cosf, (float), float), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float sin(float)", asFUNCTIONPR(sinf, (float), float), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float tan(float)", asFUNCTIONPR(tanf, (float), float), asCALL_CDECL); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float cos(float)", asGLFunctionLinkPR(cosf, (float), float), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float sin(float)", asGLFunctionLinkPR(sinf, (float), float), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float tan(float)", asGLFunctionLinkPR(tanf, (float), float), asGLFunctionCall); assert( r >= 0 );
 
-	r = engine->RegisterGlobalFunction("float acos(float)", asFUNCTIONPR(acosf, (float), float), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float asin(float)", asFUNCTIONPR(asinf, (float), float), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float atan(float)", asFUNCTIONPR(atanf, (float), float), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float atan2(float,float)", asFUNCTIONPR(atan2f, (float, float), float), asCALL_CDECL); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float acos(float)", asGLFunctionLinkPR(acosf, (float), float), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float asin(float)", asGLFunctionLinkPR(asinf, (float), float), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float atan(float)", asGLFunctionLinkPR(atanf, (float), float), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float atan2(float,float)", asGLFunctionLinkPR(atan2f, (float, float), float), asGLFunctionCall); assert( r >= 0 );
 
 	// Hyberbolic functions
-	r = engine->RegisterGlobalFunction("float cosh(float)", asFUNCTIONPR(coshf, (float), float), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float sinh(float)", asFUNCTIONPR(sinhf, (float), float), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float tanh(float)", asFUNCTIONPR(tanhf, (float), float), asCALL_CDECL); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float cosh(float)", asGLFunctionLinkPR(coshf, (float), float), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float sinh(float)", asGLFunctionLinkPR(sinhf, (float), float), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float tanh(float)", asGLFunctionLinkPR(tanhf, (float), float), asGLFunctionCall); assert( r >= 0 );
 
 	// Exponential and logarithmic functions
-	r = engine->RegisterGlobalFunction("float log(float)", asFUNCTIONPR(logf, (float), float), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float log10(float)", asFUNCTIONPR(log10f, (float), float), asCALL_CDECL); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float log(float)", asGLFunctionLinkPR(logf, (float), float), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float log10(float)", asGLFunctionLinkPR(log10f, (float), float), asGLFunctionCall); assert( r >= 0 );
 
 	// Power functions
-	r = engine->RegisterGlobalFunction("float pow(float, float)", asFUNCTIONPR(powf, (float, float), float), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float sqrt(float)", asFUNCTIONPR(sqrtf, (float), float), asCALL_CDECL); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float pow(float, float)", asGLFunctionLinkPR(powf, (float, float), float), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float sqrt(float)", asGLFunctionLinkPR(sqrtf, (float), float), asGLFunctionCall); assert( r >= 0 );
 
 	// Nearest integer, absolute value, and remainder functions
-	r = engine->RegisterGlobalFunction("float ceil(float)", asFUNCTIONPR(ceilf, (float), float), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float abs(float)", asFUNCTIONPR(fabsf, (float), float), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float floor(float)", asFUNCTIONPR(floorf, (float), float), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float fraction(float)", asFUNCTIONPR(fractionf, (float), float), asCALL_CDECL); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float ceil(float)", asGLFunctionLinkPR(ceilf, (float), float), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float abs(float)", asGLFunctionLinkPR(fabsf, (float), float), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float floor(float)", asGLFunctionLinkPR(floorf, (float), float), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float fraction(float)", asGLFunctionLinkPR(fractionf, (float), float), asGLFunctionCall); assert( r >= 0 );
 
 	// Don't register modf because AngelScript already supports the % operator
 #else
 	// double versions of the same
-	r = engine->RegisterGlobalFunction("double cos(double)", asFUNCTIONPR(cos, (double), double), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double sin(double)", asFUNCTIONPR(sin, (double), double), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double tan(double)", asFUNCTIONPR(tan, (double), double), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double acos(double)", asFUNCTIONPR(acos, (double), double), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double asin(double)", asFUNCTIONPR(asin, (double), double), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double atan(double)", asFUNCTIONPR(atan, (double), double), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double atan2(double,double)", asFUNCTIONPR(atan2, (double, double), double), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double cosh(double)", asFUNCTIONPR(cosh, (double), double), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double sinh(double)", asFUNCTIONPR(sinh, (double), double), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double tanh(double)", asFUNCTIONPR(tanh, (double), double), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double log(double)", asFUNCTIONPR(log, (double), double), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double log10(double)", asFUNCTIONPR(log10, (double), double), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double pow(double, double)", asFUNCTIONPR(pow, (double, double), double), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double sqrt(double)", asFUNCTIONPR(sqrt, (double), double), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double ceil(double)", asFUNCTIONPR(ceil, (double), double), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double abs(double)", asFUNCTIONPR(fabs, (double), double), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double floor(double)", asFUNCTIONPR(floor, (double), double), asCALL_CDECL); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double fraction(double)", asFUNCTIONPR(fraction, (double), double), asCALL_CDECL); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double cos(double)", asGLFunctionLinkPR(cos, (double), double), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double sin(double)", asGLFunctionLinkPR(sin, (double), double), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double tan(double)", asGLFunctionLinkPR(tan, (double), double), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double acos(double)", asGLFunctionLinkPR(acos, (double), double), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double asin(double)", asGLFunctionLinkPR(asin, (double), double), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double atan(double)", asGLFunctionLinkPR(atan, (double), double), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double atan2(double,double)", asGLFunctionLinkPR(atan2, (double, double), double), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double cosh(double)", asGLFunctionLinkPR(cosh, (double), double), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double sinh(double)", asGLFunctionLinkPR(sinh, (double), double), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double tanh(double)", asGLFunctionLinkPR(tanh, (double), double), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double log(double)", asGLFunctionLinkPR(log, (double), double), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double log10(double)", asGLFunctionLinkPR(log10, (double), double), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double pow(double, double)", asGLFunctionLinkPR(pow, (double, double), double), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double sqrt(double)", asGLFunctionLinkPR(sqrt, (double), double), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double ceil(double)", asGLFunctionLinkPR(ceil, (double), double), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double abs(double)", asGLFunctionLinkPR(fabs, (double), double), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double floor(double)", asGLFunctionLinkPR(floor, (double), double), asGLFunctionCall); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double fraction(double)", asGLFunctionLinkPR(fraction, (double), double), asGLFunctionCall); assert( r >= 0 );
 #endif
 }
 
@@ -306,55 +307,55 @@ void RegisterScriptMath_Generic(asIScriptEngine *engine)
 
 #if AS_USE_FLOAT
 	// Trigonometric functions
-	r = engine->RegisterGlobalFunction("float cos(float)", asFUNCTION(cosf_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float sin(float)", asFUNCTION(sinf_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float tan(float)", asFUNCTION(tanf_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float cos(float)", asGLFunctionLink(cosf_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float sin(float)", asGLFunctionLink(sinf_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float tan(float)", asGLFunctionLink(tanf_generic), asCALL_GENERIC); assert( r >= 0 );
 
-	r = engine->RegisterGlobalFunction("float acos(float)", asFUNCTION(acosf_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float asin(float)", asFUNCTION(asinf_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float atan(float)", asFUNCTION(atanf_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float atan2(float,float)", asFUNCTION(atan2f_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float acos(float)", asGLFunctionLink(acosf_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float asin(float)", asGLFunctionLink(asinf_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float atan(float)", asGLFunctionLink(atanf_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float atan2(float,float)", asGLFunctionLink(atan2f_generic), asCALL_GENERIC); assert( r >= 0 );
 
 	// Hyberbolic functions
-	r = engine->RegisterGlobalFunction("float cosh(float)", asFUNCTION(coshf_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float sinh(float)", asFUNCTION(sinhf_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float tanh(float)", asFUNCTION(tanhf_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float cosh(float)", asGLFunctionLink(coshf_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float sinh(float)", asGLFunctionLink(sinhf_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float tanh(float)", asGLFunctionLink(tanhf_generic), asCALL_GENERIC); assert( r >= 0 );
 
 	// Exponential and logarithmic functions
-	r = engine->RegisterGlobalFunction("float log(float)", asFUNCTION(logf_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float log10(float)", asFUNCTION(log10f_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float log(float)", asGLFunctionLink(logf_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float log10(float)", asGLFunctionLink(log10f_generic), asCALL_GENERIC); assert( r >= 0 );
 
 	// Power functions
-	r = engine->RegisterGlobalFunction("float pow(float, float)", asFUNCTION(powf_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float sqrt(float)", asFUNCTION(sqrtf_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float pow(float, float)", asGLFunctionLink(powf_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float sqrt(float)", asGLFunctionLink(sqrtf_generic), asCALL_GENERIC); assert( r >= 0 );
 
 	// Nearest integer, absolute value, and remainder functions
-	r = engine->RegisterGlobalFunction("float ceil(float)", asFUNCTION(ceilf_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float abs(float)", asFUNCTION(fabsf_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float floor(float)", asFUNCTION(floorf_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("float fraction(float)", asFUNCTION(fractionf_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float ceil(float)", asGLFunctionLink(ceilf_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float abs(float)", asGLFunctionLink(fabsf_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float floor(float)", asGLFunctionLink(floorf_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("float fraction(float)", asGLFunctionLink(fractionf_generic), asCALL_GENERIC); assert( r >= 0 );
 
 	// Don't register modf because AngelScript already supports the % operator
 #else
 	// double versions of the same
-	r = engine->RegisterGlobalFunction("double cos(double)", asFUNCTION(cos_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double sin(double)", asFUNCTION(sin_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double tan(double)", asFUNCTION(tan_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double acos(double)", asFUNCTION(acos_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double asin(double)", asFUNCTION(asin_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double atan(double)", asFUNCTION(atan_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double atan2(double,double)", asFUNCTION(atan2_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double cosh(double)", asFUNCTION(cosh_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double sinh(double)", asFUNCTION(sinh_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double tanh(double)", asFUNCTION(tanh_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double log(double)", asFUNCTION(log_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double log10(double)", asFUNCTION(log10_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double pow(double, double)", asFUNCTION(pow_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double sqrt(double)", asFUNCTION(sqrt_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double ceil(double)", asFUNCTION(ceil_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double abs(double)", asFUNCTION(fabs_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double floor(double)", asFUNCTION(floor_generic), asCALL_GENERIC); assert( r >= 0 );
-	r = engine->RegisterGlobalFunction("double fraction(double)", asFUNCTION(fraction_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double cos(double)", asGLFunctionLink(cos_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double sin(double)", asGLFunctionLink(sin_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double tan(double)", asGLFunctionLink(tan_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double acos(double)", asGLFunctionLink(acos_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double asin(double)", asGLFunctionLink(asin_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double atan(double)", asGLFunctionLink(atan_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double atan2(double,double)", asGLFunctionLink(atan2_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double cosh(double)", asGLFunctionLink(cosh_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double sinh(double)", asGLFunctionLink(sinh_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double tanh(double)", asGLFunctionLink(tanh_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double log(double)", asGLFunctionLink(log_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double log10(double)", asGLFunctionLink(log10_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double pow(double, double)", asGLFunctionLink(pow_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double sqrt(double)", asGLFunctionLink(sqrt_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double ceil(double)", asGLFunctionLink(ceil_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double abs(double)", asGLFunctionLink(fabs_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double floor(double)", asGLFunctionLink(floor_generic), asCALL_GENERIC); assert( r >= 0 );
+	r = engine->RegisterGlobalFunction("double fraction(double)", asGLFunctionLink(fraction_generic), asCALL_GENERIC); assert( r >= 0 );
 #endif
 }
 

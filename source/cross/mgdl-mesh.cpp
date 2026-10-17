@@ -5,6 +5,7 @@
 #include <mgdl/mgdl-opengl_util.h>
 #include <mgdl/mgdl-assert.h>
 #include <mgdl/mgdl-memory.h>
+#include <mgdl/mgdl-gradient.h>
 
 
 Mesh* Mesh_CreateEmpty(void)
@@ -19,6 +20,9 @@ Mesh* Mesh_CreateEmpty(void)
 	mesh->indexCount = 0;
 	mesh->vertexCount = 0;
 	mesh->indexCounter = 0;
+
+	mesh->maxPoint = Vector3New(-MAXFLOAT, -MAXFLOAT, -MAXFLOAT);
+	mesh->minPoint = Vector3New(MAXFLOAT, MAXFLOAT, MAXFLOAT);
 
 	mesh->name = zstr_init();
 	return mesh;
@@ -106,6 +110,26 @@ void Mesh_SetupVertexArrays(Mesh* mesh)
 	return;
 }
 
+void Mesh_DisableVertexArrays(Mesh* mesh)
+{
+	if (mesh->normals != nullptr)
+	{
+		glDisableClientState(GL_NORMAL_ARRAY);
+	}
+
+	if (mesh->uvs != nullptr)
+	{
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	}
+
+	if (mesh->colors != nullptr)
+	{
+		glDisableClientState(GL_COLOR_ARRAY);
+	}
+	glDisableClientState(GL_VERTEX_ARRAY);
+
+}
+
 void Mesh_DrawElements(Mesh* mesh, GLsizei indexCount)
 {
 	Mesh_SetupVertexArrays(mesh);
@@ -116,12 +140,14 @@ void Mesh_DrawElements(Mesh* mesh, GLsizei indexCount)
 		indexCount = mesh->indexCount;
 	}
 	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_SHORT, mesh->indices);
+	Mesh_DisableVertexArrays(mesh);
 }
 
 void Mesh_DrawArrays(Mesh* mesh)
 {
 	Mesh_SetupVertexArrays(mesh);
 	glDrawArrays(GL_TRIANGLES, 0, mesh->vertexCount);
+	Mesh_DisableVertexArrays(mesh);
 }
 
 void Mesh_DrawPoints(Mesh* mesh)
@@ -222,6 +248,13 @@ GLushort Mesh_AddPosition(Mesh* mesh, Vector3 position)
 		mesh->positions[i+0] = Vector3_X(position);
 		mesh->positions[i+1] = Vector3_Y(position);
 		mesh->positions[i+2] = Vector3_Z(position);
+
+		mesh->maxPoint.x = maxF(position.x, mesh->maxPoint.x);
+		mesh->maxPoint.y = maxF(position.y, mesh->maxPoint.y);
+		mesh->maxPoint.z = maxF(position.z, mesh->maxPoint.z);
+		mesh->minPoint.x = minF(position.x, mesh->minPoint.x);
+		mesh->minPoint.y = minF(position.y, mesh->minPoint.y);
+		mesh->minPoint.z = minF(position.z, mesh->minPoint.z);
 	}
 	else
 	{
@@ -330,6 +363,34 @@ void Mesh_SetNormalToArray ( Mesh* mesh,sizetype index, Vector3 normal )
 	}
 }
 
+void Mesh_SetColorToArray32(Mesh* mesh,sizetype index, color32 color)
+{
+	if (index < mesh->vertexCount)
+	{
+		RGBAf values = Color_HexToFloats(color);
+		sizetype vi = index * 3;
+		mesh->colors[vi+0] = values.red;
+		mesh->colors[vi+1] = values.green;
+		mesh->colors[vi+2] = values.blue;
+	}
+
+}
+
+void Mesh_SetColorsFromGradient(Mesh* mesh, Gradient* gradient)
+{
+	if (mesh->colors == nullptr)
+	{
+		return;
+	}
+	float yrange = mesh->maxPoint.y - mesh->minPoint.y;
+	for (int v = 0; v < mesh->vertexCount; v++)
+	{
+		float y = mesh->positions[v * 3 + 1];
+		float aty = (y - mesh->minPoint.y) / yrange;
+		Mesh_SetColorToArray32(mesh, v, Gradient_GetColor(gradient, aty));
+	}
+}
+
 bool Mesh_GetTriangleIndices (Mesh* mesh, GLsizei triangleIndex, GLushort* outA, GLushort* outB, GLushort* outC )
 {
 	GLsizei indice = triangleIndex * 3;
@@ -405,6 +466,16 @@ Mesh* Mesh_CreateIcosahedron(u32 creationFlags)
 		-Z,  X,  N,
 		 Z, -X,  N,
 		-Z, -X,  N};
+
+		icosa->minPoint = Vector3New(
+				minF(-Z, -X),
+				minF(-Z, -X),
+				minF(-Z, -X));
+		icosa->maxPoint = Vector3New(
+				maxF(Z, X),
+				maxF(Z, X),
+				maxF(Z, X));
+
 
     if (Flag_IsSetAny(creationFlags, FlagNormals))
 	{

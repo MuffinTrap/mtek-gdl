@@ -82,9 +82,6 @@ static bool ReloadAngelScriptCode(mgdl_AngelScript* angel)
 
     CScriptBuilder builder;
 
-	// Set preprocessor directives to angelscript
-	builder.DefineWord("USE_ANGEL_AS_SCRIPT");
-
     int result = builder.StartNewModule(angel->engine, moduleName);
     mgdl_assert_printf(result >= 0, "Failed starting module %s\n", moduleName);
 
@@ -116,37 +113,13 @@ static bool ReloadAngelScriptCode(mgdl_AngelScript* angel)
     mod = angel->engine->GetModule(moduleName);
     mgdl_assert_print(mod != nullptr, "Failed to get module\n");
 
-    angel->initFunc = mod->GetFunctionByDecl("void angelscript_init()");
-    if( angel->initFunc == nullptr )
-    {
-        // The function couldn't be found. Instruct the script writer
-        // to include the expected function in the script.
-        Log_Error("The script must have the function 'void angelscript_init()'. Please add it and try again.\n");
-        return false;
-    }
-    angel->frameFunc = mod->GetFunctionByDecl("void angelscript_frame(float deltatime)");
-    if( angel->frameFunc == nullptr )
-    {
-        // The function couldn't be found. Instruct the script writer
-        // to include the expected function in the script.
-        Log_Error("The script must have the function 'void angelscript_frame(float deltatime)'. Please add it and try again.\n");
-        return false;
-    }
-    angel->quitFunc = mod->GetFunctionByDecl("void angelscript_quit()");
-    if( angel->quitFunc == nullptr )
-    {
-        // The function couldn't be found. Instruct the script writer
-        // to include the expected function in the script.
-        Log_Error("The script must have the function 'void angelscript_quit()'. Please add it and try again.\n");
-        return false;
-    }
     Log_InfoF("Loaded AngelScipt file %s\n", script);
 	angel->status = Angel_Running;
     return true;
 }
 
 
-asIScriptFunction* mgdl_FindAngelScriptFunctionVoidVoid(mgdl_AngelScript* angel, const char* functionDeclaration)
+asIScriptFunction* mgdl_FindAngelScriptFunction(mgdl_AngelScript* angel, const char* functionDeclaration)
 {
 	const char* moduleName = zstr_cstr(&angel->moduleName);
     asIScriptModule* mod = angel->engine->GetModule(moduleName);
@@ -191,29 +164,14 @@ asIScriptFunction* mgdl_FindAngelScriptFunctionVoidVoid(mgdl_AngelScript* angel,
 				// Actually, always compile the main file
 				// that should #include everything else
 				angel->status = Angel_SourceChanged;
+				if (angel->scriptModifiedCallback != nullptr)
+				{
+					angel->scriptModifiedCallback();
+				}
 			}
 		}
 	}
 #endif
-
-mgdl_AngelScript* mgdl_InitAngelCpp(AngelInitFuncType initFunc, AngelFrameFuncType frameFunc, AngelQuitFuncType quitFunc)
-{
-	mgdl_InitScriptApi();
-	mgdl_AngelScript* angel = (mgdl_AngelScript*)mgdl_AllocateGeneralMemory(sizeof(mgdl_AngelScript));
-
-	angel->engine = nullptr;
-	angel->ctx = nullptr;
-	angel->frameFunc = nullptr;
-	angel->initFunc = nullptr;
-	angel->quitFunc = nullptr;
-	angel->dmonInitDone = false;
-	mgdl_assert_print(initFunc != nullptr && frameFunc != nullptr && quitFunc != nullptr, "Must provide pointers to angelscript c++ functions when initializing AngelScript as CPP");
-	angel->cxxInitFunc = initFunc;
-	angel->cxxFrameFunc = frameFunc;
-	angel->cxxQuitFunc = quitFunc;
-	angel->status = Angel_Running;
-	return angel;
-}
 
 mgdl_AngelScript* mgdl_InitAngelScript()
 {
@@ -224,6 +182,8 @@ mgdl_AngelScript* mgdl_InitAngelScript()
     int result = angel->engine->SetMessageCallback(asFUNCTION(AngelScriptMessageCallback), 0, asCALL_CDECL);
     mgdl_assert_print(result >= 0, "Failed setting AngelScript message callback\n");
 	angel->status = Angel_Running;
+	angel->functionStatus = Angel_NotPrepared;
+	angel->scriptModifiedCallback = nullptr;
 
 	// Arrays with int[] array declaration
 	RegisterScriptArray(angel->engine, true);
@@ -237,17 +197,20 @@ mgdl_AngelScript* mgdl_InitAngelScript()
 	return angel;
 }
 
+void mgdl_RegisterAngelScriptModifiedCallback(mgdl_AngelScript* angel, CallbackFunction callback)
+{
+	angel->scriptModifiedCallback = callback;
+}
+
+bool mgdl_RecompileAngelScript(mgdl_AngelScript* angel)
+{
+	return ReloadAngelScriptCode(angel);
+}
+
 
 bool mgdl_LoadAngelScriptFiles(mgdl_AngelScript* angel, const char* mainScript, const char* hotloadDirectory, const char* moduleName)
 {
     angel->ctx = angel->engine->CreateContext();
-	angel->frameFunc = nullptr;
-	angel->initFunc = nullptr;
-	angel->quitFunc = nullptr;
-	angel->cxxInitFunc = nullptr;
-	angel->cxxFrameFunc = nullptr;
-	angel->cxxQuitFunc = nullptr;
-	angel->dmonInitDone = false;
 	mgdl_assert_print(mainScript != nullptr, "Must specify main angel script file.");
 	angel->mainScriptFile = zstr_from(mainScript);
 
@@ -304,98 +267,78 @@ bool mgdl_LoadAngelScriptFiles(mgdl_AngelScript* angel, const char* mainScript, 
 }
 
 
-static void RunAngelFunctionVoidVoid(mgdl_AngelScript* angel, asIScriptFunction* function)
+void mgdl_PrepareAngelScriptFunctionCall(mgdl_AngelScript* angel, asIScriptFunction* function)
 {
 	if (function != nullptr)
 	{
-		angel->ctx->Prepare(function);
-		int runResult = angel->ctx->Execute();
-		if (runResult != asEXECUTION_FINISHED)
+		if (angel->functionStatus == Angel_NotPrepared)
 		{
-			if (runResult == asEXECUTION_EXCEPTION)
-			{
-				// An exception occurred, let the script writer know what happened so it can be corrected.
-				Log_ErrorF("An exception '%s' occurred. Please correct the code and try again.\n", angel->ctx->GetExceptionString());
-			}
+			angel->ctx->Prepare(function);
+			angel->functionStatus = Angel_Prepared;
+		}
+		else
+		{
+			Log_Warning("AngelScript function was already prepared\n");
 		}
 	}
 }
 
-static void RunAngelFunctionVoidFloat(mgdl_AngelScript* angel, asIScriptFunction* function, float param0)
+void mgdl_SetAngelScriptFunctionParameterFloat(mgdl_AngelScript* angel, asIScriptFunction* function, int parameterIndex, float value)
 {
 	if (function != nullptr)
 	{
-		angel->ctx->Prepare(function);
-		// pass deltatime
-		angel->ctx->SetArgFloat(0, param0);
-		int runResult = angel->ctx->Execute();
-		if (runResult != asEXECUTION_FINISHED)
+		if (angel->functionStatus == Angel_Prepared)
 		{
-			if (runResult == asEXECUTION_EXCEPTION)
-			{
-				// An exception occurred, let the script writer know what happened so it can be corrected.
-				Log_ErrorF("An exception '%s' occurred when running angelscript function. Please correct the code and try again.\n", angel->ctx->GetExceptionString());
-			}
+			angel->ctx->SetArgFloat(parameterIndex, value);
+		}
+		else
+		{
+			Log_ErrorF("Cannot set AngelScript function parameter value. Function not prepared\n");
 		}
 	}
 }
 
+static void PrintExceptionInfo(asIScriptContext *ctx)
+{
+  const asIScriptFunction *function = ctx->GetExceptionFunction();
+  int exceptionColumn = 0;
+  int exceptionLine = ctx->GetExceptionLineNumber(&exceptionColumn);
+  Log_ErrorF("Description: %s\nModule: %s\n, Function: %s Line: %d:%d\n",
+			 ctx->GetExceptionString(),
+			function->GetModuleName(),
+			function->GetDeclaration(),
+			 exceptionLine, exceptionColumn
+			);
+}
 
-void mgdl_RunAngelScriptFunction(mgdl_AngelScript* angel, asIScriptFunction* function)
+void mgdl_CommitAngelScriptFunctionCall(mgdl_AngelScript* angel, asIScriptFunction* function)
 {
 	if (function != nullptr)
 	{
 		if (s_compileErrorFlag == false)
 		{
-			RunAngelFunctionVoidVoid(angel, function);
+			if (angel->functionStatus == Angel_Prepared)
+			{
+				int runResult = angel->ctx->Execute();
+				if (runResult == asEXECUTION_EXCEPTION)
+				{
+					Log_Error("AngelScript function execution resulted in exception\n");
+					PrintExceptionInfo(angel->ctx);
+				}
+				else if (runResult == asEXECUTION_ERROR)
+				{
+					Log_Error("AngelScript function execution resulted in error\n");
+				}
+				else
+				{
+					angel->functionStatus = Angel_NotPrepared;
+				}
+			}
+			else
+			{
+				Log_Error("Cannot call AngelScrip function. Call not prepared");
+			}
 		}
-	}
-}
-
-void mgdl_RunAngelScriptInit(mgdl_AngelScript* angel)
-{
-	ASSERT_DEBUG(angel != nullptr);
-	if (angel->cxxInitFunc != nullptr)
-	{
-		angel->cxxInitFunc();
-	}
-	else if (s_compileErrorFlag == false)
-	{
-		RunAngelFunctionVoidVoid(angel, angel->initFunc);
-	}
-}
-
-void mgdl_RunAngelScriptFrame(mgdl_AngelScript* angel, float deltatime)
-{
-	ASSERT_DEBUG(angel != nullptr);
-	if (angel->status == Angel_SourceChanged)
-	{
-		if (ReloadAngelScriptCode(angel))
-		{
-			mgdl_RunAngelScriptInit(angel);
-		}
-	}
-
-	if (angel->cxxFrameFunc != nullptr)
-	{
-		angel->cxxFrameFunc(deltatime);
-	}
-	else if (angel->status != Angel_CompileError)
-	{
-		RunAngelFunctionVoidFloat(angel, angel->frameFunc, deltatime);
-	}
-}
-
-void mgdl_RunAngelScriptQuit(mgdl_AngelScript* angel)
-{
-	ASSERT_DEBUG(angel != nullptr);
-	if (angel->cxxQuitFunc != nullptr)
-	{
-		angel->cxxQuitFunc();
-	}
-	else if (s_compileErrorFlag == false)
-	{
-		RunAngelFunctionVoidVoid(angel, angel->quitFunc);
 	}
 }
 

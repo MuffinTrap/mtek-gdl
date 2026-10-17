@@ -7,15 +7,31 @@
  * @brief Includes functions for loading and running AngelScript files.
  */
 
+
+// Platform defines for calling convetions
+// TODO Method link, OBJ_FIRST function link
+
+#if defined(_WIN32)
+#   define asGLFunctionCall asCALL_STDCALL
+#   define asGLFunctionLink asFUNCTION
+#	define asGLFunctionLinkPR asFUNCTIONPR
+
+#elif defined(GEKKO)
+    // On the Wii need to use Generic calling convention for time being
+    // https://www.angelcode.com/angelscript/sdk/docs/manual/doc_addon_autowrap.html
+#   include <autowrapper/aswrappedcall.h>
+#   define asGLFunctionCall asCALL_GENERIC
+#   define asGLFunctionLink WRAP_FN
+#	define asGLFunctionLinkPR WRAP_FN_PR
+#else
+#   define asGLFunctionCall asCALL_CDECL
+#   define asGLFunctionLink asFUNCTION
+#	define asGLFunctionLinkPR asFUNCTIONPR
+#endif
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
-	/**
-	 * @brief Function pointer types
-	 */
-	typedef void (*AngelInitFuncType)(void);
-	typedef void (*AngelQuitFuncType)(void);
-	typedef void (*AngelFrameFuncType)(float);
 
 	enum AngelScriptStatus
 	{
@@ -25,6 +41,13 @@ extern "C" {
 	};
 	typedef enum AngelScriptStatus AngelScriptStatus;
 
+	enum AngelScriptFunctionStatus
+	{
+		Angel_NotPrepared,
+		Angel_Prepared
+	};
+	typedef enum AngelScriptFunctionStatus AngelScriptFunctionStatus;
+
 	/**
 	 * @brief Struct representing the AngelScript engine and functions
 	 */
@@ -32,17 +55,13 @@ extern "C" {
 	{
 		asIScriptEngine *engine;
 		asIScriptContext* ctx;
-		asIScriptFunction* initFunc;
-		asIScriptFunction* frameFunc;
-		asIScriptFunction* quitFunc;
-		AngelInitFuncType cxxInitFunc;
-		AngelFrameFuncType cxxFrameFunc;
-		AngelQuitFuncType cxxQuitFunc;
 		zstr mainScriptFile;
 		zstr moduleName;
 		zstr scriptFileType;
 		bool dmonInitDone;
+		CallbackFunction scriptModifiedCallback;
 		AngelScriptStatus status;
+		AngelScriptFunctionStatus functionStatus;
 	};
 	typedef struct mgdl_AngelScript mgdl_AngelScript;
 
@@ -54,7 +73,22 @@ extern "C" {
 	mgdl_AngelScript* mgdl_InitAngelScript();
 
 	/**
-	 * @brief Loads the script files and compiles them.
+	 * @brief Register a callback to be called when angelscript files change in the watched directory.
+	 * @note When the callback is called, you can call mgdl_RecompileAngelScript at the end of frame. The Callback can come any time, even during execution!
+	 * @param angel AngelScript
+	 * @param callback The function to call. Must be type void(void)
+	 */
+	void mgdl_RegisterAngelScriptModifiedCallback(mgdl_AngelScript* angel, CallbackFunction callback);
+	/**
+	 * @brief Recompiles the main script file.
+	 * @param angel AngelScript
+	 * @returns True if compilation succeeded
+	 */
+	bool mgdl_RecompileAngelScript(mgdl_AngelScript* angel);
+
+	/**
+	 * @brief Loads the script file and compiles it.
+	 * @note If the main script includes other files, they are compiled as well.
 	 * @param angel The AngelScript object from mgdl_InitAngelScript
 	 * @param mainScript Name of main script file.
 	 * @param hotloadDirectory Name of the directory which is watched for changing. Set to nullptr to disable hotloading.
@@ -63,46 +97,53 @@ extern "C" {
 	 */
 	bool mgdl_LoadAngelScriptFiles(mgdl_AngelScript* angel, const char* mainScript, const char* hotloadDirectory, const char* moduleName);
 
-	/**
-	 * @brief Initializes the AngelScript to be used as cpp code.
-	 * @details Use the returned pointer like when using AngelScript as script as it will tell the
-	 * functions if they should call the cpp function or the script function
-	 * @returns A nullptr
-	 */
-	mgdl_AngelScript* mgdl_InitAngelCpp(AngelInitFuncType initFunc, AngelFrameFuncType frameFunc, AngelQuitFuncType quitFunc);
-
-	/**
-	 * @brief Runs the init function in the module. This is run automatically on every code change.
-	 * @param angel The AngelScript object with the module
-	 */
-	void mgdl_RunAngelScriptInit(mgdl_AngelScript* angel);
-	/**
-	 * @brief Runs the frame(float deltatime) function in the module. Call this every frame.
-	 * @param deltatime Delta time forwarded to the script function
-	 * @param angel The AngelScript object with the module
-	 */
-	void mgdl_RunAngelScriptFrame(mgdl_AngelScript* angel, float deltatime);
-	/**
-	 * @brief Runs the quit function in the module. Call this when shutting down the host program.
-	 * @param angel The AngelScript object with the module
-	 */
-	void mgdl_RunAngelScriptQuit(mgdl_AngelScript* angel);
-
 	// Custom functions for games and demos
 	/**
 	 * @brief Look for a function in anglescript by declaration
 	 * @param angel The AngelScript object with the module
-	 * @param angel The function declaration, must be type void()
-	 * @returns Function pointer or nullptr
+	 * @param functionDeclaration The function declaration
+	 * @returns Function pointer or nullptr if not found
 	 */
-	asIScriptFunction* mgdl_FindAngelScriptFunctionVoidVoid(mgdl_AngelScript* angel, const char* functionDeclaration);
+	asIScriptFunction* mgdl_FindAngelScriptFunction(mgdl_AngelScript* angel, const char* functionDeclaration);
 
 	/**
-	 * @brief Run a provided AngleScript function
+	 * @brief Prepares AngelScript function for calling.
+	 * @note Call this before settings parameters and committing the call
 	 * @param angel The AngelScript object with the module
-	 * @param angel The function pointer
+	 * @param function The function to prepare
 	 */
-	void mgdl_RunAngelScriptFunction(mgdl_AngelScript* angel, asIScriptFunction* function);
+	void mgdl_PrepareAngelScriptFunctionCall(mgdl_AngelScript* angel, asIScriptFunction* function);
+	/**
+	 * @brief Sets an integer parameter value for the prepared function call
+	 * @param angel The AngelScript object with the module
+	 * @param function The function to prepare
+	 * @param parameterIndex Index of the parameter
+	 * @param value Value of the parameter
+	 */
+	void mgdl_SetAngelScriptFunctionParameterInt(mgdl_AngelScript* angel, asIScriptFunction* function, int parameterIndex, int value);
+	/**
+	 * @brief Sets a floating point parameter value for the prepared function call
+	 * @param angel The AngelScript object with the module
+	 * @param function The function to prepare
+	 * @param parameterIndex Index of the parameter
+	 * @param value Value of the parameter
+	 */
+	void mgdl_SetAngelScriptFunctionParameterFloat(mgdl_AngelScript* angel, asIScriptFunction* function, int parameterIndex, float value);
+	/**
+	 * @brief Sets a boolean point parameter value for the prepared function call
+	 * @param angel The AngelScript object with the module
+	 * @param function The function to prepare
+	 * @param parameterIndex Index of the parameter
+	 * @param value Value of the parameter
+	 */
+	void mgdl_SetAngelScriptFunctionParameterBool(mgdl_AngelScript* angel, asIScriptFunction* function, int parameterIndex, bool value);
+	/**
+	 * @brief Commit a prepared function call
+	 * @param angel The AngelScript object with the module
+	 * @param angel The function to call
+	 */
+	void mgdl_CommitAngelScriptFunctionCall(mgdl_AngelScript* angel, asIScriptFunction* function);
+
 
 	/**
 	 * @brief Deinitializes the AngelScript engine and hotloading and frees all memory

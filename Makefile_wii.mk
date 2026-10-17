@@ -31,17 +31,20 @@ LIBOGC_INC	:=	$(DEVKITPRO)/libogc/include
 LIBOGC_LIB	:=	$(DEVKITPRO)/libogc/lib/wii
 PORTLIBS_PPC	:=	$(DEVKITPRO)/portlibs/ppc/include
 PORTLIBS_WII	:=	$(DEVKITPRO)/portlibs/wii/include
+#ANGEL_INC	:=	$(ANGELSCRIPT_SDK)/angelscript/include
+#ANGEL_LIB	:=	$(ANGELSCRIPT_SDK)/angelscript/lib-wii
 
 OGC_INCLUDE	:= -I$(LIBOGC_INC) -I$(PORTLIBS_PPC) -I$(PORTLIBS_WII)
 MACHDEP		:= -mrvl -mcpu=750 -meabi -mhard-float
 # NOTE: Cannot use -Wpedantic since OGC is C
-CXXFLAGS	 += -O3 -Wall -Wextra -std=c++11 $(MACHDEP) -DGEKKO
+CXXFLAGS	 += -O3 -Wall -Wextra -std=c++20 $(MACHDEP) -DGEKKO
 CXXFLAGS	 += -DMGDL_PLATFORM=\"Wii\"
 CXXFLAGS	 += -DMGDL_PLATFORM_WII
 
 # Add own include files so that #include <...> works
 MGDL_INCLUDE = -Iinclude -I$(DEVKITPRO)/../lib$(LIB)/include
 CXXFLAGS += $(MGDL_INCLUDE)
+#CXXFLAGS += $(ANGEL_INC)
 # NOTE: The order matters. Add OGC last so that includes are
 # searched first from local include/
 CXXFLAGS += $(OGC_INCLUDE)

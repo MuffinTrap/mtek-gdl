@@ -37,8 +37,6 @@
 *
 **********************************************************************************************/
 
-#if USE_ANGEL_AS_SCRIPT
-
 // AngelScript functions for C math functions
 float sqrtf(float value)
 {
@@ -2690,5 +2688,3 @@ void MatrixDecompose(Matrix mat, Vector3 &out translation, Quaternion &out rotat
                              0, 0, 0, 1 );
     rotation = QuaternionFromMatrix(rotationMatrix);
 }
-
-#endif

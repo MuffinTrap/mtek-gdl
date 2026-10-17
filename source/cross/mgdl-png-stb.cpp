@@ -119,10 +119,6 @@ GLenum PNG_PNGtoGLInternalFormat(int stbi_format)
 	return 0;
 }
 
-GLenum PNG_GetGLType(PNGFile* png)
-{
-	return GL_UNSIGNED_BYTE;
-}
 
 int PNG_GLFormattoPNGFormat(GLenum format)
 {
@@ -151,6 +147,11 @@ int PNG_GLFormattoPNGFormat(GLenum format)
 #endif
 
 // GENERAL PNG FUNCTIONS
+
+GLenum PNG_GetGLType(PNGFile* png)
+{
+	return GL_UNSIGNED_BYTE;
+}
 
 void PNG_DeleteData(PNGFile* png)
 {

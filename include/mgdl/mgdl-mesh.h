@@ -2,6 +2,9 @@
 
 #include <mgdl/mgdl-opengl.h>
 #include <mgdl/mgdl-types.h>
+#include <mgdl/mgdl-color.h>
+
+struct Gradient;
 
 /**
  * @file mgdl-mesh.h
@@ -27,6 +30,8 @@ struct Mesh
 	// mgdl data
 	GLushort indexCounter; /**< Used when creating a mesh */
 	zstr name;
+	Vector3 minPoint;
+	Vector3 maxPoint;
 
 	// ufbx connection
 	uint32_t ufbx_id;
@@ -101,12 +106,30 @@ extern "C"
 	 */
 	void Mesh_SetNormalToArray(Mesh* mesh,sizetype index, Vector3 normal);
 		/**
+	 * @brief Sets a vertex color in the colors array
+	 * @param mesh The mesh
+	 * @param index The colors array index
+	 * @param color The color
+	 */
+	void Mesh_SetColorToArrayV(Mesh* mesh,sizetype index, Vector3 color);
+		/**
+	 * @brief Sets a vertex color in the colors array
+	 * @param mesh The mesh
+	 * @param index The colors array index
+	 * @param color The color
+	 */
+	void Mesh_SetColorToArray32(Mesh* mesh,sizetype index, color32 color);
+		/**
 	 * @brief Sets a vertex uv in the texture coordinates array
 	 * @param mesh The mesh
 	 * @param index The texture coordinates array index
 	 * @param uv The vertex uv
 	 */
 	void Mesh_SetUVToArray(Mesh* mesh,sizetype index, Vector2 uv);
+
+	// Sets the vertex colors from gradient top to bottom
+	void Mesh_SetColorsFromGradient(Mesh* mesh, Gradient* gradient);
+
 		/**
 	 * @brief Gets drawing indices of a given vertext triangle
 	 * @param mesh The mesh
@@ -210,6 +233,8 @@ extern "C"
 	 * @returns The next index to use.
 	 */
 	u32 Mesh_AddTriangle(Mesh* mesh, GLushort indexA, GLushort indexB, GLushort indexC, u32 index);
+
+
 
 
 	/**
