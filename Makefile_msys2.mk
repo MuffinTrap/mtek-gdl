@@ -1,5 +1,6 @@
 # Build a Windows static library
-include Makefile_pc.mk
+include rules_all.mk
+include rules_pc.mk
 
 # Windows specific settings
 CXX = clang++
@@ -30,21 +31,27 @@ install: $(ARC)
 	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/pc
 
 	@cp $(LIBDIR)/$(ARC) $(INSTALL_DIR)/lib
-	@cp $(LIBDIR)/$(DLL) $(INSTALL_DIR)/lib
+	#@cp $(LIBDIR)/$(DLL) $(INSTALL_DIR)/lib
 
 	@cp $(LIBHDR) $(INSTALL_DIR)/include
 	@cp $(HDRS_X) $(INSTALL_DIR)/include/$(LIB)
 	@cp $(HDRS_PC) $(INSTALL_DIR)/include/$(LIB)/pc
 
 # UFBX library
-	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/fbx
+	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/ufbx
 	@cp $(UFBX_HDR) $(INSTALL_DIR)/include/$(LIB)/ufbx
-# ccVector library
-	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/ccVector
-	@cp $(CCVEC_HDR) $(INSTALL_DIR)/include/$(LIB)/ccVector
 # random generation library
 	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/wflcg
 	@cp $(RANDOM_HDR) $(INSTALL_DIR)/include/$(LIB)/wflcg
+# file change watching library
+	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/dmon
+	@cp $(DMON_HDR) $(INSTALL_DIR)/include/$(LIB)/dmon
+# string library
+	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/zstrh
+	@cp $(ZSTR_HDR) $(INSTALL_DIR)/include/$(LIB)/zstrh
+# raymath library
+	@mkdir -p $(INSTALL_DIR)/include/$(LIB)/raymath
+	@cp $(RAYMATH_HDR) $(INSTALL_DIR)/include/$(LIB)/raymath
 
 	@echo installed to $(INSTALL_DIR)
 

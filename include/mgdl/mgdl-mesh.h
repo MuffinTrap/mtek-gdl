@@ -1,7 +1,8 @@
 #pragma once
+#ifndef MGDL_MESH_H
+#define MGDL_MESH_H
 
 #include <mgdl/mgdl-opengl.h>
-#include <mgdl/mgdl-types.h>
 #include <mgdl/mgdl-color.h>
 
 struct Gradient;
@@ -260,3 +261,5 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
+
+#endif // MGDL_MESH_H

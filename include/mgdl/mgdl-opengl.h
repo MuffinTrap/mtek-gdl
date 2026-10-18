@@ -15,6 +15,10 @@
 #       include <Windows.h>
 #       include <gL/GL.h>
 #       include <gL/GLU.h>
+#	elif defined(MGDL_PLATFORM_MSYS2)
+		#include <GL/gl.h>
+        #include <GL/glu.h>
+        #include <GL/glut.h>
 #   elif defined(_WIN32)
 #       include <Windows.h>
 #       include <gl/GL.h>

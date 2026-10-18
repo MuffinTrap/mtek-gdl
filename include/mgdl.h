@@ -1,4 +1,6 @@
 #pragma once
+#ifndef MGDL_H
+#define MGDL_H
 
 #include "mgdl/mgdl-config.h"
 #include "mgdl/mgdl-types.h"
@@ -9,6 +11,7 @@
 #include "mgdl/mgdl-memory.h"
 #include "mgdl/mgdl-assert.h"
 #include "mgdl/mgdl-logger.h"
+
 #include "mgdl/mgdl-palette.h"
 #include "mgdl/mgdl-camera.h"
 #include "mgdl/mgdl-png.h"
@@ -22,14 +25,19 @@
 #include "mgdl/mgdl-assetmanager.h"
 #include "mgdl/mgdl-defaultfont.h"
 #include "mgdl/mgdl-gui.h"
-#include "mgdl/mgdl-script-api.h"
+#include "mgdl/mgdl-gradient.h"
+#include "mgdl/mgdl-palette.h"
+#include "mgdl/mgdl-draw3d.h"
+
 #include "mgdl/mgdl-sound.h"
 #include "mgdl/mgdl-controller.h"
 #include "mgdl/mgdl-platform.h"
-#include "mgdl/mgdl-palette.h"
-#include "mgdl/mgdl-draw3d.h"
 #include "mgdl/mgdl-splash.h"
 #include "mgdl/mgdl-console.h"
 #include "mgdl/mgdl-audio.h"
-#include "mgdl/mgdl-main.h"
 #include "mgdl/mgdl-angelscript.h"
+#include "mgdl/mgdl-script-api.h"
+
+#include "mgdl/mgdl-main.h"
+
+#endif

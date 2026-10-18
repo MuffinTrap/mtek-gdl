@@ -43,3 +43,6 @@ buid_wii/
 
 # Valgrind artifacts
 vgcore.*
+
+# KDE Plasma folder colors
+.directory

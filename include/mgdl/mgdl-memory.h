@@ -1,4 +1,6 @@
 #pragma once
+#ifndef MGDL_MEMORY_H
+#define MGDL_MEMORY_H
 
 /**
  * @file mgdl-memory.h
@@ -86,11 +88,12 @@ sizetype mgdl_GetAllocatedGeneralMemoryBytes();
 	// linker complains that it cannot find the definition...
 	#pragma clang diagnostic push
 	#pragma clang diagnostic ignored "-Wunused-parameter"
-	void mgdl_CacheFlushRange(void* rangeStart, sizetype size)
-	{
+	//void mgdl_CacheFlushRange(void* rangeStart, sizetype size)
+	//{
 		// nop
-	}
+	//}
 	#pragma clang diagnostic pop
+	#define mgdl_CacheFlushRange(rangeStart, size) 
 #endif
 
 #if defined(MGDL_PLATFORM_LINUX) || defined(MGDL_PLATFORM_MAC)
@@ -100,3 +103,5 @@ sizetype mgdl_GetAllocatedGeneralMemoryBytes();
 #ifdef __cplusplus
 }
 #endif
+
+#endif // HEADER GUARD

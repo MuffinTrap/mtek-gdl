@@ -137,7 +137,7 @@ GLint TextureWrapToGLWrap(TextureWrapModes wrapMode)
 			return GL_CLAMP;
 			break;
 		case TextureWrapModes::Wrap_Mirror:
-#if defined(MGDL_PLATFORM_WINDOWS)
+#if defined(MGDL_PLATFORM_WINDOWS) || defined(MGDL_PLATFORM_MSYS2)
 			// TODO How to do?
 			return GL_REPEAT;
 #else // defined(MGDL_PLATFORM_WINDOWS)

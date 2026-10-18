@@ -59,6 +59,7 @@ void Joystick_Init()
         {
             joystick->isConnected = true;
             Log_InfoF("Joystick Init index %d\n", joystick->index);
+			joystick->controller.m_type = Controller_Xbox360Pad;
         }
         else if (result == ERROR_DEVICE_NOT_CONNECTED)
         {

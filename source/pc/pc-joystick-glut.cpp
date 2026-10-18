@@ -85,6 +85,7 @@ void Joystick_Init()
 		glutJoystickFunc(joystickCallback, 0);
 
 		joystick->isConnected = true;
+		joystick->controller.m_type = Controller_Xbox360Pad;
 	}
 	else
 	{

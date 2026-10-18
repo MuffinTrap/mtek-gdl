@@ -146,6 +146,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\Libraries\sdk\angelscript\include\angelscript.h" />
     <ClInclude Include="..\include\mgdl.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-types.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\sdk\angelscript\projects\msvc2022\angelscript.vcxproj">
