@@ -30,7 +30,9 @@ extern "C"
 
 PNGFile* PNG_GenerateColorImage(color32 color);
 
+PNGFile* PNG_ReadTexels(unsigned char* texels, int width, int height, int channels);
 PNGFile* PNG_ReadFile(const char* filename);
+PNGFile* PNG_ReadFilePtr(FILE* filePtr);
 void PNG_DeleteData(PNGFile* png);
 
 GLenum PNG_GetGLFormat(PNGFile* png);

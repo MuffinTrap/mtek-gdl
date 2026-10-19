@@ -19,19 +19,10 @@
 #include <mgdl/stb/stb_image.h>
 #pragma GCC diagnostic pop
 
-PNGFile* PNG_ReadFile(const char* filename)
+PNGFile* PNG_ReadTexels(unsigned char* texelPtr, int width, int height, int channels)
 {
-	Log_InfoF("Loading Png file %s\n", filename);
-	if (mgdl_DoesFileExist(filename) == false)
-	{
-		Log_ErrorF("No such file: %s\n", filename);
-		return nullptr;
-	}
-	int width, height, channels;
-	unsigned char* texelPtr = stbi_load(filename, &width, &height, &channels, 0);
 	if (texelPtr == NULL)
 	{
-		Log_ErrorF("Could not read PNG file %s\n", filename);
 		return nullptr;
 	}
 	Log_InfoF("Loaded Png file w:%d h:%d channels:%d\n", width, height, channels);
@@ -67,8 +58,40 @@ PNGFile* PNG_ReadFile(const char* filename)
 	png->_texels = texelPtr;
 	sizetype imageDataSize = width * height * channels;
 	mgdl_CacheFlushRange(png->_texels, imageDataSize);
-	
+
 	return png;
+}
+
+PNGFile* PNG_ReadFilePtr(FILE* filePtr)
+{
+	if( filePtr == nullptr)
+	{
+		return nullptr;
+	}
+
+	int width, height, channels;
+	unsigned char* texelPtr = stbi_load_from_file(filePtr, &width, &height, &channels, 0);
+	return PNG_ReadTexels(texelPtr, width, height, channels);
+
+}
+
+PNGFile* PNG_ReadFile(const char* filename)
+{
+	Log_InfoF("Loading Png file %s\n", filename);
+	if (mgdl_DoesFileExist(filename) == false)
+	{
+		Log_ErrorF("No such file: %s\n", filename);
+		return nullptr;
+	}
+	int width, height, channels;
+	unsigned char* texelPtr = stbi_load(filename, &width, &height, &channels, 0);
+
+	if (texelPtr == NULL)
+	{
+		Log_ErrorF("Could not read PNG file %s\n", filename);
+		return nullptr;
+	}
+	return PNG_ReadTexels(texelPtr, width, height, channels);
 }
 
 GLenum PNG_PNGtoGLFormat(int stbi_format)

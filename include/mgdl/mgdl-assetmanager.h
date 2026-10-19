@@ -100,6 +100,12 @@ void AssetManager_Init();
  * @returns Handle to the loaded texture
  */
 TextureHandle AssetManager_LoadTexture(const char* filename, bool generateMipMaps);
+/**
+ * @brief Loads a texture from png file and offset. Will not load again if a texture with same name is already loaded.
+ * @param filename Path to the png file relative to the executable
+ * @returns Handle to the loaded texture
+ */
+TextureHandle AssetManager_LoadTextureOffset(const char* filename, sizetype offsetFromStart, const char* identierName, bool generateMipMaps);
 
 /**
  * @brief Returns the texture asset associated with the given handle.

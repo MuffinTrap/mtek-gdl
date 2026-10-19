@@ -119,8 +119,12 @@ int PNG_GLFormattoPNGFormat(GLenum format)
 }
 
 
-PNGFile* _PNG_ReadFilePointer(FILE* fp)
+PNGFile* PNG_ReadFilePtr(FILE* fp)
 {
+	if (fp == nullptr)
+	{
+		return nullptr;
+	}
 	// Read from file pointer
 	png_byte magic[8];
 	png_structp png_ptr;
@@ -359,7 +363,7 @@ PNGFile* PNG_ReadFile(const char* filename)
 		return nullptr;
 	}
 
-	PNGFile* png = _PNG_ReadFilePointer(fp);
+	PNGFile* png = PNG_ReadFilePtr(fp);
 	fclose(fp);
 	return png;
 }

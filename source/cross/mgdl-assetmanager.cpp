@@ -146,32 +146,28 @@ void AssetManager_LoadFont(AssetManager* manager, Texture* texture)
 	manager->m_memoryInUse += texture->spriteAtlas->characterCount * sizeof(Vector2);
 }
 
-TextureHandle AssetManager_LoadTexture(const char* filename, bool generateMipMaps)
+static TextureHandle AssetManager_FindTextureByName(zstr_view identierNameView)
 {
-	mgdl_assert_print(m_manager.m_textureAssets != nullptr, "AssetManager not initialized!");
-	TextureHandle handle = Handle_CreateTexture(0);
+	TextureHandle handle = MGDL_INVALID_HANDLE;
 	ObjectArray* array = m_manager.m_textureAssets;
-	// Check if already loaded
-	zstr_view filenameView = zstr_view_from(filename);
 	for(sizetype i = 0; i < ObjectArray_Count(array); i++)
 	{
 		TextureAsset* m = ObjectArray_Get_TextureAsset(array, i);
 		zstr_view handleView = zstr_as_view(&m->filename);
-		if (zstr_view_eq_view(filenameView, handleView))
+		if (zstr_view_eq_view(identierNameView, handleView))
 		{
 			handle = Handle_CreateTexture(i);
 			return handle;
 		}
 	}
+	return handle;
+}
 
-	// TODO Read settings from asset configuration file
-
-	TextureFilterModes filterMode = TextureFilterModes::Nearest;
-	Texture* texture = Texture_LoadFile(filename, filterMode, generateMipMaps);
-	ASSERT_DEBUG(texture != nullptr);
+static TextureHandle AssetManager_LoadTexturePtr(TextureHandle handle, const char* identifierName, Texture* texture, bool generateMipMaps)
+{
 	if (texture != nullptr)
 	{
-		Log_InfoF("Texture %s size is %d %d\n", filename, texture->width, texture->height);
+		Log_InfoF("Texture %s size is %d %d\n", identifierName, texture->width, texture->height);
 		// TODO how much memory the image data takes extracted
 		// TODO Convert from image format to bytes per pixe;
 		// TODO add a function to texture that tells the memory usage
@@ -184,16 +180,69 @@ TextureHandle AssetManager_LoadTexture(const char* filename, bool generateMipMap
 			m_manager.m_memoryInUse += texture->width * texture->height * (int)texture->colorFormat;
 		}
 
-		TextureAsset ta = AssetManager_CreateTextureAsset(texture, filename);
+		TextureAsset ta = AssetManager_CreateTextureAsset(texture, identifierName);
+
+		ObjectArray* array = m_manager.m_textureAssets;
 		handle = Handle_CreateTexture((u16)ObjectArray_Add_TextureAsset(array, ta));
 
-		Log_InfoF("Texture %s got handle %u\n", filename, Handle_Index(handle));
+		Log_InfoF("Texture %s got handle %u\n", identifierName, Handle_Index(handle));
 	}
 	else
 	{
 		handle = MGDL_INVALID_HANDLE;
 	}
+
 	return handle;
+}
+
+TextureHandle AssetManager_LoadTextureOffset(const char* filename, sizetype offsetFromStart, const char* identierName, bool generateMipMaps)
+{
+	mgdl_assert_print(m_manager.m_textureAssets != nullptr, "AssetManager not initialized!");
+	TextureHandle handle = Handle_CreateTexture(0);
+	// Check if already loaded
+	zstr_view idView = zstr_view_from(identierName);
+
+	handle = AssetManager_FindTextureByName(idView);
+	if (Handle_IsValid(handle))
+	{
+		return handle;
+	}
+
+	TextureFilterModes filterMode = TextureFilterModes::Nearest;
+	FILE* fileptr = fopen(filename, "rb");
+	if (fileptr)
+	{
+		fseek(fileptr, offsetFromStart, SEEK_SET);
+		PNGFile* png = PNG_ReadFilePtr(fileptr);
+		Texture* texture = Texture_LoadPNG(png, filterMode, generateMipMaps);
+		ASSERT_DEBUG(texture != nullptr);
+		fclose(fileptr);
+		return AssetManager_LoadTexturePtr(handle, identierName, texture, generateMipMaps);
+	}
+	handle = MGDL_INVALID_HANDLE;
+	return handle;
+}
+
+
+TextureHandle AssetManager_LoadTexture(const char* filename, bool generateMipMaps)
+{
+	mgdl_assert_print(m_manager.m_textureAssets != nullptr, "AssetManager not initialized!");
+	TextureHandle handle = Handle_CreateTexture(0);
+	// Check if already loaded
+	zstr_view filenameView = zstr_view_from(filename);
+
+	handle = AssetManager_FindTextureByName(filenameView);
+	if (Handle_IsValid(handle))
+	{
+		return handle;
+	}
+
+	// TODO Read settings from asset configuration file
+
+	TextureFilterModes filterMode = TextureFilterModes::Nearest;
+	Texture* texture = Texture_LoadFile(filename, filterMode, generateMipMaps);
+	ASSERT_DEBUG(texture != nullptr);
+	return AssetManager_LoadTexturePtr(handle, filename, texture, generateMipMaps);
 }
 
 void AssetManager_PrintLoadedTextures()
