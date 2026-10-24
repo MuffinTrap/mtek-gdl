@@ -52,7 +52,6 @@ Texture* Texture_LoadPNG(PNGFile* png, TextureFilterModes filterMode, bool gener
 	mgdl_assert_print(png != nullptr, "Texture_LoadPNG got nullptr for png\n");
 
 	Texture* image = Texture_Create();
-	GLint glFilter = TextureFilterToGLFilter(filterMode);
 
 	GLint alignment;
 	glGenTextures(1, &image->textureId);
@@ -305,14 +304,25 @@ void Texture_SetFilterModeMag(Texture* texture, TextureFilterModes mode)
 	ASSERT_DEBUG(texture != nullptr);
 	glBindTexture(GL_TEXTURE_2D, texture->textureId);
 
-	if ((mode == Nearest || mode == Linear) == false)
+	// If minap filter is given convert to normal
+	if (mode == MipmapNearest || mode == MipmapAvgNearest)
+	{
+		mode = Nearest;
+	}
+	else if (mode == MipmapLinear || mode == MipmapTrilinear)
+	{
+		mode = Linear;
+	}
+
+	if (mode == Nearest || mode == Linear)
+	{
+		GLint glFilter = TextureFilterToGLFilter(mode);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glFilter);
+	}
+	else
 	{
 		Log_Error("Setting the texture Magnifying filter to minmap filter is not possible");
 	}
-
-	GLint glFilter = TextureFilterToGLFilter(mode);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glFilter);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 

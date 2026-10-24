@@ -207,8 +207,15 @@ TextureHandle AssetManager_LoadTextureOffset(const char* filename, sizetype offs
 	{
 		return handle;
 	}
-
-	TextureFilterModes filterMode = TextureFilterModes::Nearest;
+	TextureFilterModes filterMode;
+	if (generateMipMaps)
+	{
+		filterMode = TextureFilterModes::MipmapNearest;
+	}
+	else
+	{
+		filterMode = TextureFilterModes::Nearest;
+	}
 	FILE* fileptr = fopen(filename, "rb");
 	if (fileptr)
 	{
