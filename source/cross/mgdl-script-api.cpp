@@ -432,7 +432,7 @@ SceneHandle mgdl_LoadScene(const zstr& filename)
 // MODELS
 ModelHandle mgdl_LoadModel(const char* filename)
 {
-	return AssetManager_LoadModel(filename);
+	return AssetManager_LoadModel(filename, true);
 }
 
 ModelHandle mgdl_LoadModel(const zstr& filename)

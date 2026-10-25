@@ -490,7 +490,7 @@ SceneHandle AssetManager_LoadScene(const char* filename)
 	return handle;
 }
 
-ModelHandle AssetManager_LoadModel(const char* filename)
+ModelHandle AssetManager_LoadModel(const char* filename, bool loadMaterial)
 {
 	ModelHandle handle = Handle_CreateModel(0);
 	ObjectArray* array = m_manager.m_modelAssets;
@@ -508,7 +508,7 @@ ModelHandle AssetManager_LoadModel(const char* filename)
 			return handle;
 		}
 	}
-	Model* model = FBX_LoadFirstModel(filename);
+	Model* model = FBX_LoadFirstModel(filename, loadMaterial);
 	ASSERT_DEBUG(model != nullptr);
 	if (model != nullptr)
 	{

@@ -186,9 +186,10 @@ Scene* AssetManager_GetScene(SceneHandle handle);
 /**
  * @brief Loads the first model from fbx file
  * @param filename Name of the fbx file
+ * @param loadMaterial Should the material be loaded from the file too
  * @returns Handle to the loaded model
  */
-ModelHandle AssetManager_LoadModel(const char* filename);
+ModelHandle AssetManager_LoadModel(const char* filename, bool loadMaterial);
 
 /**
  * @brief Returns a pointer to Model

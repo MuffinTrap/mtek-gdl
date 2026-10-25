@@ -73,16 +73,16 @@ GLenum PNG_PNGtoGLInternalFormat(int pngFormat)
 	switch(pngFormat)
 	{
 		case PNG_COLOR_TYPE_GRAY:
-			return GL_UNSIGNED_BYTE;
+			return GL_LUMINANCE;
 		break;
 		case PNG_COLOR_TYPE_GRAY_ALPHA:
-			return GL_UNSIGNED_BYTE;
+			return GL_LUMINANCE_ALPHA;
 		break;
 		case PNG_COLOR_TYPE_RGB:
-			return GL_UNSIGNED_BYTE;
+			return GL_RGB;
 		break;
 		case PNG_COLOR_TYPE_RGB_ALPHA:
-			return GL_UNSIGNED_BYTE;
+			return GL_RGBA;
 		break;
 		default:
 			Log_Warning("Unsupported PNG color type\n");

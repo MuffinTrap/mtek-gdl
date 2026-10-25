@@ -228,7 +228,7 @@ ufbx_mesh* FBX_GetFirstMesh(ufbx_scene* scene)
     return nullptr;
 }
 
-Model* FBX_LoadFirstModel(const char* fbxFile)
+Model* FBX_LoadFirstModel(const char* fbxFile, bool loadMaterial)
 {
 	ufbx_scene* scene = FBX_LoadScene(fbxFile);
 	if (scene == nullptr)
@@ -243,20 +243,23 @@ Model* FBX_LoadFirstModel(const char* fbxFile)
 	zstr filepath = zstr_from(fbxFile);
 
 	// Find '/'
-	ptrdiff_t index = zstr_find(&filepath, "/");
-	if (index > 0)
+	if (loadMaterial)
 	{
-		zstr_view pathview = zstr_as_view(&filepath);
-		zstr_view filetype = zstr_sub(pathview, 0, index);
-		zstr folder = zstr_from_view(filetype);
-		material = FBX_LoadFirstMaterial(scene, zstr_cstr(&folder));
-		zstr_free(&folder);
-	}
-	zstr_free(&filepath);
+		ptrdiff_t index = zstr_find(&filepath, "/");
+		if (index > 0)
+		{
+			zstr_view pathview = zstr_as_view(&filepath);
+			zstr_view filetype = zstr_sub(pathview, 0, index);
+			zstr folder = zstr_from_view(filetype);
+			material = FBX_LoadFirstMaterial(scene, zstr_cstr(&folder));
+			zstr_free(&folder);
+		}
+		zstr_free(&filepath);
 
-	if (material == nullptr)
-	{
-		material = FBX_LoadFirstMaterial(scene, nullptr);
+		if (material == nullptr)
+		{
+			material = FBX_LoadFirstMaterial(scene, nullptr);
+		}
 	}
 
 	if (mesh != nullptr)

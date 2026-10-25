@@ -35,7 +35,7 @@ extern "C"
  * @return Loaded scene.
  */
 Scene* FBX_Load(const char* fbxFile);
-Model* FBX_LoadFirstModel(const char* fbxFile);
+Model* FBX_LoadFirstModel(const char* fbxFile, bool loadMaterial);
 
 Mesh* m_FBX_AllocateMesh(ufbx_mesh* fbxMesh);
 Mesh* m_FBX_LoadMesh(ufbx_mesh* fbxMesh);
@@ -50,7 +50,6 @@ Material* FBX_LoadNodeMaterial(ufbx_node* node, sizetype materialIndex, const ch
 
 ufbx_scene* FBX_LoadScene(const char* fbxFile);
 ufbx_mesh* FBX_GetFirstMesh(ufbx_scene* scene);
-Model* FBX_LoadFirstModel(const char* fbxFile);
 
 #ifdef __cplusplus
 }
