@@ -73,6 +73,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LibraryPath>C:\Dev\libsndfile-1.2.2-win64\lib;C:\Program Files %28x86%29\OpenAL 1.1 SDK\libs\Win64;C:\Dev\freeglut\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IntDir>$(Platform)\$(Configuration)\Build\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -146,6 +149,8 @@
   <ItemGroup>
     <ClInclude Include="..\..\Libraries\sdk\angelscript\include\angelscript.h" />
     <ClInclude Include="..\include\mgdl.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-angelscript.h" />
+    <ClInclude Include="..\include\mgdl\mgdl-opengl.h" />
     <ClInclude Include="..\include\mgdl\mgdl-types.h" />
   </ItemGroup>
   <ItemGroup>

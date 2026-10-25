@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\NewFilter1">
-      <UniqueIdentifier>{c317989f-0692-470f-a5cf-064cad2278c7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Config Files">
       <UniqueIdentifier>{e8125d2b-6a88-475d-b795-4aa090cb54cb}</UniqueIdentifier>
     </Filter>
@@ -28,6 +25,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\mgdl\mgdl-types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mgdl\mgdl-opengl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mgdl\mgdl-angelscript.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
